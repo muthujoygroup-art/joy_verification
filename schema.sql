@@ -279,6 +279,47 @@ CREATE TABLE IF NOT EXISTS platform_guidelines (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 21. DIGILOCKER VERIFICATIONS (Government Vault Demographics)
+CREATE TABLE IF NOT EXISTS digilocker_verifications (
+    id VARCHAR(50) PRIMARY KEY,
+    session_id VARCHAR(50),
+    candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE SET NULL,
+    user_type VARCHAR(50) DEFAULT 'individual',
+    auth_type VARCHAR(50) DEFAULT 'mobile',
+    identifier_value VARCHAR(100),
+    digilocker_id VARCHAR(100),
+    full_name VARCHAR(255),
+    dob VARCHAR(50),
+    gender VARCHAR(20),
+    email VARCHAR(255),
+    aadhaar_no VARCHAR(50),
+    uan_no VARCHAR(50),
+    pan_no VARCHAR(50),
+    dl_no VARCHAR(50),
+    address TEXT,
+    pincode VARCHAR(20),
+    status VARCHAR(50) DEFAULT 'success',
+    purpose VARCHAR(255) DEFAULT 'Employee onboarding private sector',
+    service_name VARCHAR(255) DEFAULT 'JoyVerify',
+    company_id VARCHAR(50) DEFAULT 'COMP001',
+    hr_id VARCHAR(50) DEFAULT 'hr-1',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 22. DIGILOCKER DOCUMENTS (Issued Government Certificates)
+CREATE TABLE IF NOT EXISTS digilocker_documents (
+    id VARCHAR(50) PRIMARY KEY,
+    verification_id VARCHAR(50) REFERENCES digilocker_verifications(id) ON DELETE CASCADE,
+    candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE SET NULL,
+    document_name VARCHAR(255) NOT NULL,
+    issuer VARCHAR(255),
+    doc_no VARCHAR(100),
+    doc_uri VARCHAR(255),
+    doc_type VARCHAR(100),
+    doc_status VARCHAR(50) DEFAULT 'Verified',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- CREATE INDEXES FOR ULTRA-FAST QUERY PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_candidates_token ON candidates(token);
 CREATE INDEX IF NOT EXISTS idx_candidates_company ON candidates(company_id);
@@ -286,6 +327,10 @@ CREATE INDEX IF NOT EXISTS idx_candidates_hr ON candidates(hr_id);
 CREATE INDEX IF NOT EXISTS idx_verification_records_cand ON verification_records(candidate_id);
 CREATE INDEX IF NOT EXISTS idx_verification_records_token ON verification_records(token);
 CREATE INDEX IF NOT EXISTS idx_verification_records_type ON verification_records(verification_type);
+CREATE INDEX IF NOT EXISTS idx_digilocker_verif_cand ON digilocker_verifications(candidate_id);
+CREATE INDEX IF NOT EXISTS idx_digilocker_verif_ident ON digilocker_verifications(identifier_value);
+CREATE INDEX IF NOT EXISTS idx_digilocker_verif_comp ON digilocker_verifications(company_id);
+CREATE INDEX IF NOT EXISTS idx_digilocker_docs_verif ON digilocker_documents(verification_id);
 
 -- ====================================================================
 -- INITIAL PRODUCTION SEED DATA
@@ -294,9 +339,9 @@ CREATE INDEX IF NOT EXISTS idx_verification_records_type ON verification_records
 -- Insert Companies
 INSERT INTO companies (id, name, code, contact_person, email, plan, price_per_verification, verified_count_this_month, max_limit, status, features)
 VALUES 
-('comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'JOYCORP', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Enterprise Premier', 120.00, 142, 500, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": true, "pan": true, "uan": true, "education": true, "criminalCheck": false, "addressCheck": false, "bankCheck": true}'),
-('comp-2', 'Apex Logistics & Freight', 'APEX', 'Ananya Sharma', 'hr-head@apexlogistics.in', 'Standard Tier', 100.00, 88, 250, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": false, "pan": true, "uan": false, "education": false, "criminalCheck": false, "addressCheck": true, "bankCheck": false}'),
-('comp-3', 'Starlight Healthcare Solutions', 'SHS', 'Dr. Ramesh Iyer', 'operations@starlighthealth.org', 'Basic Tier', 80.00, 34, 100, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": false, "drivingLicense": false, "pan": false, "uan": false, "education": false, "criminalCheck": false, "addressCheck": false, "bankCheck": false}')
+('comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'JOYCORP', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Enterprise Premier', 120.00, 142, 500, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": true, "pan": true, "uan": true, "education": true, "criminalCheck": false, "addressCheck": false, "bankCheck": true, "logo": "/assets/logos/joy_true_profile_shield_emblem.png", "logo_url": "/assets/logos/joy_true_profile_shield_emblem.png"}'),
+('comp-2', 'Joy Man Power Service', 'COMP002', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Enterprise Premier', 120.00, 56, 500, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": true, "pan": true, "uan": true, "education": true, "criminalCheck": false, "addressCheck": false, "bankCheck": true, "logo": "/assets/logos/joy_true_profile_shield_emblem.png", "logo_url": "/assets/logos/joy_true_profile_shield_emblem.png"}'),
+('comp-3', 'Apex Logistics & Freight', 'APEX', 'Ananya Sharma', 'hr-head@apexlogistics.in', 'Standard Tier', 100.00, 88, 250, 'Active', '{"aadhaar": true, "mobileOtp": true, "faceCapture": true, "drivingLicense": false, "pan": true, "uan": false, "education": false, "criminalCheck": false, "addressCheck": true, "bankCheck": false, "logo": "/assets/logos/joy_true_profile_shield_emblem.png", "logo_url": "/assets/logos/joy_true_profile_shield_emblem.png"}')
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert HR Users

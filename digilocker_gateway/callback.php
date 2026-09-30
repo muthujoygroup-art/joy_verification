@@ -9,14 +9,20 @@ require_once 'api.php';
 // 1. Extract OAuth Parameters
 $state = isset($_GET['state']) ? trim($_GET['state']) : '';
 $code  = isset($_GET['code']) ? trim($_GET['code']) : '';
+$error = isset($_GET['error']) ? trim($_GET['error']) : '';
+$error_desc = isset($_GET['error_description']) ? trim($_GET['error_description']) : '';
 
-// If code is returned, forward directly to main HR Portal
-if (!empty($code)) {
-    $targetUrl = 'https://test2.joycorporatesolutions.com/digilocker-callback?code=' . urlencode($code) . (!empty($state) ? '&state=' . urlencode($state) : '');
-    header("Location: " . $targetUrl);
+// If code or error is returned, forward directly to main HR Portal
+if (!empty($code) || !empty($error)) {
+    $params = [];
+    if (!empty($code)) $params['code'] = $code;
+    if (!empty($state)) $params['state'] = $state;
+    if (!empty($error)) $params['error'] = $error;
+    if (!empty($error_desc)) $params['error_description'] = $error_desc;
+    
+    header("Location: https://test2.joycorporatesolutions.com/digilocker-callback?" . http_build_query($params));
     exit;
 }
-$error = '';
 
 // Retrieve saved PKCE state data
 $cachedState = get_pkce_state($state);

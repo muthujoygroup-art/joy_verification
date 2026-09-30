@@ -14,6 +14,7 @@ from backend.app.models.inquiry import LeadInquiry
 from backend.app.models.review import ClientReview
 from backend.app.models.api_call_log import ApiCallLog
 from backend.app.models.blog import BlogPost
+from backend.app.models.digilocker import DigilockerVerification, DigilockerDocument
 
 __all__ = [
     "SuperAdminUser",
@@ -40,5 +41,7 @@ __all__ = [
     "CommunicationGateway",
     "LeadInquiry",
     "ClientReview",
-    "BlogPost"
+    "BlogPost",
+    "DigilockerVerification",
+    "DigilockerDocument"
 ]

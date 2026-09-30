@@ -85,9 +85,12 @@ ALTER TABLE companies ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-INSERT INTO companies (id, name, code, contact_person, email, password_hash, plan, price_per_verification, verified_count_this_month, max_limit, wallet_balance, status, is_active, features, terms_accepted, terms_version, created_at)
-VALUES ('comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'JOYCORP', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Company@Admin2026', 'Enterprise Premier', 120.0, 142, 500, 50000.0, 'Active', TRUE, '{"aadhaar": true, "pan": true, "bankCheck": true, "uan": true, "drivingLicense": true, "passport": true, "aiFaceBiometrics": true, "mobileOtp": true, "emailGateway": true, "faceCapture": true}'::json, 'true', 'v2.4-2026', CURRENT_TIMESTAMP)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, code = EXCLUDED.code, email = EXCLUDED.email;
+INSERT INTO companies (id, name, code, contact_person, email, password_hash, plan, price_per_verification, verified_count_this_month, max_limit, wallet_balance, status, is_active, logo_url, features, terms_accepted, terms_version, created_at)
+VALUES 
+('comp-1', 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', 'JOYCORP', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Company@Admin2026', 'Enterprise Premier', 120.0, 142, 500, 50000.0, 'Active', TRUE, '/assets/logos/joy_true_profile_shield_emblem.png', '{"aadhaar": true, "pan": true, "bankCheck": true, "uan": true, "drivingLicense": true, "passport": true, "aiFaceBiometrics": true, "mobileOtp": true, "emailGateway": true, "faceCapture": true, "logo": "/assets/logos/joy_true_profile_shield_emblem.png"}'::json, 'true', 'v2.4-2026', CURRENT_TIMESTAMP),
+('comp-2', 'Joy Man Power Service', 'COMP002', 'Muthu Kumar P', 'muthujoygroup@gmail.com', 'Company@Admin2026', 'Enterprise Premier', 120.0, 56, 500, 50000.0, 'Active', TRUE, '/assets/logos/joy_true_profile_shield_emblem.png', '{"aadhaar": true, "pan": true, "bankCheck": true, "uan": true, "drivingLicense": true, "passport": true, "aiFaceBiometrics": true, "mobileOtp": true, "emailGateway": true, "faceCapture": true, "logo": "/assets/logos/joy_true_profile_shield_emblem.png"}'::json, 'true', 'v2.4-2026', CURRENT_TIMESTAMP)
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, code = EXCLUDED.code, email = EXCLUDED.email, logo_url = EXCLUDED.logo_url, features = EXCLUDED.features;
+
 
 
 -- ----------------------------------------------------------------------------
@@ -830,3 +833,92 @@ ALTER TABLE platform_guidelines ALTER COLUMN title DROP NOT NULL;
 INSERT INTO platform_guidelines (id, role, title, guidelines_data, guidelines, updated_at)
 VALUES ('guide-01', 'superadmin', 'Master Platform Guidelines', '[{"title": "DPDP Act 2023 Consent Audit", "desc": "Ensure all candidate checks possess digital consent signatures."}, {"title": "API Gateway Quota Balancing", "desc": "Monitor Sandbox.co.in vs CoinCircleTrust failover quotas."}]'::json, '[{"title": "DPDP Act 2023 Consent Audit", "desc": "Ensure all candidate checks possess digital consent signatures."}, {"title": "API Gateway Quota Balancing", "desc": "Monitor Sandbox.co.in vs CoinCircleTrust failover quotas."}]'::json, CURRENT_TIMESTAMP)
 ON CONFLICT (role) DO NOTHING;
+
+
+-- ----------------------------------------------------------------------------
+-- 21. digilocker_verifications (Government Vault Digital Demographics)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS digilocker_verifications (
+    id VARCHAR(50) PRIMARY KEY,
+    session_id VARCHAR(50),
+    candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE SET NULL,
+    user_type VARCHAR(50) DEFAULT 'individual',
+    auth_type VARCHAR(50) DEFAULT 'mobile',
+    identifier_value VARCHAR(100),
+    digilocker_id VARCHAR(100),
+    full_name VARCHAR(255),
+    dob VARCHAR(50),
+    gender VARCHAR(20),
+    email VARCHAR(255),
+    aadhaar_no VARCHAR(50),
+    uan_no VARCHAR(50),
+    pan_no VARCHAR(50),
+    dl_no VARCHAR(50),
+    address TEXT,
+    pincode VARCHAR(20),
+    status VARCHAR(50) DEFAULT 'success',
+    purpose VARCHAR(255) DEFAULT 'Employee onboarding private sector',
+    service_name VARCHAR(255) DEFAULT 'JoyVerify',
+    company_id VARCHAR(50) DEFAULT 'COMP001',
+    hr_id VARCHAR(50) DEFAULT 'hr-1',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS id VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS session_id VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS candidate_id VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS user_type VARCHAR(50) DEFAULT 'individual';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS auth_type VARCHAR(50) DEFAULT 'mobile';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS identifier_value VARCHAR(100);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS digilocker_id VARCHAR(100);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS full_name VARCHAR(255);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS dob VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS gender VARCHAR(20);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS aadhaar_no VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS uan_no VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS pan_no VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS dl_no VARCHAR(50);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS pincode VARCHAR(20);
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'success';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS purpose VARCHAR(255) DEFAULT 'Employee onboarding private sector';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS service_name VARCHAR(255) DEFAULT 'JoyVerify';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS company_id VARCHAR(50) DEFAULT 'COMP001';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS hr_id VARCHAR(50) DEFAULT 'hr-1';
+ALTER TABLE digilocker_verifications ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+CREATE INDEX IF NOT EXISTS idx_digilocker_verif_cand ON digilocker_verifications(candidate_id);
+CREATE INDEX IF NOT EXISTS idx_digilocker_verif_ident ON digilocker_verifications(identifier_value);
+CREATE INDEX IF NOT EXISTS idx_digilocker_verif_comp ON digilocker_verifications(company_id);
+
+
+-- ----------------------------------------------------------------------------
+-- 22. digilocker_documents (Issued Government Certificates & Credentials)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS digilocker_documents (
+    id VARCHAR(50) PRIMARY KEY,
+    verification_id VARCHAR(50) REFERENCES digilocker_verifications(id) ON DELETE CASCADE,
+    candidate_id VARCHAR(50) REFERENCES candidates(id) ON DELETE SET NULL,
+    document_name VARCHAR(255) NOT NULL,
+    issuer VARCHAR(255),
+    doc_no VARCHAR(100),
+    doc_uri VARCHAR(255),
+    doc_type VARCHAR(100),
+    doc_status VARCHAR(50) DEFAULT 'Verified',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS id VARCHAR(50);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS verification_id VARCHAR(50);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS candidate_id VARCHAR(50);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS document_name VARCHAR(255);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS issuer VARCHAR(255);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS doc_no VARCHAR(100);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS doc_uri VARCHAR(255);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS doc_type VARCHAR(100);
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS doc_status VARCHAR(50) DEFAULT 'Verified';
+ALTER TABLE digilocker_documents ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+CREATE INDEX IF NOT EXISTS idx_digilocker_docs_verif ON digilocker_documents(verification_id);
+

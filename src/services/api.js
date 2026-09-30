@@ -774,24 +774,22 @@ export const api = {
     body: JSON.stringify(payload),
   }),
   initiateDigilockerAuth: async (payload) => {
-    const portalOrigin = (typeof window !== 'undefined' && window.location?.origin) 
-      ? window.location.origin 
-      : 'https://test2.joycorporatesolutions.com';
-    const dynamicRedirectUri = payload.redirect_uri || `${portalOrigin}/digilocker-callback`;
+    // Official whitelisted callback registered on DigiLocker API Setu Portal
+    const officialRegisteredRedirect = 'https://verify.joycorporatesolutions.com/callback.php';
+    const redirectUri = payload.redirect_uri || officialRegisteredRedirect;
 
     try {
       return await request('/verification/digilocker/initiate-auth', {
         method: 'POST',
         body: JSON.stringify({
           ...payload,
-          redirect_uri: dynamicRedirectUri
+          redirect_uri: redirectUri
         }),
       });
     } catch (e) {
       // Synchronous client fallback generation adhering to NeGD 2026 guidelines
       const userType = payload.user_type || 'individual';
       const clientId = userType === 'company' ? 'NU68486825' : 'QEC8BCDA95';
-      const redirectUri = dynamicRedirectUri;
       const state = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('');
       
       // Clean purpose: alphanumeric + space + underscore only (NeGD / DigiLocker rule)

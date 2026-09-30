@@ -393,6 +393,7 @@ export const HrExecutiveView = () => {
     showToast, 
     hrUsers, 
     companies, 
+    setCompanies,
     featureList, 
     systemSettings, 
     updateRoleSettings, 
@@ -1846,19 +1847,59 @@ export const HrExecutiveView = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5 min-w-0">
             {/* Employer Corporate Logo Display */}
-            {currentCompany?.logo || currentCompany?.logo_url || (currentCompany?.features || {}).logo || (currentCompany?.documents || {}).company_logo ? (
-              <div className="w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1.5 flex items-center justify-center shrink-0 overflow-hidden" title={`Employer: ${currentCompany?.name}`}>
-                <img 
-                  src={currentCompany.logo || currentCompany.logo_url || (currentCompany.features || {}).logo || (currentCompany.documents || {}).company_logo} 
-                  alt={currentCompany.name} 
-                  className="w-full h-full object-contain" 
-                />
-              </div>
-            ) : (
-              <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-xs border-2 border-white">
-                {(currentCompany?.name || 'JC').charAt(0).toUpperCase()}
-              </div>
-            )}
+            {(() => {
+              const compLogoSrc = currentCompany?.logo || currentCompany?.logo_url || (currentCompany?.features || {}).logo || (currentCompany?.documents || {}).company_logo || (currentCompany?.name?.toLowerCase()?.includes('joy') ? '/assets/logos/joy_true_profile_shield_emblem.png' : '/assets/logos/joy_true_profile_badge.png');
+              
+              const handleUploadCompanyLogo = (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (file.size > 3 * 1024 * 1024) {
+                    showToast('⚠️ Logo file size exceeds 3MB limit.', 'error');
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    const base64 = event.target.result;
+                    const compId = currentCompany?.id || 'comp-joy';
+                    if (typeof setCompanies === 'function') {
+                      setCompanies(prev => prev.map(c => (c.id === compId || c.code === currentCompany?.code) ? { ...c, logo: base64, logo_url: base64, company_logo: base64 } : c));
+                    }
+                    api.updateCompanyProfile(compId, { logo: base64, logo_url: base64, company_logo: base64 }).catch(() => {});
+                    showToast('✅ Company logo updated successfully!', 'success');
+                  };
+                  reader.readAsDataURL(file);
+                }
+              };
+
+              return (
+                <div className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1.5 flex items-center justify-center shrink-0 overflow-hidden" title={`Employer: ${currentCompany?.name || 'Company'} - Click to change logo`}>
+                  <img 
+                    src={compLogoSrc} 
+                    alt={currentCompany?.name || 'Company Logo'} 
+                    className="w-full h-full object-contain" 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/assets/logos/joy_true_profile_shield_emblem.png';
+                    }}
+                  />
+                  <label 
+                    htmlFor="hr-company-logo-upload" 
+                    className="absolute inset-0 bg-slate-900/80 text-white flex flex-col items-center justify-center opacity-0 group-hover/comp-logo:opacity-100 transition-opacity cursor-pointer text-[9px] font-bold"
+                    title="Upload custom logo"
+                  >
+                    <Camera className="w-3.5 h-3.5 mb-0.5" />
+                    <span>Change</span>
+                  </label>
+                  <input 
+                    type="file" 
+                    id="hr-company-logo-upload" 
+                    className="hidden" 
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    onChange={handleUploadCompanyLogo}
+                  />
+                </div>
+              );
+            })()}
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Management</span>

@@ -104,6 +104,8 @@ class Candidate(Base):
     passport_data = Column(JSON, default=dict)
     face_match_data = Column(JSON, default=dict)
     court_record_data = Column(JSON, default=dict)
+    digilocker_data = Column(JSON, default=dict)
+    digilocker_verified = Column(Boolean, default=False)
     risk_score = Column(Float, default=0.0)
     bgv_verdict = Column(String(50), default="Pending") # 'Pending' | 'Clear / Verified' | 'Major Discrepancy' | 'Minor Flag'
     discrepancies_detected = Column(JSON, default=list)
