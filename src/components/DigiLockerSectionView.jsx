@@ -517,7 +517,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                 </span>
               </div>
 
-              <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
+              <form onSubmit={handleExecuteFetch} className="space-y-4">
                 
                 {/* 1. Identifier Type Tabs */}
                 <div>
@@ -707,42 +707,23 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
                   </div>
                 </div>
 
-                {/* 🚀 THE PRIMARY PROMINENT ACTION BUTTONS */}
-                <div className="pt-2 space-y-2.5">
+                {/* ⚡ THE PRIMARY PROMINENT ACTION BUTTON */}
+                <div className="pt-2">
                   <button
                     type="submit"
-                    disabled={isGeneratingAuth || isFetching}
-                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-md flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-indigo-600 hover:bg-indigo-500 shadow-indigo-200 hover:shadow-lg"
-                  >
-                    {isGeneratingAuth ? (
-                      <>
-                        <RefreshCw className="w-5 h-5 animate-spin text-white" />
-                        <span className="text-white font-black tracking-wide">Connecting to DigiLocker Government Gateway...</span>
-                      </>
-                    ) : (
-                      <>
-                        <ExternalLink className="w-5 h-5 text-white" />
-                        <span className="text-white font-black tracking-wide">🚀 Verify with DigiLocker (Official Redirect)</span>
-                        <ArrowRight className="w-4 h-4 text-white ml-1" />
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleExecuteFetch}
-                    disabled={isFetching || isGeneratingAuth}
-                    className="w-full py-3 px-4 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xs disabled:opacity-50"
+                    disabled={isFetching}
+                    className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-xl flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 shadow-emerald-500/20 hover:shadow-emerald-500/30"
                   >
                     {isFetching ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-emerald-700" />
-                        <span>Querying Government Vault & Ingesting Documents...</span>
+                        <RefreshCw className="w-5 h-5 animate-spin text-white" />
+                        <span className="text-white font-black tracking-wide">Querying Government Vault & Ingesting Documents...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4 text-emerald-600" />
-                        <span>⚡ Direct In-Portal Fetch (Instant Vault Ingest)</span>
+                        <Sparkles className="w-5 h-5 text-white" />
+                        <span className="text-white font-black tracking-wide">⚡ Fetch & Ingest DigiLocker Records (Instant Verification)</span>
+                        <ArrowRight className="w-4 h-4 text-white ml-1" />
                       </>
                     )}
                   </button>
@@ -1263,89 +1244,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr }) => {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 🌟 4. GATEWAY REDIRECTION MODAL (When Gateway Button is Clicked)           */}
-      {/* ========================================================================= */}
-      {showAuthModal && generatedAuthData && (
-        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-5 animate-scaleIn">
-            
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 text-sky-700 font-black text-sm">
-                <ExternalLink className="w-5 h-5 text-sky-600" />
-                <span>DigiLocker Official Redirection Gateway</span>
-              </div>
-              <button 
-                type="button" 
-                onClick={() => setShowAuthModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="p-4 rounded-2xl bg-sky-50/70 border border-sky-100 space-y-2 text-xs">
-              <div className="font-bold text-sky-950 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-sky-600" />
-                <span>NeGD API Setu Live Gateway Connection Prepared</span>
-              </div>
-              <p className="text-slate-600 leading-relaxed">
-                Click below to continue to the official Government of India MeriPehchaan DigiLocker login portal.
-              </p>
-            </div>
-
-            <div className="p-3 bg-slate-900 rounded-2xl text-[11px] font-mono text-sky-300 break-all max-h-24 overflow-y-auto border border-slate-800">
-              {generatedAuthData.auth_url}
-            </div>
-
-            <div className="space-y-2">
-              <a
-                href={generatedAuthData.auth_url}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-3.5 px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
-                style={{ backgroundColor: '#0284c7', color: '#ffffff' }}
-              >
-                <ExternalLink className="w-4 h-4 text-white" />
-                <span className="text-white font-black">Open Official DigiLocker Gateway ↗️</span>
-              </a>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200 transition-all"
-                >
-                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedLink ? 'Copied URL!' : 'Copy Gateway URL'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleShareWhatsApp}
-                  className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
-                  title="Send link on WhatsApp"
-                >
-                  <Share2 className="w-3.5 h-3.5" />
-                  <span>Share WhatsApp 💬</span>
-                </button>
-              </div>
-
-              <div className="pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={handleOpenSandboxSimulation}
-                  className="w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                >
-                  <FlaskConical className="w-4 h-4 text-purple-600" />
-                  <span>Test with Interactive Sandbox Simulation 🧪</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* 🌟 5. DOCUMENT DETAILS PREVIEW MODAL (Matching dd/callback.php)            */}
