@@ -1665,8 +1665,8 @@ export const AppProvider = ({ children }) => {
           for (const c of comps) {
             const key = (c.id || c.code || c.email || '').toLowerCase();
             if (key && !seen.has(key)) {
-              seen.add(key);
-              const compLogo = c.logo || c.logo_url || c.company_logo || (c.features || {}).logo || (c.features || {}).logo_url || (c.documents || {}).company_logo || (c.documents || {}).logo || '';
+              const isJoyComp = (c.name && c.name.toLowerCase().includes('joy')) || c.id === 'COMP001' || c.code === 'COMP001' || c.code === 'COMP002' || c.id === 'comp-joy' || c.id === 'comp-test-1';
+              const compLogo = c.logo || c.logo_url || c.company_logo || (c.features || {}).logo || (c.features || {}).logo_url || (c.documents || {}).company_logo || (c.documents || {}).logo || (isJoyComp ? '/joy_logo.png' : '');
               const compLoc = c.location || c.registered_address || (c.features || {}).location || '';
               uniqueComps.push({
                 id: c.id,
@@ -2179,7 +2179,8 @@ export const AppProvider = ({ children }) => {
 
     // Resolve Employer Company Logo
     const matchedCompany = companies.find(c => c.id === candidateData.companyId || c.name === candidateData.companyName) || companies[0] || {};
-    const resolvedCompanyLogo = matchedCompany.logo || matchedCompany.logo_url || matchedCompany.features?.logo || null;
+    const isJoyMatch = (matchedCompany.name && matchedCompany.name.toLowerCase().includes('joy')) || matchedCompany.id === 'COMP001' || matchedCompany.code === 'COMP001' || matchedCompany.code === 'COMP002';
+    const resolvedCompanyLogo = matchedCompany.logo || matchedCompany.logo_url || matchedCompany.company_logo || (matchedCompany.features || {}).logo || (isJoyMatch ? '/joy_logo.png' : null);
 
     try {
       const created = await api.createCandidate({

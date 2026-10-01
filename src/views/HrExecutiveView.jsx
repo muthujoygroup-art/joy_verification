@@ -1848,7 +1848,16 @@ export const HrExecutiveView = () => {
           <div className="flex items-start gap-3.5 min-w-0">
             {/* Employer Corporate Logo Display */}
             {(() => {
-              const compLogoSrc = currentCompany?.logo || currentCompany?.logo_url || (currentCompany?.features || {}).logo || (currentCompany?.documents || {}).company_logo || (currentCompany?.name?.toLowerCase()?.includes('joy') ? '/assets/logos/joy_true_profile_shield_emblem.png' : '/assets/logos/joy_true_profile_badge.png');
+              const compName = currentCompany?.name || activeHr?.companyName || 'Joy Corporate Solutions';
+              const isJoyGroup = compName.toLowerCase().includes('joy') || currentCompany?.code === 'COMP001' || currentCompany?.code === 'COMP002' || currentCompany?.id === 'COMP001' || currentCompany?.id === 'comp-joy';
+              
+              const rawLogo = currentCompany?.logo || 
+                              currentCompany?.logo_url || 
+                              currentCompany?.company_logo || 
+                              (currentCompany?.features || {}).logo || 
+                              (currentCompany?.documents || {}).company_logo;
+
+              const compLogoSrc = rawLogo || (isJoyGroup ? '/joy_logo.png' : null);
               
               const handleUploadCompanyLogo = (e) => {
                 const file = e.target.files?.[0];
@@ -1871,21 +1880,41 @@ export const HrExecutiveView = () => {
                 }
               };
 
+              // Compute clean 2-letter company monogram for fallback
+              const nameParts = compName.trim().split(/\s+/).filter(Boolean);
+              const initials = nameParts.length >= 2 
+                ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+                : compName.slice(0, 2).toUpperCase();
+
               return (
-                <div className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1.5 flex items-center justify-center shrink-0 overflow-hidden" title={`Employer: ${currentCompany?.name || 'Company'} - Click to change logo`}>
-                  <img 
-                    src={compLogoSrc} 
-                    alt={currentCompany?.name || 'Company Logo'} 
-                    className="w-full h-full object-contain" 
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = '/assets/logos/joy_true_profile_shield_emblem.png';
-                    }}
-                  />
+                <div 
+                  className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1.5 flex items-center justify-center shrink-0 overflow-hidden" 
+                  title={`Employer: ${compName} - Click to change logo`}
+                >
+                  {compLogoSrc ? (
+                    <img 
+                      src={compLogoSrc} 
+                      alt={`${compName} Logo`} 
+                      className="w-full h-full object-contain" 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        if (isJoyGroup) {
+                          e.target.src = '/joy_logo.png';
+                        } else {
+                          e.target.style.display = 'none';
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-base flex items-center justify-center shadow-xs">
+                      {initials}
+                    </div>
+                  )}
+
                   <label 
                     htmlFor="hr-company-logo-upload" 
                     className="absolute inset-0 bg-slate-900/80 text-white flex flex-col items-center justify-center opacity-0 group-hover/comp-logo:opacity-100 transition-opacity cursor-pointer text-[9px] font-bold"
-                    title="Upload custom logo"
+                    title="Upload custom company logo"
                   >
                     <Camera className="w-3.5 h-3.5 mb-0.5" />
                     <span>Change</span>
