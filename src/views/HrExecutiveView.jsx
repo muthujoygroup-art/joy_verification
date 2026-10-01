@@ -1848,8 +1848,9 @@ export const HrExecutiveView = () => {
           <div className="flex items-start gap-3.5 min-w-0">
             {/* Employer Corporate Logo Display */}
             {(() => {
-              const compName = currentCompany?.name || activeHr?.companyName || 'Joy Corporate Solutions';
-              const isJoyGroup = compName.toLowerCase().includes('joy') || currentCompany?.code === 'COMP001' || currentCompany?.code === 'COMP002' || currentCompany?.id === 'COMP001' || currentCompany?.id === 'comp-joy';
+              const compName = currentCompany?.name || activeHr?.companyName || 'Joy Man Power Service';
+              const isManpower = compName.toLowerCase().includes('manpower') || compName.toLowerCase().includes('man power') || currentCompany?.code === 'COMP002';
+              const isCorporateSol = compName.toLowerCase().includes('corporate') || compName.toLowerCase().includes('solution') || currentCompany?.code === 'COMP001';
               
               const rawLogo = currentCompany?.logo || 
                               currentCompany?.logo_url || 
@@ -1857,7 +1858,17 @@ export const HrExecutiveView = () => {
                               (currentCompany?.features || {}).logo || 
                               (currentCompany?.documents || {}).company_logo;
 
-              const compLogoSrc = rawLogo || (isJoyGroup ? '/joy_logo.png' : null);
+              // Filter out any legacy shield emblem paths
+              const isShieldLogo = rawLogo && (rawLogo.includes('joy_true_profile_shield') || rawLogo.includes('joy_true_profile_badge') || rawLogo === '/joy_logo.png');
+              const cleanCustomLogo = !isShieldLogo ? rawLogo : null;
+
+              const defaultCompanyLogo = isManpower 
+                ? '/assets/logos/companies/joy_manpower_service_logo.png' 
+                : (isCorporateSol || compName.toLowerCase().includes('joy')
+                    ? '/assets/logos/companies/joy_corporate_solutions_logo.png'
+                    : null);
+
+              const compLogoSrc = cleanCustomLogo || defaultCompanyLogo;
               
               const handleUploadCompanyLogo = (e) => {
                 const file = e.target.files?.[0];
@@ -1869,7 +1880,7 @@ export const HrExecutiveView = () => {
                   const reader = new FileReader();
                   reader.onload = (event) => {
                     const base64 = event.target.result;
-                    const compId = currentCompany?.id || 'comp-joy';
+                    const compId = currentCompany?.id || 'COMP002';
                     if (typeof setCompanies === 'function') {
                       setCompanies(prev => prev.map(c => (c.id === compId || c.code === currentCompany?.code) ? { ...c, logo: base64, logo_url: base64, company_logo: base64 } : c));
                     }
@@ -1888,18 +1899,18 @@ export const HrExecutiveView = () => {
 
               return (
                 <div 
-                  className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1.5 flex items-center justify-center shrink-0 overflow-hidden" 
+                  className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1 flex items-center justify-center shrink-0 overflow-hidden" 
                   title={`Employer: ${compName} - Click to change logo`}
                 >
                   {compLogoSrc ? (
                     <img 
                       src={compLogoSrc} 
                       alt={`${compName} Logo`} 
-                      className="w-full h-full object-contain" 
+                      className="w-full h-full object-contain rounded-xl" 
                       onError={(e) => {
                         e.target.onerror = null;
-                        if (isJoyGroup) {
-                          e.target.src = '/joy_logo.png';
+                        if (defaultCompanyLogo) {
+                          e.target.src = defaultCompanyLogo;
                         } else {
                           e.target.style.display = 'none';
                         }
