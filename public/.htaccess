@@ -3,13 +3,13 @@
   RewriteEngine On
   RewriteBase /
   
+  # Prioritize React SPA index.html for root and directory requests
+  DirectoryIndex index.html index.php
+  
   # Allow direct access to existing files & folders (assets, api, images)
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-  
-  # Proxy /api requests to FastAPI backend if not handled
-  # RewriteRule ^api/(.*) http://127.0.0.1:8000/api/$1 [P,L]
   
   # Route all other URLs (/login, /hr, /superadmin, /company, /verify) to index.html
   RewriteRule ^ index.html [L]
