@@ -95,20 +95,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
 
   const candCompany = Array.isArray(companies) ? companies.find(comp => comp.id === c.companyId || comp.code === c.companyCode || comp.name === c.companyName) : null;
   const employerCompanyName = candCompany?.name || c.companyName || jf.companyName || jf.workingCompany || 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED';
-  const isManpowerEmployer = employerCompanyName?.toLowerCase()?.includes('manpower') || employerCompanyName?.toLowerCase()?.includes('man power') || candCompany?.code === 'COMP002';
-  const isCorporateEmployer = employerCompanyName?.toLowerCase()?.includes('corporate') || employerCompanyName?.toLowerCase()?.includes('solution') || candCompany?.code === 'COMP001';
-  
   const rawEmpLogo = c.companyLogo || c.company_logo || candCompany?.logo || candCompany?.logo_url || candCompany?.company_logo || (candCompany?.documents || {}).company_logo || (candCompany?.features || {}).logo;
-  const isEmpShield = rawEmpLogo && (rawEmpLogo.includes('joy_true_profile_shield') || rawEmpLogo.includes('joy_true_profile_badge') || rawEmpLogo === '/joy_logo.png');
-  const cleanEmpLogo = !isEmpShield ? rawEmpLogo : null;
-  
-  const defaultEmpLogo = isManpowerEmployer
-    ? '/assets/logos/companies/joy_manpower_service_logo.png'
-    : (isCorporateEmployer || employerCompanyName?.toLowerCase()?.includes('joy')
-        ? '/assets/logos/companies/joy_corporate_solutions_logo.png'
-        : null);
-
-  const employerCompanyLogo = cleanEmpLogo || defaultEmpLogo || '/assets/logos/companies/joy_manpower_service_logo.png';
+  const employerCompanyLogo = rawEmpLogo || '/joy_logo.png';
   const companyName = employerCompanyName;
   const facePhoto = c.faceImages?.straight || c.faceImages?.livePhoto || c.faceImages?.aadhaarRef || c.photo || jf.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300';
   const generatedTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST';

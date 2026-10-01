@@ -127,72 +127,7 @@ import {
   X,
   Zap
 } from 'lucide-react';
-// Dedicated Inline Corporate Brand Logos for Employer Workstations
-export const JoyManpowerLogoSvg = ({ className = "w-full h-full" }) => (
-  <svg viewBox="0 0 512 512" className={className} xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="jmBgHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#0284c7" />
-        <stop offset="50%" stopColor="#0369a1" />
-        <stop offset="100%" stopColor="#0f172a" />
-      </linearGradient>
-      <linearGradient id="jmGoldHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#38bdf8" />
-        <stop offset="100%" stopColor="#34d399" />
-      </linearGradient>
-      <linearGradient id="jmAccentHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#ffffff" />
-        <stop offset="100%" stopColor="#e0f2fe" />
-      </linearGradient>
-    </defs>
-    <rect width="512" height="512" rx="112" fill="url(#jmBgHeader)" />
-    <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="4" />
-    <g transform="translate(256, 210)" textAnchor="middle">
-      <circle cx="-76" cy="-45" r="32" fill="url(#jmGoldHeader)" opacity="0.9" />
-      <path d="M -125 45 C -125 -10, -25 -10, -25 45 Z" fill="url(#jmGoldHeader)" opacity="0.75" />
-      <circle cx="76" cy="-45" r="32" fill="url(#jmGoldHeader)" opacity="0.9" />
-      <path d="M 25 45 C 25 -10, 125 -10, 125 45 Z" fill="url(#jmGoldHeader)" opacity="0.75" />
-      <circle cx="0" cy="-75" r="42" fill="url(#jmAccentHeader)" />
-      <path d="M -65 50 C -65 -20, 65 -20, 65 50 Z" fill="url(#jmAccentHeader)" />
-      <path d="M -140 70 Q 0 115 140 70" fill="none" stroke="url(#jmGoldHeader)" strokeWidth="12" strokeLinecap="round" />
-    </g>
-    <text x="256" y="380" fontFamily="sans-serif" fontSize="46" fontWeight="900" fill="#ffffff" letterSpacing="6" textAnchor="middle">JOY</text>
-    <text x="256" y="425" fontFamily="sans-serif" fontSize="24" fontWeight="800" fill="#38bdf8" letterSpacing="4" textAnchor="middle">MANPOWER SERVICE</text>
-  </svg>
-);
-
-export const JoyCorporateSolutionsLogoSvg = ({ className = "w-full h-full" }) => (
-  <svg viewBox="0 0 512 512" className={className} xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="jcsBgHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#1e1b4b" />
-        <stop offset="50%" stopColor="#312e81" />
-        <stop offset="100%" stopColor="#0f172a" />
-      </linearGradient>
-      <linearGradient id="jcsCyanHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#38bdf8" />
-        <stop offset="100%" stopColor="#818cf8" />
-      </linearGradient>
-      <linearGradient id="jcsAmberHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#fbbf24" />
-        <stop offset="100%" stopColor="#f59e0b" />
-      </linearGradient>
-    </defs>
-    <rect width="512" height="512" rx="112" fill="url(#jcsBgHeader)" />
-    <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="4" />
-    <g transform="translate(256, 205)" textAnchor="middle">
-      <circle cx="-80" cy="0" r="24" fill="url(#jcsCyanHeader)" />
-      <circle cx="80" cy="0" r="24" fill="url(#jcsCyanHeader)" />
-      <circle cx="0" cy="-80" r="24" fill="url(#jcsAmberHeader)" />
-      <circle cx="0" cy="70" r="20" fill="url(#jcsCyanHeader)" />
-      <path d="M -80 0 L 0 -80 L 80 0 L 0 70 Z" fill="none" stroke="url(#jcsCyanHeader)" strokeWidth="8" strokeLinejoin="round" opacity="0.6" />
-      <polygon points="0,-42 36,-21 36,21 0,42 -36,21 -36,-21" fill="#ffffff" />
-      <circle cx="0" cy="0" r="16" fill="#312e81" />
-    </g>
-    <text x="256" y="375" fontFamily="sans-serif" fontSize="44" fontWeight="900" fill="#ffffff" letterSpacing="6" textAnchor="middle">JOY</text>
-    <text x="256" y="420" fontFamily="sans-serif" fontSize="21" fontWeight="800" fill="#a5b4fc" letterSpacing="3.5" textAnchor="middle">CORPORATE SOLUTIONS</text>
-  </svg>
-);
+import { Linkedin, Github, Twitter, Instagram, Facebook, Youtube } from '../components/SocialIcons';
 
 // Helper to create clean default form data
 const getDefaultFormData = (activeHr = {}, currentCompany = {}) => ({
@@ -1926,22 +1861,14 @@ export const HrExecutiveView = () => {
         ? 'Joy Corporate Solutions Private Limited' 
         : (currentCompany?.name || activeHr?.companyName || 'Joy Corporate Solutions'));
 
-  const rawLogo = currentCompany?.logo || 
-                  currentCompany?.logo_url || 
-                  currentCompany?.company_logo || 
-                  (currentCompany?.features || {}).logo || 
-                  (currentCompany?.documents || {}).company_logo;
-
-  const isShieldLogo = rawLogo && (rawLogo.includes('joy_true_profile_shield') || rawLogo.includes('joy_true_profile_badge') || rawLogo === '/joy_logo.png');
-  const cleanCustomLogo = !isShieldLogo ? rawLogo : null;
-
-  const defaultCompanyLogo = isManpower 
-    ? '/assets/logos/companies/joy_manpower_service_logo.png' 
-    : (isCorporateSol || compName.toLowerCase().includes('joy')
-        ? '/assets/logos/companies/joy_corporate_solutions_logo.png'
-        : null);
-
-  const compLogoSrc = cleanCustomLogo || defaultCompanyLogo;
+  const compLogoSrc = currentCompany?.logo || 
+                      currentCompany?.logo_url || 
+                      currentCompany?.company_logo || 
+                      (currentCompany?.features || {}).logo || 
+                      (currentCompany?.documents || {}).company_logo || 
+                      activeHr?.companyLogo || 
+                      activeHr?.company_logo || 
+                      '/joy_logo.png';
 
   const handleUploadCompanyLogo = (e) => {
     const file = e.target.files?.[0];
@@ -1983,30 +1910,14 @@ export const HrExecutiveView = () => {
               className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1 flex items-center justify-center shrink-0 overflow-hidden" 
               title={`Employer: ${compName} - Click to change logo`}
             >
-              {cleanCustomLogo ? (
-                <img 
-                  src={cleanCustomLogo} 
-                  alt={`${compName} Logo`} 
-                  className="w-full h-full object-contain rounded-xl" 
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    if (defaultCompanyLogo) {
-                      e.target.src = defaultCompanyLogo;
-                    }
-                  }}
-                />
-              ) : isManpower ? (
-                <JoyManpowerLogoSvg className="w-full h-full object-contain rounded-xl shadow-2xs" />
-              ) : (isCorporateSol || compName.toLowerCase().includes('joy')) ? (
-                <JoyCorporateSolutionsLogoSvg className="w-full h-full object-contain rounded-xl shadow-2xs" />
-              ) : compLogoSrc ? (
+              {compLogoSrc ? (
                 <img 
                   src={compLogoSrc} 
                   alt={`${compName} Logo`} 
                   className="w-full h-full object-contain rounded-xl" 
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.style.display = 'none';
+                    e.target.src = '/joy_logo.png';
                   }}
                 />
               ) : (

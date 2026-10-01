@@ -1665,20 +1665,8 @@ export const AppProvider = ({ children }) => {
           for (const c of comps) {
             const key = (c.id || c.code || c.email || '').toLowerCase();
             if (key && !seen.has(key)) {
-              const isManpower = (c.name && (c.name.toLowerCase().includes('manpower') || c.name.toLowerCase().includes('man power'))) || c.code === 'COMP002' || c.id === 'COMP002';
-              const isCorporateSol = (c.name && (c.name.toLowerCase().includes('corporate') || c.name.toLowerCase().includes('solution'))) || c.code === 'COMP001' || c.id === 'COMP001' || c.id === 'comp-joy' || c.id === 'comp-test-1';
-              
               const rawLogo = c.logo || c.logo_url || c.company_logo || (c.features || {}).logo || (c.features || {}).logo_url || (c.documents || {}).company_logo || (c.documents || {}).logo;
-              const isShield = rawLogo && (rawLogo.includes('joy_true_profile_shield') || rawLogo.includes('joy_true_profile_badge') || rawLogo === '/joy_logo.png');
-              const cleanLogo = !isShield ? rawLogo : null;
-              
-              const defaultLogo = isManpower 
-                ? '/assets/logos/companies/joy_manpower_service_logo.png' 
-                : (isCorporateSol || (c.name && c.name.toLowerCase().includes('joy'))
-                    ? '/assets/logos/companies/joy_corporate_solutions_logo.png'
-                    : '');
-
-              const compLogo = cleanLogo || defaultLogo;
+              const compLogo = rawLogo || '/joy_logo.png';
               const compLoc = c.location || c.registered_address || (c.features || {}).location || '';
               uniqueComps.push({
                 id: c.id,
@@ -2191,20 +2179,8 @@ export const AppProvider = ({ children }) => {
 
     // Resolve Employer Company Logo
     const matchedCompany = companies.find(c => c.id === candidateData.companyId || c.name === candidateData.companyName) || companies[0] || {};
-    const isManpowerMatch = (matchedCompany.name && (matchedCompany.name.toLowerCase().includes('manpower') || matchedCompany.name.toLowerCase().includes('man power'))) || matchedCompany.code === 'COMP002' || matchedCompany.id === 'COMP002';
-    const isCorporateMatch = (matchedCompany.name && (matchedCompany.name.toLowerCase().includes('corporate') || matchedCompany.name.toLowerCase().includes('solution'))) || matchedCompany.code === 'COMP001' || matchedCompany.id === 'COMP001';
-    
     const rawMatchLogo = matchedCompany.logo || matchedCompany.logo_url || matchedCompany.company_logo || (matchedCompany.features || {}).logo;
-    const isShieldMatch = rawMatchLogo && (rawMatchLogo.includes('joy_true_profile_shield') || rawMatchLogo.includes('joy_true_profile_badge') || rawMatchLogo === '/joy_logo.png');
-    const cleanMatchLogo = !isShieldMatch ? rawMatchLogo : null;
-    
-    const defaultMatchLogo = isManpowerMatch 
-      ? '/assets/logos/companies/joy_manpower_service_logo.png'
-      : (isCorporateMatch || (matchedCompany.name && matchedCompany.name.toLowerCase().includes('joy'))
-          ? '/assets/logos/companies/joy_corporate_solutions_logo.png'
-          : null);
-
-    const resolvedCompanyLogo = cleanMatchLogo || defaultMatchLogo;
+    const resolvedCompanyLogo = rawMatchLogo || '/joy_logo.png';
 
     try {
       const created = await api.createCandidate({
