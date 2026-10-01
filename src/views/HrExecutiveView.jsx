@@ -1861,14 +1861,33 @@ export const HrExecutiveView = () => {
         ? 'Joy Corporate Solutions Private Limited' 
         : (currentCompany?.name || activeHr?.companyName || 'Joy Corporate Solutions'));
 
-  const compLogoSrc = currentCompany?.logo || 
-                      currentCompany?.logo_url || 
-                      currentCompany?.company_logo || 
-                      (currentCompany?.features || {}).logo || 
-                      (currentCompany?.documents || {}).company_logo || 
-                      activeHr?.companyLogo || 
-                      activeHr?.company_logo || 
-                      '/joy_logo.png';
+  const rawLogo = currentCompany?.logo || 
+                  currentCompany?.logo_url || 
+                  currentCompany?.company_logo || 
+                  (currentCompany?.features || {}).logo || 
+                  (currentCompany?.documents || {}).company_logo || 
+                  activeHr?.companyLogo || 
+                  activeHr?.company_logo;
+
+  const isProjectShield = rawLogo && (
+    rawLogo.includes('joy_true_profile_shield') || 
+    rawLogo.includes('joy_true_profile_badge') || 
+    rawLogo.includes('joy_trueprofile') ||
+    rawLogo === '/joy_logo.png'
+  );
+
+  const isCrossLogo = (isManpower && rawLogo && typeof rawLogo === 'string' && rawLogo.includes('joy_corporate_solutions')) ||
+                      (isCorporateSol && rawLogo && typeof rawLogo === 'string' && rawLogo.includes('joy_manpower_service'));
+
+  const cleanCustomLogo = (rawLogo && !isProjectShield && !isCrossLogo) ? rawLogo : null;
+
+  const defaultCompanyLogo = isManpower 
+    ? '/assets/logos/companies/joy_manpower_service_logo.png' 
+    : (isCorporateSol || compName.toLowerCase().includes('joy')
+        ? '/assets/logos/companies/joy_corporate_solutions_logo.png'
+        : null);
+
+  const compLogoSrc = cleanCustomLogo || defaultCompanyLogo;
 
   const handleUploadCompanyLogo = (e) => {
     const file = e.target.files?.[0];
@@ -1917,7 +1936,11 @@ export const HrExecutiveView = () => {
                   className="w-full h-full object-contain rounded-xl" 
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/joy_logo.png';
+                    if (defaultCompanyLogo) {
+                      e.target.src = defaultCompanyLogo;
+                    } else {
+                      e.target.style.display = 'none';
+                    }
                   }}
                 />
               ) : (
