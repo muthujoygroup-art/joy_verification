@@ -54,6 +54,7 @@ import HumanIdentitySection from '../components/landing/HumanIdentitySection';
 import VerificationTimeline from '../components/landing/VerificationTimeline';
 import WorkforceConnectionSection from '../components/landing/WorkforceConnectionSection';
 import FeatureShowcase from '../components/landing/FeatureShowcase';
+import DigiLockerShowcaseSection from '../components/landing/DigiLockerShowcaseSection';
 import TrustSection from '../components/landing/TrustSection';
 import WhyJoyTrueProfile from '../components/landing/WhyJoyTrueProfile';
 import CTASection from '../components/landing/CTASection';
@@ -718,6 +719,12 @@ export const LandingPageView = () => {
 
           {/* FEATURES ASYMMETRIC BENTO SHOWCASE */}
           <FeatureShowcase onOpenDemo={() => setShowDemoModal(true)} />
+
+          {/* 🏛️ DIGILOCKER GOVERNMENT DIGITAL VAULT & VERIFICATION RAILS */}
+          <DigiLockerShowcaseSection 
+            onOpenDemo={() => setShowDemoModal(true)}
+            onOpenLegalHandbook={() => setShowLegalHandbook(true)}
+          />
 
           {/* TRUST AND VERIFICATION */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
@@ -1500,8 +1507,9 @@ export const LandingPageView = () => {
           </div>
 
           {/* Complete Services Catalog Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
+              { title: 'DigiLocker Government Vault', desc: 'NeGD API Setu connector fetching authentic Aadhaar XML, PAN, DL, CBSE marksheets, and EPFO UAN passbooks.', speed: '0.45s', icon: Building2, color: 'text-sky-600 bg-sky-50' },
               { title: 'Aadhaar UIDAI e-KYC', desc: 'Direct UIDAI OTP authentication with automatic data redaction and address verification.', speed: '0.42s', icon: ShieldCheck, color: 'text-indigo-600 bg-indigo-50' },
               { title: 'PAN 2.0 ID Verification', desc: 'Real-time Income Tax & NSDL direct check validating full candidate legal name and status.', speed: '0.35s', icon: CreditCard, color: 'text-emerald-600 bg-emerald-50' },
               { title: 'EPFO Moonlighting Radar', desc: 'Queries active UAN contributions to flag undisclosed secondary jobs and overlap periods.', speed: '0.78s', icon: Search, color: 'text-amber-600 bg-amber-50' },
