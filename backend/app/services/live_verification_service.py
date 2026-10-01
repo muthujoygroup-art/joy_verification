@@ -1455,18 +1455,18 @@ def verify_voter_id_live(
     c_dob = _resolve_candidate_dob(candidate, {"dob": dob})
     f_name = _resolve_candidate_father_name(candidate)
 
-    # 1. Primary Active Endpoint: /voter-id-verification (id_number: clean_voter)
+    # 1. Primary Active Endpoint: /voter-id-details (epic_number: clean_voter)
     live_ok, live_res, latency, err_msg = _call_neev_api(
-        endpoint_slug="/voter-id-verification",
-        payload_data={"id_number": clean_voter},
+        endpoint_slug="/voter-id-details",
+        payload_data={"epic_number": clean_voter},
         provider_info=provider_info
     )
 
-    # 2. Secondary Fallback: /voter-id-details
+    # 2. Secondary Fallback: /voter-id-verification if supported
     if not live_ok and not (isinstance(live_res, dict) and live_res.get("code") == "RESOURCE_NOT_FOUND"):
         live_ok, live_res, latency, err_msg = _call_neev_api(
             endpoint_slug="/voter-id-details",
-            payload_data={"fileNumber": clean_voter, "dob": c_dob},
+            payload_data={"id_number": clean_voter, "epic_number": clean_voter},
             provider_info=provider_info
         )
 

@@ -1848,9 +1848,23 @@ export const HrExecutiveView = () => {
           <div className="flex items-start gap-3.5 min-w-0">
             {/* Employer Corporate Logo Display */}
             {(() => {
-              const compName = currentCompany?.name || activeHr?.companyName || 'Joy Man Power Service';
-              const isManpower = compName.toLowerCase().includes('manpower') || compName.toLowerCase().includes('man power') || currentCompany?.code === 'COMP002';
-              const isCorporateSol = compName.toLowerCase().includes('corporate') || compName.toLowerCase().includes('solution') || currentCompany?.code === 'COMP001';
+              const currentPath = (typeof window !== 'undefined' ? (window.location.pathname || '') : '').toLowerCase();
+              const compName = currentCompany?.name || activeHr?.companyName || (currentPath.includes('man-power') || currentPath.includes('manpower') ? 'Joy Man Power Service' : 'Joy Corporate Solutions');
+              const isManpower = compName.toLowerCase().includes('manpower') || 
+                                 compName.toLowerCase().includes('man power') || 
+                                 currentCompany?.code === 'COMP002' || 
+                                 currentCompany?.id === 'COMP002' ||
+                                 activeHr?.companyId === 'COMP002' ||
+                                 currentPath.includes('joy-man-power') ||
+                                 currentPath.includes('manpower') ||
+                                 currentPath.includes('man-power');
+              
+              const isCorporateSol = compName.toLowerCase().includes('corporate') || 
+                                     compName.toLowerCase().includes('solution') || 
+                                     currentCompany?.code === 'COMP001' ||
+                                     currentCompany?.id === 'COMP001' ||
+                                     activeHr?.companyId === 'COMP001' ||
+                                     currentPath.includes('joy-corporate');
               
               const rawLogo = currentCompany?.logo || 
                               currentCompany?.logo_url || 
