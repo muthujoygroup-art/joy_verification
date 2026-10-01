@@ -91,18 +91,38 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
   // Purpose Catalogue from API / Backend
   const [purposesList, setPurposesList] = useState([]);
   
-  // Stored DigiLocker Records Cache - strictly genuinely verified records
+  // Normalized deduplication key for verified candidate records
+  const getCandidateKey = (r) => {
+    if (!r) return '';
+    const mobile = (r.mobile || r.identifier_value || r.identifier || '').toString().replace(/\D/g, '').slice(-10);
+    if (mobile && mobile.length === 10) return `mob_${mobile}`;
+    const pan = (r.pan_no || '').trim().toUpperCase();
+    if (pan && pan.length === 10) return `pan_${pan}`;
+    const name = (r.full_name || r.candidate_name || r.name || '').trim().toLowerCase();
+    if (name) return `name_${name}`;
+    const dlId = (r.digilocker_id || r.digilockerId || '').trim();
+    if (dlId) return `dl_${dlId}`;
+    return `id_${r.id || Math.random()}`;
+  };
+
+  // Stored DigiLocker Records Cache - strictly genuinely verified records without duplicates
   const [verifiedRecords, setVerifiedRecords] = useState(() => {
     try {
       const saved = localStorage.getItem('joy_digilocker_verified_records');
       if (!saved) return [];
       const parsed = JSON.parse(saved);
       if (!Array.isArray(parsed)) return [];
-      return parsed.filter(r => 
-        (r.status === 'success' || r.account_status === 'VERIFIED' || r.digilocker_verified === true) &&
+      const clean = parsed.filter(r => 
+        (r.status === 'success' || r.account_status === 'VERIFIED' || r.account_status === 'VERIFIED_ACTIVE' || r.digilocker_verified === true) &&
         (r.full_name || r.candidate_name || r.name) &&
         (r.mobile || r.identifier_value || r.digilocker_id)
       );
+      const uniqueMap = new Map();
+      clean.forEach(item => {
+        const k = getCandidateKey(item);
+        if (k) uniqueMap.set(k, item);
+      });
+      return Array.from(uniqueMap.values());
     } catch (e) {
       return [];
     }
@@ -133,18 +153,21 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
     }).catch(() => {});
   }, []);
 
-  // Sync server DigiLocker records from database (strictly verified only)
+  // Sync server DigiLocker records from database (strictly verified only, guaranteed deduplicated)
   const loadDbRecords = () => {
     api.getDigilockerRecords().then(res => {
       if (res && Array.isArray(res.records)) {
         const cleanRecords = res.records.filter(r => 
-          (r.status === 'success' || r.account_status === 'VERIFIED' || r.digilocker_verified === true) &&
+          (r.status === 'success' || r.account_status === 'VERIFIED' || r.account_status === 'VERIFIED_ACTIVE' || r.digilocker_verified === true) &&
           (r.full_name || r.candidate_name || r.name) &&
           (r.mobile || r.identifier_value || r.digilocker_id)
         );
-        const unique = Array.from(
-          new Map(cleanRecords.map(item => [item.digilocker_id || item.mobile || item.identifier_value || item.id, item])).values()
-        );
+        const uniqueMap = new Map();
+        cleanRecords.forEach(item => {
+          const k = getCandidateKey(item);
+          if (k) uniqueMap.set(k, item);
+        });
+        const unique = Array.from(uniqueMap.values());
         setVerifiedRecords(unique);
         try {
           localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(unique));
@@ -252,6 +275,9 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
     const effectivePurpose = customPurpose ? customPurpose.trim().slice(0, 50) : selectedPurpose;
     const effectiveService = (serviceName || 'JoyVerify').trim().slice(0, 50);
 
+    const selCand = (candidates || []).find(c => c.id === selectedCandidateId);
+    const candName = selCand ? (selCand.name || selCand.full_name) : undefined;
+
     setIsFetching(true);
     setFetchProgressStage(1);
     setLatestFetchResult(null);
@@ -269,6 +295,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
         service_name: effectiveService,
         doc_types: selectedDocTypes,
         candidate_id: selectedCandidateId || undefined,
+        candidate_name: candName,
         company_id: currentCompany?.id || 'COMP001',
         hr_id: activeHr?.id || 'hr-1'
       });
@@ -280,9 +307,18 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
       if (response && response.success) {
         setLatestFetchResult(response);
         
-        // Update local records
+        // Update local records with strict deduplication
         setVerifiedRecords(prev => {
-          const updated = [response, ...prev.filter(r => (r.digilocker_id !== response.digilocker_id && r.mobile !== response.mobile))];
+          const uniqueMap = new Map();
+          const targetKey = getCandidateKey(response);
+          uniqueMap.set(targetKey, response);
+          prev.forEach(r => {
+            const k = getCandidateKey(r);
+            if (k && k !== targetKey) {
+              uniqueMap.set(k, r);
+            }
+          });
+          const updated = Array.from(uniqueMap.values());
           try {
             localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(updated));
           } catch (e) {}
@@ -324,9 +360,16 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
     }
   };
 
-  // Filter verified records
+  // Filter verified records (Guaranteed Zero Duplicate Profiles)
   const filteredRecords = useMemo(() => {
-    return (verifiedRecords || []).filter(r => {
+    const uniqueMap = new Map();
+    (verifiedRecords || []).forEach(r => {
+      const k = getCandidateKey(r);
+      if (k) uniqueMap.set(k, r);
+    });
+    const uniqueList = Array.from(uniqueMap.values());
+
+    return uniqueList.filter(r => {
       const q = searchQuery.toLowerCase().trim();
       const matchSearch = !q || 
         (r.full_name || r.candidate_name || r.name || '').toLowerCase().includes(q) ||
@@ -933,35 +976,35 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Registered Mobile:</span>
-                      <strong className="font-mono text-slate-800">+91 {latestFetchResult.mobile || '8610597895'}</strong>
+                      <strong className="font-mono text-slate-800">+91 {latestFetchResult.mobile || latestFetchResult.identifier_value || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Care Of / Father:</span>
-                      <strong className="text-slate-800">S/O {latestFetchResult.father_name || 'Periyasamy'}</strong>
+                      <strong className="text-slate-800">{latestFetchResult.father_name ? `S/O ${latestFetchResult.father_name}` : '—'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Date of Birth & Gender:</span>
-                      <strong className="text-slate-800">{latestFetchResult.dob || '15-08-1992'} ({latestFetchResult.gender || 'Male'})</strong>
+                      <strong className="text-slate-800">{latestFetchResult.dob || '—'} ({latestFetchResult.gender || '—'})</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Official Email:</span>
-                      <strong className="text-slate-800 truncate block">{latestFetchResult.email || 'muthukumar.p@joycorporatesolutions.com'}</strong>
+                      <strong className="text-slate-800 truncate block">{latestFetchResult.email || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Masked Aadhaar:</span>
-                      <strong className="font-mono text-slate-800">{latestFetchResult.aadhaar_no || latestFetchResult.masked_aadhaar || 'XXXX-XXXX-8942'}</strong>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.aadhaar_no || latestFetchResult.masked_aadhaar || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">PAN Number:</span>
-                      <strong className="font-mono text-slate-800">{latestFetchResult.pan_no || 'AAAPM8942K'}</strong>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.pan_no || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">Driving License:</span>
-                      <strong className="font-mono text-slate-800">{latestFetchResult.dl_no || 'TN-45-2016-0049210'}</strong>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.dl_no || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold block text-[10px] uppercase">EPFO UAN:</span>
-                      <strong className="font-mono text-slate-800">{latestFetchResult.uan_no || '100829141052'}</strong>
+                      <strong className="font-mono text-slate-800">{latestFetchResult.uan_no || '—'}</strong>
                     </div>
                   </div>
 
@@ -969,7 +1012,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                     <span className="text-slate-400 font-bold block text-[10px] uppercase">Residential Address (eAadhaar XML):</span>
                     <p className="text-slate-700 font-medium leading-relaxed mt-0.5">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 inline mr-1" />
-                      {latestFetchResult.address || 'No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001'}
+                      {latestFetchResult.address || 'Authenticated residential address from eAadhaar XML.'}
                     </p>
                   </div>
                 </div>
