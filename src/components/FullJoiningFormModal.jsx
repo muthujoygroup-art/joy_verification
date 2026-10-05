@@ -10,6 +10,7 @@ import { NonCompeteAgreement } from './statutory/NonCompeteAgreement';
 import { ContractFormXIII } from './statutory/ContractFormXIII';
 import IndustryAgreementsModal from './statutory/IndustryAgreementsModal';
 import { EMPLOYEE_CATEGORIES, CATEGORIES_LIST, getEmployeeCategoryConfig } from '../config/employeeCategories';
+import { OfficialDocRedirectPill } from '../config/officialDocumentPortals';
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
@@ -1523,6 +1524,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, aadhaarNo: e.target.value })}
                     className={getCandidateFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')} 
                   />
+                  <OfficialDocRedirectPill fieldKey="aadhaarNo" />
                 </div>
                 <div>
                   {renderCandidateFieldLabel('Tax PAN Card Number', 'panNo', true)}
@@ -1533,6 +1535,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     onChange={e => setFormData({ ...formData, panNo: e.target.value })}
                     className={getCandidateFieldInputClass('panNo', 'form-input font-mono font-bold')} 
                   />
+                  <OfficialDocRedirectPill fieldKey="panNo" />
                 </div>
                 <div>
                   {renderCandidateFieldLabel('PF Number / UAN (EPFO)', 'pfNumber', true)}
@@ -1544,6 +1547,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     placeholder="12-digit UAN"
                     className={getCandidateFieldInputClass('pfNumber', 'form-input font-mono')} 
                   />
+                  <OfficialDocRedirectPill fieldKey="uanEpf" />
                 </div>
                 <div>
                   {renderCandidateFieldLabel('ESI Number (IP Number)', 'esiNumber')}
@@ -1554,6 +1558,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     placeholder="10-digit IP No"
                     className={getCandidateFieldInputClass('esiNumber', 'form-input font-mono')} 
                   />
+                  <OfficialDocRedirectPill fieldKey="esiNumber" />
                 </div>
               </div>
 

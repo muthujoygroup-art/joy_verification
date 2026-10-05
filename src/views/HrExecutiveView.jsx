@@ -32,6 +32,7 @@ import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
 import { DigiLockerFetchModal } from '../components/DigiLockerFetchModal';
 import { DigiLockerSectionView } from '../components/DigiLockerSectionView';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
+import { OfficialDocRedirectPill, OfficialDocumentHubBanner, OFFICIAL_DOCUMENT_PORTALS } from '../config/officialDocumentPortals';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus, getNextFieldOwnershipMode } from '../utils/verificationRequirements';
 import { 
   GENDER_OPTIONS, 
@@ -4441,6 +4442,7 @@ export const HrExecutiveView = () => {
                     onChange={(e) => setFormData({ ...formData, aadhaarNo: e.target.value })}
                     className={getFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')}
                   />
+                  <OfficialDocRedirectPill fieldKey="aadhaarNo" />
                 </div>
               </div>
 
@@ -5140,12 +5142,20 @@ export const HrExecutiveView = () => {
                   EPFO Form 11 • ESIC Form 1 • TDS Form 12B • Form XIII
                 </span>
               </div>
+
+              {/* 🏛️ Official Government Document Application & Direct Creation Hub Banner */}
+              <OfficialDocumentHubBanner />
               
               {/* SUB-SECTION 5A: Core Government IDs */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block">
-                  🪪 Core Government Identity Credentials & Original Document Numbers:
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block">
+                    🪪 Core Government Identity Credentials & Original Document Numbers:
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-medium italic">
+                    Click redirect badges below if employee hasn't created the document yet
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                   <div>
                     {renderFieldLabel('Income Tax PAN Number', 'panNo')}
@@ -5156,6 +5166,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, panNo: e.target.value.toUpperCase() })}
                       className={getFieldInputClass('panNo', 'form-input font-mono font-bold')}
                     />
+                    <OfficialDocRedirectPill fieldKey="panNo" />
                   </div>
                   <div>
                     {renderFieldLabel('Passport Number', 'passportNo')}
@@ -5166,6 +5177,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, passportNo: e.target.value.toUpperCase() })}
                       className={getFieldInputClass('passportNo', 'form-input font-mono')}
                     />
+                    <OfficialDocRedirectPill fieldKey="passportNo" />
                   </div>
                   <div>
                     {renderFieldLabel('Driving License (DL)', 'drivingLicense')}
@@ -5176,6 +5188,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, drivingLicense: e.target.value })}
                       className={getFieldInputClass('drivingLicense', 'form-input font-mono')}
                     />
+                    <OfficialDocRedirectPill fieldKey="drivingLicense" />
                   </div>
                   <div>
                     {renderFieldLabel('Voter ID (EPIC Number)', 'voterId')}
@@ -5186,6 +5199,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, voterId: e.target.value.toUpperCase() })}
                       className={getFieldInputClass('voterId', 'form-input font-mono')}
                     />
+                    <OfficialDocRedirectPill fieldKey="voterId" />
                   </div>
                   <div>
                     {renderFieldLabel('National / State Ration Card Number', 'rationCardNo')}
@@ -5196,6 +5210,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, rationCardNo: e.target.value.toUpperCase() })}
                       className={getFieldInputClass('rationCardNo', 'form-input font-mono')}
                     />
+                    <OfficialDocRedirectPill fieldKey="rationCardNo" />
                   </div>
                   <div>
                     {renderFieldLabel('ESIC IP / Insurance Number', 'esicNumber')}
@@ -5206,6 +5221,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, esicNumber: e.target.value })}
                       className={getFieldInputClass('esicNumber', 'form-input font-mono')}
                     />
+                    <OfficialDocRedirectPill fieldKey="esicNumber" />
                   </div>
                 </div>
               </div>
@@ -5230,6 +5246,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, uanEpf: e.target.value, pfNumber: e.target.value })}
                       className={getFieldInputClass('uanEpf', 'form-input font-mono font-bold')}
                     />
+                    <OfficialDocRedirectPill fieldKey="uanEpf" />
                   </div>
                   <div>
                     {renderFieldLabel('Previous PF Member ID', 'previousPfNumber')}
@@ -5329,6 +5346,7 @@ export const HrExecutiveView = () => {
                       onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value, esicNo: e.target.value })}
                       className={getFieldInputClass('esiNumber', 'form-input font-mono')}
                     />
+                    <OfficialDocRedirectPill fieldKey="esiNumber" />
                   </div>
                   <div>
                     {renderFieldLabel('Previous ESIC Ins No (if any)', 'esicPrevInsNo')}

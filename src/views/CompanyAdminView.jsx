@@ -21,6 +21,7 @@ import { VendorVerificationCertificateModal } from '../components/VendorVerifica
 import { VendorLinkModal } from '../components/VendorLinkModal';
 import { VendorDossierModal } from '../components/VendorDossierModal';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
+import { OfficialDocRedirectPill } from '../config/officialDocumentPortals';
 import {
   AlertTriangle,
   Award,
@@ -6897,6 +6898,7 @@ export const CompanyAdminView = () => {
                           onChange={(e) => setNewHr({ ...newHr, panNo: e.target.value.toUpperCase() })}
                           className="form-input font-mono font-bold"
                         />
+                        <OfficialDocRedirectPill fieldKey="panNo" />
                       </div>
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Aadhaar Identity Number</label>
@@ -6907,6 +6909,7 @@ export const CompanyAdminView = () => {
                           onChange={(e) => setNewHr({ ...newHr, aadhaarNo: e.target.value })}
                           className="form-input font-mono font-bold"
                         />
+                        <OfficialDocRedirectPill fieldKey="aadhaarNo" />
                       </div>
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Passport Number</label>
@@ -6917,6 +6920,7 @@ export const CompanyAdminView = () => {
                           onChange={(e) => setNewHr({ ...newHr, passportNo: e.target.value.toUpperCase() })}
                           className="form-input font-mono"
                         />
+                        <OfficialDocRedirectPill fieldKey="passportNo" />
                       </div>
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Driving License (DL)</label>
@@ -6927,6 +6931,7 @@ export const CompanyAdminView = () => {
                           onChange={(e) => setNewHr({ ...newHr, drivingLicense: e.target.value })}
                           className="form-input font-mono"
                         />
+                        <OfficialDocRedirectPill fieldKey="drivingLicense" />
                       </div>
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">Voter ID (EPIC Number)</label>
@@ -6937,6 +6942,7 @@ export const CompanyAdminView = () => {
                           onChange={(e) => setNewHr({ ...newHr, voterId: e.target.value.toUpperCase() })}
                           className="form-input font-mono"
                         />
+                        <OfficialDocRedirectPill fieldKey="voterId" />
                       </div>
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">National Ration Card No.</label>
@@ -6947,6 +6953,7 @@ export const CompanyAdminView = () => {
                           onChange={(e) => setNewHr({ ...newHr, rationCardNo: e.target.value.toUpperCase() })}
                           className="form-input font-mono font-bold text-emerald-900"
                         />
+                        <OfficialDocRedirectPill fieldKey="rationCardNo" />
                       </div>
                     </div>
                   </div>
