@@ -32,20 +32,20 @@ export const OFFICIAL_DOCUMENT_PORTALS = {
     key: 'uanEpf',
     docName: 'EPFO Universal Account Number (UAN)',
     authority: 'Employees\' Provident Fund Organisation (EPFO)',
-    applyUrl: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/no-uan-reg',
-    secondaryUrl: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
-    badgeText: "Don't have UAN? Direct UAN Allotment on EPFO Portal ↗",
+    applyUrl: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
+    secondaryUrl: 'https://web.umang.gov.in/landing/department/epfo.html',
+    badgeText: "Don't have UAN? Open EPFO Member Portal / UMANG Direct Allotment ↗",
     shortLabel: 'Generate UAN ↗',
-    tooltip: 'Direct link to EPFO Member Portal for citizen direct UAN allotment (Aadhaar based)',
+    tooltip: 'Direct link to EPFO Member Portal & UMANG for citizen direct UAN allotment (Aadhaar based)',
     theme: 'purple'
   },
   pfNumber: {
     key: 'pfNumber',
     docName: 'EPFO Universal Account Number (UAN)',
     authority: 'Employees\' Provident Fund Organisation (EPFO)',
-    applyUrl: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/no-uan-reg',
-    secondaryUrl: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
-    badgeText: "Don't have UAN? Direct UAN Allotment on EPFO Portal ↗",
+    applyUrl: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
+    secondaryUrl: 'https://web.umang.gov.in/landing/department/epfo.html',
+    badgeText: "Don't have UAN? Open EPFO Member Portal / UMANG Direct Allotment ↗",
     shortLabel: 'Generate UAN ↗',
     theme: 'purple'
   },
@@ -85,7 +85,7 @@ export const OFFICIAL_DOCUMENT_PORTALS = {
     key: 'passportNo',
     docName: 'Indian Passport',
     authority: 'Passport Seva • Ministry of External Affairs (MEA)',
-    applyUrl: 'https://www.passportindia.gov.in/AppOnlineProject/welcomeLink',
+    applyUrl: 'https://www.passportindia.gov.in/',
     secondaryUrl: 'https://www.passportindia.gov.in/AppOnlineProject/user/RegistrationBaseAction?request_locale=en',
     badgeText: "Don't have Passport? Apply on Passport Seva Portal ↗",
     shortLabel: 'Apply Passport ↗',
@@ -96,7 +96,7 @@ export const OFFICIAL_DOCUMENT_PORTALS = {
     key: 'rationCardNo',
     docName: 'National / State Food Security Ration Card',
     authority: 'NFSA • Department of Food & Public Distribution',
-    applyUrl: 'https://nfsa.gov.in/portal/apply-ration-card',
+    applyUrl: 'https://nfsa.gov.in/',
     secondaryUrl: 'https://nfsa.gov.in/',
     badgeText: "Don't have Ration Card? Apply Online on NFSA State Portal ↗",
     shortLabel: 'Apply Ration Card ↗',
@@ -107,20 +107,20 @@ export const OFFICIAL_DOCUMENT_PORTALS = {
     key: 'esicNumber',
     docName: 'ESIC Insured Person (IP) Number',
     authority: 'Employees\' State Insurance Corporation (ESIC)',
-    applyUrl: 'https://www.esic.gov.in/insurance-services',
+    applyUrl: 'https://portal.esic.gov.in/EmployeePortal/login.aspx',
     secondaryUrl: 'https://www.esic.gov.in/',
-    badgeText: "Don't have ESIC IP? Check ESIC Registration & Portal ↗",
+    badgeText: "Don't have ESIC IP? Open ESIC Insured Person Portal ↗",
     shortLabel: 'Check ESIC ↗',
-    tooltip: 'Direct link to ESIC Official Portal for Employee Insurance & IP services',
+    tooltip: 'Direct link to ESIC Official Insured Person Portal & ESIC Portal',
     theme: 'teal'
   },
   esiNumber: {
     key: 'esiNumber',
     docName: 'ESIC Insured Person (IP) Number',
     authority: 'Employees\' State Insurance Corporation (ESIC)',
-    applyUrl: 'https://www.esic.gov.in/insurance-services',
+    applyUrl: 'https://portal.esic.gov.in/EmployeePortal/login.aspx',
     secondaryUrl: 'https://www.esic.gov.in/',
-    badgeText: "Don't have ESIC IP? Check ESIC Registration & Portal ↗",
+    badgeText: "Don't have ESIC IP? Open ESIC Insured Person Portal ↗",
     shortLabel: 'Check ESIC ↗',
     theme: 'teal'
   },
@@ -226,11 +226,11 @@ export const OfficialDocumentHubBanner = ({ onQuickFillDemo }) => {
         </a>
 
         <a
-          href="https://unifiedportal-mem.epfindia.gov.in/memberinterface/no-uan-reg"
+          href="https://unifiedportal-mem.epfindia.gov.in/memberinterface/"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 rounded-xl bg-white hover:bg-purple-50 border border-slate-200 hover:border-purple-300 transition-all flex flex-col justify-between group shadow-2xs"
-          title="EPFO Direct UAN Allotment for First-Time Employees"
+          title="EPFO Member Portal & Direct UAN Allotment for First-Time Employees"
         >
           <div className="flex items-center justify-between">
             <span className="text-base">💼</span>
@@ -277,7 +277,7 @@ export const OfficialDocumentHubBanner = ({ onQuickFillDemo }) => {
         </a>
 
         <a
-          href="https://www.passportindia.gov.in/AppOnlineProject/welcomeLink"
+          href="https://www.passportindia.gov.in/"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 rounded-xl bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 transition-all flex flex-col justify-between group shadow-2xs"
