@@ -26,6 +26,7 @@ import {
   generateIndividualDocumentPdf,
   exportSingleDigilockerToExcel 
 } from '../utils/digilockerExportUtils';
+import { deduplicateAndSanitizeDigiLockerProfiles } from '../components/DigiLockerSectionView';
 
 export const DigiLockerCallbackView = () => {
   const [searchParams] = useSearchParams();
@@ -72,11 +73,13 @@ export const DigiLockerCallbackView = () => {
 
         if (res && res.success) {
           setResult(res);
-          // Persist to local storage records cache
+          // Persist to local storage records cache with strict deduplication
           try {
             const saved = localStorage.getItem('joy_digilocker_verified_records');
             const prev = saved ? JSON.parse(saved) : [];
-            const updated = [res, ...prev.filter(r => (r.digilocker_id !== res.digilocker_id && r.mobile !== res.mobile))];
+            const rawCandidates = localStorage.getItem('joy_candidates');
+            const parsedCands = rawCandidates ? JSON.parse(rawCandidates) : [];
+            const updated = deduplicateAndSanitizeDigiLockerProfiles([res, ...(Array.isArray(prev) ? prev : [])], parsedCands);
             localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(updated));
           } catch (e) {}
         } else {

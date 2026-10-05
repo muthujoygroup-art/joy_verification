@@ -19,14 +19,15 @@ import {
   Check, 
   Layers, 
   Eye, 
-  ArrowRight,
-  BadgeCheck,
-  AlertCircle,
-  FileCheck2,
-  GraduationCap,
-  Car,
-  FileSpreadsheet
+  ArrowRight, 
+  BadgeCheck, 
+  AlertCircle, 
+  FileCheck2, 
+  GraduationCap, 
+  Car, 
+  FileSpreadsheet 
 } from 'lucide-react';
+import { deduplicateAndSanitizeDigiLockerProfiles } from './DigiLockerSectionView';
 
 export const DigiLockerFetchModal = ({ 
   isOpen, 
@@ -60,7 +61,7 @@ export const DigiLockerFetchModal = ({
       if (!saved) return [];
       const parsed = JSON.parse(saved);
       if (!Array.isArray(parsed)) return [];
-      return parsed.filter(r => (r.status === 'success' || r.account_status === 'VERIFIED' || r.digilocker_verified === true) && (r.full_name || r.candidate_name) && (r.mobile || r.identifier_value));
+      return deduplicateAndSanitizeDigiLockerProfiles(parsed, candidates || []);
     } catch (e) {
       return [];
     }
@@ -80,14 +81,7 @@ export const DigiLockerFetchModal = ({
     if (isOpen) {
       api.getDigilockerRecords().then(res => {
         if (res && Array.isArray(res.records)) {
-          const cleanRecords = res.records.filter(r => 
-            (r.status === 'success' || r.account_status === 'VERIFIED' || r.digilocker_verified === true) &&
-            (r.full_name || r.candidate_name || r.name) &&
-            (r.mobile || r.identifier_value || r.digilocker_id)
-          );
-          const unique = Array.from(
-            new Map(cleanRecords.map(item => [item.digilocker_id || item.mobile || item.identifier_value || item.id, item])).values()
-          );
+          const unique = deduplicateAndSanitizeDigiLockerProfiles(res.records, candidates || []);
           setDigilockerRecords(unique);
           try {
             localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(unique));
@@ -95,7 +89,7 @@ export const DigiLockerFetchModal = ({
         }
       }).catch(() => {});
     }
-  }, [isOpen]);
+  }, [isOpen, candidates]);
 
   // Handle Escape key
   useEffect(() => {
@@ -241,8 +235,7 @@ export const DigiLockerFetchModal = ({
 
         // Update local state and persist
         setDigilockerRecords(prev => {
-          const filtered = prev.filter(r => r.mobile !== cleanMob);
-          const updated = [enrichedRecord, ...filtered];
+          const updated = deduplicateAndSanitizeDigiLockerProfiles([enrichedRecord, ...(prev || [])], candidates || []);
           try {
             localStorage.setItem('joy_digilocker_verified_records', JSON.stringify(updated));
           } catch (e) {}
