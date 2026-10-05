@@ -1,0 +1,1356 @@
+{
+  "1": {
+    "num": 1,
+    "name": "Aadhaar Detail Verification V2",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-detail-verif",
+    "slug": "aadhaar-detail-verif",
+    "page": "9",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$",
+      "otp OTP REQUIRED ^\\d{6}$"
+    ]
+  },
+  "2": {
+    "num": 2,
+    "name": "Aadhaar Link Check",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-link-check",
+    "slug": "aadhaar-link-check",
+    "page": "11",
+    "fields": [
+      "id_type ID Type REQUIRED",
+      "When id_type  is one of the values below, also send its companion field:",
+      "MOBILE",
+      "\u2192 \u00a0 mobile",
+      "Mobile REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?",
+      "\\d{3}[-.\\s]?\\d{4}$",
+      "EMAIL  \u2192 \u00a0 email Email REQUIRED ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-",
+      "zA-Z]{2,}$",
+      "aadhaar_number Aadhaar",
+      "Number",
+      "REQUIRED ^[2-9]{1}[0-9]{11}$"
+    ]
+  },
+  "3": {
+    "num": 3,
+    "name": "Aadhaar To PAN",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-to-pan",
+    "slug": "aadhaar-to-pan",
+    "page": "12",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$"
+    ]
+  },
+  "4": {
+    "num": 4,
+    "name": "Aadhaar to PAN (masked) V2",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-to-pan-maske",
+    "slug": "aadhaar-to-pan-maske",
+    "page": "13",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$"
+    ]
+  },
+  "5": {
+    "num": 5,
+    "name": "Aadhaar To PAN (Unmasked) V2",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-to-pan-unmas",
+    "slug": "aadhaar-to-pan-unmas",
+    "page": "14",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$"
+    ]
+  },
+  "6": {
+    "num": 6,
+    "name": "Aadhaar To PAN CKYC",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-to-pan-ckyc",
+    "slug": "aadhaar-to-pan-ckyc",
+    "page": "15",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$"
+    ]
+  },
+  "7": {
+    "num": 7,
+    "name": "Aadhaar To PAN(Unmasked)",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-to-pan-unmas",
+    "slug": "aadhaar-to-pan-unmas",
+    "page": "16",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$"
+    ]
+  },
+  "8": {
+    "num": 8,
+    "name": "Aadhaar Validation V2",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-validation-v",
+    "slug": "aadhaar-validation-v",
+    "page": "17",
+    "fields": [
+      "aadhaarNumber Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$"
+    ]
+  },
+  "9": {
+    "num": 9,
+    "name": "Aadhaar Verify",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/aadhaar-verify",
+    "slug": "aadhaar-verify",
+    "page": "18",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^[2-9]{1}[0-9]{11}$"
+    ]
+  },
+  "10": {
+    "num": 10,
+    "name": "Driving License Details",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/driving-license-deta",
+    "slug": "driving-license-deta",
+    "page": "19",
+    "fields": [
+      "driving_license_number Driving license number REQUIRED ^[A-Za-z]{2}\\d{2}[A-Za-z0-9]",
+      "{10,13}$",
+      "date_of_birth Date of birth of license",
+      "holder",
+      "REQUIRED"
+    ]
+  },
+  "11": {
+    "num": 11,
+    "name": "Generate Aadhaar OTP V2",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/generate-aadhaar-otp",
+    "slug": "generate-aadhaar-otp",
+    "page": "22",
+    "fields": [
+      "aadhaar_number Aadhaar Number REQUIRED ^\\d{4}-?\\d{4}-?\\d{4}$"
+    ]
+  },
+  "12": {
+    "num": 12,
+    "name": "Identity Verification with Digilocker",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/identity-verificatio",
+    "slug": "identity-verificatio",
+    "page": "23",
+    "fields": []
+  },
+  "13": {
+    "num": 13,
+    "name": "Mobile Number To Challan Details",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-number-to-cha",
+    "slug": "mobile-number-to-cha",
+    "page": "24",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "14": {
+    "num": 14,
+    "name": "Mobile To PAN V2",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-number-to-pan",
+    "slug": "mobile-number-to-pan",
+    "page": "30",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "15": {
+    "num": 15,
+    "name": "Mobile To Profile Advance",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-profile-ad",
+    "slug": "mobile-to-profile-ad",
+    "page": "31",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "16": {
+    "num": 16,
+    "name": "Mobile360",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile360",
+    "slug": "mobile360",
+    "page": "33",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "17": {
+    "num": 17,
+    "name": "PAN Details V1",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-details-v1",
+    "slug": "pan-details-v1",
+    "page": "37",
+    "fields": [
+      "pan PAN Number REQUIRED ^[A-Z]{5}[0-9]{4}[A-Z]{1}$"
+    ]
+  },
+  "18": {
+    "num": 18,
+    "name": "Passport Verification",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/passport-verificatio",
+    "slug": "passport-verificatio",
+    "page": "38",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"pan\": \"EFBPA9601F\",",
+      "\"pan_type\": \"Individual\",",
+      "\"fullname\": \"RAO ARJUNSINGH\",",
+      "\"first_name\": \"RAO\",",
+      "\"middle_name\": \"\",",
+      "\"last_name\": \"ARJUNSINGH\",",
+      "\"father_name\": \"RAM SINGH RAO\",",
+      "\"gender\": \"male\",",
+      "\"aadhaar_number\": \"41XXXXXXXX67\",",
+      "\"aadhaar_linked\": true,",
+      "\"dob\": \"09/02/2003\",",
+      "\"address\": {",
+      "\"building_name\": \"S/O: Ramsingh, 155/6, Chankyapuri, Nr JJ hospital\",",
+      "\"locality\": \"Ghatlodia S.O\",",
+      "\"street_name\": \"Ghatalodia, Ahmedabad City, Ahmedabad, \",",
+      "\"pincode\": \"380061\",",
+      "\"city\": \"Ahmadabad City\",",
+      "\"state\": \"Gujarat\",",
+      "\"country\": \"India\"",
+      "},",
+      "\"mobile\": \"\",",
+      "\"email\": \"\"",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 38 of 279"
+    ]
+  },
+  "19": {
+    "num": 19,
+    "name": "Voter ID Details",
+    "method": "POST",
+    "category": "IDENTITY VERIFICATION",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/voter-id-details",
+    "slug": "voter-id-details",
+    "page": "39",
+    "fields": [
+      "{",
+      "\"dob\": \"03-02-1999\",",
+      "\"fileNumber\": \"LK5072574276018\"",
+      "}",
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"file_number\": \"AH2066802792526\",",
+      "\"name\": \"ARJUNSINGH RAO\",",
+      "\"dob\": \"2003-02-09\",",
+      "\"application_type\": \"NORMAL\",",
+      "\"application_received_date\": \"2026-02-10\",",
+      "\"status\": \"VALID\"",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 39 of 279"
+    ]
+  },
+  "20": {
+    "num": 20,
+    "name": "CRIF",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/crif",
+    "slug": "crif",
+    "page": "43",
+    "fields": [
+      "name Full Name REQUIRED",
+      "mobile_number Mobile Number REQUIRED ^[6-9]\\d{9}$"
+    ]
+  },
+  "21": {
+    "num": 21,
+    "name": "Mobile To Account V2",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-account-v2",
+    "slug": "mobile-to-account-v2",
+    "page": "58",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "22": {
+    "num": 22,
+    "name": "Mobile to Account V3",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-account-v3",
+    "slug": "mobile-to-account-v3",
+    "page": "60",
+    "fields": [
+      "mobile_number Mobile Number REQUIRED ^[6-9]\\d{9}$"
+    ]
+  },
+  "23": {
+    "num": 23,
+    "name": "Mobile To Primary UPI ID",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-primary-up",
+    "slug": "mobile-to-primary-up",
+    "page": "62",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "24": {
+    "num": 24,
+    "name": "Mobile To UAN V2",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-uan-v2",
+    "slug": "mobile-to-uan-v2",
+    "page": "63",
+    "fields": [
+      "mobile_number Mobile Number REQUIRED ^[6-9]\\d{9}$"
+    ]
+  },
+  "26": {
+    "num": 26,
+    "name": "PAN Basic",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-basic",
+    "slug": "pan-basic",
+    "page": "66",
+    "fields": [
+      "pan_number Pan Number REQUIRED ^[A-Z]{3}[CPHFATBLJG][A-Z]\\d{4}[A-Z]$"
+    ]
+  },
+  "27": {
+    "num": 27,
+    "name": "PAN Experian",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-experian",
+    "slug": "pan-experian",
+    "page": "67",
+    "fields": [
+      "pan_number PAN Number REQUIRED ^[A-Z]{3}[CPHFATBLJG][A-Z]\\d{4}[A-Z]$"
+    ]
+  },
+  "28": {
+    "num": 28,
+    "name": "PAN Info",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-info",
+    "slug": "pan-info",
+    "page": "100",
+    "fields": [
+      "pan_number Pan",
+      "Number",
+      "REQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG][a-zA-Z]\\d{4}[A-",
+      "Za-z]$"
+    ]
+  },
+  "29": {
+    "num": 29,
+    "name": "PAN Info V2",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-info-v2",
+    "slug": "pan-info-v2",
+    "page": "101",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"dob\": \"05/02/2000\",",
+      "\"pan\": \"GMTPP1412A\",",
+      "\"tax\": \"N/A\",",
+      "\"email\": null,",
+      "\"gender\": \"male\",",
+      "\"mobile\": null,",
+      "\"aadhaar\": \"XXXXXXXX3897\",",
+      "\"address\": {",
+      "\"state\": \"Madhya Pradesh\",",
+      "\"pin_code\": \"486001\",",
+      "\"address_line_1\": \"15 shiv prasad marg Saman pathkhan tola\",",
+      "\"address_line_2\": \"Rewa H.O\",",
+      "\"address_line_3\": \" Near kisor nyayalay huzur rewa\",",
+      "\"address_line_4\": \"Huzur\",",
+      "\"address_line_5\": \"\"",
+      "},",
+      "\"category\": \"Person\",",
+      "\"full_name\": \"SHIVANK SINGH PARIHAR\",",
+      "\"last_name\": \"PARIHAR\",",
+      "\"aadharlink\": true,",
+      "\"first_name\": \"SHIVANK\",",
+      "\"middle_name\": \"SINGH\"",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 101 of 279"
+    ]
+  },
+  "30": {
+    "num": 30,
+    "name": "PAN To Insurance",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-to-insurance",
+    "slug": "pan-to-insurance",
+    "page": "104",
+    "fields": [
+      "pan_number Pan",
+      "Number",
+      "REQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG][a-zA-Z]\\d{4}[A-",
+      "Za-z]$"
+    ]
+  },
+  "31": {
+    "num": 31,
+    "name": "PAN to ITR",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-to-itr",
+    "slug": "pan-to-itr",
+    "page": "105",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": [",
+      "{",
+      "\"pan\": \"COBPP0051F\",",
+      "\"insurer\": \"Bajaj Life Insurance Limited\",",
+      "\"agent_name\": \"MANIBHAI DAHYABHAI PARMAR\",",
+      "\"agency_code\": \"ABLIC1003342682\",",
+      "\"insurer_type\": \"Life\",",
+      "\"date_of_birth\": \"12 Mar 1964\",",
+      "\"status_of_agency\": \"Terminated for Non Fulfilment of Minimum business Gua",
+      "\"status_change_date\": \"10 Jun 2025\",",
+      "\"date_of_appointment\": \"25 May 2024\",",
+      "\"license_no_previously_held\": \"\"",
+      "},",
+      "{",
+      "\"pan\": \"COBPP0051F\",",
+      "\"insurer\": \"LIFE INSURANCE CORPORATION OF INDIA\",",
+      "\"agent_name\": \"MANIBHAI DAHYABHAI PARMAR\",",
+      "\"agency_code\": \"LIC05931833\",",
+      "\"insurer_type\": \"Life\",",
+      "\"date_of_birth\": \"12 Mar 1964\",",
+      "\"status_of_agency\": \"Inforce\",",
+      "\"status_change_date\": \"30 Dec 2025\",",
+      "\"date_of_appointment\": \"30 Dec 2025\",",
+      "\"license_no_previously_held\": \"\"",
+      "}",
+      "],",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 105 of 279"
+    ]
+  },
+  "32": {
+    "num": 32,
+    "name": "UPI ID Payment Analyser",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/upi-id-payment-analy",
+    "slug": "upi-id-payment-analy",
+    "page": "108",
+    "fields": [
+      "upi_id Upi Id REQUIRED ^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}$"
+    ]
+  },
+  "33": {
+    "num": 33,
+    "name": "UPI To Account",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/upi-to-account",
+    "slug": "upi-to-account",
+    "page": "109",
+    "fields": [
+      "upi_id Upi Id REQUIRED ^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}$"
+    ]
+  },
+  "34": {
+    "num": 34,
+    "name": "Verify UPI ID",
+    "method": "POST",
+    "category": "FINANCIAL & CREDIT",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/verify-upi-id",
+    "slug": "verify-upi-id",
+    "page": "112",
+    "fields": [
+      "upi_id Upi Id REQUIRED ^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}$"
+    ]
+  },
+  "35": {
+    "num": 35,
+    "name": "Account Validation",
+    "method": "POST",
+    "category": "BANKING & UPI",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/account-validation",
+    "slug": "account-validation",
+    "page": "113",
+    "fields": [
+      "account_number Bank Account Number REQUIRED ^\\d{9,18}$",
+      "ifsc_code IFSC Code REQUIRED ^[A-Z]{4}0[A-Z0-9]{6}$"
+    ]
+  },
+  "36": {
+    "num": 36,
+    "name": "IFSC Lookup",
+    "method": "POST",
+    "category": "BANKING & UPI",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/ifsc-lookup",
+    "slug": "ifsc-lookup",
+    "page": "114",
+    "fields": [
+      "ifsc IFSC Code REQUIRED ^[A-Z]{4}0[A-Z0-9]{6}$"
+    ]
+  },
+  "37": {
+    "num": 37,
+    "name": "UPI Verification",
+    "method": "POST",
+    "category": "BANKING & UPI",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/upi-verification",
+    "slug": "upi-verification",
+    "page": "115",
+    "fields": [
+      "{",
+      "\"ifsc\": \"CBIN0282121\"",
+      "}",
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"bank\": \"BANK OF BARODA\",",
+      "\"ifsc\": \"BARB0GHATLO\",",
+      "\"neft\": \"Live\",",
+      "\"imps\": \"Live\",",
+      "\"rtgs\": \"Live\",",
+      "\"upi\": \"Live\",",
+      "\"ft\": \"Not Live\",",
+      "\"micr\": 380012081,",
+      "\"nbin\": 0,",
+      "\"address\": \"GROUND FLOOR, SHOP 65-70, DEVNANDAN COMPLEX, NEAR CHNAKYAPURI OV",
+      "\"city\": \"GHATLODIYA\",",
+      "\"state\": \"GUJARAT\",",
+      "\"branch\": \"GHATLODIA, AHMEDABAD\",",
+      "\"ifscSubcode\": \"BARB0\",",
+      "\"category\": \"\",",
+      "\"swiftCode\": \"\"",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 115 of 279"
+    ]
+  },
+  "38": {
+    "num": 38,
+    "name": "CIN To Company Details",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/cin-to-company-detai",
+    "slug": "cin-to-company-detai",
+    "page": "117",
+    "fields": [
+      "cin CIN REQUIRED ^[U|L]\\d{5}[A-Za-z]{2}\\d{4}[A-Za-z]{3}\\d{6}$"
+    ]
+  },
+  "39": {
+    "num": 39,
+    "name": "CIN to Directors Lookup",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/cin-to-directors-loo",
+    "slug": "cin-to-directors-loo",
+    "page": "119",
+    "fields": [
+      "cin Company CIN Number REQUIRED ^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$"
+    ]
+  },
+  "40": {
+    "num": 40,
+    "name": "CIN To GST",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/cin-to-gst",
+    "slug": "cin-to-gst",
+    "page": "137",
+    "fields": [
+      "cin Company CIN Number REQUIRED ^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$"
+    ]
+  },
+  "41": {
+    "num": 41,
+    "name": "CIN To GST V2",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/cin-to-gst-v2",
+    "slug": "cin-to-gst-v2",
+    "page": "139",
+    "fields": [
+      "{",
+      "\"company_name\": \"RELIANCE INDUSTRIES LIMITED\",",
+      "\"gst_number\": \"03AAACR5055K2ZG\",",
+      "\"pan_number\": \"AAACR5055K\",",
+      "\"category\": \"Company\",",
+      "\"status\": \"Active\"",
+      "},",
+      "{",
+      "\"company_name\": \"RELIANCE INDUSTRIES LIMITED\",",
+      "\"gst_number\": \"25AAACR5055K1ZB\",",
+      "\"pan_number\": \"AAACR5055K\",",
+      "\"category\": \"Company\",",
+      "\"status\": \"Cancelled\"",
+      "},",
+      "{",
+      "\"company_name\": \"RELIANCE INDUSTRIES LIMITED\",",
+      "\"gst_number\": \"03AAACR5055K1ZH\",",
+      "\"pan_number\": \"AAACR5055K\",",
+      "\"category\": \"Company\",",
+      "\"status\": \"Cancelled\"",
+      "},",
+      "{",
+      "\"company_name\": \"RELIANCE INDUSTRIES LIMITED\",",
+      "\"gst_number\": \"29AAACR5055K2Z2\",",
+      "\"pan_number\": \"AAACR5055K\",",
+      "\"category\": \"Company\",",
+      "\"status\": \"Cancelled\"",
+      "}",
+      "]",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 139 of 279"
+    ]
+  },
+  "42": {
+    "num": 42,
+    "name": "CIN To MCA",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/cin-to-mca",
+    "slug": "cin-to-mca",
+    "page": "142",
+    "fields": [
+      "cin_number Cin Number REQUIRED ^[L|U]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$"
+    ]
+  },
+  "43": {
+    "num": 43,
+    "name": "Company Name To CIN",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/company-name-to-cin",
+    "slug": "company-name-to-cin",
+    "page": "150",
+    "fields": [
+      "\"profitSharingPercentage\": \"\",",
+      "\"educationalQualification\": \"Secondary education\",",
+      "\"monetaryContributionValue\": \"\",",
+      "\"signatoryAssociationStatus\": \"\",",
+      "\"othersEducationalQualification\": \"\"",
+      "}",
+      "],",
+      "\"contactAddress\": [",
+      "{",
+      "\"state\": \"Orissa\",",
+      "\"country\": \"India\",",
+      "\"district\": \"Ganjam\",",
+      "\"postalCode\": \"761115\",",
+      "\"streetAddress\": \"*****\",",
+      "\"streetAddress2\": \"Gunthapada\"",
+      "},",
+      "{",
+      "\"state\": \"Orissa\",",
+      "\"country\": \"India\",",
+      "\"district\": \"Ganjam\",",
+      "\"postalCode\": \"761115\",",
+      "\"streetAddress\": \"*****\",",
+      "\"streetAddress2\": \"Gunthapada\"",
+      "}",
+      "],",
+      "\"dateOfAppointment\": \"08/02/2024\",",
+      "\"DirectorDisqualified\": \"N\"",
+      "}",
+      "]",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 150 of 279"
+    ]
+  },
+  "44": {
+    "num": 44,
+    "name": "Company Name To GST Report",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/company-name-to-gst-",
+    "slug": "company-name-to-gst-",
+    "page": "151",
+    "fields": [
+      "company_name Company Name REQUIRED"
+    ]
+  },
+  "45": {
+    "num": 45,
+    "name": "DIN To Director Details",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/din-to-director-deta",
+    "slug": "din-to-director-deta",
+    "page": "152",
+    "fields": [
+      "din DIN Number REQUIRED ^\\d{8}$"
+    ]
+  },
+  "46": {
+    "num": 46,
+    "name": "DIN to MCA",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/din-to-mca",
+    "slug": "din-to-mca",
+    "page": "155",
+    "fields": [
+      "din_number DIN Number REQUIRED ^[0-9]{8}$"
+    ]
+  },
+  "47": {
+    "num": 47,
+    "name": "FSSAI Verification",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/fssai-verification",
+    "slug": "fssai-verification",
+    "page": "166",
+    "fields": [
+      "id_number FSSAI ID Number REQUIRED ^[1-3]{1}\\d{13}$"
+    ]
+  },
+  "48": {
+    "num": 48,
+    "name": "GST Advance Report",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/gst-advance-report",
+    "slug": "gst-advance-report",
+    "page": "167",
+    "fields": []
+  },
+  "49": {
+    "num": 49,
+    "name": "GST Details (Basic) V2",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/gst-details-basic-v2",
+    "slug": "gst-details-basic-v2",
+    "page": "174",
+    "fields": [
+      "gstin GSTIN REQUIRED ^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+    ]
+  },
+  "50": {
+    "num": 50,
+    "name": "GST Report",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/gst-report",
+    "slug": "gst-report",
+    "page": "175",
+    "fields": []
+  },
+  "51": {
+    "num": 51,
+    "name": "LLPIN To Company Details",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/llpin-to-company-det",
+    "slug": "llpin-to-company-det",
+    "page": "203",
+    "fields": [
+      "},",
+      "\"status\": 1",
+      "},",
+      "\"2026-2027\": {",
+      "\"data\": {",
+      "\"response\": [",
+      "{",
+      "\"quarter\": \"Q1\",",
+      "\"preference\": \"M\"",
+      "},",
+      "{",
+      "\"quarter\": \"Q2\",",
+      "\"preference\": \"M\"",
+      "},",
+      "{",
+      "\"quarter\": \"Q3\",",
+      "\"preference\": \"M\"",
+      "},",
+      "{",
+      "\"quarter\": \"Q4\",",
+      "\"preference\": \"M\"",
+      "}",
+      "]",
+      "},",
+      "\"status\": 1",
+      "}",
+      "}",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 203 of 279"
+    ]
+  },
+  "52": {
+    "num": 52,
+    "name": "MCA Company Search",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mca-company-search",
+    "slug": "mca-company-search",
+    "page": "206",
+    "fields": [
+      "type Search type (COMPANY_NAME / CIN / DIN) REQUIRED ^(COMPANY_NAME|CIN|DIN)$",
+      "Allowed values: COMPANY_NAME , CIN , DIN",
+      "value Search value based on selected type REQUIRED"
+    ]
+  },
+  "53": {
+    "num": 53,
+    "name": "PAN To GST Numbers",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-to-gst-numbers",
+    "slug": "pan-to-gst-numbers",
+    "page": "216",
+    "fields": [
+      "pan_number Pan",
+      "Number",
+      "REQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG][a-zA-Z]\\d{4}[A-",
+      "Za-z]$"
+    ]
+  },
+  "54": {
+    "num": 54,
+    "name": "PAN to GST Numbers V2",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/pan-to-gst-numbers-v",
+    "slug": "pan-to-gst-numbers-v",
+    "page": "217",
+    "fields": [
+      "pan PAN Number REQUIRED ^[A-Za-z]{5}[0-9]{4}[A-Za-z]$"
+    ]
+  },
+  "55": {
+    "num": 55,
+    "name": "Udyam Advance",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/udyam-advance",
+    "slug": "udyam-advance",
+    "page": "218",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"pan\": \"ABCDE1234F\",",
+      "\"gst_numbers\": [",
+      "{",
+      "\"gstin\": \"27ABCDE1234F1Z5\",",
+      "\"state\": \"Maharashtra\",",
+      "\"status\": \"Active\"",
+      "}",
+      "]",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 218 of 279"
+    ]
+  },
+  "56": {
+    "num": 56,
+    "name": "Udyam List",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/udyam-list",
+    "slug": "udyam-list",
+    "page": "223",
+    "fields": [
+      "id_type ID Type REQUIRED",
+      "When id_type  is one of the values below, also send its companion field:",
+      "pan  \u2192 \u00a0 pan Pan REQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG]",
+      "[a-zA-Z]\\d{4}[A-Za-z]$",
+      "mobile  \u2192 \u00a0 mobile Mobile REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?",
+      "[-.\\s]?\\d{3}[-.\\s]?\\d{4}$",
+      "email  \u2192 \u00a0 email Email REQUIRED ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.",
+      "[a-zA-Z]{2,}$",
+      "company_name",
+      "\u2192 \u00a0 company_name",
+      "Company",
+      "Name",
+      "REQUIRED ^[a-zA-Z]{3}[cphfatbljgCPHFATBLJG]",
+      "[a-zA-Z]\\d{4}[A-Za-z]$"
+    ]
+  },
+  "57": {
+    "num": 57,
+    "name": "Udyam Report",
+    "method": "POST",
+    "category": "BUSINESS & COMPLIANCE",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/udyam-report",
+    "slug": "udyam-report",
+    "page": "224",
+    "fields": [
+      "udyam_number Udyam Number REQUIRED"
+    ]
+  },
+  "58": {
+    "num": 58,
+    "name": "Challan Number To Challan Details",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/challan-number-to-ch",
+    "slug": "challan-number-to-ch",
+    "page": "228",
+    "fields": [
+      "challan_number Challan Number REQUIRED"
+    ]
+  },
+  "59": {
+    "num": 59,
+    "name": "Challan status",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/challan-status",
+    "slug": "challan-status",
+    "page": "230",
+    "fields": [
+      "id_number RC/Vehicle",
+      "Number(MP17CD1010)",
+      "REQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]",
+      "{4}$"
+    ]
+  },
+  "60": {
+    "num": 60,
+    "name": "Fastag Details",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "",
+    "slug": "",
+    "page": "233",
+    "fields": []
+  },
+  "61": {
+    "num": 61,
+    "name": "Mobile Number to Vehicle RC",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-number-to-veh",
+    "slug": "mobile-number-to-veh",
+    "page": "236",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "63": {
+    "num": 63,
+    "name": "RC advance",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/rc-advance",
+    "slug": "rc-advance",
+    "page": "239",
+    "fields": [
+      "id_number Vehicle",
+      "Number(MP17CD0101)",
+      "REQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]",
+      "{4}$"
+    ]
+  },
+  "64": {
+    "num": 64,
+    "name": "RC Details",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/rc-details",
+    "slug": "rc-details",
+    "page": "241",
+    "fields": [
+      "vehicle_number Vehicle Number REQUIRED"
+    ]
+  },
+  "65": {
+    "num": 65,
+    "name": "RC Details Advance",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/rc-details-advance",
+    "slug": "rc-details-advance",
+    "page": "243",
+    "fields": [
+      "vehicle_number Vehicle Number REQUIRED"
+    ]
+  },
+  "66": {
+    "num": 66,
+    "name": "RC To Mobile Number",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/rc-to-mobile-number",
+    "slug": "rc-to-mobile-number",
+    "page": "245",
+    "fields": []
+  },
+  "67": {
+    "num": 67,
+    "name": "RC to Number",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/rc-to-number",
+    "slug": "rc-to-number",
+    "page": "246",
+    "fields": [
+      "id_number Vehicle",
+      "Number(MP14CD0110)",
+      "REQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]",
+      "{4}$"
+    ]
+  },
+  "68": {
+    "num": 68,
+    "name": "Vehicle Number To Challan Details",
+    "method": "POST",
+    "category": "VEHICLE & RC",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/vehicle-number-to-ch",
+    "slug": "vehicle-number-to-ch",
+    "page": "247",
+    "fields": [
+      "vehicle_number Vehicle Number REQUIRED ^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$"
+    ]
+  },
+  "69": {
+    "num": 69,
+    "name": "DIN To PAN",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/din-to-pan",
+    "slug": "din-to-pan",
+    "page": "254",
+    "fields": [
+      "din_number DIN Number REQUIRED ^\\d{8}$"
+    ]
+  },
+  "70": {
+    "num": 70,
+    "name": "Employment History V2",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/employment-history-v",
+    "slug": "employment-history-v",
+    "page": "255",
+    "fields": [
+      "id_number UAN Number REQUIRED ^[1-9][0-9]{11}$"
+    ]
+  },
+  "71": {
+    "num": 71,
+    "name": "ESIC Data",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/esic-data",
+    "slug": "esic-data",
+    "page": "256",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"client_id\": \"employment_history_uan_v2_jDtovapjsLmCykNUpppn\",",
+      "\"uan\": \"102161689669\",",
+      "\"employment_history\": [",
+      "{",
+      "\"name\": \"ABHISHEK GUPTA\",",
+      "\"guardian_name\": \"LAVKUSH GUPTA\",",
+      "\"establishment_name\": \"WEB4NEXT TECHNOLOGY PRIVATE LIMITED\",",
+      "\"member_id\": \"GJAHD26281780000010025\",",
+      "\"date_of_joining\": \"2023-08-01\",",
+      "\"date_of_exit\": null",
+      "}",
+      "]",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 256 of 279"
+    ]
+  },
+  "72": {
+    "num": 72,
+    "name": "Mobile To PAN",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-pan",
+    "slug": "mobile-to-pan",
+    "page": "258",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "73": {
+    "num": 73,
+    "name": "Mobile To UAN",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "",
+    "slug": "",
+    "page": "259",
+    "fields": []
+  },
+  "74": {
+    "num": 74,
+    "name": "PAN To DIN",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/mobile-to-uan",
+    "slug": "mobile-to-uan",
+    "page": "260",
+    "fields": [
+      "mobile_number Mobile",
+      "Number",
+      "REQUIRED ^(\\+\\d{1,3}[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]?\\d{3}",
+      "[-.\\s]?\\d{4}$"
+    ]
+  },
+  "75": {
+    "num": 75,
+    "name": "UAN Advance",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/uan-advance",
+    "slug": "uan-advance",
+    "page": "261",
+    "fields": [
+      "uan_number UAN Number REQUIRED ^[1-9][0-9]{11}$"
+    ]
+  },
+  "76": {
+    "num": 76,
+    "name": "UAN to Employment History V2",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/uan-to-employment-hi",
+    "slug": "uan-to-employment-hi",
+    "page": "264",
+    "fields": [
+      "uan_number UAN Number REQUIRED ^\\d{12}$"
+    ]
+  },
+  "77": {
+    "num": 77,
+    "name": "UAN to Employment History V3",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/uan-to-employment-hi",
+    "slug": "uan-to-employment-hi",
+    "page": "265",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": [",
+      "{",
+      "\"company_details\": {",
+      "\"est_id\": \"GJAHD2628178000\",",
+      "\"company_name\": \"WEB4NEXT TECHNOLOGY PRIVATE LIMITED\",",
+      "\"company_address\": \"K701, Gala Haven,Vill Khoraj, Tal Gandhinagar\"",
+      "},",
+      "\"employee_detail\": {",
+      "\"lcm\": \"MAY-2026\",",
+      "\"doe_epf\": \"\",",
+      "\"doe_eps\": \"\",",
+      "\"doj_epf\": \"01-AUG-2023\",",
+      "\"doj_eps\": \"\",",
+      "\"member_id\": \"GJAHD26281780000010025\",",
+      "\"claim_status\": \"\",",
+      "\"benefit_taken\": \"\",",
+      "\"uan_linked_by\": \"\",",
+      "\"balance_status\": \"Available\",",
+      "\"reason_of_leaving\": \"\",",
+      "\"previous_employment\": \"N\",",
+      "\"is_north_east_member\": \"N\"",
+      "}",
+      "}",
+      "],",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 265 of 279"
+    ]
+  },
+  "78": {
+    "num": 78,
+    "name": "UAN To Employment Profile",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/uan-to-employment-pr",
+    "slug": "uan-to-employment-pr",
+    "page": "268",
+    "fields": [
+      "uan_number Uan Number REQUIRED ^[1-9]{1}[0-9]{11}$"
+    ]
+  },
+  "79": {
+    "num": 79,
+    "name": "UAN To Employment Records",
+    "method": "POST",
+    "category": "EMPLOYMENT & UAN",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/uan-to-employment-re",
+    "slug": "uan-to-employment-re",
+    "page": "269",
+    "fields": [
+      "{",
+      "\"success\": true,",
+      "\"message\": \"success\",",
+      "\"data\": {",
+      "\"uan_employment_history\": {",
+      "\"uan\": \"101615138758\",",
+      "\"name\": \"DEMO USER\",",
+      "\"guardian_name\": \"DEMO GUARDIAN\",",
+      "\"employment_history\": [",
+      "{",
+      "\"establishment_name\": \"DEMO COMPANY PVT LTD\",",
+      "\"member_id\": \"MRNOI00000000000010001\",",
+      "\"date_of_joining\": \"2022-01-01\",",
+      "\"date_of_exit\": \"2024-12-31\"",
+      "}",
+      "]",
+      "},",
+      "\"uan_advance\": {",
+      "\"uan\": \"101615138758\",",
+      "\"name\": \"DEMO USER\",",
+      "\"pan_number\": \"ABCDE1234F\",",
+      "\"dob\": \"1990-01-01\",",
+      "\"gender\": \"Male\",",
+      "\"mobile\": \"9999999999\",",
+      "\"email\": \"demo@example.com\"",
+      "},",
+      "\"pan_info\": null",
+      "},",
+      "\"html\": null,",
+      "\"requestId\": \"a1b2c3d4-e5f6-7890-ab12-cd34ef567890\",",
+      "\"timestamp\": \"2026-08-25T10:15:30.000Z\"",
+      "}",
+      "Neev API \u2014 KYC & Identity Verification Integration Guide  \u00b7  Page 269 of 279"
+    ]
+  },
+  "80": {
+    "num": 80,
+    "name": "Realtime Court Case Search",
+    "method": "POST",
+    "category": "COURT & CRIMINAL RECORDS",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/realtime-court-case-",
+    "slug": "realtime-court-case-",
+    "page": "272",
+    "fields": []
+  },
+  "81": {
+    "num": 81,
+    "name": "Domain Search",
+    "method": "POST",
+    "category": "OTHER",
+    "url": "https://apis.coincircletrust.com/api/v1/apiProduct/domain-search",
+    "slug": "domain-search",
+    "page": "273",
+    "fields": [
+      "domain Domain REQUIRED"
+    ]
+  }
+}

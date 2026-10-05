@@ -1711,7 +1711,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
               >
                 <Download className="w-4 h-4 text-indigo-600" />
-                <span>Export Candidate Ledger 📥</span>
+                <span>Export Candidate Ledger</span>
               </button>
             </div>
           </div>
@@ -1761,7 +1761,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           onClick={() => setViewingDossierCandidate(c)}
                           className="btn btn-secondary text-xs py-1.5 px-3 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100"
                         >
-                          View Dossier 📄
+                          View Dossier
                         </button>
                       </td>
                     </tr>
@@ -1843,7 +1843,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
             >
               <Scale className="w-4 h-4 text-indigo-600" />
-              <span>DPDP Framework Handbook 🛡️</span>
+              <span>DPDP Framework Handbook</span>
             </button>
           </div>
 
@@ -2089,7 +2089,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
                     title="Purge duplicate candidate profiles and re-sequence unique profile IDs"
                   >
-                    <span>🧹 Deduplicate & Clean</span>
+                    <span>Deduplicate & Clean</span>
                   </button>
                   <span className="badge badge-sky text-[9px] font-bold">Prefix: COMPxxxEMPxxx</span>
                 </div>

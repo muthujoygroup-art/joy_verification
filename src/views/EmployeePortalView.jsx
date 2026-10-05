@@ -979,26 +979,26 @@ export const EmployeePortalView = ({ directToken = null }) => {
               className="btn btn-secondary text-xs py-1.5 px-3 font-bold cursor-pointer btn-interactive text-rose-700 hover:bg-rose-50 hover:border-rose-300"
               title="Lock and Exit Verification Session"
             >
-              🚪 Exit Session
+              Exit Session
             </button>
           </div>
         </div>
 
-        {/* 💬 ALWAYS-VISIBLE TOP HR MESSAGE & INSTRUCTIONS BANNER */}
+        {/* ALWAYS-VISIBLE TOP HR MESSAGE & INSTRUCTIONS BANNER */}
         <div className="p-4 bg-indigo-50/95 border-2 border-indigo-200 rounded-2xl text-xs text-indigo-950 space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between font-extrabold text-indigo-900">
             <div className="flex items-center gap-2">
-              <span className="text-base">💬</span>
+              <MessageSquare className="w-4 h-4 text-indigo-600" />
               <span className="text-xs uppercase tracking-wider">Instructions from HR Department ({candidate.hrName || 'PRAVEEN B'}):</span>
             </div>
             <span className="badge badge-indigo text-[9px]">HR Direct Message</span>
           </div>
           <p className="text-indigo-950 font-semibold pl-6 leading-relaxed text-[12px]">
-            "{candidate.hrCustomMessage || 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please review your onboarding particulars, upload your original KYC and academic certificates, and complete verification by this week.'}"
+            &quot;{candidate.hrCustomMessage || 'Welcome to JOY CORPORATE SOLUTIONS PRIVATE LIMITED! Please review your onboarding particulars, upload your original KYC and academic certificates, and complete verification by this week.'}&quot;
           </p>
         </div>
 
-        {/* 🛡️ DATA SECURITY & PRIVACY ASSURANCE TRUST BANNER */}
+        {/* DATA SECURITY & PRIVACY ASSURANCE TRUST BANNER */}
         <div className="p-4 bg-emerald-50/90 border-2 border-emerald-300 rounded-2xl text-xs text-emerald-950 space-y-2 shadow-2xs">
           <div className="flex items-center justify-between font-extrabold text-emerald-900">
             <div className="flex items-center gap-2">
@@ -1006,7 +1006,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
               <span className="text-xs uppercase tracking-wider">100% Encrypted Data Safety Guarantee & DPDP Act 2023 Compliance</span>
             </div>
             <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900 text-[10px] font-black uppercase tracking-wider border border-emerald-400">
-              ISO 27001 Certified ✓
+              ISO 27001 Certified
             </span>
           </div>
           <p className="text-emerald-950 leading-relaxed text-[11px]">
@@ -1017,14 +1017,14 @@ export const EmployeePortalView = ({ directToken = null }) => {
               onClick={() => setShowTermsModal(true)}
               className="font-bold text-emerald-800 underline hover:text-emerald-950 cursor-pointer flex items-center gap-1"
             >
-              <span>View Terms & Conditions 📄</span>
+              <span>View Terms & Conditions</span>
             </button>
             <span className="text-emerald-300">•</span>
             <button
               onClick={() => setShowDpdpModal(true)}
               className="font-bold text-emerald-800 underline hover:text-emerald-950 cursor-pointer flex items-center gap-1"
             >
-              <span>DPDP Candidate Privacy Rights 🛡️</span>
+              <span>DPDP Candidate Privacy Rights</span>
             </button>
             <span className="text-emerald-300">•</span>
             <button
@@ -1032,7 +1032,7 @@ export const EmployeePortalView = ({ directToken = null }) => {
               className="font-bold text-indigo-700 underline hover:text-indigo-950 cursor-pointer flex items-center gap-1"
             >
               <LifeBuoy className="w-3.5 h-3.5" />
-              <span>Need Help? Raise Support Ticket 🛟</span>
+              <span>Need Help? Raise Support Ticket</span>
             </button>
           </div>
         </div>

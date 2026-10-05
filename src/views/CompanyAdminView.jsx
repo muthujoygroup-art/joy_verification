@@ -1369,8 +1369,9 @@ export const CompanyAdminView = () => {
                 <span className="badge badge-cyan">Company Admin Workstation</span>
                 <span className="text-xs text-slate-500 font-bold">• Executive Operations</span>
                 {(company.location || company.registered_address) && (
-                  <span className="text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                    📍 {company.location || company.registered_address}
+                  <span className="text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200 flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                    <span>{company.location || company.registered_address}</span>
                   </span>
                 )}
               </div>
@@ -1380,7 +1381,7 @@ export const CompanyAdminView = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* 🤝 Enterprise Vendor Verification & Point-in-Time PDF Quick-Access */}
+            {/* Enterprise Vendor Verification & Point-in-Time PDF Quick-Access */}
             <button
               type="button"
               onClick={() => {
@@ -1395,10 +1396,10 @@ export const CompanyAdminView = () => {
               title="Verify Vendors (GST, PAN, Bank, MSME) & Download Official Point-in-Time PDF Certificates"
             >
               <ShieldCheck className={`w-3.5 h-3.5 ${activeTab === 'vendor_verification' ? 'text-white' : 'text-indigo-600'}`} />
-              <span>Verify Vendors & PDF 🤝</span>
+              <span>Verify Vendors & PDF</span>
             </button>
 
-            {/* 🏢 Company Employee Plan & Headcount Quota Badge */}
+            {/* Company Employee Plan & Headcount Quota Badge */}
             <div 
               data-tour-step="company-topup-wallet-btn"
               onClick={() => {
@@ -1420,7 +1421,7 @@ export const CompanyAdminView = () => {
               title="Pay Monthly Verification Bill Online"
             >
               <Receipt className="w-3.5 h-3.5" />
-              <span>Pay Online & Settle Bill 💳</span>
+              <span>Pay Online & Settle Bill</span>
             </button>
           </div>
         </div>

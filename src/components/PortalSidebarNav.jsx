@@ -405,7 +405,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           colorClass: 'from-blue-600 to-cyan-600',
           defaultTab: 'landing_cms',
           divisions: [
-            { id: 'landing_cms', label: 'Homepage Content & CMS 🌐', tab: 'landing_cms', icon: Globe },
+            { id: 'landing_cms', label: 'Homepage Content & CMS', tab: 'landing_cms', icon: Globe },
             { id: 'leads_inquiries', label: 'Inquiries & Leads', tab: 'inquiries', icon: Sparkles },
             { id: 'reviews_moderation', label: 'Customer Reviews', tab: 'reviews', icon: Star },
             { id: 'terms_hub', label: 'Terms & Agreements', tab: 'terms_hub', icon: Scale }
@@ -424,7 +424,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'studio', label: 'Live Verification Studio', tab: 'studio', icon: Layers },
             { id: 'api_margins', label: 'API Consumption & Profit Margins', tab: 'consumption_margins', icon: TrendingUp },
             { id: 'comm_gateways', label: 'Messaging (WhatsApp & SMS)', tab: 'whatsapp_sms', icon: MessageSquare },
-            { id: 'settings_smtp', label: 'Email SMTP Server 📧', tab: 'settings', icon: Mail }
+            { id: 'settings_smtp', label: 'Email SMTP Server', tab: 'settings', icon: Mail }
           ]
         },
         {
@@ -467,18 +467,18 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'reports',
           divisions: [
             { id: 'reports', label: '1. Reports Center', tab: 'reports', icon: Download },
-            { id: 'guidelines', label: '2. Legal & Privacy Rules 🏛️', tab: 'legal_governance', icon: Scale },
-            { id: 'masterfields', label: '3. System Field Presets 🎛️', tab: 'masterdata', icon: Sliders },
-            { id: 'tickets', label: '4. Support Helpdesk ⚙️', tab: 'tickets', icon: LifeBuoy },
-            { id: 'settings', label: '5. Platform Settings 🔒', tab: 'settings', icon: Settings },
-            { id: 'omnisearch_gov', label: 'Quick Search 🔍', tab: 'omnisearch', icon: Search }
+            { id: 'guidelines', label: '2. Legal & Privacy Rules', tab: 'legal_governance', icon: Scale },
+            { id: 'masterfields', label: '3. System Field Presets', tab: 'masterdata', icon: Sliders },
+            { id: 'tickets', label: '4. Support Helpdesk', tab: 'tickets', icon: LifeBuoy },
+            { id: 'settings', label: '5. Platform Settings', tab: 'settings', icon: Settings },
+            { id: 'omnisearch_gov', label: 'Quick Search', tab: 'omnisearch', icon: Search }
           ]
         }
       ];
     }
 
     // =========================================================================
-    // 🏢 2. COMPANY ADMIN: 5 PILLARS & RESPECTIVE DIVISIONS
+    // 2. COMPANY ADMIN: 5 PILLARS & RESPECTIVE DIVISIONS
     // =========================================================================
     if (effectiveRole === 'company') {
       return [
@@ -511,7 +511,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'vendor_verification',
-          title: '3. Vendor Verification 🤝',
+          title: '3. Vendor Verification',
           subtitle: 'Corporate Due Diligence',
           badgeText: `${(vendors || []).length} VENDORS`,
           icon: ShieldCheck,
@@ -549,7 +549,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'billing_wallet',
           divisions: [
             { id: 'billing_wallet', label: 'Postpaid Plans & Monthly Invoices', tab: 'billing_wallet', icon: CreditCard },
-            { id: 'recharge_wallet', label: '⚡ Settle Bill (Razorpay)', modal: 'razorpay', icon: Zap },
+            { id: 'recharge_wallet', label: 'Settle Bill (Razorpay)', modal: 'razorpay', icon: Zap },
             { id: 'smtp_settings', label: 'Email Server Settings', tab: 'smtp_settings', icon: MessageSquare },
             { id: 'support', label: 'Helpdesk & Support', tab: 'support', icon: LifeBuoy }
           ]
@@ -558,7 +558,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
 
     // =========================================================================
-    // 👔 3. HR EXECUTIVE: 3 PILLARS & RESPECTIVE DIVISIONS
+    // 3. HR EXECUTIVE: 3 PILLARS & RESPECTIVE DIVISIONS
     // =========================================================================
     if (effectiveRole === 'hrexecutive') {
       return [
@@ -586,7 +586,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'profiler',
           divisions: [
             { id: 'profiler', label: 'New Candidate Form', tab: 'profiler', icon: Sliders },
-            { id: 'bulk_import_btn', label: 'Bulk Import (Excel) 📥', tab: 'profiler', modal: 'bulk_import', icon: FileSpreadsheet }
+            { id: 'bulk_import_btn', label: 'Bulk Import (Excel)', tab: 'profiler', modal: 'bulk_import', icon: FileSpreadsheet }
           ]
         },
         {
@@ -612,9 +612,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           colorClass: 'from-sky-600 to-indigo-800',
           defaultTab: 'digilocker_vault',
           divisions: [
-            { id: 'digilocker_create', label: 'DigiLocker Fetch ⚡', tab: 'digilocker_vault', icon: Smartphone },
-            { id: 'digilocker_dossier', label: 'Verified Profiles 🏛️', tab: 'digilocker_vault', icon: Building2 },
-            { id: 'digilocker_compliance', label: 'NeGD 2026 Compliance 🛡️', tab: 'digilocker_vault', icon: Scale }
+            { id: 'digilocker_create', label: 'DigiLocker Fetch', tab: 'digilocker_vault', icon: Smartphone },
+            { id: 'digilocker_dossier', label: 'Verified Profiles', tab: 'digilocker_vault', icon: Building2 },
+            { id: 'digilocker_compliance', label: 'NeGD Compliance', tab: 'digilocker_vault', icon: Scale }
           ]
         }
       ];

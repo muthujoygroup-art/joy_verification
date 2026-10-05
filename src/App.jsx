@@ -18,6 +18,7 @@ import { EmployeePortalView } from './views/EmployeePortalView';
 import { VendorPortalView } from './views/VendorPortalView';
 import { CompanyActivationView } from './views/CompanyActivationView';
 import { HrActivationView } from './views/HrActivationView';
+import { OfficialVerificationCertificateModal } from './components/OfficialVerificationCertificateModal';
 import { DigiLockerCallbackView } from './views/DigiLockerCallbackView';
 
 // Authentic Brand Loading Animation for Suspense Fallback
@@ -215,6 +216,59 @@ export const App = () => {
                 <Route path="/privacy" element={<PublicPagesView initialPage="privacy-policy" />} />
                 <Route path="/terms-and-conditions" element={<PublicPagesView initialPage="terms-and-conditions" />} />
                 <Route path="/terms" element={<PublicPagesView initialPage="terms-and-conditions" />} />
+
+                {/* Certificate Showcase Route */}
+                <Route path="/certificate-preview" element={
+                  <div className="min-h-screen bg-slate-100 p-4 sm:p-8 flex items-center justify-center">
+                    <OfficialVerificationCertificateModal 
+                      candidate={{
+                        id: 'emp-101',
+                        token: 'emp-101',
+                        name: 'Aarav Sharma',
+                        empId: 'JOY-EMP-8921',
+                        employeeNumber: 'JOY-EMP-8921',
+                        fatherSpouseName: 'Rajesh Sharma',
+                        mobile: '9876543210',
+                        email: 'aarav.sharma@example.com',
+                        aadhaarNo: 'XXXX-XXXX-5829',
+                        panNo: 'ABCPS1234F',
+                        designation: 'Senior Software Engineer',
+                        department: 'Engineering & Product',
+                        companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+                        status: 'Verified',
+                        verificationDate: '02 Oct 2026, 14:32:10 IST',
+                        verificationsCompleted: {
+                          aadhaar: true,
+                          pan: true,
+                          bankCheck: true,
+                          uan: true,
+                          face: true,
+                          email: true,
+                          mobile: true,
+                          education: true
+                        },
+                        verifiedAttributes: {
+                          aadhaar: { maskedNumber: 'XXXX-XXXX-5829', name: 'Aarav Sharma', dob: '1994-08-15', status: 'VERIFIED' },
+                          pan: { panNumber: 'ABCPS1234F', registeredName: 'AARAV SHARMA', status: 'VERIFIED' },
+                          bankCheck: { accountNumber: '987654321098', ifsc: 'SBIN0001234', bankName: 'State Bank of India', registeredName: 'AARAV SHARMA', status: 'VERIFIED' },
+                          uan: { uanNumber: '101234567890', employerName: 'Joy Corporate Solutions Pvt Ltd', status: 'CLEAR - NO MOONLIGHTING' },
+                          education: { degree: 'B.Tech Computer Science', university: 'Anna University', year: '2016', rollNo: '12CS889', status: 'DIGILOCKER VERIFIED' }
+                        },
+                        joiningFormData: {
+                          fullName: 'Aarav Sharma',
+                          empId: 'JOY-EMP-8921',
+                          companyName: 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED',
+                          designation: 'Senior Software Engineer',
+                          department: 'Engineering & Product',
+                          fatherSpouseName: 'Rajesh Sharma',
+                          dob: '1994-08-15',
+                          gender: 'Male'
+                        }
+                      }}
+                      onClose={() => {}}
+                    />
+                  </div>
+                } />
 
                 {/* 2. Single-Role Dedicated Login Routes */}
                 <Route path="/login" element={<LoginView />} />

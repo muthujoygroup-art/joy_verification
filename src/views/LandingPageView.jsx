@@ -63,6 +63,7 @@ import InteractiveSpeedComparison from '../components/landing/InteractiveSpeedCo
 import VerificationCommandOrbit from '../components/landing/VerificationCommandOrbit';
 import LandingPagePreloader from '../components/landing/LandingPagePreloader';
 import WhatsAppConcierge3D from '../components/landing/WhatsAppConcierge3D';
+import { GoogleStyleProductExplorer } from '../components/landing/GoogleStyleProductExplorer';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -736,6 +737,14 @@ export const LandingPageView = () => {
 
           {/* WHY JOY TRUE PROFILE */}
           <WhyJoyTrueProfile onOpenDemo={() => setShowDemoModal(true)} />
+
+          {/* GOOGLE-STYLE 18-PRODUCT INTERACTIVE ECOSYSTEM EXPLORER */}
+          <div className="py-8">
+            <GoogleStyleProductExplorer 
+              onOpenDemoModal={() => setShowDemoModal(true)}
+              onOpenTourModal={() => setShowTourGuideModal(true)}
+            />
+          </div>
 
           {/* JOY GROUP ECOSYSTEM & SOFTWARE SUITE */}
           <section className="py-16 sm:py-24 bg-[#FCFCFA] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#E5EAF0]">
@@ -1461,6 +1470,14 @@ export const LandingPageView = () => {
           <WorkforceConnectionSection />
           <WhyJoyTrueProfile onOpenDemo={() => setShowDemoModal(true)} />
           
+          {/* GOOGLE-STYLE 18-PRODUCT ECOSYSTEM */}
+          <div className="py-4">
+            <GoogleStyleProductExplorer 
+              onOpenDemoModal={() => setShowDemoModal(true)}
+              onOpenTourModal={() => setShowTourGuideModal(true)}
+            />
+          </div>
+
           <CTASection 
             onOpenDemo={() => setShowDemoModal(true)} 
             onOpenContact={() => handleTabChange('contact')}

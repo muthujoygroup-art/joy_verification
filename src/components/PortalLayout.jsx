@@ -289,11 +289,11 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   setShowTourGuideModal(true);
                   window.dispatchEvent(new CustomEvent("open_tour_guide_modal"));
                 }}
-                className="hidden md:flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                className="hidden md:flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Launch Interactive Feature Walkthroughs & How-To Guides"
               >
                 <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow shrink-0" />
-                <span>Tour 🎮</span>
+                <span>Tour</span>
               </button>
 
               {/* Statutory Legal Handbook Trigger */}
@@ -303,11 +303,11 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowLegalHandbook(true);
                 }}
-                className="hidden xl:flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                className="hidden xl:flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Statutory Legal & DPDP Act 2023 Compliance Framework"
               >
                 <Scale className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
-                <span>Legal & DPDP 🛡️</span>
+                <span>Legal & DPDP</span>
               </button>
 
               {/* Universal Date-Filtered Export */}
@@ -317,11 +317,11 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowUniversalExportModal(true);
                 }}
-                className="hidden sm:flex h-8 px-2.5 rounded-xl items-center gap-1 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                className="hidden sm:flex h-8 px-2.5 rounded-xl items-center gap-1 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Download Date-Filtered Candidate Reports in PDF, Excel, Word, or ZIP"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                <span className="text-[11px] sm:text-xs font-bold text-emerald-950">Reports 📥</span>
+                <span className="text-[11px] sm:text-xs font-bold text-emerald-950">Reports</span>
               </button>
 
               {/* Notifications Alert Bell */}
@@ -331,7 +331,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowNotificationsModal(true);
                 }}
-                className="h-8 px-2 sm:px-2.5 rounded-xl flex items-center gap-1 text-amber-800 bg-white hover:bg-amber-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all relative cursor-pointer whitespace-nowrap"
+                className="h-8 px-2 sm:px-2.5 rounded-xl flex items-center gap-1 text-amber-800 bg-white hover:bg-amber-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all relative cursor-pointer whitespace-nowrap text-xs"
                 title="Real-Time Notifications & System Alerts"
               >
                 <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -350,11 +350,11 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowSupportModal(true);
                 }}
-                className="hidden sm:flex h-8 px-2.5 rounded-xl items-center gap-1 text-purple-800 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                className="hidden sm:flex h-8 px-2.5 rounded-xl items-center gap-1 text-purple-800 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Raise Support Ticket / Feedback"
               >
                 <LifeBuoy className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                <span>Support 🛟</span>
+                <span>Support</span>
               </button>
 
               {/* Active Session Badge (Visible on all screen sizes) */}

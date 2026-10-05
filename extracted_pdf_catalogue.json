@@ -1,0 +1,320 @@
+[
+  {
+    "id": 1,
+    "name": "Aadhaar Detail Verification V2",
+    "category": "Identity Verification",
+    "path": "/aadhaar-detail-verification-v2"
+  },
+  {
+    "id": 2,
+    "name": "Aadhaar Link Check",
+    "category": "Identity Verification",
+    "path": "/aadhaar-link-check"
+  },
+  {
+    "id": 3,
+    "name": "Aadhaar To PAN",
+    "category": "Identity Verification",
+    "path": "/aadhaar-to-pan"
+  },
+  {
+    "id": 4,
+    "name": "Aadhaar to PAN (masked) V2",
+    "category": "Identity Verification",
+    "path": "/aadhaar-to-pan-masked-v2"
+  },
+  {
+    "id": 6,
+    "name": "Aadhaar To PAN CKYC",
+    "category": "Identity Verification",
+    "path": "/aadhaar-to-pan-ckyc"
+  },
+  {
+    "id": 7,
+    "name": "Aadhaar To PAN(Unmasked)",
+    "category": "Identity Verification",
+    "path": "/aadhaar-to-pan-unmasked"
+  },
+  {
+    "id": 8,
+    "name": "Aadhaar Validation V2",
+    "category": "Identity Verification",
+    "path": "/aadhaar-validation-v2"
+  },
+  {
+    "id": 9,
+    "name": "Aadhaar Verify",
+    "category": "Identity Verification",
+    "path": "/aadhaar-verify"
+  },
+  {
+    "id": 10,
+    "name": "Driving License Details",
+    "category": "Identity Verification",
+    "path": "/driving-license-details"
+  },
+  {
+    "id": 11,
+    "name": "Generate Aadhaar OTP V2",
+    "category": "Identity Verification",
+    "path": "/generate-aadhaar-otp-v2"
+  },
+  {
+    "id": 14,
+    "name": "Mobile To PAN V2",
+    "category": "Identity Verification",
+    "path": "/mobile-number-to-pan-v2"
+  },
+  {
+    "id": 15,
+    "name": "Mobile To Profile Advance",
+    "category": "Identity Verification",
+    "path": "/mobile-to-profile-advance"
+  },
+  {
+    "id": 16,
+    "name": "Mobile360",
+    "category": "Identity Verification",
+    "path": "/mobile360"
+  },
+  {
+    "id": 17,
+    "name": "PAN Details V1",
+    "category": "Identity Verification",
+    "path": "/pan-details-v1"
+  },
+  {
+    "id": 18,
+    "name": "Passport Verification",
+    "category": "Identity Verification",
+    "path": "/passport-verification"
+  },
+  {
+    "id": 19,
+    "name": "Voter ID Details",
+    "category": "Identity Verification",
+    "path": "/voter-id-details"
+  },
+  {
+    "id": 20,
+    "name": "CRIF",
+    "category": "Financial & Credit",
+    "path": "/crif"
+  },
+  {
+    "id": 21,
+    "name": "Mobile To Account V2",
+    "category": "Financial & Credit",
+    "path": "/mobile-to-account-v2"
+  },
+  {
+    "id": 22,
+    "name": "Mobile to Account V3",
+    "category": "Financial & Credit",
+    "path": "/mobile-to-account-v3"
+  },
+  {
+    "id": 23,
+    "name": "Mobile To Primary UPI ID",
+    "category": "Financial & Credit",
+    "path": "/mobile-to-primary-upi-id"
+  },
+  {
+    "id": 24,
+    "name": "Mobile To UAN V2",
+    "category": "Financial & Credit",
+    "path": "/mobile-to-uan-v2"
+  },
+  {
+    "id": 25,
+    "name": "Mobile To Verified UPI IDs",
+    "category": "Financial & Credit",
+    "path": "/mobile-to-verified-upi-ids"
+  },
+  {
+    "id": 26,
+    "name": "PAN Basic",
+    "category": "Financial & Credit",
+    "path": "/pan-basic"
+  },
+  {
+    "id": 27,
+    "name": "PAN Experian",
+    "category": "Financial & Credit",
+    "path": "/pan-experian"
+  },
+  {
+    "id": 28,
+    "name": "PAN Info",
+    "category": "Financial & Credit",
+    "path": "/pan-info"
+  },
+  {
+    "id": 29,
+    "name": "PAN Info V2",
+    "category": "Financial & Credit",
+    "path": "/pan-info-v2"
+  },
+  {
+    "id": 30,
+    "name": "PAN To Insurance",
+    "category": "Financial & Credit",
+    "path": "/pan-to-insurance"
+  },
+  {
+    "id": 31,
+    "name": "PAN to ITR",
+    "category": "Financial & Credit",
+    "path": "/pan-to-itr"
+  },
+  {
+    "id": 32,
+    "name": "UPI ID Payment Analyser",
+    "category": "Financial & Credit",
+    "path": "/upi-id-payment-analyser"
+  },
+  {
+    "id": 33,
+    "name": "UPI To Account",
+    "category": "Financial & Credit",
+    "path": "/upi-to-account"
+  },
+  {
+    "id": 34,
+    "name": "Verify UPI ID",
+    "category": "Financial & Credit",
+    "path": "/verify-upi-id"
+  },
+  {
+    "id": 35,
+    "name": "Account Validation",
+    "category": "Banking & UPI",
+    "path": "/account-validation"
+  },
+  {
+    "id": 36,
+    "name": "IFSC Lookup",
+    "category": "Banking & UPI",
+    "path": "/ifsc-lookup"
+  },
+  {
+    "id": 37,
+    "name": "UPI Verification",
+    "category": "Banking & UPI",
+    "path": "/upi-verification"
+  },
+  {
+    "id": 59,
+    "name": "Challan status",
+    "category": "Vehicle & RC",
+    "path": "/challan-status"
+  },
+  {
+    "id": 60,
+    "name": "Fastag Details",
+    "category": "Vehicle & RC",
+    "path": "/fastag-details"
+  },
+  {
+    "id": 61,
+    "name": "Mobile Number to Vehicle RC",
+    "category": "Vehicle & RC",
+    "path": "/mobile-number-to-vehicle-rc"
+  },
+  {
+    "id": 62,
+    "name": "Mobile To Dl",
+    "category": "Vehicle & RC",
+    "path": "/mobile-to-dl"
+  },
+  {
+    "id": 63,
+    "name": "RC advance",
+    "category": "Vehicle & RC",
+    "path": "/rc-advance"
+  },
+  {
+    "id": 64,
+    "name": "RC Details",
+    "category": "Vehicle & RC",
+    "path": "/rc-details"
+  },
+  {
+    "id": 65,
+    "name": "RC Details Advance",
+    "category": "Vehicle & RC",
+    "path": "/rc-details-advance"
+  },
+  {
+    "id": 66,
+    "name": "RC To Mobile Number",
+    "category": "Vehicle & RC",
+    "path": "/rc-to-mobile-number"
+  },
+  {
+    "id": 67,
+    "name": "RC to Number",
+    "category": "Vehicle & RC",
+    "path": "/rc-to-number"
+  },
+  {
+    "id": 69,
+    "name": "DIN To PAN",
+    "category": "Employment & UAN",
+    "path": "/din-to-pan"
+  },
+  {
+    "id": 70,
+    "name": "Employment History V2",
+    "category": "Employment & UAN",
+    "path": "/employment-history-v2"
+  },
+  {
+    "id": 71,
+    "name": "ESIC Data",
+    "category": "Employment & UAN",
+    "path": "/esic-data"
+  },
+  {
+    "id": 72,
+    "name": "Mobile To PAN",
+    "category": "Employment & UAN",
+    "path": "/mobile-to-pan"
+  },
+  {
+    "id": 73,
+    "name": "Mobile To UAN",
+    "category": "Employment & UAN",
+    "path": "/mobile-to-uan"
+  },
+  {
+    "id": 74,
+    "name": "PAN To DIN",
+    "category": "Employment & UAN",
+    "path": "/pan-to-din"
+  },
+  {
+    "id": 75,
+    "name": "UAN Advance",
+    "category": "Employment & UAN",
+    "path": "/uan-advance"
+  },
+  {
+    "id": 78,
+    "name": "UAN To Employment Profile",
+    "category": "Employment & UAN",
+    "path": "/uan-to-employment-profile"
+  },
+  {
+    "id": 79,
+    "name": "UAN To Employment Records",
+    "category": "Employment & UAN",
+    "path": "/uan-to-employment-records"
+  },
+  {
+    "id": 81,
+    "name": "Domain Search",
+    "category": "Other",
+    "path": "/domain-search"
+  }
+]

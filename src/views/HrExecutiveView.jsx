@@ -1923,7 +1923,7 @@ export const HrExecutiveView = () => {
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-700" />
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-start gap-3.5 min-w-0">
+          <div className="flex items-start gap-3.5 min-w-0 flex-1">
             {/* Employer Corporate Logo Display */}
             <div 
               className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1 flex items-center justify-center shrink-0 overflow-hidden" 
@@ -1979,10 +1979,10 @@ export const HrExecutiveView = () => {
                   🏢 Company: {isManpower ? 'COMP002' : (isCorporateSol ? 'COMP001' : (currentCompany?.code || 'COMP001'))}
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight leading-snug break-words">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight leading-snug">
                 {currentHrDivMeta.title}
               </h2>
-              <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed break-words">
+              <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed">
                 {currentHrDivMeta.subtitle}
               </p>
             </div>
@@ -1998,7 +1998,7 @@ export const HrExecutiveView = () => {
               title="Open DigiLocker Government Data Vault & Digital Verification Desk"
             >
               <Landmark className="w-3.5 h-3.5 text-sky-600" />
-              <span>DigiLocker Vault 🏛️</span>
+              <span>DigiLocker Vault</span>
             </button>
 
             <button
@@ -2008,7 +2008,7 @@ export const HrExecutiveView = () => {
               title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
             >
               <Download className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Date-Filtered Reports 📥</span>
+              <span>Date-Filtered Reports</span>
             </button>
 
             <button
@@ -2018,7 +2018,7 @@ export const HrExecutiveView = () => {
               title="Export all filtered candidates and details to Excel (.xlsx)"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Export All Excel (.xlsx) 📊</span>
+              <span>Export All Excel (.xlsx)</span>
             </button>
 
             <button 
@@ -2035,7 +2035,7 @@ export const HrExecutiveView = () => {
               title="Bulk import candidates via Excel"
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-              <span>Bulk Import (Excel) 📥</span>
+              <span>Bulk Import (Excel)</span>
             </button>
 
             <button 

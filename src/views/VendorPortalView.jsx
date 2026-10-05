@@ -376,7 +376,7 @@ export const VendorPortalView = ({ directToken = null }) => {
                 }}
                 className="btn btn-company py-3 px-6 text-xs font-black shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <span>Accept Terms & Continue 🚀</span>
+                <span>Accept Terms & Continue</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -622,7 +622,7 @@ export const VendorPortalView = ({ directToken = null }) => {
                   type="submit"
                   className="btn btn-company py-2.5 px-6 text-xs font-black shadow-md flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Save & Upload Documents 📄</span>
+                  <span>Save & Upload Documents</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -739,7 +739,7 @@ export const VendorPortalView = ({ directToken = null }) => {
                 className="btn btn-company py-2.5 px-6 text-xs font-black shadow-md flex items-center gap-2 cursor-pointer"
               >
                 <Zap className="w-4 h-4 text-amber-300" />
-                <span>Run Live 11-in-1 Verification Audit ⚡</span>
+                <span>Run Live 11-in-1 Verification Audit</span>
               </button>
             </div>
 

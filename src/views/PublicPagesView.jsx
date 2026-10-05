@@ -42,6 +42,7 @@ import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 import { WhatsAppConcierge3D } from '../components/landing/WhatsAppConcierge3D';
+import { GoogleStyleProductExplorer } from '../components/landing/GoogleStyleProductExplorer';
 
 export const PublicPagesView = ({ initialPage = 'features' }) => {
   const navigate = useNavigate();
@@ -316,7 +317,14 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                   <li className="flex items-center gap-2">✓ Itemized monthly verification ledgers</li>
                 </ul>
               </div>
+            </div>
 
+            {/* Google-Style 18-Product Ecosystem Explorer */}
+            <div className="pt-8">
+              <GoogleStyleProductExplorer 
+                onOpenDemoModal={() => navigate('/contact')}
+                onOpenTourModal={() => navigate('/how-it-works')}
+              />
             </div>
           </div>
         )}
