@@ -24,13 +24,14 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
         query = query.filter(Candidate.hr_id == hr_id)
     elif company_id:
         target = company_id.strip()
-        joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp"]
+        joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp", "comp002", "joymanpower", "joymanpowerservice", "joy-man-power-service", "comp-002", "comp_002", "manpower"]
         clean_target = target.lower().replace("-", "").replace("_", "")
         if clean_target in [a.replace("-", "").replace("_", "") for a in joy_aliases]:
             query = query.filter(
-                (Candidate.company_id.in_(["COMP001", "comp-joy", "comp-test-1", "JOY01", "compjoy", target])) |
+                (Candidate.company_id.in_(["COMP001", "COMP002", "comp-joy", "comp-test-1", "JOY01", "compjoy", "comp-002", target])) |
                 (Candidate.company_id.ilike("%comp%")) |
-                (Candidate.company_id.ilike("%joy%"))
+                (Candidate.company_id.ilike("%joy%")) |
+                (Candidate.company_id.ilike("%manpower%"))
             )
         else:
             comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()

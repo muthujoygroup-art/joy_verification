@@ -1923,74 +1923,79 @@ export const HrExecutiveView = () => {
       <div className="glass-panel p-5 sm:p-6 border-emerald-200 bg-white space-y-4 relative overflow-hidden shadow-xs rounded-2xl">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-700" />
         
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-4">
-            <div className="flex items-start gap-3.5 min-w-0 flex-1">
-              {/* Employer Corporate Logo Display */}
-              <div 
-                className="relative group/comp-logo w-14 h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1 flex items-center justify-center shrink-0 overflow-hidden" 
-                title={`Employer: ${compName} - Click to change logo`}
-              >
-                {compLogoSrc ? (
-                  <img 
-                    src={compLogoSrc} 
-                    alt={`${compName} Logo`} 
-                    className="w-full h-full object-contain rounded-xl" 
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      if (defaultCompanyLogo) {
-                        e.target.src = defaultCompanyLogo;
-                      } else {
-                        e.target.style.display = 'none';
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-base flex items-center justify-center shadow-xs">
-                    {initials}
-                  </div>
-                )}
-
-                <label 
-                  htmlFor="hr-company-logo-upload" 
-                  className="absolute inset-0 bg-slate-900/80 text-white flex flex-col items-center justify-center opacity-0 group-hover/comp-logo:opacity-100 transition-opacity cursor-pointer text-[9px] font-bold"
-                  title="Upload custom company logo"
-                >
-                  <Camera className="w-3.5 h-3.5 mb-0.5" />
-                  <span>Change</span>
-                </label>
-                <input 
-                  type="file" 
-                  id="hr-company-logo-upload" 
-                  className="hidden" 
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                  onChange={handleUploadCompanyLogo}
+        <div className="space-y-3.5">
+          {/* Identity & Company Badges */}
+          <div className="flex items-center gap-3.5 min-w-0">
+            {/* Employer Corporate Logo Display */}
+            <div 
+              className="relative group/comp-logo w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1 flex items-center justify-center shrink-0 overflow-hidden" 
+              title={`Employer: ${compName} - Click to change logo`}
+            >
+              {compLogoSrc ? (
+                <img 
+                  src={compLogoSrc} 
+                  alt={`${compName} Logo`} 
+                  className="w-full h-full object-contain rounded-xl" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    if (defaultCompanyLogo) {
+                      e.target.src = defaultCompanyLogo;
+                    } else {
+                      e.target.style.display = 'none';
+                    }
+                  }}
                 />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Management</span>
-                  <span className="text-[11px] sm:text-xs text-slate-700 font-bold shrink-0">
-                    • {activeHr.name} <span className="text-slate-400 font-normal">({compName})</span>
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[10.5px] border border-emerald-300 shadow-2xs shrink-0">
-                    👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || (isManpower ? 'hr_comp002_001' : `${currentCompany?.code || 'COMP001'}HR001`)}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[10.5px] border border-purple-300 shadow-2xs shrink-0">
-                    🏢 Company: {isManpower ? 'COMP002' : (isCorporateSol ? 'COMP001' : (currentCompany?.code || 'COMP001'))}
-                  </span>
+              ) : (
+                <div className="w-full h-full rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-black text-base flex items-center justify-center shadow-xs">
+                  {initials}
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight leading-snug">
-                  {currentHrDivMeta.title}
-                </h2>
-                <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed max-w-4xl">
-                  {currentHrDivMeta.subtitle}
-                </p>
-              </div>
+              )}
+
+              <label 
+                htmlFor="hr-company-logo-upload" 
+                className="absolute inset-0 bg-slate-900/80 text-white flex flex-col items-center justify-center opacity-0 group-hover/comp-logo:opacity-100 transition-opacity cursor-pointer text-[9px] font-bold"
+                title="Upload custom company logo"
+              >
+                <Camera className="w-3.5 h-3.5 mb-0.5" />
+                <span>Change</span>
+              </label>
+              <input 
+                type="file" 
+                id="hr-company-logo-upload" 
+                className="hidden" 
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                onChange={handleUploadCompanyLogo}
+              />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 self-start 2xl:self-center">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="badge badge-emerald font-black text-[9.5px] sm:text-xs shrink-0">HR Management</span>
+                <span className="text-[11px] sm:text-xs text-slate-700 font-bold shrink-0">
+                  • {activeHr.name} <span className="text-slate-400 font-normal">({compName})</span>
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-mono font-black text-[10.5px] border border-emerald-300 shadow-2xs shrink-0">
+                  👔 HR ID: {activeHr.hrCode || activeHr.uniqueProfileId || (isManpower ? 'hr_comp002_001' : `${currentCompany?.code || 'COMP001'}HR001`)}
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono font-black text-[10.5px] border border-purple-300 shadow-2xs shrink-0">
+                  🏢 Company: {isManpower ? 'COMP002' : (isCorporateSol ? 'COMP001' : (currentCompany?.code || 'COMP001'))}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Title & Action Buttons Bar */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1 border-t border-slate-100/80">
+            <div className="min-w-0 flex-1 pr-2">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+                {currentHrDivMeta.title}
+              </h2>
+              <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed">
+                {currentHrDivMeta.subtitle}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 self-start lg:self-center">
               <button
                 type="button"
                 onClick={() => {
