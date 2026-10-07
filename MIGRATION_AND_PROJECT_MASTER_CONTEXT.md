@@ -1,7 +1,7 @@
 # JOY TrueProfile (Joy Verification Platform)
 ## Master Migration Context & Comprehensive Project History
 **Target Environment:** Google Antigravity IDE / Antigravity 2.0 / AGY CLI  
-**Author / Repository:** `muthujoygroup-art/joy_verification`  
+**Author / Repository:** `muthujoygroup-art/joytrueprofile` (`https://github.com/muthujoygroup-art/joytrueprofile.git`)  
 **Generated Date:** October 2026  
 **Platform Version:** Enterprise v2.4 (React 19 + Vite + FastAPI + MySQL/SQLite + Neev API Engine + DigiLocker Gateway)
 

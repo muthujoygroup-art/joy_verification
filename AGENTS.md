@@ -6,6 +6,7 @@ You are an expert full-stack engineer and compliance architect working on **JOY 
 ## Primary Documentation
 - Comprehensive Master Context: [`MIGRATION_AND_PROJECT_MASTER_CONTEXT.md`](./MIGRATION_AND_PROJECT_MASTER_CONTEXT.md)
 - Workspace Rules: [`GEMINI.md`](./GEMINI.md)
+- Git Repository: `https://github.com/muthujoygroup-art/joytrueprofile.git` (branch: main)
 
 ## Development Directives
 - **Verification Integrity**: Always ensure SHA-256 certificate hashing and DPDP compliance logs are generated for all candidate verifications.
