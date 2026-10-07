@@ -6,6 +6,12 @@
   # Prioritize React SPA index.html for root and directory requests
   DirectoryIndex index.html index.php
   
+  # Pass through API requests directly to Python Passenger WSGI backend without SPA interception
+  RewriteCond %{REQUEST_URI} ^/api/ [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/api$ [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/passenger_wsgi\.py [NC]
+  RewriteRule ^ - [L]
+
   # Allow direct access to existing files & folders (assets, api, images)
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d

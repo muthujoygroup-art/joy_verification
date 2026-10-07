@@ -631,6 +631,32 @@ def get_company_analytics(company_id: str, db: Session = Depends(get_db)):
         "avg_tat_hours": 3.4
     }
 
+@router.get("/{company_id}/candidates")
+def get_company_candidates(company_id: str, db: Session = Depends(get_db)):
+    """Fetch all candidate records belonging to the company with multi-alias support"""
+    from backend.app.routers.hr import serialize_candidate
+    target = company_id.strip()
+    joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp", "comp002", "joymanpower", "joymanpowerservice", "joy-man-power-service", "comp-002", "comp_002", "manpower"]
+    clean_target = target.lower().replace("-", "").replace("_", "")
+    
+    if clean_target in [a.replace("-", "").replace("_", "") for a in joy_aliases]:
+        cands = db.query(Candidate).filter(
+            (Candidate.company_id.in_(["COMP001", "COMP002", "comp-joy", "comp-test-1", "JOY01", "compjoy", "comp-002", target])) |
+            (Candidate.company_id.ilike("%comp%")) |
+            (Candidate.company_id.ilike("%joy%")) |
+            (Candidate.company_id.ilike("%manpower%"))
+        ).order_by(Candidate.created_at.desc()).all()
+    else:
+        comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
+        target_id = comp.id if comp else target
+        cands = db.query(Candidate).filter(
+            (Candidate.company_id == target_id) | 
+            (Candidate.company_id == target) | 
+            (Candidate.company_id.ilike(f"%{target}%"))
+        ).order_by(Candidate.created_at.desc()).all()
+
+    return [serialize_candidate(c) for c in cands]
+
 # =============================================================================
 # 🏢 COMPANY SELF-ACTIVATION PORTAL ENDPOINTS
 # =============================================================================

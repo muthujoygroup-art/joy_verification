@@ -1,24 +1,242 @@
 from backend.app.services.storage_service import get_candidate_folder
 import uuid
+import json
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
-from backend.app.database import get_db, apply_runtime_migrations
+from backend.app.database import get_db
 from backend.app.models import Candidate, Company, HrUser, CandidateDocument
 from backend.app.services.email_service import send_candidate_onboarding_email
 from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpdate
 
 router = APIRouter(prefix="/hr", tags=["HR Executive"])
 
-@router.get("/candidates", response_model=List[CandidateResponse])
+def serialize_candidate(c: Candidate) -> Dict[str, Any]:
+    """Bulletproof serializer for Candidate SQLAlchemy models to prevent any FastAPI 500 serialization crashes"""
+    if not c:
+        return {}
+
+    def safe_dict(val, default=None):
+        if val is None:
+            return default if default is not None else {}
+        if isinstance(val, dict):
+            return val
+        if isinstance(val, str):
+            try:
+                parsed = json.loads(val)
+                return parsed if isinstance(parsed, dict) else (default if default is not None else {})
+            except Exception:
+                return default if default is not None else {}
+        return default if default is not None else {}
+
+    def safe_list(val, default=None):
+        if val is None:
+            return default if default is not None else []
+        if isinstance(val, list):
+            return val
+        if isinstance(val, str):
+            try:
+                parsed = json.loads(val)
+                return parsed if isinstance(parsed, list) else (default if default is not None else [])
+            except Exception:
+                return default if default is not None else []
+        return default if default is not None else []
+
+    docs = []
+    try:
+        if hasattr(c, "documents") and c.documents:
+            for doc in c.documents:
+                docs.append({
+                    "id": str(doc.id),
+                    "candidate_id": str(doc.candidate_id or c.id),
+                    "title": str(doc.title or ""),
+                    "doc_type": str(doc.doc_type or "general"),
+                    "file_format": str(doc.file_format or "pdf"),
+                    "file_path": str(doc.file_path or ""),
+                    "file_size_kb": float(doc.file_size_kb or 0.0),
+                    "created_at": doc.created_at.isoformat() if getattr(doc, "created_at", None) else None
+                })
+    except Exception:
+        docs = []
+
+    clean_token = str(c.token or f"cand_{c.id or uuid.uuid4().hex[:8]}")
+    clean_emp_id = str(c.emp_id or "")
+    clean_emp_num = str(c.employee_number or clean_emp_id or "EMP-001")
+
+    return {
+        "id": str(c.id or ""),
+        "token": clean_token,
+        "name": str(c.name or "Candidate"),
+        "emp_id": clean_emp_id,
+        "empId": clean_emp_id,
+        "employee_number": clean_emp_num,
+        "employeeNumber": clean_emp_num,
+        "email": str(c.email or ""),
+        "mobile": str(c.mobile or ""),
+        "aadhaar_no": str(c.aadhaar_no or ""),
+        "aadhaarNo": str(c.aadhaar_no or ""),
+        "designation": str(c.designation or "Associate"),
+        "dept": str(c.dept or "General"),
+        "company_id": str(c.company_id or "COMP001"),
+        "companyId": str(c.company_id or "COMP001"),
+        "hr_id": str(c.hr_id or "hr-1"),
+        "hrId": str(c.hr_id or "hr-1"),
+        "portal_password": str(c.portal_password or "1234"),
+        "portalPassword": str(c.portal_password or "1234"),
+        "employee_type": str(c.employee_type or "it_tech"),
+        "employeeType": str(c.employee_type or "it_tech"),
+        "dob": str(c.dob or ""),
+        "doj": str(c.doj or ""),
+        "age": int(c.age) if c.age is not None else None,
+        "gender": str(c.gender or ""),
+        "marital_status": str(c.marital_status or "Single / Unmarried"),
+        "maritalStatus": str(c.marital_status or "Single / Unmarried"),
+        "mother_tongue": str(c.mother_tongue or ""),
+        "motherTongue": str(c.mother_tongue or ""),
+        "languages_known": str(c.languages_known or ""),
+        "languagesKnown": str(c.languages_known or ""),
+        "pf_number": str(c.pf_number or ""),
+        "esi_number": str(c.esi_number or ""),
+        "religion": str(c.religion or ""),
+        "caste": str(c.caste or ""),
+        "category": str(c.category or "General"),
+        "native_state": str(c.native_state or ""),
+        "nativeState": str(c.native_state or ""),
+        "native_district": str(c.native_district or ""),
+        "nativeDistrict": str(c.native_district or ""),
+        "identification_marks": str(c.identification_marks or ""),
+        "identificationMarks": str(c.identification_marks or ""),
+        "father_name": str(c.father_name or ""),
+        "fatherName": str(c.father_name or ""),
+        "father_mobile": str(c.father_mobile or ""),
+        "fatherMobile": str(c.father_mobile or ""),
+        "father_occupation": str(c.father_occupation or ""),
+        "fatherOccupation": str(c.father_occupation or ""),
+        "mother_name": str(c.mother_name or ""),
+        "motherName": str(c.mother_name or ""),
+        "mother_mobile": str(c.mother_mobile or ""),
+        "motherMobile": str(c.mother_mobile or ""),
+        "mother_occupation": str(c.mother_occupation or ""),
+        "motherOccupation": str(c.mother_occupation or ""),
+        "spouse_name": str(c.spouse_name or ""),
+        "spouseName": str(c.spouse_name or ""),
+        "spouse_mobile": str(c.spouse_mobile or ""),
+        "spouseMobile": str(c.spouse_mobile or ""),
+        "spouse_occupation": str(c.spouse_occupation or ""),
+        "spouseOccupation": str(c.spouse_occupation or ""),
+        "siblings": safe_list(c.siblings),
+        "children": safe_list(c.children),
+        "languages": safe_list(c.languages),
+        "blood_group": str(c.blood_group or ""),
+        "bloodGroup": str(c.blood_group or ""),
+        "state": str(c.state or ""),
+        "district": str(c.district or ""),
+        "city": str(c.city or ""),
+        "area": str(c.area or ""),
+        "pincode": str(c.pincode or ""),
+        "present_address": str(c.present_address or ""),
+        "permanent_address": str(c.permanent_address or ""),
+        "pan_no": str(c.pan_no or ""),
+        "panNo": str(c.pan_no or ""),
+        "uan_no": str(c.uan_no or ""),
+        "uanNo": str(c.uan_no or ""),
+        "passport_no": str(c.passport_no or ""),
+        "passportNo": str(c.passport_no or ""),
+        "driving_license_no": str(c.driving_license_no or ""),
+        "drivingLicenseNo": str(c.driving_license_no or ""),
+        "voter_id": str(c.voter_id or ""),
+        "voterId": str(c.voter_id or ""),
+        "ration_card_no": str(c.ration_card_no or ""),
+        "rationCardNo": str(c.ration_card_no or ""),
+        "alternate_mobile": str(c.alternate_mobile or ""),
+        "alternateMobile": str(c.alternate_mobile or ""),
+        "emergency_contact_name": str(c.emergency_contact_name or ""),
+        "emergencyContactName": str(c.emergency_contact_name or ""),
+        "emergency_contact_phone": str(c.emergency_contact_phone or ""),
+        "emergencyContactPhone": str(c.emergency_contact_phone or ""),
+        "qualification_category": str(c.qualification_category or ""),
+        "qualificationCategory": str(c.qualification_category or ""),
+        "highest_qualification": str(c.highest_qualification or ""),
+        "highestQualification": str(c.highest_qualification or ""),
+        "job_category": str(c.job_category or ""),
+        "jobCategory": str(c.job_category or ""),
+        "job_type": str(c.job_type or "Full Time Permanent"),
+        "jobType": str(c.job_type or "Full Time Permanent"),
+        "bank_name": str(c.bank_name or ""),
+        "bankName": str(c.bank_name or ""),
+        "bank_account_no": str(c.bank_account_no or ""),
+        "bankAccountNo": str(c.bank_account_no or ""),
+        "ifsc_code": str(c.ifsc_code or ""),
+        "ifscCode": str(c.ifsc_code or ""),
+        "nominee_name": str(c.nominee_name or ""),
+        "nomineeName": str(c.nominee_name or ""),
+        "nominee_relation": str(c.nominee_relation or ""),
+        "nomineeRelation": str(c.nominee_relation or ""),
+        "linked_in_url": str(c.linked_in_url or ""),
+        "linkedInUrl": str(c.linked_in_url or ""),
+        "github_url": str(c.github_url or ""),
+        "githubUrl": str(c.github_url or ""),
+        "portfolio_url": str(c.portfolio_url or ""),
+        "portfolioUrl": str(c.portfolio_url or ""),
+        "twitter_url": str(c.twitter_url or ""),
+        "twitterUrl": str(c.twitter_url or ""),
+        "instagram_url": str(c.instagram_url or ""),
+        "instagramUrl": str(c.instagram_url or ""),
+        "facebook_url": str(c.facebook_url or ""),
+        "facebookUrl": str(c.facebook_url or ""),
+        "youtube_url": str(c.youtube_url or ""),
+        "youtubeUrl": str(c.youtube_url or ""),
+        "status": str(c.status or "Link Sent"),
+        "verification_config": safe_dict(c.verification_config),
+        "verificationConfig": safe_dict(c.verification_config),
+        "verifications_completed": safe_dict(c.verifications_completed),
+        "verificationsCompleted": safe_dict(c.verifications_completed),
+        "verified_attributes": safe_dict(c.verified_attributes),
+        "verifiedAttributes": safe_dict(c.verified_attributes),
+        "face_images": safe_dict(c.face_images, {"straight": None, "left": None, "right": None}),
+        "faceImages": safe_dict(c.face_images, {"straight": None, "left": None, "right": None}),
+        "manual_checks": safe_dict(c.manual_checks),
+        "manualChecks": safe_dict(c.manual_checks),
+        "joining_form_data": safe_dict(c.joining_form_data),
+        "joiningFormData": safe_dict(c.joining_form_data),
+        "custom_fields": safe_dict(c.custom_fields) if isinstance(c.custom_fields, dict) else (safe_list(c.custom_fields) if isinstance(c.custom_fields, list) else {}),
+        "customFields": safe_dict(c.custom_fields) if isinstance(c.custom_fields, dict) else (safe_list(c.custom_fields) if isinstance(c.custom_fields, list) else {}),
+        "industry_specialization": safe_dict(c.industry_specialization),
+        "industrySpecialization": safe_dict(c.industry_specialization),
+        "signing_papers": safe_dict(c.signing_papers),
+        "signingPapers": safe_dict(c.signing_papers),
+        "category_documents": safe_dict(c.category_documents),
+        "categoryDocuments": safe_dict(c.category_documents),
+        "specimen_signature": c.specimen_signature,
+        "specimenSignature": c.specimen_signature,
+        "aadhaar_data": safe_dict(c.aadhaar_data),
+        "pan_data": safe_dict(c.pan_data),
+        "bank_data": safe_dict(c.bank_data),
+        "dl_data": safe_dict(c.dl_data),
+        "epfo_data": safe_dict(c.epfo_data),
+        "passport_data": safe_dict(c.passport_data),
+        "face_match_data": safe_dict(c.face_match_data),
+        "court_record_data": safe_dict(c.court_record_data),
+        "digilocker_data": safe_dict(c.digilocker_data),
+        "digilocker_verified": bool(c.digilocker_verified),
+        "risk_score": float(c.risk_score or 0.0),
+        "riskScore": float(c.risk_score or 0.0),
+        "bgv_verdict": str(c.bgv_verdict or "Pending Review"),
+        "bgvVerdict": str(c.bgv_verdict or "Pending Review"),
+        "discrepancies_detected": safe_list(c.discrepancies_detected),
+        "discrepanciesDetected": safe_list(c.discrepancies_detected),
+        "documents": docs,
+        "verification_date": c.verification_date.isoformat() if getattr(c, "verification_date", None) else None,
+        "verificationDate": c.verification_date.isoformat() if getattr(c, "verification_date", None) else None,
+        "created_at": c.created_at.isoformat() if getattr(c, "created_at", None) else None,
+        "createdAt": c.created_at.isoformat() if getattr(c, "created_at", None) else None
+    }
+
+@router.get("/candidates")
 def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = Depends(get_db)):
     """Fetch candidates filtered by HR executive or Company with multi-alias support"""
-    try:
-        apply_runtime_migrations(db.get_bind())
-    except Exception:
-        pass
     query = db.query(Candidate)
     if hr_id:
         query = query.filter(Candidate.hr_id == hr_id)
@@ -83,7 +301,7 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
             if em and "@" in em: seen_emails.add(em)
             if mob: seen_mobiles.add(mob)
             if aadh_key: seen_aadhaars.add(aadh_key)
-            unique_candidates.append(c)
+            unique_candidates.append(serialize_candidate(c))
 
     return unique_candidates
 
@@ -495,17 +713,12 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
 
     return new_candidate, True
 
-@router.post("/candidates", response_model=CandidateResponse)
+@router.post("/candidates")
 def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
     """
     Creates a new labor/employee profile, configures verification fields,
     and issues an automated verification token link.
     """
-    try:
-        apply_runtime_migrations(db.get_bind())
-    except Exception:
-        pass
-
     new_candidate, is_new = _save_or_update_candidate_record(payload, db, commit=True)
 
     # 📧 Automated Email Invitation to Candidate
@@ -539,9 +752,9 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
     except Exception as e:
         print(f"Warning: Failed to dispatch candidate onboarding email: {e}")
 
-    return new_candidate
+    return serialize_candidate(new_candidate)
 
-@router.post("/candidates/bulk", response_model=List[CandidateResponse])
+@router.post("/candidates/bulk")
 def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends(get_db)):
     """
     Bulk import multiple candidate/employee profiles in a high-performance, atomic batch transaction.
@@ -615,7 +828,7 @@ def create_candidates_bulk(payload: List[CandidateCreate], db: Session = Depends
         except Exception:
             continue
 
-    return refreshed_list
+    return [serialize_candidate(c) for c in refreshed_list]
 
 @router.post("/dispatch-link")
 def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
@@ -799,7 +1012,7 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     }
 
 
-@router.put("/candidates/{candidate_id}", response_model=CandidateResponse)
+@router.put("/candidates/{candidate_id}")
 def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Session = Depends(get_db)):
     """
     Updates an existing candidate/employee profile particulars including name, contact,
@@ -890,18 +1103,18 @@ def update_candidate_profile(candidate_id: str, payload: CandidateUpdate, db: Se
 
     db.commit()
     db.refresh(cand)
-    return cand
+    return serialize_candidate(cand)
 
 
 @router.put("/candidates/{candidate_id}/status")
 @router.put("/candidates/{candidate_id}/toggle-status")
-def toggle_candidate_status(candidate_id: str, payload: dict, db: Session = Depends(get_db)):
+def toggle_candidate_status(candidate_id: str, payload: dict = None, db: Session = Depends(get_db)):
     """Set candidate verification status: 'Verified' | 'Link Sent' | 'In Verification' | 'Inactive' | 'Discontinued' | 'Withdrawn'"""
     cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
     if not cand:
         raise HTTPException(status_code=404, detail="Candidate not found")
     
-    new_status = payload.get("status", "Inactive")
+    new_status = payload.get("status", "Inactive") if payload else "Inactive"
     cand.status = new_status
     db.commit()
     db.refresh(cand)
@@ -974,27 +1187,4 @@ def purge_duplicate_candidates(payload: dict = None, db: Session = Depends(get_d
         "success": True,
         "message": f"Purged {deleted_count} duplicate candidate records. All candidate records are 100% unique & deduplicated.",
         "deleted_count": deleted_count
-    }
-
-@router.put("/candidates/{candidate_id}/toggle-status")
-def toggle_candidate_status(candidate_id: str, payload: dict = None, db: Session = Depends(get_db)):
-    """Toggles candidate status between Active (Pending/Verified) and Inactive"""
-    cand = db.query(Candidate).filter((Candidate.id == candidate_id) | (Candidate.token == candidate_id)).first()
-    if not cand:
-        raise HTTPException(status_code=404, detail="Candidate not found")
-    
-    new_status = payload.get("status") if payload and "status" in payload else None
-    if not new_status:
-        if cand.status == "Inactive":
-            new_status = "Pending"
-        else:
-            new_status = "Inactive"
-            
-    cand.status = new_status
-    db.commit()
-    db.refresh(cand)
-    return {
-        "success": True,
-        "message": f"Candidate {cand.name} is now {new_status}",
-        "status": cand.status
     }
