@@ -35,7 +35,7 @@
 
 ## 4. Indexing & Security Boundaries
 - **Publicly Indexable**:
-  - https://test2.joycorporatesolutions.com/
+  - https://trueprofile.joycorporatesolutions.com/
 - **Strictly Blocked via robots.txt & Authentication**:
   - /superadmin/*
   - /company/*

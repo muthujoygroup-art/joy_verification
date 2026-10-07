@@ -476,7 +476,7 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
     joyTrueProfile: {
       name: 'JOY TRUE PROFILE',
       tagline: 'Direct Registry Instant Workforce Background Verification',
-      url: 'https://verification.joycorporatesolutions.com',
+      url: 'https://trueprofile.joycorporatesolutions.com',
       badge: 'Verification Engine',
       description: 'Sub-45-second direct registry verification rail connecting Super Admins, Companies, HR recruiters, and candidates with UIDAI Aadhaar OTP, NSDL PAN, NPCI IMPS Penny Drop, EPFO moonlighting audits, and tamper-proof PDF dossiers.',
       features: [
@@ -503,7 +503,7 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
     joyDigitalVault: {
       name: 'JOY DIGITAL VAULT',
       tagline: 'DPDP Act 2023 Verifiable Digital Credential Engine',
-      url: 'https://verification.joycorporatesolutions.com',
+      url: 'https://trueprofile.joycorporatesolutions.com',
       badge: 'Security & Privacy',
       description: 'Cryptographically signed and tamper-evident digital credential storage. Ensures full DPDP Act 2023 compliance with granular candidate consent management and 256-bit AES encryption.',
       features: [

@@ -36,7 +36,7 @@ export const VendorLinkModal = ({ vendor, company, isOpen, onClose }) => {
     .replace(/(^-|-$)/g, '');
 
   const token = v.token || v.magicToken || v.id;
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://verification.joycorporatesolutions.com';
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://trueprofile.joycorporatesolutions.com';
   const vendorMagicUrl = `${baseUrl}/${compSlug}/vendor/${token}`;
 
   const handleCopyLink = () => {

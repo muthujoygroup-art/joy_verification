@@ -1,7 +1,7 @@
 <?php
 /**
  * Joy Corporate Solutions - DigiLocker OAuth Callback Gateway Forwarder
- * Automatically forwards code & state to test2.joycorporatesolutions.com/digilocker-callback
+ * Automatically forwards code & state to trueprofile.joycorporatesolutions.com/digilocker-callback
  */
 error_reporting(0);
 ini_set('display_errors', 0);
@@ -17,7 +17,7 @@ if (!empty($state)) $params['state'] = $state;
 if (!empty($error)) $params['error'] = $error;
 if (!empty($error_desc)) $params['error_description'] = $error_desc;
 
-$target_url = 'https://test2.joycorporatesolutions.com/digilocker-callback';
+$target_url = 'https://trueprofile.joycorporatesolutions.com/digilocker-callback';
 if (!empty($params)) {
     $target_url .= '?' . http_build_query($params);
 }

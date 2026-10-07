@@ -1,5 +1,5 @@
-﻿# Robots.txt for Joy True Profile (JOY CORPORATE SOLUTIONS PRIVATE LIMITED)
-# Website: https://test2.joycorporatesolutions.com/
+# Robots.txt for Joy True Profile (JOY CORPORATE SOLUTIONS PRIVATE LIMITED)
+# Website: https://trueprofile.joycorporatesolutions.com/
 
 User-agent: *
 Allow: /$
@@ -24,4 +24,4 @@ Disallow: /api/
 Disallow: /api/*
 
 # Canonical XML Sitemap
-Sitemap: https://test2.joycorporatesolutions.com/sitemap.xml
+Sitemap: https://trueprofile.joycorporatesolutions.com/sitemap.xml

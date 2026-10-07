@@ -664,7 +664,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                     <div className="flex flex-col items-center justify-center p-1.5 bg-slate-50 border border-slate-200 rounded-xl">
                       <div className="p-1 bg-white rounded-lg shadow-2xs border border-slate-200">
                         <QRCodeSVG 
-                          value={`https://verification.joycorporatesolutions.com/verify-dossier?id=${c.token || c.id || 'TOK'}&emp=${c.employeeNumber || c.empId || 'EMP001'}&sha=${c.sha256Seal || c.sha256_seal || 'SHA256-AUTHENTIC-RECORD'}`}
+                          value={`https://trueprofile.joycorporatesolutions.com/verify-dossier?id=${c.token || c.id || 'TOK'}&emp=${c.employeeNumber || c.empId || 'EMP001'}&sha=${c.sha256Seal || c.sha256_seal || 'SHA256-AUTHENTIC-RECORD'}`}
                           size={46}
                           level="M"
                         />

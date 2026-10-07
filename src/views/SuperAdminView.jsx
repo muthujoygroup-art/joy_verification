@@ -193,7 +193,7 @@ export const SuperAdminView = () => {
     wabaId: 'WABA-99823412091',
     phoneNumberId: 'PN-919876543210',
     accessToken: 'EAAG99823412091ZABCPASSWORDTOKEN',
-    webhookUrl: 'https://verification.joycorporatesolutions.com/api/v1/whatsapp/webhook',
+    webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/v1/whatsapp/webhook',
     webhookSecret: 'whsec_JoyWhatsApp2026_x89',
     autoSendOnboardingLink: true,
     autoSendOtpCode: true,
@@ -752,7 +752,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     }
   }));
 
-  const [callbackUrl, setCallbackUrl] = useState('https://verification.joycorporatesolutions.com/api/verification/webhook/callback');
+  const [callbackUrl, setCallbackUrl] = useState('https://trueprofile.joycorporatesolutions.com/api/verification/webhook/callback');
   const [isCallbackCopied, setIsCallbackCopied] = useState(false);
 
   // Dynamic API Provider Management States
@@ -764,7 +764,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     endpointUrl: 'https://api.example.com/v1',
     apiKey: '',
     secretKey: '',
-    webhookUrl: 'https://verification.joycorporatesolutions.com/api/verification/webhook/callback',
+    webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/verification/webhook/callback',
     mode: 'Production (Live Mode)',
     rateLimitPerMin: 120,
     monthlyQuota: 10000,
@@ -8929,7 +8929,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   endpointUrl: 'https://api.example.com/v1',
                   apiKey: '',
                   secretKey: '',
-                  webhookUrl: 'https://verification.joycorporatesolutions.com/api/verification/webhook/callback',
+                  webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/verification/webhook/callback',
                   mode: 'Production (Live Mode)',
                   rateLimitPerMin: 120,
                   monthlyQuota: 10000,

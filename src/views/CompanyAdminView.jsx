@@ -3706,7 +3706,7 @@ export const CompanyAdminView = () => {
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/(^-|-$)/g, '');
                   const token = v.token || v.magicToken || v.id;
-                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://verification.joycorporatesolutions.com';
+                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://trueprofile.joycorporatesolutions.com';
                   const magicUrl = `${baseUrl}/${compSlug}/vendor/${token}`;
 
                   return (

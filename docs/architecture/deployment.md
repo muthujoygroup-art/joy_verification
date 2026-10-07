@@ -2,7 +2,7 @@
 
 ## 1. Target Environment
 - **Host**: cPanel / Cloud Linux VPS (Passenger WSGI + Node/Vite Client)
-- **Live URL**: https://test2.joycorporatesolutions.com/
+- **Live URL**: https://trueprofile.joycorporatesolutions.com/
 - **Backend Port**: 8000 (Internal FastAPI)
 - **Python Version**: 3.10+
 - **Node.js Version**: 20+
@@ -32,5 +32,5 @@ python backend/app/migrate_production_schema.py
 ### Verification & Health Check
 Test the live API health endpoint:
 `powershell
-curl -I https://test2.joycorporatesolutions.com/api/docs
+curl -I https://trueprofile.joycorporatesolutions.com/api/docs
 `

@@ -418,7 +418,7 @@ export const OfficialVerificationCertificateModal = ({ candidate, onClose }) => 
             <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-200">
               <div className="p-1 bg-white rounded-lg shadow-2xs border border-slate-200">
                 <QRCodeSVG 
-                  value={`https://verification.joycorporatesolutions.com/verify?id=${certId}&emp=${candidate.empId || candidate.token || 'EMP'}&status=${isFullyVerified ? 'VERIFIED' : 'PROVISIONAL'}`}
+                  value={`https://trueprofile.joycorporatesolutions.com/verify?id=${certId}&emp=${candidate.empId || candidate.token || 'EMP'}&status=${isFullyVerified ? 'VERIFIED' : 'PROVISIONAL'}`}
                   size={54}
                   level="M"
                 />

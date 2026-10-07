@@ -496,7 +496,7 @@ export const ComprehensiveBgvReportModal = ({
                 <div className="flex flex-col items-center justify-center p-1.5 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="p-1 bg-white rounded-lg shadow-2xs border border-slate-200">
                     <QRCodeSVG 
-                      value={`https://verification.joycorporatesolutions.com/verify-dossier?token=${c.token || c.id || 'TOK'}&emp=${uniqueCode}&sha=${c.sha256Seal || c.sha256_seal || 'SHA256-JOY-VERIFIED'}`}
+                      value={`https://trueprofile.joycorporatesolutions.com/verify-dossier?token=${c.token || c.id || 'TOK'}&emp=${uniqueCode}&sha=${c.sha256Seal || c.sha256_seal || 'SHA256-JOY-VERIFIED'}`}
                       size={46}
                       level="M"
                     />

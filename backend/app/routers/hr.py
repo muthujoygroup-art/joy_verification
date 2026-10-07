@@ -757,7 +757,7 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
         except Exception:
             pass
 
-    app_url = (settings.APP_BASE_URL or "https://test2.joycorporatesolutions.com").rstrip('/')
+    app_url = (settings.APP_BASE_URL or "https://trueprofile.joycorporatesolutions.com").rstrip('/')
     verify_url = f"{app_url}/verify?token={target_token}"
 
     # 4. Dispatch onboarding email to Candidate

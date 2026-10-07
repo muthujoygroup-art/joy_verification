@@ -16,9 +16,9 @@ if (!empty($code)) {
     if (!empty($state)) $params['state'] = $state;
     if (!empty($error)) $params['error'] = $error;
     if (!empty($error_desc)) $params['error_description'] = $error_desc;
-    $target_url = 'https://test2.joycorporatesolutions.com/digilocker-callback?' . http_build_query($params);
+    $target_url = 'https://trueprofile.joycorporatesolutions.com/digilocker-callback?' . http_build_query($params);
 } else {
-    $target_url = 'https://test2.joycorporatesolutions.com/joy-man-power-service/hr/agilan/candidates';
+    $target_url = 'https://trueprofile.joycorporatesolutions.com/joy-man-power-service/hr/agilan/candidates';
 }
 
 header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");

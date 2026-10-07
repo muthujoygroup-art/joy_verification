@@ -1,8 +1,8 @@
 # JOY TRUE PROFILE — API Documentation & Catalog
 
 ## 1. Base URL
-- Production Base URL: https://test2.joycorporatesolutions.com/api
-- Interactive OpenAPI Docs: https://test2.joycorporatesolutions.com/api/docs
+- Production Base URL: https://trueprofile.joycorporatesolutions.com/api
+- Interactive OpenAPI Docs: https://trueprofile.joycorporatesolutions.com/api/docs
 
 ## 2. Core API Modules
 
