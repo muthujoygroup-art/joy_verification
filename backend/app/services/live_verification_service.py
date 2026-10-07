@@ -162,12 +162,20 @@ def compute_record_hash(data: Dict[str, Any], secret_salt: str = "JOY_VERIF_DPDP
 # -----------------------------------------------------------------------------
 def get_active_provider_info(db: Optional[Session] = None, preferred_provider_key: Optional[str] = None) -> Dict[str, Any]:
     """
-    Returns the currently active primary API provider configured in PostgreSQL.
-    Reads credentials entered dynamically in the SuperAdmin console.
+    Returns the currently active primary API provider configured in PostgreSQL / Environment Variables.
+    Seamlessly merges credentials from cPanel Environment Variables and SuperAdmin console.
     """
     from sqlalchemy import text
     from backend.app.database import engine
     from backend.app.config import settings
+
+    env_coincircle_key = (settings.COINCIRCLE_API_KEY or "").strip()
+    env_coincircle_secret = (settings.COINCIRCLE_SECRET_KEY or "").strip()
+    env_coincircle_url = (settings.COINCIRCLE_BASE_URL or DEFAULT_COINCIRCLE_ENDPOINT).strip()
+
+    env_sandbox_key = (settings.SANDBOX_API_KEY or "").strip()
+    env_sandbox_secret = (settings.SANDBOX_SECRET_KEY or "").strip()
+    env_sandbox_url = (settings.SANDBOX_BASE_URL or "https://api.sandbox.co.in").strip()
 
     try:
         with engine.connect() as conn:
@@ -178,16 +186,35 @@ def get_active_provider_info(db: Optional[Session] = None, preferred_provider_ke
             if preferred_provider_key:
                 for r in rows:
                     if r.get("provider_key") == preferred_provider_key and r.get("is_active") is not False:
+                        db_key = (r.get("api_key") or "").strip()
+                        db_secret = (r.get("secret_key") or "").strip()
+                        final_key = db_key or (env_coincircle_key if "coincircle" in preferred_provider_key else env_sandbox_key)
+                        final_secret = db_secret or (env_coincircle_secret if "coincircle" in preferred_provider_key else env_sandbox_secret)
                         return {
                             "key": r.get("provider_key"),
                             "name": r.get("display_name", "CoinCircle Gateway"),
                             "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
-                            "api_key": (r.get("api_key") or "").strip(),
-                            "secret_key": (r.get("secret_key") or "").strip(),
+                            "api_key": final_key,
+                            "secret_key": final_secret,
                             "is_active": r.get("is_active") is not False,
                             "sandbox_mode": bool(r.get("sandbox_mode"))
                         }
-            # 2. Primary provider with valid API key
+
+            # 2. If CoinCircle API key is provided in Environment Variables, prioritize CoinCircle/Neev 81 APIs
+            if env_coincircle_key:
+                for r in rows:
+                    if r.get("provider_key") == "server2_coincircle" or "coincircle" in str(r.get("provider_key")).lower():
+                        return {
+                            "key": r.get("provider_key"),
+                            "name": r.get("display_name", "Server 2: CoinCircleTrust Gateways (Neev 81 APIs)"),
+                            "endpoint_url": r.get("endpoint_url") or env_coincircle_url,
+                            "api_key": env_coincircle_key or (r.get("api_key") or "").strip(),
+                            "secret_key": env_coincircle_secret or (r.get("secret_key") or "").strip(),
+                            "is_active": True,
+                            "sandbox_mode": bool(r.get("sandbox_mode"))
+                        }
+
+            # 3. Primary provider with valid API key
             for r in rows:
                 if r.get("is_primary") and r.get("is_active") is not False and (r.get("api_key") or "").strip():
                     return {
@@ -199,7 +226,8 @@ def get_active_provider_info(db: Optional[Session] = None, preferred_provider_ke
                         "is_active": True,
                         "sandbox_mode": bool(r.get("sandbox_mode"))
                     }
-            # 3. Any coincircle provider with valid API key
+
+            # 4. Any coincircle provider with valid API key
             for r in rows:
                 if (r.get("provider_key") == "server2_coincircle" or "coincircle" in str(r.get("provider_key")).lower()) and (r.get("api_key") or "").strip():
                     return {
@@ -211,7 +239,8 @@ def get_active_provider_info(db: Optional[Session] = None, preferred_provider_ke
                         "is_active": r.get("is_active") is not False,
                         "sandbox_mode": bool(r.get("sandbox_mode"))
                     }
-            # 4. Any provider with a non-empty API key
+
+            # 5. Any provider with a non-empty API key
             for r in rows:
                 if (r.get("api_key") or "").strip():
                     return {
@@ -223,14 +252,16 @@ def get_active_provider_info(db: Optional[Session] = None, preferred_provider_ke
                         "is_active": r.get("is_active") is not False,
                         "sandbox_mode": bool(r.get("sandbox_mode"))
                     }
-            # 5. First row
+
+            # 6. Fallback to first row, merging any env key
             r = rows[0]
+            db_key = (r.get("api_key") or "").strip()
             return {
                 "key": r.get("provider_key"),
                 "name": r.get("display_name", "API Gateway"),
-                "endpoint_url": r.get("endpoint_url") or DEFAULT_COINCIRCLE_ENDPOINT,
-                "api_key": (r.get("api_key") or "").strip(),
-                "secret_key": (r.get("secret_key") or "").strip(),
+                "endpoint_url": r.get("endpoint_url") or env_coincircle_url,
+                "api_key": db_key or env_coincircle_key or env_sandbox_key,
+                "secret_key": (r.get("secret_key") or "").strip() or env_coincircle_secret or env_sandbox_secret,
                 "is_active": r.get("is_active") is not False,
                 "sandbox_mode": bool(r.get("sandbox_mode"))
             }
@@ -240,9 +271,9 @@ def get_active_provider_info(db: Optional[Session] = None, preferred_provider_ke
     return {
         "key": "server2_coincircle",
         "name": "Server 2: CoinCircleTrust Gateways (Neev 81 APIs)",
-        "endpoint_url": settings.COINCIRCLE_BASE_URL or DEFAULT_COINCIRCLE_ENDPOINT,
-        "api_key": settings.COINCIRCLE_API_KEY or "",
-        "secret_key": settings.COINCIRCLE_SECRET_KEY or "",
+        "endpoint_url": env_coincircle_url,
+        "api_key": env_coincircle_key,
+        "secret_key": env_coincircle_secret,
         "is_active": True,
         "sandbox_mode": False
     }
