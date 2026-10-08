@@ -1,21 +1,20 @@
 ---
 deployment:
   tasks:
-    - /bin/cp -a dist/. /home/$USER/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
-    - /bin/cp -a dist/. /home/$USER/public_html/trueprofile/ 2>/dev/null || true
-    - /bin/cp -a dist/. /home/$USER/public_html/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
-    - /bin/cp -a dist/. /home/$USER/public_html/ 2>/dev/null || true
-    - /bin/cp -a dist/. ../trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
-    - /bin/cp -a dist/. ../public_html/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
-    - /bin/cp -a dist/. ../public_html/trueprofile/ 2>/dev/null || true
-    - /bin/cp -f dist/.htaccess /home/$USER/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
-    - /bin/cp -f dist/.htaccess /home/$USER/public_html/trueprofile/.htaccess 2>/dev/null || true
-    - /bin/cp -f dist/.htaccess /home/$USER/public_html/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
-    - /bin/cp -f dist/.htaccess ../trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
-    - /bin/cp -f dist/.htaccess ../public_html/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
-    - /bin/cp -f dist/.htaccess ../public_html/trueprofile/.htaccess 2>/dev/null || true
-    - mkdir -p tmp 2>/dev/null || true
-    - touch tmp/restart.txt 2>/dev/null || true
-    - touch passenger_wsgi.py 2>/dev/null || true
-
-
+    - /bin/cp -rf dist/* /home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* /home/joyglo52/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* /home/joyglo52/public_html/trueprofile/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/public_html/trueprofile/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* /home/joyglo52/public_html/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/public_html/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* ../trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess ../trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* ../public_html/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess ../public_html/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* ../public_html/trueprofile/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess ../public_html/trueprofile/.htaccess 2>/dev/null || true
+    - /bin/mkdir -p /home/joyglo52/repositories/joytrueprofile/tmp
+    - /bin/touch /home/joyglo52/repositories/joytrueprofile/tmp/restart.txt
+    - /bin/touch /home/joyglo52/repositories/joytrueprofile/passenger_wsgi.py
