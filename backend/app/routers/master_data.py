@@ -13,6 +13,7 @@ from backend.app.schemas import (
 router = APIRouter(prefix="/master-data", tags=["Master Data Management"])
 
 @router.get("/dropdowns")
+@router.get("/dropdown-options")
 def get_all_dropdown_options(db: Session = Depends(get_db)):
     """Fetch grouped master dropdown options"""
     options = db.query(MasterDataOption).filter(MasterDataOption.is_active == True).all()
