@@ -62,7 +62,7 @@ def seed_database(force_refresh=False):
     
     db = SessionLocal()
     try:
-        # 1. Check Super Admin
+        # 1. Super Admin
         sa_admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
         if not sa_admin:
             logger.info("Seeding Super Admin: admin@joycorporatesolutions.com...")
@@ -76,6 +76,168 @@ def seed_database(force_refresh=False):
             )
             db.add(new_sa)
             db.commit()
+
+        # 2. Companies
+        comp1 = db.query(Company).filter((Company.code == "COMP001") | (Company.id == "COMP001")).first()
+        if not comp1:
+            comp1 = Company(
+                id="COMP001",
+                code="COMP001",
+                name="Joy Corporate Solutions Private Limited",
+                contact_person="Muthu Kumar P",
+                email="admin@joycorporatesolutions.com",
+                phone="+91 98765 43210",
+                plan="tier2",
+                status="Active",
+                activation_status="Active",
+                max_limit=100,
+                verified_count_this_month=38,
+                wallet_balance=200000.0,
+                logo_url="/assets/logos/companies/joy_corporate_solutions_logo.png",
+                features={
+                    "cin": "U74999KA2026PTC098214",
+                    "gstin": "33AABCJ1234K1Z5",
+                    "pan": "AABCJ1234K",
+                    "location": "Joy Tech Park, Electronic City, Bengaluru",
+                    "tier_number": 2
+                }
+            )
+            db.add(comp1)
+            db.commit()
+
+        comp2 = db.query(Company).filter((Company.code == "COMP002") | (Company.id == "COMP002")).first()
+        if not comp2:
+            comp2 = Company(
+                id="COMP002",
+                code="COMP002",
+                name="Joy Man Power Service",
+                contact_person="Agilan",
+                email="agilan@joycorporatesolutions.com",
+                phone="+91 98450 12345",
+                plan="tier1",
+                status="Active",
+                activation_status="Active",
+                max_limit=50,
+                verified_count_this_month=12,
+                wallet_balance=100000.0,
+                logo_url="/assets/logos/companies/joy_manpower_service_logo.png",
+                features={
+                    "location": "Chennai Central Workstation, Tamil Nadu",
+                    "tier_number": 1
+                }
+            )
+            db.add(comp2)
+            db.commit()
+
+        # 3. HR Users
+        hr1 = db.query(HrUser).filter(HrUser.email == "agilan@joycorporatesolutions.com").first()
+        if not hr1:
+            hr1 = HrUser(
+                id="hr_001",
+                company_id="COMP002",
+                name="Agilan (Lead HR)",
+                email="agilan@joycorporatesolutions.com",
+                dept="Talent Acquisition",
+                active_links=5,
+                status="Active",
+                permissions={
+                    "can_create": True,
+                    "can_verify": True,
+                    "can_export": True,
+                    "designation": "Lead HR Recruiter",
+                    "phone": "9876543210",
+                    "activation_status": "Active"
+                }
+            )
+            db.add(hr1)
+            db.commit()
+
+        # 4. Candidates (Seed if fewer than 2 candidates exist)
+        total_cands = db.query(Candidate).count()
+        if total_cands < 2:
+            c1 = Candidate(
+                id="emp_001",
+                token="emp-101",
+                name="Aarav Sharma",
+                emp_id="JOY-EMP-8921",
+                employee_number="JOY-EMP-8921",
+                email="aarav.sharma@example.com",
+                mobile="9876543210",
+                company_id="COMP001",
+                hr_id="hr_001",
+                designation="Senior Software Engineer",
+                dept="Engineering & Product",
+                status="Verified",
+                bgv_verdict="Verified & Compliant",
+                risk_score=0.0
+            )
+            c2 = Candidate(
+                id="emp_002",
+                token="emp-102",
+                name="Priya Nair",
+                emp_id="JOY-EMP-8922",
+                employee_number="JOY-EMP-8922",
+                email="priya.nair@example.com",
+                mobile="9845012345",
+                company_id="COMP001",
+                hr_id="hr_001",
+                designation="Financial Analyst",
+                dept="Corporate Finance",
+                status="Verified",
+                bgv_verdict="Verified & Compliant",
+                risk_score=0.0
+            )
+            c3 = Candidate(
+                id="emp_003",
+                token="emp-103",
+                name="Karthik Raja",
+                emp_id="JOY-EMP-8923",
+                employee_number="JOY-EMP-8923",
+                email="karthik.raja@example.com",
+                mobile="9845098765",
+                company_id="COMP002",
+                hr_id="hr_001",
+                designation="Operations Manager",
+                dept="Operations",
+                status="Verified",
+                bgv_verdict="Verified & Compliant",
+                risk_score=0.0
+            )
+            c4 = Candidate(
+                id="emp_004",
+                token="emp-104",
+                name="Priya Sundaram",
+                emp_id="JOY-EMP-8924",
+                employee_number="JOY-EMP-8924",
+                email="priya.sundaram@example.com",
+                mobile="9789012345",
+                company_id="COMP002",
+                hr_id="hr_001",
+                designation="Senior QA Engineer",
+                dept="Quality Assurance",
+                status="Link Sent",
+                bgv_verdict="Pending Review",
+                risk_score=0.0
+            )
+            c5 = Candidate(
+                id="emp_005",
+                token="emp-105",
+                name="Ramesh Kumar",
+                emp_id="JOY-EMP-8925",
+                employee_number="JOY-EMP-8925",
+                email="ramesh.test@example.com",
+                mobile="9876501234",
+                company_id="COMP002",
+                hr_id="hr_001",
+                designation="HR Executive",
+                dept="Human Resources",
+                status="Link Sent",
+                bgv_verdict="Pending Review",
+                risk_score=0.0
+            )
+            db.add_all([c1, c2, c3, c4, c5])
+            db.commit()
+            logger.info("Default candidate dataset successfully seeded.")
     except Exception as e:
         db.rollback()
         logger.error(f"Seed error: {e}")

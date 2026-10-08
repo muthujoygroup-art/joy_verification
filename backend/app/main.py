@@ -1,10 +1,14 @@
 import time
+import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import settings
 from backend.app.database import engine, Base
 import backend.app.models  # Guarantees all 21 models and relationships are registered
 from backend.app.seed import seed_database
+
+logger = logging.getLogger("joy_backend")
+logging.basicConfig(level=logging.INFO)
 from backend.app.routers import (
     auth_router,
     superadmin_router,
@@ -182,36 +186,42 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def global_catchall_exception_handler(request: Request, exc: Exception):
     import traceback
-    from backend.app.services.logger_service import record_system_error_log
-    error_trace = traceback.format_exc()
-    logger.error(f"[CRITICAL SERVER ERROR]: {exc}\n{error_trace}")
-    
-    # Automatically log incident to PostgreSQL for SuperAdmin Forensics
     try:
-        req_path = str(request.url.path)
-        portal_name = "Backend API Service"
-        if "hr" in req_path: portal_name = "HR Executive Portal"
-        elif "company" in req_path: portal_name = "Company Admin Portal"
-        elif "verify" in req_path or "verification" in req_path: portal_name = "Employee Verification Link"
-        elif "superadmin" in req_path: portal_name = "SuperAdmin Portal"
+        error_trace = traceback.format_exc()
+        try:
+            logger.error(f"[CRITICAL SERVER ERROR]: {exc}\n{error_trace}")
+        except Exception:
+            pass
+        
+        # Automatically log incident to PostgreSQL for SuperAdmin Forensics
+        try:
+            from backend.app.services.logger_service import record_system_error_log
+            req_path = str(request.url.path)
+            portal_name = "Backend API Service"
+            if "hr" in req_path: portal_name = "HR Executive Portal"
+            elif "company" in req_path: portal_name = "Company Admin Portal"
+            elif "verify" in req_path or "verification" in req_path: portal_name = "Employee Verification Link"
+            elif "superadmin" in req_path: portal_name = "SuperAdmin Portal"
 
-        record_system_error_log(
-            section=f"API: {request.method} {req_path}",
-            error_code=f"ERR_{type(exc).__name__.upper()}",
-            message=str(exc),
-            portal=portal_name,
-            function_name=req_path,
-            stack_trace=error_trace,
-            ip_address=request.client.host if request.client else "Unknown",
-            severity="Critical"
-        )
-    except Exception as log_err:
-        logger.warn(f"Could not record exception to SystemErrorLog: {log_err}")
+            record_system_error_log(
+                section=f"API: {request.method} {req_path}",
+                error_code=f"ERR_{type(exc).__name__.upper()}",
+                message=str(exc),
+                portal=portal_name,
+                function_name=req_path,
+                stack_trace=error_trace,
+                ip_address=request.client.host if request.client else "Unknown",
+                severity="Critical"
+            )
+        except Exception:
+            pass
+    except Exception:
+        pass
 
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "Our servers encountered a temporary issue. Please try again in a few moments.",
+            "detail": f"Temporary server issue: {str(exc)}",
             "status_code": 500
         }
     )

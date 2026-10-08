@@ -1,16 +1,18 @@
-from backend.app.services.storage_service import get_candidate_folder
 import uuid
 import json
+import logging
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 
+from backend.app.services.storage_service import get_candidate_folder
 from backend.app.database import get_db
 from backend.app.models import Candidate, Company, HrUser, CandidateDocument
 from backend.app.services.email_service import send_candidate_onboarding_email
 from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpdate
 
+logger = logging.getLogger("hr_router")
 router = APIRouter(prefix="/hr", tags=["HR Executive"])
 
 def serialize_candidate(c: Candidate) -> Dict[str, Any]:
@@ -237,73 +239,81 @@ def serialize_candidate(c: Candidate) -> Dict[str, Any]:
 @router.get("/candidates")
 def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = Depends(get_db)):
     """Fetch candidates filtered by HR executive or Company with multi-alias support"""
-    query = db.query(Candidate)
-    if hr_id:
-        query = query.filter(Candidate.hr_id == hr_id)
-    elif company_id:
-        target = company_id.strip()
-        joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp", "comp002", "joymanpower", "joymanpowerservice", "joy-man-power-service", "comp-002", "comp_002", "manpower"]
-        clean_target = target.lower().replace("-", "").replace("_", "")
-        if clean_target in [a.replace("-", "").replace("_", "") for a in joy_aliases]:
-            query = query.filter(
-                (Candidate.company_id.in_(["COMP001", "COMP002", "comp-joy", "comp-test-1", "JOY01", "compjoy", "comp-002", target])) |
-                (Candidate.company_id.ilike("%comp%")) |
-                (Candidate.company_id.ilike("%joy%")) |
-                (Candidate.company_id.ilike("%manpower%"))
-            )
-        else:
-            comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
-            target_id = comp.id if comp else target
-            query = query.filter(
-                (Candidate.company_id == target_id) | 
-                (Candidate.company_id == target) | 
-                (Candidate.company_id.ilike(f"%{target}%"))
-            )
-    candidates = query.order_by(Candidate.created_at.desc()).all()
-    seen_tokens = set()
-    seen_emails = set()
-    seen_mobiles = set()
-    seen_aadhaars = set()
-    unique_candidates = []
+    try:
+        query = db.query(Candidate)
+        if hr_id:
+            query = query.filter(Candidate.hr_id == hr_id)
+        elif company_id:
+            target = company_id.strip()
+            joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp", "comp002", "joymanpower", "joymanpowerservice", "joy-man-power-service", "comp-002", "comp_002", "manpower"]
+            clean_target = target.lower().replace("-", "").replace("_", "")
+            if clean_target in [a.replace("-", "").replace("_", "") for a in joy_aliases]:
+                query = query.filter(
+                    (Candidate.company_id.in_(["COMP001", "COMP002", "comp-joy", "comp-test-1", "JOY01", "compjoy", "comp-002", target])) |
+                    (Candidate.company_id.ilike("%comp%")) |
+                    (Candidate.company_id.ilike("%joy%")) |
+                    (Candidate.company_id.ilike("%manpower%"))
+                )
+            else:
+                comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
+                target_id = comp.id if comp else target
+                query = query.filter(
+                    (Candidate.company_id == target_id) | 
+                    (Candidate.company_id == target) | 
+                    (Candidate.company_id.ilike(f"%{target}%"))
+                )
+        candidates = query.order_by(Candidate.created_at.desc()).all()
+        seen_tokens = set()
+        seen_emails = set()
+        seen_mobiles = set()
+        seen_aadhaars = set()
+        unique_candidates = []
 
-    for c in candidates:
-        if c.verifications_completed is None:
-            c.verifications_completed = {}
-        if c.face_images is None:
-            c.face_images = {"straight": None, "left": None, "right": None}
-        if c.verification_config is None:
-            c.verification_config = {}
-        if c.joining_form_data is None:
-            c.joining_form_data = {}
-        if c.custom_fields is None:
-            c.custom_fields = {}
-        if c.manual_checks is None:
-            c.manual_checks = {}
-        if c.verified_attributes is None:
-            c.verified_attributes = {}
-        if c.discrepancies_detected is None:
-            c.discrepancies_detected = []
-        if not c.status:
-            c.status = "Link Sent"
+        for c in candidates:
+            try:
+                if c.verifications_completed is None:
+                    c.verifications_completed = {}
+                if c.face_images is None:
+                    c.face_images = {"straight": None, "left": None, "right": None}
+                if c.verification_config is None:
+                    c.verification_config = {}
+                if c.joining_form_data is None:
+                    c.joining_form_data = {}
+                if c.custom_fields is None:
+                    c.custom_fields = {}
+                if c.manual_checks is None:
+                    c.manual_checks = {}
+                if c.verified_attributes is None:
+                    c.verified_attributes = {}
+                if c.discrepancies_detected is None:
+                    c.discrepancies_detected = []
+                if not c.status:
+                    c.status = "Link Sent"
 
-        tok = (c.token or "").strip().lower()
-        cid = (c.id or "").strip().lower()
-        em = (c.email or "").strip().lower()
-        mob_digits = "".join(filter(str.isdigit, str(c.mobile or "")))
-        mob = mob_digits[-10:] if (len(mob_digits) >= 10 and mob_digits[-10:] not in ("9876543210", "1234567890", "0000000000")) else ""
-        aadh = "".join(filter(str.isdigit, str(c.aadhaar_no or "")))
-        aadh_key = aadh if len(aadh) == 12 else ""
+                tok = (c.token or "").strip().lower()
+                cid = (c.id or "").strip().lower()
+                em = (c.email or "").strip().lower()
+                mob_digits = "".join(filter(str.isdigit, str(c.mobile or "")))
+                mob = mob_digits[-10:] if (len(mob_digits) >= 10 and mob_digits[-10:] not in ("9876543210", "1234567890", "0000000000")) else ""
+                aadh = "".join(filter(str.isdigit, str(c.aadhaar_no or "")))
+                aadh_key = aadh if len(aadh) == 12 else ""
 
-        is_dup = (tok and tok in seen_tokens) or (cid and cid in seen_tokens) or (em and "@" in em and em in seen_emails) or (mob and mob in seen_mobiles) or (aadh_key and aadh_key in seen_aadhaars)
-        if not is_dup:
-            if tok: seen_tokens.add(tok)
-            if cid: seen_tokens.add(cid)
-            if em and "@" in em: seen_emails.add(em)
-            if mob: seen_mobiles.add(mob)
-            if aadh_key: seen_aadhaars.add(aadh_key)
-            unique_candidates.append(serialize_candidate(c))
+                is_dup = (tok and tok in seen_tokens) or (cid and cid in seen_tokens) or (em and "@" in em and em in seen_emails) or (mob and mob in seen_mobiles) or (aadh_key and aadh_key in seen_aadhaars)
+                if not is_dup:
+                    if tok: seen_tokens.add(tok)
+                    if cid: seen_tokens.add(cid)
+                    if em and "@" in em: seen_emails.add(em)
+                    if mob: seen_mobiles.add(mob)
+                    if aadh_key: seen_aadhaars.add(aadh_key)
+                    unique_candidates.append(serialize_candidate(c))
+            except Exception as item_err:
+                logger.warning(f"Error serializing candidate item: {item_err}")
+                continue
 
-    return unique_candidates
+        return unique_candidates
+    except Exception as e:
+        logger.error(f"Error fetching candidates from database: {e}")
+        return []
 
 def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, commit: bool = True):
     """
