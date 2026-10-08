@@ -1,3 +1,14 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/joyglo52/repositories/joytrueprofile"
+PassengerBaseURI "/"
+PassengerPython "/home/joyglo52/virtualenv/repositories/joytrueprofile/3.13/bin/python"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+
 # Apache / cPanel Single Page Application (SPA) Routing for JOY Verification
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -6,17 +17,18 @@
   # Prioritize React SPA index.html for root and directory requests
   DirectoryIndex index.html index.php
   
-  # Pass through API requests directly to Python Passenger WSGI backend without SPA interception
-  RewriteCond %{REQUEST_URI} ^/api/ [NC,OR]
-  RewriteCond %{REQUEST_URI} ^/api$ [NC,OR]
-  RewriteCond %{REQUEST_URI} ^/passenger_wsgi\.py [NC]
-  RewriteRule ^ - [L]
-
-  # Allow direct access to existing files & folders (assets, api, images)
+  # Allow direct access to existing files & folders (assets, js, css, images, favicon)
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
+
+  # Pass through API and WSGI requests directly to Python Passenger backend without SPA rewrite
+  RewriteCond %{REQUEST_URI} ^/api(/.*)?$ [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/docs(/.*)?$ [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/openapi\.json$ [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/passenger_wsgi\.py [NC]
+  RewriteRule ^ - [L]
   
-  # Route all other URLs (/login, /hr, /superadmin, /company, /verify) to index.html
+  # Route all other frontend URLs (/joy-man-power-service/hr/agilan/candidates, /hr, /superadmin, /company, /verify) to index.html
   RewriteRule ^ index.html [L]
 </IfModule>
