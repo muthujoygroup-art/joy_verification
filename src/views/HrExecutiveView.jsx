@@ -1920,12 +1920,11 @@ export const HrExecutiveView = () => {
     <div className="space-y-8 animate-fadeIn text-slate-900">
       
       {/* Top Header Banner */}
-      <div className="glass-panel p-5 sm:p-6 border-emerald-200 bg-white space-y-4 relative overflow-hidden shadow-xs rounded-2xl">
+      <div className="glass-panel p-5 sm:p-6 border-emerald-200 bg-white relative overflow-hidden shadow-xs rounded-2xl">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-700" />
         
-        <div className="space-y-3.5">
-          {/* Identity & Company Badges */}
-          <div className="flex items-center gap-3.5 min-w-0">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
             {/* Employer Corporate Logo Display */}
             <div 
               className="relative group/comp-logo w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border border-emerald-200 shadow-2xs p-1 flex items-center justify-center shrink-0 overflow-hidden" 
@@ -1981,88 +1980,82 @@ export const HrExecutiveView = () => {
                   🏢 Company: {isManpower ? 'COMP002' : (isCorporateSol ? 'COMP001' : (currentCompany?.code || 'COMP001'))}
                 </span>
               </div>
-            </div>
-          </div>
-
-          {/* Title & Action Buttons Bar */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1 border-t border-slate-100/80">
-            <div className="min-w-0 flex-1 pr-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight leading-snug">
                 {currentHrDivMeta.title}
               </h2>
               <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed">
                 {currentHrDivMeta.subtitle}
               </p>
             </div>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 self-start lg:self-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('digilocker_vault');
-                }}
-                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 shadow-2xs cursor-pointer transition-all"
-                title="Open DigiLocker Government Data Vault & Digital Verification Desk"
-              >
-                <Landmark className="w-3.5 h-3.5 text-sky-600" />
-                <span>DigiLocker Vault</span>
-              </button>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 self-start xl:self-center">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('digilocker_vault');
+              }}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-sky-900 bg-sky-50 border-sky-300 hover:bg-sky-100 shadow-2xs cursor-pointer transition-all"
+              title="Open DigiLocker Government Data Vault & Digital Verification Desk"
+            >
+              <Landmark className="w-3.5 h-3.5 text-sky-600" />
+              <span>DigiLocker Vault</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setShowUniversalExportModal(true)}
-                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer transition-all"
-                title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
-              >
-                <Download className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Date-Filtered Reports</span>
-              </button>
+            <button
+              type="button"
+              onClick={() => setShowUniversalExportModal(true)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer transition-all"
+              title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
+            >
+              <Download className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Date-Filtered Reports</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => exportAllCandidatesToExcel(filteredCandidates, 'Workforce Verification Master Roster', companies)}
-                className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all"
-                title="Export all filtered candidates and details to Excel (.xlsx)"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Export All Excel (.xlsx)</span>
-              </button>
+            <button
+              type="button"
+              onClick={() => exportAllCandidatesToExcel(filteredCandidates, 'Workforce Verification Master Roster', companies)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all"
+              title="Export all filtered candidates and details to Excel (.xlsx)"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export All Excel (.xlsx)</span>
+            </button>
 
-              <button 
-                onClick={() => {
-                  if (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) {
-                    triggerAccessDenied('Bulk Excel Ingestion', 'Bulk candidate Excel ingestion is disabled for HR staff by your Company Administrator.');
-                    return;
-                  }
-                  setShowBulkImportModal(true);
-                }}
-                className={`btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 transition-all ${
-                  (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
-                }`}
-                title="Bulk import candidates via Excel"
-              >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                <span>Bulk Import (Excel)</span>
-              </button>
+            <button 
+              onClick={() => {
+                if (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) {
+                  triggerAccessDenied('Bulk Excel Ingestion', 'Bulk candidate Excel ingestion is disabled for HR staff by your Company Administrator.');
+                  return;
+                }
+                setShowBulkImportModal(true);
+              }}
+              className={`btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-emerald-800 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 transition-all ${
+                (hrPerms.allowProfileCreation === false || hrPerms.allowBulkExcelUpload === false) ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              title="Bulk import candidates via Excel"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              <span>Bulk Import (Excel)</span>
+            </button>
 
-              <button 
-                onClick={() => {
-                  if (hrPerms.allowProfileCreation === false) {
-                    triggerAccessDenied('Create Employee Profile', 'Manual candidate profile creation is disabled for HR staff by your Company Administrator.');
-                    return;
-                  }
-                  setShowAddForm(true);
-                  setActiveTab('profiler');
-                }}
-                className={`btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-xs font-bold transition-all ${
-                  hrPerms.allowProfileCreation === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
-                }`}
-                title={hrPerms.allowProfileCreation === false ? 'Access Restricted: Profile Creation Disabled by Company Admin' : 'Add Candidate & Send Link'}
-              >
-                <SendHorizontal className="w-4 h-4" />
-                <span>+ Add Candidate & Send Link</span>
-              </button>
-            </div>
+            <button 
+              onClick={() => {
+                if (hrPerms.allowProfileCreation === false) {
+                  triggerAccessDenied('Create Employee Profile', 'Manual candidate profile creation is disabled for HR staff by your Company Administrator.');
+                  return;
+                }
+                setShowAddForm(true);
+                setActiveTab('profiler');
+              }}
+              className={`btn btn-hrexecutive text-xs flex items-center gap-1.5 shadow-xs font-bold transition-all ${
+                hrPerms.allowProfileCreation === false ? 'disabled-feature-action cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              title={hrPerms.allowProfileCreation === false ? 'Access Restricted: Profile Creation Disabled by Company Admin' : 'Add Candidate & Send Link'}
+            >
+              <SendHorizontal className="w-4 h-4" />
+              <span>+ Add Candidate & Send Link</span>
+            </button>
           </div>
         </div>
       </div>
