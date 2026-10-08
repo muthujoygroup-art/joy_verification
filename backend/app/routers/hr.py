@@ -263,10 +263,7 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
                     (Candidate.company_id.ilike(f"%{target}%"))
                 )
         candidates = query.order_by(Candidate.created_at.desc()).all()
-        seen_tokens = set()
-        seen_emails = set()
-        seen_mobiles = set()
-        seen_aadhaars = set()
+        seen_keys = set()
         unique_candidates = []
 
         for c in candidates:
@@ -290,21 +287,11 @@ def get_all_candidates(hr_id: str = None, company_id: str = None, db: Session = 
                 if not c.status:
                     c.status = "Link Sent"
 
-                tok = (c.token or "").strip().lower()
-                cid = (c.id or "").strip().lower()
-                em = (c.email or "").strip().lower()
-                mob_digits = "".join(filter(str.isdigit, str(c.mobile or "")))
-                mob = mob_digits[-10:] if (len(mob_digits) >= 10 and mob_digits[-10:] not in ("9876543210", "1234567890", "0000000000")) else ""
-                aadh = "".join(filter(str.isdigit, str(c.aadhaar_no or "")))
-                aadh_key = aadh if len(aadh) == 12 else ""
-
-                is_dup = (tok and tok in seen_tokens) or (cid and cid in seen_tokens) or (em and "@" in em and em in seen_emails) or (mob and mob in seen_mobiles) or (aadh_key and aadh_key in seen_aadhaars)
-                if not is_dup:
-                    if tok: seen_tokens.add(tok)
-                    if cid: seen_tokens.add(cid)
-                    if em and "@" in em: seen_emails.add(em)
-                    if mob: seen_mobiles.add(mob)
-                    if aadh_key: seen_aadhaars.add(aadh_key)
+                key = str(c.id or c.token or "").strip().lower()
+                if key and key not in seen_keys:
+                    seen_keys.add(key)
+                    unique_candidates.append(serialize_candidate(c))
+                elif not key:
                     unique_candidates.append(serialize_candidate(c))
             except Exception as item_err:
                 logger.warning(f"Error serializing candidate item: {item_err}")
