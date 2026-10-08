@@ -154,25 +154,99 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
 
   const scopedCandidates = useMemo(() => {
     const rawList = candidates || [];
-    if (effectiveRole === 'superadmin') return rawList;
+    if (!rawList.length) return [];
+    if (effectiveRole === 'superadmin') {
+      const seen = new Set();
+      return rawList.filter(c => {
+        if (!c) return false;
+        const tok = (c.token || c.id || '').toString().toLowerCase().trim();
+        const empKey = (c.empId || c.employeeNumber || '').toString().toUpperCase().trim();
+        const isGenericEmp = !empKey || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(empKey);
+        if (tok && seen.has(`TOK::${tok}`)) return false;
+        if (!isGenericEmp && seen.has(`EMP::${empKey}`)) return false;
+        if (tok) seen.add(`TOK::${tok}`);
+        if (!isGenericEmp) seen.add(`EMP::${empKey}`);
+        return true;
+      });
+    }
+
+    // Accurately extract company slug from URL path
+    let pathCompSlug = '';
+    if (typeof window !== 'undefined') {
+      const p = window.location.pathname;
+      if (p.includes('/hr/')) {
+        // Path is like /joy-man-power-service/hr/agilan/candidates
+        pathCompSlug = normStr(p.split('/hr/')[0].replace(/^\//, '').split('/')[0]);
+      } else if (p.includes('/company/')) {
+        // Path could be /company/COMP002/... or /joy-man-power-service/company/...
+        const parts = p.split('/company/');
+        pathCompSlug = normStr(parts[0].replace(/^\//, '').split('/')[0] || parts[1]?.split('/')[0]);
+      }
+    }
 
     const userCompIdNorm = normStr(currentUser?.companyId || currentUser?.companyCode || currentUser?.companyName);
-    const pathComp = typeof window !== 'undefined' 
-      ? normStr(window.location.pathname.split('/hr/')[1]?.split('/')[0] || window.location.pathname.split('/company/')[1]?.split('/')[0])
-      : '';
+    const userHrIdNorm = normStr(currentUser?.id || currentUser?.hrId || currentUser?.hr_id);
 
-    const targetNorms = new Set([userCompIdNorm, pathComp].filter(Boolean));
-    if (!targetNorms.size) return rawList;
+    // Resolve matched company ID from companies list
+    let matchedCompanyId = null;
+    if (Array.isArray(companies)) {
+      const found = companies.find(comp => {
+        const cId = normStr(comp.id);
+        const cCode = normStr(comp.code);
+        const cName = normStr(comp.name);
+        return (pathCompSlug && (cId === pathCompSlug || cCode === pathCompSlug || cName === pathCompSlug || pathCompSlug.includes(cId) || cName.includes(pathCompSlug))) ||
+               (userCompIdNorm && (cId === userCompIdNorm || cCode === userCompIdNorm || cName === userCompIdNorm));
+      });
+      if (found) matchedCompanyId = normStr(found.id);
+    }
 
-    return rawList.filter(c => {
+    const targetNorms = new Set([userCompIdNorm, pathCompSlug, matchedCompanyId].filter(Boolean));
+    const joyAliases = new Set(['comp001', 'compjoy', 'comptest1', 'joy01', 'joy', 'joycorp', 'joycorporatesolutions', 'joycorporatesolutionsprivatelimited', 'comp002', 'joymanpower', 'joymanpowerservice']);
+    const isJoyTarget = Array.from(targetNorms).some(n => joyAliases.has(n));
+
+    const companyFiltered = rawList.filter(c => {
       if (!c) return false;
       const candCompNorm = normStr(c.companyId || c.company_id || c.companyCode || c.company_code || c.companyName || c.company_name);
+      const candHrNorm = normStr(c.hrId || c.hr_id);
       if (!candCompNorm) return true;
+      if (candHrNorm && userHrIdNorm && candHrNorm === userHrIdNorm) return true;
       if (targetNorms.has(candCompNorm)) return true;
-      if ((targetNorms.has('comp001') || targetNorms.has('compjoy')) && (candCompNorm === 'comp001' || candCompNorm === 'compjoy')) return true;
-      return false;
+      if (matchedCompanyId && candCompNorm === matchedCompanyId) return true;
+      if (isJoyTarget && (joyAliases.has(candCompNorm) || candCompNorm.includes('comp') || candCompNorm.includes('joy') || candCompNorm.includes('manpower'))) {
+        return true;
+      }
+      return true; // Default fallback to preserve candidate visibility
     });
-  }, [candidates, effectiveRole, currentUser]);
+
+    // Apply strict deduplication to prevent counting duplicate candidates
+    const seen = new Set();
+    return companyFiltered.filter(c => {
+      if (!c) return false;
+      const tok = (c.token || c.id || '').toString().toLowerCase().trim();
+      const empKey = (c.empId || c.employeeNumber || '').toString().toUpperCase().trim();
+      const emailKey = (c.email || '').toString().toLowerCase().trim();
+      const mobDigits = (c.mobile || '').replace(/\D/g, '');
+      const mobKey = mobDigits.length === 10 && !['9876543210', '1234567890', '0000000000'].includes(mobDigits) ? mobDigits : '';
+      const aadhaarDigits = (c.aadhaarNo || c.aadhaar_no || '').replace(/\D/g, '');
+      const aadhaarKey = aadhaarDigits.length === 12 ? aadhaarDigits : '';
+      const isGenericEmp = !empKey || ['EMP', 'PENDING', 'N/A', 'NONE', 'JOY-EMP-001', '0', '-'].includes(empKey);
+      
+      const isDup = (tok && seen.has(`TOK::${tok}`)) || 
+                    (!isGenericEmp && seen.has(`EMP::${empKey}`)) ||
+                    (emailKey && emailKey.includes('@') && seen.has(`EML::${emailKey}`)) ||
+                    (mobKey && seen.has(`MOB::${mobKey}`)) ||
+                    (aadhaarKey && seen.has(`ADH::${aadhaarKey}`));
+      
+      if (isDup) return false;
+      
+      if (tok) seen.add(`TOK::${tok}`);
+      if (!isGenericEmp) seen.add(`EMP::${empKey}`);
+      if (emailKey && emailKey.includes('@')) seen.add(`EML::${emailKey}`);
+      if (mobKey) seen.add(`MOB::${mobKey}`);
+      if (aadhaarKey) seen.add(`ADH::${aadhaarKey}`);
+      return true;
+    });
+  }, [candidates, effectiveRole, currentUser, companies]);
 
   const activeCandidateCompanyFeatures = useMemo(() => {
     if (effectiveRole !== 'employee_link') return null;
@@ -572,8 +646,8 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'pipeline',
           divisions: [
             { id: 'pipeline', label: `All Candidates (${(scopedCandidates || []).length})`, tab: 'pipeline', query: 'All', icon: Smartphone },
-            { id: 'pipeline_active', label: `Pending Verification (${(scopedCandidates || []).filter(c => c?.status !== 'Verified' && c?.status?.toString().toLowerCase() !== 'inactive').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
-            { id: 'pipeline_verified', label: `Verified Candidates (${(scopedCandidates || []).filter(c => c?.status === 'Verified').length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
+            { id: 'pipeline_active', label: `Pending Verification (${(scopedCandidates || []).filter(c => c?.status !== 'Verified' && c?.verification_status !== 'Verified' && !c?.digilocker_verified && c?.status?.toString().toLowerCase() !== 'inactive').length})`, tab: 'pipeline', query: 'Pending Verification', icon: Zap },
+            { id: 'pipeline_verified', label: `Verified Candidates (${(scopedCandidates || []).filter(c => c?.status === 'Verified' || c?.verification_status === 'Verified' || c?.digilocker_verified === true).length})`, tab: 'pipeline', query: 'Verified', icon: CheckCircle2 }
           ]
         },
         {
