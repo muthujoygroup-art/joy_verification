@@ -1364,4 +1364,35 @@ def request_company_plan_upgrade(company_id: str, payload: dict, db: Session = D
         "upgrade_request": req_record
     }
 
+@router.get("/{company_id}/candidates")
+def get_company_candidates(company_id: str, db: Session = Depends(get_db)):
+    """Fetch all candidates belonging to a specific company ID or code with multi-alias support"""
+    from backend.app.routers.hr import serialize_candidate
+    try:
+        target = company_id.strip()
+        joy_aliases = ["comp001", "comp-joy", "compjoy", "comp-test-1", "joy01", "joy", "joycorp", "comp002", "joymanpower", "joymanpowerservice", "joy-man-power-service", "comp-002", "comp_002", "manpower"]
+        clean_target = target.lower().replace("-", "").replace("_", "")
+        
+        query = db.query(Candidate)
+        if clean_target in [a.replace("-", "").replace("_", "") for a in joy_aliases]:
+            query = query.filter(
+                (Candidate.company_id.in_(["COMP001", "COMP002", "comp-joy", "comp-test-1", "JOY01", "compjoy", "comp-002", target])) |
+                (Candidate.company_id.ilike("%comp%")) |
+                (Candidate.company_id.ilike("%joy%")) |
+                (Candidate.company_id.ilike("%manpower%"))
+            )
+        else:
+            comp = db.query(Company).filter((Company.id == target) | (Company.code == target)).first()
+            target_id = comp.id if comp else target
+            query = query.filter(
+                (Candidate.company_id == target_id) | 
+                (Candidate.company_id == target) | 
+                (Candidate.company_id.ilike(f"%{target}%"))
+            )
+        candidates = query.order_by(Candidate.created_at.desc()).all()
+        return [serialize_candidate(c) for c in candidates]
+    except Exception as e:
+        print(f"Error fetching company candidates: {e}")
+        return []
+
 
