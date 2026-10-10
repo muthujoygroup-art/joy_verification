@@ -1,6 +1,9 @@
 import time
+import os
 import logging
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import settings
 from backend.app.database import engine, Base
@@ -422,9 +425,78 @@ def get_security_metrics():
         }
     }
 
+# ---------------------------------------------------------------------------
+# 🌐 Dynamic Frontend SPA Serving & Static Asset Mount
+# ---------------------------------------------------------------------------
+CURRENT_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+POSSIBLE_DIST_PATHS = [
+    os.path.abspath(os.path.join(CURRENT_FILE_DIR, "..", "..", "dist")),
+    "/home/joyglo52/repositories/joytrueprofile/dist",
+    "/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com",
+    "/home/joyglo52/trueprofile.joycorporatesolutions.com",
+    os.path.abspath(os.path.join(os.getcwd(), "dist")),
+]
+
+dist_dir = None
+for p in POSSIBLE_DIST_PATHS:
+    if os.path.isdir(p) and os.path.isfile(os.path.join(p, "index.html")):
+        dist_dir = p
+        break
+
+if not dist_dir:
+    dist_dir = os.path.abspath(os.path.join(CURRENT_FILE_DIR, "..", "..", "dist"))
+
+# Mount /assets if assets directory exists
+if os.path.isdir(dist_dir):
+    assets_dir = os.path.join(dist_dir, "assets")
+    if os.path.isdir(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="frontend_assets")
+
+@app.get("/api")
+@app.get(f"{settings.API_PREFIX}")
+def api_root():
+    return {
+        "service": "JOY DATA VERIFICATION API",
+        "version": settings.VERSION,
+        "documentation": "/api/docs",
+        "status": "online"
+    }
+
 @app.get("/")
-def root():
+def serve_root():
+    index_file = os.path.join(dist_dir, "index.html")
+    if os.path.isfile(index_file):
+        return FileResponse(index_file)
     return {
         "message": "JOY DATA VERIFICATION API is running.",
-        "documentation": "/docs"
+        "documentation": "/api/docs"
     }
+
+@app.get("/{full_path:path}")
+async def serve_spa_catchall(full_path: str):
+    clean_path = full_path.lstrip("/")
+    
+    # 1. Do not intercept backend API routes, documentation, or system endpoints
+    if (clean_path.startswith("api") or 
+        clean_path.startswith("docs") or 
+        clean_path.startswith("redoc") or 
+        clean_path.startswith("openapi.json") or 
+        clean_path.startswith("health") or
+        clean_path.startswith("system")):
+        raise HTTPException(status_code=404, detail="API route not found")
+
+    # 2. If requested static file exists in dist, serve directly (favicon, images, etc.)
+    static_file = os.path.join(dist_dir, clean_path)
+    if os.path.isfile(static_file):
+        return FileResponse(static_file)
+
+    # 3. For all React SPA routes (/joy-man-power-service/hr/agilan/candidates, /login, /superadmin, /verify/...)
+    index_file = os.path.join(dist_dir, "index.html")
+    if os.path.isfile(index_file):
+        return FileResponse(index_file)
+
+    return {
+        "message": "JOY DATA VERIFICATION API is running.",
+        "documentation": "/api/docs"
+    }
+
