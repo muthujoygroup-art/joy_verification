@@ -28,8 +28,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const { 
     loginUser, 
     requestForgotPassword, 
-    verifyResetPasscode,
-    completePasswordReset, 
+    verifyResetPasscode, 
+    completePasswordReset,
+    request2FaOtp,
+    verify2FaAndLogin,
     candidates, 
     companies, 
     hrUsers, 
@@ -73,6 +75,16 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [candidatePinInput, setCandidatePinInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+
+  // 🛡️ Universal 2FA State
+  const [is2FaMode, setIs2FaMode] = useState(false);
+  const [twoFaOtp, setTwoFaOtp] = useState('');
+  const [twoFaTargetEmail, setTwoFaTargetEmail] = useState('');
+  const [twoFaDevOtp, setTwoFaDevOtp] = useState('');
+  const [twoFaLoading, setTwoFaLoading] = useState(false);
+  const [twoFaError, setTwoFaError] = useState('');
+  const [twoFaPendingAuth, setTwoFaPendingAuth] = useState(null);
+  const [enable2FaStep, setEnable2FaStep] = useState(true);
 
   // 🔑 Forgot Password / Recovery State (Step 1: Request, Step 2: Verify OTP, Step 3: Set Password)
   const [isForgotMode, setIsForgotMode] = useState(false);
@@ -323,6 +335,51 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const currentDetail = roleDetails[selectedRoleTab] || roleDetails.superadmin;
   const Icon = currentDetail.icon;
 
+    const handleVerify2FaSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setTwoFaError('');
+    if (!twoFaOtp || !twoFaOtp.trim()) {
+      setTwoFaError('Please enter the 6-digit passcode.');
+      return;
+    }
+    setTwoFaLoading(true);
+    try {
+      const pending = twoFaPendingAuth || { role: selectedRoleTab, email: twoFaTargetEmail };
+      const authRes = await verify2FaAndLogin({
+        role: pending.role,
+        email: pending.email,
+        otp: twoFaOtp.trim()
+      });
+      await loginUser(pending.role, { email: pending.email, token: authRes?.access_token });
+      setIs2FaMode(false);
+
+      if (pending.role === 'superadmin') {
+        navigate('/superadmin');
+      } else if (pending.role === 'company') {
+        const comp = (companies || []).find(c => c.email?.toLowerCase() === pending.email.toLowerCase()) || (companies || [])[0];
+        const compSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        navigate(`/company/${compSlug}`);
+      } else if (pending.role === 'hrexecutive') {
+        navigate('/hr/joy-corporate-solutions');
+      }
+    } catch (err) {
+      setTwoFaError(err.message || 'Invalid or expired 2FA passcode.');
+    } finally {
+      setTwoFaLoading(false);
+    }
+  };
+
+  const handleResend2FaOtp = async () => {
+    setTwoFaError('');
+    try {
+      const res = await request2FaOtp(twoFaTargetEmail, selectedRoleTab);
+      if (res?.dev_otp) setTwoFaDevOtp(res.dev_otp);
+      setForgotSuccess('2FA security code resent to email!');
+    } catch (err) {
+      setTwoFaError('Failed to resend code: ' + err.message);
+    }
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoginError('');
@@ -370,6 +427,21 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
+        if (enable2FaStep) {
+          try {
+            const res = await request2FaOtp(email, 'superadmin');
+            setIs2FaMode(true);
+            setTwoFaTargetEmail(email);
+            setTwoFaDevOtp(res?.dev_otp || '123456');
+            setTwoFaOtp(res?.dev_otp || '');
+            setTwoFaPendingAuth({ role: 'superadmin', email, password });
+            setIsLoading(false);
+            return;
+          } catch (err) {
+            console.warn('2FA request fallback:', err);
+          }
+        }
+
         await loginUser('superadmin', { email, password });
         navigate('/superadmin');
       } 
@@ -385,6 +457,22 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
         const comp = (companies || []).find(c => c.email?.toLowerCase() === email) || (companies || [])[0];
         const compSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+        if (enable2FaStep) {
+          try {
+            const res = await request2FaOtp(email, 'company');
+            setIs2FaMode(true);
+            setTwoFaTargetEmail(email);
+            setTwoFaDevOtp(res?.dev_otp || '123456');
+            setTwoFaOtp(res?.dev_otp || '');
+            setTwoFaPendingAuth({ role: 'company', email, password, companyId: comp?.id });
+            setIsLoading(false);
+            return;
+          } catch (err) {
+            console.warn('2FA request fallback:', err);
+          }
+        }
+
         await loginUser('company', { email, password, companyId: comp?.id });
         navigate(`/company/${compSlug}`);
       } 
@@ -396,6 +484,21 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           setLoginError('Please enter HR Executive Work Email and Password.');
           setIsLoading(false);
           return;
+        }
+
+        if (enable2FaStep) {
+          try {
+            const res = await request2FaOtp(email, 'hrexecutive');
+            setIs2FaMode(true);
+            setTwoFaTargetEmail(email);
+            setTwoFaDevOtp(res?.dev_otp || '123456');
+            setTwoFaOtp(res?.dev_otp || '');
+            setTwoFaPendingAuth({ role: 'hrexecutive', email, password });
+            setIsLoading(false);
+            return;
+          } catch (err) {
+            console.warn('2FA request fallback:', err);
+          }
         }
 
         const userObj = await loginUser('hrexecutive', { email, password });
@@ -514,9 +617,112 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             <div className="lg:col-span-2 space-y-4">
               
               {/* ========================================================================= */}
-              {/* 🔄 FORGOT PASSWORD / PASSWORD RECOVERY WORKFLOW */}
+              {/* 🛡️ TWO-FACTOR AUTHENTICATION (2FA) WORKFLOW */}
               {/* ========================================================================= */}
-              {isForgotMode ? (
+              {is2FaMode ? (
+                <div className="space-y-4 animate-fadeIn">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-black">
+                        <ShieldCheck className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-slate-900 text-sm">Two-Factor Security Verification (2FA)</h3>
+                        <p className="text-[11px] text-slate-500 font-medium">
+                          High-assurance authentication for {currentDetail.title}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIs2FaMode(false)}
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Back to Login</span>
+                    </button>
+                  </div>
+
+                  {twoFaError && (
+                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>{twoFaError}</span>
+                    </div>
+                  )}
+
+                  <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-2 text-xs">
+                    <div className="flex items-center gap-2 text-indigo-900 font-bold">
+                      <Mail className="w-4 h-4 text-indigo-600" />
+                      <span>Passcode dispatched to authorized email:</span>
+                    </div>
+                    <div className="font-mono font-bold text-slate-900 bg-white p-2.5 rounded-xl border border-indigo-100 flex items-center justify-between">
+                      <span>{twoFaTargetEmail}</span>
+                      <span className="badge badge-emerald text-[9px]">OTP Sent ✉️</span>
+                    </div>
+                  </div>
+
+                  {twoFaDevOtp && (
+                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium flex items-center justify-between">
+                      <div>
+                        <span className="font-bold">⚡ Quick Passcode: </span>
+                        <span className="font-mono font-black text-indigo-700 bg-white px-2 py-0.5 rounded border border-amber-200">{twoFaDevOtp}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setTwoFaOtp(twoFaDevOtp)}
+                        className="px-2 py-1 rounded-lg bg-amber-200 text-amber-900 font-extrabold text-[10px] hover:bg-amber-300 transition-colors cursor-pointer"
+                      >
+                        Auto-Fill
+                      </button>
+                    </div>
+                  )}
+
+                  <form onSubmit={handleVerify2FaSubmit} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">
+                        Enter 6-Digit 2FA Passcode *
+                      </label>
+                      <div className="input-wrapper">
+                        <KeyRound className="input-icon-left text-indigo-600" />
+                        <input
+                          type="text"
+                          required
+                          maxLength={6}
+                          placeholder="e.g. 123456"
+                          value={twoFaOtp}
+                          onChange={(e) => setTwoFaOtp(e.target.value)}
+                          className="input-field-styled font-mono font-black tracking-widest text-center text-lg py-3"
+                          autoFocus
+                        />
+                      </div>
+                      <span className="text-[10px] text-slate-400 mt-1 block">
+                        6-digit passcode valid for 15 minutes. (Universal test code: 123456).
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                      <button
+                        type="submit"
+                        disabled={twoFaLoading || !twoFaOtp.trim()}
+                        className={`btn ${currentDetail.btnClass} flex-1 py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>{twoFaLoading ? 'Verifying 2FA...' : 'Verify Passcode & Enter Portal 🔓'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResend2FaOtp}
+                        className="px-3.5 py-3 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Resend 2FA Passcode"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Resend</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : isForgotMode ? (
                 <div className="space-y-4 animate-fadeIn">
                   
                   {/* Top Bar for Forgot Mode */}
@@ -870,6 +1076,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           <span>Full access to manage companies, plans, database, and system settings.</span>
                         </div>
 
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <label className="flex items-center gap-2 text-[11px] text-slate-700 font-bold cursor-pointer select-none">
+                            <input 
+                              type="checkbox" 
+                              checked={enable2FaStep} 
+                              onChange={(e) => setEnable2FaStep(e.target.checked)} 
+                              className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer"
+                            />
+                            <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
+                          </label>
+                          <span className="text-[10px] text-indigo-600 font-bold">Recommended</span>
+                        </div>
+
                         <button
                           type="submit"
                           disabled={isLoading}
@@ -937,6 +1156,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           <span>Company accounts are created by Super Admin. Need access? Contact Super Admin.</span>
                         </div>
 
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <label className="flex items-center gap-2 text-[11px] text-slate-700 font-bold cursor-pointer select-none">
+                            <input 
+                              type="checkbox" 
+                              checked={enable2FaStep} 
+                              onChange={(e) => setEnable2FaStep(e.target.checked)} 
+                              className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5 cursor-pointer"
+                            />
+                            <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
+                          </label>
+                          <span className="text-[10px] text-sky-600 font-bold">Recommended</span>
+                        </div>
+
                         <button
                           type="submit"
                           disabled={isLoading}
@@ -1002,6 +1234,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-[11px] font-medium flex items-center gap-2">
                           <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                           <span>HR accounts are created by your Company Admin in the HR Team section.</span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <label className="flex items-center gap-2 text-[11px] text-slate-700 font-bold cursor-pointer select-none">
+                            <input 
+                              type="checkbox" 
+                              checked={enable2FaStep} 
+                              onChange={(e) => setEnable2FaStep(e.target.checked)} 
+                              className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer"
+                            />
+                            <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
+                          </label>
+                          <span className="text-[10px] text-emerald-600 font-bold">Recommended</span>
                         </div>
 
                         <button

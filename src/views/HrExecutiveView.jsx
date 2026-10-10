@@ -402,7 +402,10 @@ export const HrExecutiveView = () => {
     dispatchReVerificationLink,
     approveCandidateSubmission,
     requestCandidateCorrections,
-    triggerAccessDenied
+    triggerAccessDenied,
+    candidateExpiryAlerts,
+    fetchExpiryAlerts,
+    dispatchCandidateLink
   } = useApp();
 
   const [activeMainSection, setActiveMainSection] = useState('pipeline_dossiers');
@@ -2505,6 +2508,23 @@ export const HrExecutiveView = () => {
                         )}
                       </div>
                     </div>
+
+                    {/* Multi-Channel Dispatch Telemetry Badge */}
+                    {cand.dispatchChannel && (
+                      <div className="flex items-center justify-between text-[10px] bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 font-medium">
+                        <span className="text-slate-500 font-bold">Dispatched via:</span>
+                        <div className="flex items-center gap-1 font-bold">
+                          {cand.dispatchChannel === 'WHATSAPP' && <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">💬 WhatsApp</span>}
+                          {cand.dispatchChannel === 'SMS' && <span className="text-cyan-700 bg-cyan-50 px-1.5 py-0.5 rounded border border-cyan-200">📱 Carrier SMS</span>}
+                          {cand.dispatchChannel === 'EMAIL' && <span className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">✉️ Corporate Email</span>}
+                          {cand.dispatchedAt && (
+                            <span className="text-slate-400 font-mono text-[9px]">
+                              • {new Date(cand.dispatchedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* 60-Day Validity Bar if Verified */}
                     {lc.isVerified && (

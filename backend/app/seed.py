@@ -133,10 +133,11 @@ def seed_database(force_refresh=False):
         hr1 = db.query(HrUser).filter(HrUser.email == "agilan@joycorporatesolutions.com").first()
         if not hr1:
             hr1 = HrUser(
-                id="hr_001",
+                id="hr_comp002_001",
                 company_id="COMP002",
                 name="Agilan (Lead HR)",
                 email="agilan@joycorporatesolutions.com",
+                password_hash="Hr@Recruiter2026",
                 dept="Talent Acquisition",
                 active_links=5,
                 status="Active",
@@ -145,14 +146,38 @@ def seed_database(force_refresh=False):
                     "can_verify": True,
                     "can_export": True,
                     "designation": "Lead HR Recruiter",
-                    "phone": "9876543210",
+                    "phone": "+91 78459 66580",
                     "activation_status": "Active"
                 }
             )
             db.add(hr1)
+            db.commit()
+
+        hr2 = db.query(HrUser).filter(HrUser.email == "haripriya@joycorporatesolutions.com").first()
+        if not hr2:
+            hr2 = HrUser(
+                id="hr_comp001_001",
+                company_id="COMP001",
+                name="Hari priya",
+                email="haripriya@joycorporatesolutions.com",
+                password_hash="Hr@Recruiter2026",
+                dept="Managing Recruitment",
+                active_links=0,
+                status="Active",
+                permissions={
+                    "can_create": True,
+                    "can_verify": True,
+                    "can_export": True,
+                    "designation": "HR & ADMIN",
+                    "phone": "+91 95007 88211",
+                    "activation_status": "Active"
+                }
+            )
+            db.add(hr2)
             db.commit()
     except Exception as e:
         db.rollback()
         logger.error(f"Seed error: {e}")
     finally:
         db.close()
+

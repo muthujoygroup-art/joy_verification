@@ -35,13 +35,18 @@ export const QrCodeModal = ({
   hrPreferences,
   onEditProfile
 }) => {
-  const { companies, showToast, updateCandidatePassword } = useApp();
+  const { companies, showToast, updateCandidatePassword, dispatchCandidateLink, templateRequests } = useApp();
   const [copiedInternal, setCopiedInternal] = useState(false);
   const [passcodeText, setPasscodeText] = useState('1234');
   const [isPasscodeSaved, setIsPasscodeSaved] = useState(false);
   
-  // Email dispatching states
+  // Multi-Channel Dispatch States
+  const [selectedChannel, setSelectedChannel] = useState('WHATSAPP'); // 'WHATSAPP' | 'SMS' | 'EMAIL'
   const [targetEmail, setTargetEmail] = useState('');
+  const [targetMobile, setTargetMobile] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+  const [isDispatchingChannel, setIsDispatchingChannel] = useState(false);
+  const [dispatchSuccessMsg, setDispatchSuccessMsg] = useState('');
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSentSuccess, setEmailSentSuccess] = useState(false);
   const [emailSuccessMsg, setEmailSuccessMsg] = useState('');
@@ -50,6 +55,7 @@ export const QrCodeModal = ({
     if (candidate) {
       setPasscodeText(candidate.portalPassword || candidate.securityPin || '1234');
       setTargetEmail(candidate.email || '');
+      setTargetMobile(candidate.mobile || '');
 
       // Ensure candidate token is persisted in PostgreSQL DB so mobile scanners resolve it
       if (candidate.token) {
@@ -176,6 +182,20 @@ export const QrCodeModal = ({
       };
 
       const res = await api.dispatchCandidateEmail(payload);
+      
+      // Log delivery channel and timestamp telemetry
+      try {
+        if (typeof dispatchCandidateLink === 'function') {
+          await dispatchCandidateLink(candidate.id || candidate.token, {
+            channel: 'EMAIL',
+            template_name: 'Corporate Email Onboarding Invite',
+            recipient: destEmail
+          });
+        }
+      } catch (telErr) {
+        console.warn('Telemetry log warning:', telErr);
+      }
+
       if (res && res.success) {
         if (res.email_sent === false) {
           setEmailSentSuccess(true);
@@ -209,16 +229,70 @@ export const QrCodeModal = ({
     if (showToast) showToast(`🎲 Generated & saved random PIN: ${randomPin}`);
   };
 
-  // 💬 1-Click WhatsApp Direct Share (No server-side configuration needed)
-  const handleShareWhatsApp = () => {
-    const rawMobile = (candidate.mobile || '').replace(/\D/g, '');
+  // 💬 WhatsApp Direct Share with Channel Telemetry
+  const handleShareWhatsApp = async () => {
+    const rawMobile = (targetMobile || candidate.mobile || '').replace(/\D/g, '');
     const phone = rawMobile.length >= 10 ? `91${rawMobile.slice(-10)}` : '';
     const cleanPin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
-    const message = `Hello ${candidate.name},\n\nPlease complete your official digital identity & background onboarding verification for ${company.name} using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n🔐 Access PIN: ${cleanPin}\n\nIssued by: ${hrSenderName} (${company.name})\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`;
+    
+    // Check if approved company template is selected
+    const chosenTemplate = (templateRequests || []).find(t => t.id === selectedTemplateId && t.channel === 'WHATSAPP');
+    let message = '';
+    if (chosenTemplate) {
+      message = chosenTemplate.template_body
+        .replace(/{{candidate_name}}/g, candidate.name)
+        .replace(/{{company_name}}/g, company.name)
+        .replace(/{{verification_link}}/g, verifyUrl)
+        .replace(/{{expiry_date}}/g, '15 Minutes');
+    } else {
+      message = `Hello ${candidate.name},\n\nPlease complete your official sovereign identity & background onboarding verification for ${company.name} using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n\nIssued by: ${hrSenderName} (${company.name})\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`;
+    }
+
+    try {
+      if (typeof dispatchCandidateLink === 'function') {
+        await dispatchCandidateLink(candidate.id || candidate.token, {
+          channel: 'WHATSAPP',
+          template_name: chosenTemplate?.template_name || 'Standard WhatsApp Invite',
+          recipient: targetMobile || candidate.mobile
+        });
+      }
+    } catch (telErr) {
+      console.warn('Telemetry log warning:', telErr);
+    }
+
     const waUrl = phone 
       ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`
       : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');
+    if (showToast) showToast('💬 Link dispatched via WhatsApp & delivery channel logged!');
+  };
+
+  // 📱 Carrier SMS Dispatch with Telecom Gate
+  const handleSendCarrierSms = async () => {
+    const rawMobile = (targetMobile || candidate.mobile || '').replace(/\D/g, '');
+    if (!rawMobile || rawMobile.length < 10) {
+      if (showToast) showToast('Please enter a valid 10-digit candidate mobile number for SMS dispatch', 'error');
+      return;
+    }
+
+    setIsDispatchingChannel(true);
+    try {
+      const chosenTemplate = (templateRequests || []).find(t => t.id === selectedTemplateId && t.channel === 'SMS');
+      if (typeof dispatchCandidateLink === 'function') {
+        await dispatchCandidateLink(candidate.id || candidate.token, {
+          channel: 'SMS',
+          template_name: chosenTemplate?.template_name || 'DLT Carrier SMS Template',
+          recipient: rawMobile
+        });
+      }
+      setDispatchSuccessMsg(`📱 SMS link dispatched to +91 ${rawMobile.slice(-10)}!`);
+      if (showToast) showToast(`📱 Carrier SMS link dispatched to candidate!`);
+      setTimeout(() => setDispatchSuccessMsg(''), 5000);
+    } catch (err) {
+      if (showToast) showToast(`SMS dispatch error: ${err.message}`, 'error');
+    } finally {
+      setIsDispatchingChannel(false);
+    }
   };
 
   useEffect(() => {
@@ -287,87 +361,258 @@ export const QrCodeModal = ({
             </span>
           </div>
 
-          {/* 📧 SECTION 1: HR SENDER TO EMPLOYEE RECIPIENT EMAIL DISPATCH BOX */}
-          <div className="p-4 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 border-2 border-indigo-300/80 rounded-2xl space-y-3 shadow-xs">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-black text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
-                <Mail className="w-4 h-4 text-indigo-600" />
-                <span>Send Link to Employee Mail (From HR)</span>
-              </label>
-              <span className="badge badge-indigo text-[9px] font-bold">Official SMTP</span>
-            </div>
+          {/* 📡 CHANNEL SELECTOR: WHATSAPP vs CARRIER SMS vs CORPORATE EMAIL */}
+          <div className="p-1.5 bg-slate-100 rounded-2xl flex items-center gap-1 text-xs font-bold border border-slate-200">
+            <button
+              type="button"
+              onClick={() => setSelectedChannel('WHATSAPP')}
+              className={`flex-1 py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                selectedChannel === 'WHATSAPP' 
+                  ? 'bg-emerald-600 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>WhatsApp 💬</span>
+            </button>
 
-            <div className="space-y-2 text-xs">
-              {/* Sender HR Details */}
-              <div className="bg-white/90 p-2.5 rounded-xl border border-indigo-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">From (HR):</span>
-                  <span className="font-bold text-slate-900">{hrSenderName}</span>
-                  <span className="text-[11px] font-mono text-indigo-700 font-semibold">&lt;{hrSenderEmail}&gt;</span>
-                </div>
-              </div>
+            <button
+              type="button"
+              onClick={() => setSelectedChannel('SMS')}
+              className={`flex-1 py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                selectedChannel === 'SMS' 
+                  ? 'bg-cyan-600 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Carrier SMS 📱</span>
+            </button>
 
-              {/* Recipient Employee Email Input */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-700">To Employee Email:</span>
-                  {!targetEmail && <span className="text-[10px] text-rose-600 font-bold">Enter candidate email</span>}
-                </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input 
-                    type="email"
-                    value={targetEmail}
-                    onChange={(e) => setTargetEmail(e.target.value)}
-                    placeholder="e.g. employee@gmail.com"
-                    className="flex-1 bg-white border-2 border-indigo-200 focus:border-indigo-600 text-slate-900 text-xs py-2 px-3 rounded-xl outline-none font-medium"
-                  />
-                  
-                  <button
-                    type="button"
-                    onClick={handleSendEmailInvite}
-                    disabled={isSendingEmail}
-                    className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0 cursor-pointer"
-                  >
-                    {isSendingEmail ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Sending...</span>
-                      </>
-                    ) : emailSentSuccess ? (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Sent ✓</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Send Mail 📧</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Fallback & Email Status Details */}
-              {emailSuccessMsg && (
-                <div className={`p-2.5 rounded-xl text-[11px] font-bold flex items-center justify-between gap-1.5 animate-fadeIn ${
-                  emailSentSuccess ? 'bg-emerald-50 border border-emerald-300 text-emerald-900' : 'bg-amber-50 border border-amber-300 text-amber-900'
-                }`}>
-                  <div className="flex items-center gap-1.5">
-                    {emailSentSuccess ? <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <Info className="w-3.5 h-3.5 text-amber-600 shrink-0" />}
-                    <span>{emailSuccessMsg}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleOpenMailClient}
-                    className="underline text-indigo-700 hover:text-indigo-900 cursor-pointer text-[10px] shrink-0"
-                  >
-                    Open Mail App ↗
-                  </button>
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedChannel('EMAIL')}
+              className={`flex-1 py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                selectedChannel === 'EMAIL' 
+                  ? 'bg-indigo-600 text-white shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Email ✉️</span>
+            </button>
           </div>
+
+          {/* 💬 CHANNEL 1: WHATSAPP DISPATCH BOX */}
+          {selectedChannel === 'WHATSAPP' && (
+            <div className="p-4 bg-gradient-to-r from-emerald-50/80 to-teal-50/80 border-2 border-emerald-300/80 rounded-2xl space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-emerald-600" />
+                  <span>WhatsApp Link Dispatch (Corporate Gateway)</span>
+                </label>
+                <span className="badge badge-emerald text-[9px] font-bold">+91 94426 77726 Active 🟢</span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                {/* Template Selector */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Select Message Template:</label>
+                  <select
+                    value={selectedTemplateId}
+                    onChange={(e) => setSelectedTemplateId(e.target.value)}
+                    className="w-full p-2 bg-white rounded-xl border border-emerald-200 text-xs font-medium"
+                  >
+                    <option value="">Default Onboarding Invitation Template</option>
+                    {(templateRequests || [])
+                      .filter(t => t.channel === 'WHATSAPP' && (t.status === 'APPROVED' || !t.company_id || t.company_id === candidate.companyId))
+                      .map(t => (
+                        <option key={t.id} value={t.id}>
+                          {t.template_name} ({t.category || 'General'})
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[11px] font-bold text-slate-700 block">Candidate Mobile Number:</span>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input 
+                      type="tel"
+                      value={targetMobile}
+                      onChange={(e) => setTargetMobile(e.target.value)}
+                      placeholder="e.g. +91 9876543210"
+                      className="flex-1 bg-white border-2 border-emerald-200 focus:border-emerald-600 text-slate-900 text-xs py-2 px-3 rounded-xl outline-none font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleShareWhatsApp}
+                      className="py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0 cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Dispatch WhatsApp 💬</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 📱 CHANNEL 2: CARRIER SMS DISPATCH BOX */}
+          {selectedChannel === 'SMS' && (
+            <div className="p-4 bg-gradient-to-r from-cyan-50/80 to-sky-50/80 border-2 border-cyan-300/80 rounded-2xl space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black text-cyan-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <Smartphone className="w-4 h-4 text-cyan-600" />
+                  <span>Telecom DLT Carrier SMS Dispatch</span>
+                </label>
+                <span className="badge badge-cyan text-[9px] font-bold">DLT Header: JOYCORP</span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                {/* Template Selector */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Select DLT Registered SMS Template:</label>
+                  <select
+                    value={selectedTemplateId}
+                    onChange={(e) => setSelectedTemplateId(e.target.value)}
+                    className="w-full p-2 bg-white rounded-xl border border-cyan-200 text-xs font-medium"
+                  >
+                    <option value="">Standard Candidate Onboarding Link (DLT-1407)</option>
+                    {(templateRequests || [])
+                      .filter(t => t.channel === 'SMS' && (t.status === 'APPROVED' || !t.company_id || t.company_id === candidate.companyId))
+                      .map(t => (
+                        <option key={t.id} value={t.id}>
+                          {t.template_name} ({t.category || 'General'})
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[11px] font-bold text-slate-700 block">Candidate Mobile Number:</span>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input 
+                      type="tel"
+                      value={targetMobile}
+                      onChange={(e) => setTargetMobile(e.target.value)}
+                      placeholder="e.g. 9876543210"
+                      className="flex-1 bg-white border-2 border-cyan-200 focus:border-cyan-600 text-slate-900 text-xs py-2 px-3 rounded-xl outline-none font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendCarrierSms}
+                      disabled={isDispatchingChannel}
+                      className="py-2 px-4 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0 cursor-pointer"
+                    >
+                      {isDispatchingChannel ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Dispatching...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Dispatch SMS 📱</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {dispatchSuccessMsg && (
+                  <div className="p-2.5 rounded-xl text-[11px] font-bold bg-cyan-50 border border-cyan-300 text-cyan-900 flex items-center gap-1.5 animate-fadeIn">
+                    <Check className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
+                    <span>{dispatchSuccessMsg}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 📧 CHANNEL 3: HR CORPORATE EMAIL DISPATCH BOX */}
+          {selectedChannel === 'EMAIL' && (
+            <div className="p-4 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 border-2 border-indigo-300/80 rounded-2xl space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <Mail className="w-4 h-4 text-indigo-600" />
+                  <span>Send Link to Employee Mail (From HR)</span>
+                </label>
+                <span className="badge badge-indigo text-[9px] font-bold">Official SMTP</span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                {/* Sender HR Details */}
+                <div className="bg-white/90 p-2.5 rounded-xl border border-indigo-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">From (HR):</span>
+                    <span className="font-bold text-slate-900">{hrSenderName}</span>
+                    <span className="text-[11px] font-mono text-indigo-700 font-semibold">&lt;{hrSenderEmail}&gt;</span>
+                  </div>
+                </div>
+
+                {/* Recipient Employee Email Input */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-700">To Employee Email:</span>
+                    {!targetEmail && <span className="text-[10px] text-rose-600 font-bold">Enter candidate email</span>}
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input 
+                      type="email"
+                      value={targetEmail}
+                      onChange={(e) => setTargetEmail(e.target.value)}
+                      placeholder="e.g. employee@gmail.com"
+                      className="flex-1 bg-white border-2 border-indigo-200 focus:border-indigo-600 text-slate-900 text-xs py-2 px-3 rounded-xl outline-none font-medium"
+                    />
+                    
+                    <button
+                      type="button"
+                      onClick={handleSendEmailInvite}
+                      disabled={isSendingEmail}
+                      className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all shrink-0 cursor-pointer"
+                    >
+                      {isSendingEmail ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Sending...</span>
+                        </>
+                      ) : emailSentSuccess ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Sent ✓</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Send Mail 📧</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Fallback & Email Status Details */}
+                {emailSuccessMsg && (
+                  <div className={`p-2.5 rounded-xl text-[11px] font-bold flex items-center justify-between gap-1.5 animate-fadeIn ${
+                    emailSentSuccess ? 'bg-emerald-50 border border-emerald-300 text-emerald-900' : 'bg-amber-50 border border-amber-300 text-amber-900'
+                  }`}>
+                    <div className="flex items-center gap-1.5">
+                      {emailSentSuccess ? <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <Info className="w-3.5 h-3.5 text-amber-600 shrink-0" />}
+                      <span>{emailSuccessMsg}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleOpenMailClient}
+                      className="underline text-indigo-700 hover:text-indigo-900 cursor-pointer text-[10px] shrink-0"
+                    >
+                      Open Mail App ↗
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* 🔒 SECTION 2: VISUAL CAPTCHA & VAULT SECURITY PROTECTION */}
           <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-2">

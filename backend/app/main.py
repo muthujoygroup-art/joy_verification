@@ -127,7 +127,11 @@ def ensure_schema_compatibility():
                 ("candidates", "youtube_url", "VARCHAR(255)"),
                 ("companies", "logo_url", "VARCHAR(500)"),
                 ("companies", "is_active", "BOOLEAN DEFAULT TRUE"),
-                ("companies", "wallet_balance", "FLOAT DEFAULT 50000.0")
+                ("companies", "wallet_balance", "FLOAT DEFAULT 50000.0"),
+                ("candidates", "dispatch_channel", "VARCHAR(50) DEFAULT 'whatsapp'"),
+                ("candidates", "dispatched_at", "TIMESTAMP"),
+                ("candidates", "dispatch_status", "VARCHAR(50) DEFAULT 'Sent'"),
+                ("candidates", "expiry_alert_sent", "BOOLEAN DEFAULT FALSE")
             ]
             for tbl, col, col_type in columns:
                 try:
@@ -472,6 +476,11 @@ def serve_root():
         "documentation": "/api/docs"
     }
 
+STATIC_EXTENSIONS = (
+    ".js", ".css", ".png", ".jpg", ".jpeg", ".svg", ".ico", 
+    ".webp", ".woff", ".woff2", ".ttf", ".eot", ".json", ".map", ".txt"
+)
+
 @app.get("/{full_path:path}")
 async def serve_spa_catchall(full_path: str):
     clean_path = full_path.lstrip("/")
@@ -485,18 +494,51 @@ async def serve_spa_catchall(full_path: str):
         clean_path.startswith("system")):
         raise HTTPException(status_code=404, detail="API route not found")
 
-    # 2. If requested static file exists in dist, serve directly (favicon, images, etc.)
-    static_file = os.path.join(dist_dir, clean_path)
-    if os.path.isfile(static_file):
-        return FileResponse(static_file)
+    is_asset_request = (
+        clean_path.startswith("assets/") or 
+        clean_path.lower().endswith(STATIC_EXTENSIONS)
+    )
 
-    # 3. For all React SPA routes (/joy-man-power-service/hr/agilan/candidates, /login, /superadmin, /verify/...)
-    index_file = os.path.join(dist_dir, "index.html")
-    if os.path.isfile(index_file):
-        return FileResponse(index_file)
+    # Candidate file locations to check
+    search_locations = [
+        os.path.join(dist_dir, clean_path),
+        os.path.join(dist_dir, "assets", os.path.basename(clean_path)),
+        os.path.join("/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com", clean_path),
+        os.path.join("/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com", "assets", os.path.basename(clean_path)),
+        os.path.join("/home/joyglo52/repositories/joytrueprofile/dist", clean_path),
+        os.path.join("/home/joyglo52/repositories/joytrueprofile/dist", "assets", os.path.basename(clean_path)),
+    ]
+
+    for candidate in search_locations:
+        if os.path.isfile(candidate):
+            # Explicit media type to guarantee correct browser parsing
+            media_type = None
+            if candidate.endswith(".js"):
+                media_type = "text/javascript"
+            elif candidate.endswith(".css"):
+                media_type = "text/css"
+            elif candidate.endswith(".svg"):
+                media_type = "image/svg+xml"
+            elif candidate.endswith(".json"):
+                media_type = "application/json"
+            return FileResponse(candidate, media_type=media_type)
+
+    # 2. If it was specifically an asset request and was NOT found on disk, NEVER return index.html!
+    if is_asset_request:
+        raise HTTPException(status_code=404, detail=f"Static asset '{clean_path}' not found")
+
+    # 3. For all React SPA routing paths (/login, /superadmin, /company/..., /hr/..., /verify/...)
+    for candidate_index in [
+        os.path.join(dist_dir, "index.html"),
+        "/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/index.html",
+        "/home/joyglo52/repositories/joytrueprofile/dist/index.html"
+    ]:
+        if os.path.isfile(candidate_index):
+            return FileResponse(candidate_index)
 
     return {
         "message": "JOY DATA VERIFICATION API is running.",
         "documentation": "/api/docs"
     }
+
 

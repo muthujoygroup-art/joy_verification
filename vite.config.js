@@ -13,6 +13,9 @@ export default defineConfig({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]',
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
@@ -21,7 +24,7 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
             }
-            if (id.includes('canvas-confetti') || id.includes('dompurify') || id.includes('html2canvas')) {
+            if (id.includes('canvas-confetti') || id.includes('dompurify') || id.includes('html2canvas') || id.includes('jspdf')) {
               return 'vendor-utils';
             }
             return 'vendor-core';

@@ -35,4 +35,5 @@ tmp/
 *.tmp
 scratch/
 scratch_*
+*.db
 

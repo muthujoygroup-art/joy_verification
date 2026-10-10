@@ -111,6 +111,10 @@ class Candidate(Base):
     discrepancies_detected = Column(JSON, default=list)
     
     verification_date = Column(DateTime, nullable=True)
+    dispatch_channel = Column(String(50), default="whatsapp") # 'whatsapp' | 'email' | 'sms'
+    dispatched_at = Column(DateTime, nullable=True)
+    dispatch_status = Column(String(50), default="Sent") # 'Sent' | 'Delivered' | 'Opened' | 'Completed'
+    expiry_alert_sent = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships

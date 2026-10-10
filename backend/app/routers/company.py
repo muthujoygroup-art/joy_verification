@@ -1395,4 +1395,173 @@ def get_company_candidates(company_id: str, db: Session = Depends(get_db)):
         print(f"Error fetching company candidates: {e}")
         return []
 
+# =============================================================================
+# 💬 MESSAGE TEMPLATE REQUESTS (WhatsApp / SMS)
+# =============================================================================
+@router.post("/{company_id}/templates/request")
+def request_message_template(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Company requests a new WhatsApp or SMS message template for SuperAdmin approval"""
+    from backend.app.models.system import MessageTemplateRequest
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    template_name = (payload.get("template_name") or payload.get("name") or "").strip()
+    template_content = (payload.get("template_content") or payload.get("content") or "").strip()
+    channel = (payload.get("channel") or "whatsapp").strip().lower()
+    category = (payload.get("category") or "Onboarding Link").strip()
+    variables = payload.get("variables") or []
+
+    if not template_name or not template_content:
+        raise HTTPException(status_code=400, detail="Template name and content are required")
+
+    req_id = f"tmpl_{uuid.uuid4().hex[:10]}"
+    tmpl_req = MessageTemplateRequest(
+        id=req_id,
+        company_id=comp.id,
+        company_name=comp.name,
+        channel=channel,
+        template_name=template_name,
+        category=category,
+        template_content=template_content,
+        variables=variables,
+        status="Pending"
+    )
+    db.add(tmpl_req)
+    db.commit()
+    db.refresh(tmpl_req)
+
+    return {
+        "success": True,
+        "message": f"Message template '{template_name}' submitted to SuperAdmin for approval!",
+        "template": {
+            "id": tmpl_req.id,
+            "company_id": tmpl_req.company_id,
+            "company_name": tmpl_req.company_name,
+            "channel": tmpl_req.channel,
+            "template_name": tmpl_req.template_name,
+            "category": tmpl_req.category,
+            "template_content": tmpl_req.template_content,
+            "variables": tmpl_req.variables,
+            "status": tmpl_req.status,
+            "created_at": tmpl_req.created_at.isoformat() if tmpl_req.created_at else None
+        }
+    }
+
+@router.get("/{company_id}/templates")
+def get_company_templates(company_id: str, db: Session = Depends(get_db)):
+    """Fetch all message templates requested or approved for the company"""
+    from backend.app.models.system import MessageTemplateRequest
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    target_id = comp.id if comp else company_id
+
+    records = db.query(MessageTemplateRequest).filter(MessageTemplateRequest.company_id == target_id).order_by(MessageTemplateRequest.created_at.desc()).all()
+    return [{
+        "id": r.id,
+        "company_id": r.company_id,
+        "company_name": r.company_name,
+        "channel": r.channel,
+        "template_name": r.template_name,
+        "category": r.category,
+        "template_content": r.template_content,
+        "variables": r.variables,
+        "status": r.status,
+        "superadmin_notes": r.superadmin_notes,
+        "created_at": r.created_at.isoformat() if r.created_at else None,
+        "reviewed_at": r.reviewed_at.isoformat() if r.reviewed_at else None
+    } for r in records]
+
+# =============================================================================
+# ⚙️ CANDIDATE FORM FIELD REQUIREMENTS (Company sets rules for HRs)
+# =============================================================================
+@router.get("/{company_id}/candidate-field-rules")
+def get_candidate_field_rules(company_id: str, db: Session = Depends(get_db)):
+    """Fetch mandatory/optional candidate form fields defined by this company"""
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    rules = (comp.features or {}).get("candidate_field_rules", {
+        "aadhaar": {"mandatory": True, "enabled": True},
+        "pan": {"mandatory": True, "enabled": True},
+        "bankAccount": {"mandatory": True, "enabled": True},
+        "uan": {"mandatory": False, "enabled": True},
+        "passport": {"mandatory": False, "enabled": True},
+        "drivingLicense": {"mandatory": False, "enabled": True},
+        "education": {"mandatory": True, "enabled": True},
+        "experience": {"mandatory": False, "enabled": True},
+        "nominee": {"mandatory": True, "enabled": True},
+        "faceCapture": {"mandatory": True, "enabled": True},
+        "signature": {"mandatory": True, "enabled": True}
+    })
+    return {"success": True, "company_id": comp.id, "rules": rules}
+
+@router.put("/{company_id}/candidate-field-rules")
+def update_candidate_field_rules(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Company Admin updates mandatory and optional rules for employee onboarding forms"""
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    rules = payload.get("rules") or payload
+    f = dict(comp.features or {})
+    f["candidate_field_rules"] = rules
+    comp.features = f
+    db.commit()
+
+    return {"success": True, "message": "Candidate onboarding form requirements saved to database!", "rules": rules}
+
+# =============================================================================
+# 💳 OFFLINE BANK / UPI UTR PAYMENT PROOF SUBMISSION
+# =============================================================================
+@router.post("/{company_id}/offline-payment")
+def submit_offline_payment_proof(company_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Company Admin submits offline bank transfer (NEFT/RTGS/IMPS/UPI) UTR proof for invoice settlement"""
+    from backend.app.models.billing import PaymentRecord
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    amount = float(payload.get("amount") or 0.0)
+    utr_number = (payload.get("utr_number") or payload.get("utr") or "").strip()
+    payment_method = (payload.get("payment_method") or "Direct Bank Transfer (NEFT/RTGS)").strip()
+    notes = (payload.get("notes") or "").strip()
+
+    if not utr_number or amount <= 0:
+        raise HTTPException(status_code=400, detail="Valid payment amount and UTR/Reference number are required")
+
+    tx_id = f"PAY-{uuid.uuid4().hex[:10].upper()}"
+    record = PaymentRecord(
+        id=tx_id,
+        company_id=comp.id,
+        amount=amount,
+        payment_method=payment_method,
+        transaction_ref=utr_number,
+        status="Pending SuperAdmin Approval"
+    )
+    db.add(record)
+    
+    # Store in company recharge transactions
+    f = dict(comp.features or {})
+    txs = f.get("pending_offline_payments", [])
+    txs.insert(0, {
+        "id": tx_id,
+        "amount": amount,
+        "utr_number": utr_number,
+        "payment_method": payment_method,
+        "notes": notes,
+        "submitted_at": datetime.utcnow().isoformat(),
+        "status": "Pending SuperAdmin Approval"
+    })
+    f["pending_offline_payments"] = txs
+    comp.features = f
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Payment proof submitted (UTR: {utr_number}). SuperAdmin will verify and settle your invoice.",
+        "transaction_id": tx_id
+    }
+
+
 

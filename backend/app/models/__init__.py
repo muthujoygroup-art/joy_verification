@@ -9,7 +9,7 @@ from backend.app.models.api_config import ApiConfiguration, FeatureItem
 from backend.app.models.master_data import MasterDataOption, MasterFormField
 from backend.app.models.billing import Invoice, PaymentRecord
 from backend.app.models.ticket import SupportTicket, TicketReply
-from backend.app.models.system import SystemErrorLog, SystemSetting, PlatformGuideline, CommunicationGateway
+from backend.app.models.system import SystemErrorLog, SystemSetting, PlatformGuideline, CommunicationGateway, MessageTemplateRequest
 from backend.app.models.inquiry import LeadInquiry
 from backend.app.models.review import ClientReview
 from backend.app.models.api_call_log import ApiCallLog
@@ -39,9 +39,11 @@ __all__ = [
     "SystemSetting",
     "PlatformGuideline",
     "CommunicationGateway",
+    "MessageTemplateRequest",
     "LeadInquiry",
     "ClientReview",
     "BlogPost",
     "DigilockerVerification",
     "DigilockerDocument"
 ]
+

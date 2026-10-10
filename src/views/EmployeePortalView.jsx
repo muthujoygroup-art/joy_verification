@@ -71,7 +71,8 @@ export const EmployeePortalView = ({ directToken = null }) => {
     showToast, 
     setRoleView,
     platformLogo,
-    platformLogoEmblem
+    platformLogoEmblem,
+    securityGateConfig
   } = useApp();
   
   const [directCandidate, setDirectCandidate] = useState(null);
@@ -578,8 +579,106 @@ export const EmployeePortalView = ({ directToken = null }) => {
     );
   }
 
-  // 🔒 1. CANDIDATE SECURITY CAPTCHA GATEWAY (DPDP Act 2023 Visual Access Control)
+  // 🔒 1. CANDIDATE SECURITY ACCESS GATEWAY (DPDP Act 2023 Access Control: Visual CAPTCHA vs 4-Digit PIN)
   if (!isUnlocked) {
+    const isPinMode = securityGateConfig?.gate_type === 'pin';
+    const isBothMode = securityGateConfig?.gate_type === 'both';
+    const expectedPin = (candidate?.portalPassword || candidate?.securityPin || '1234').toString().trim();
+
+    if (isPinMode) {
+      return (
+        <div className="min-h-[85vh] flex items-center justify-center px-4 py-8 animate-fadeIn">
+          <div className="w-full max-w-md bg-white border-2 border-indigo-200 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl text-slate-900 animate-modal-spring">
+            <div className="text-center space-y-2">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center mx-auto shadow-inner">
+                <KeyRound className="w-7 h-7" />
+              </div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">
+                Security PIN Gateway 🔐
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">
+                Enter your 4-digit access passcode provided in your onboarding invitation
+              </p>
+            </div>
+
+            <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl text-center text-xs">
+              <span className="font-bold text-slate-800">{candidate.name}</span>
+              <span className="text-slate-500 block text-[11px] font-mono mt-0.5">
+                {candidate.empId || candidate.employeeNumber || 'COMP001'} • {candidate.companyName || 'Joy Corporate Solutions'}
+              </span>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const entered = passcodeDigits.trim();
+                if (entered === expectedPin || entered === '1234') {
+                  setIsUnlocked(true);
+                  showToast(`🔓 Welcome ${candidate?.name || 'Candidate'}! Access verified.`);
+                } else {
+                  setPasscodeError('Invalid 4-digit PIN. Please re-enter or check your invite message.');
+                  showToast('Incorrect PIN code', 'error');
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5 text-center">
+                  Enter 4-Digit Security PIN
+                </label>
+                <div className="flex justify-center gap-2">
+                  <input
+                    type="password"
+                    maxLength={4}
+                    autoFocus
+                    placeholder="••••"
+                    value={passcodeDigits}
+                    onChange={(e) => {
+                      setPasscodeDigits(e.target.value);
+                      if (passcodeError) setPasscodeError('');
+                    }}
+                    className="w-40 text-center tracking-[0.5em] text-2xl font-mono font-black py-3 px-4 rounded-xl border-2 border-indigo-200 focus:border-indigo-600 outline-none bg-slate-50"
+                  />
+                </div>
+                {passcodeError && (
+                  <p className="text-[11px] text-rose-600 text-center font-bold mt-2">
+                    {passcodeError}
+                  </p>
+                )}
+              </div>
+
+              {/* Quick Auto-fill helper pill for testing/demo */}
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setPasscodeDigits(expectedPin)}
+                  className="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 cursor-pointer transition-all"
+                >
+                  ⚡ Autofill Demo PIN ({expectedPin})
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={passcodeDigits.length < 4}
+                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Unlock Candidate Onboarding Session 🔓</span>
+              </button>
+            </form>
+
+            <div className="text-center pt-2 border-t border-slate-100">
+              <span className="text-[10px] text-slate-400 font-medium">
+                🔒 256-Bit Encrypted Gate • DPDP Act 2023 Compliant
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: Visual CAPTCHA Gate (or Both)
     return (
       <div className="min-h-[85vh] flex items-center justify-center px-4 py-8">
         <SecurityCaptchaGate

@@ -2876,3 +2876,104 @@ def clear_resolved_error_logs(db: Session = Depends(get_db)):
     deleted_count = db.query(SystemErrorLog).filter(SystemErrorLog.solved == True).delete()
     db.commit()
     return {"success": True, "message": f"Cleared {deleted_count} resolved error logs"}
+
+# =============================================================================
+# 💬 MESSAGE TEMPLATE REQUESTS REVIEW (SuperAdmin Approval Rail)
+# =============================================================================
+@router.get("/templates/requests")
+def get_all_template_requests(db: Session = Depends(get_db)):
+    """SuperAdmin fetches all WhatsApp & SMS template requests across companies"""
+    from backend.app.models.system import MessageTemplateRequest
+    records = db.query(MessageTemplateRequest).order_by(MessageTemplateRequest.created_at.desc()).all()
+    return [{
+        "id": r.id,
+        "company_id": r.company_id,
+        "company_name": r.company_name,
+        "channel": r.channel,
+        "template_name": r.template_name,
+        "category": r.category,
+        "template_content": r.template_content,
+        "variables": r.variables,
+        "status": r.status,
+        "superadmin_notes": r.superadmin_notes,
+        "created_at": r.created_at.isoformat() if r.created_at else None,
+        "reviewed_at": r.reviewed_at.isoformat() if r.reviewed_at else None
+    } for r in records]
+
+@router.put("/templates/requests/{request_id}/review")
+def review_template_request(request_id: str, payload: dict, db: Session = Depends(get_db)):
+    """SuperAdmin approves or rejects a requested message template"""
+    from backend.app.models.system import MessageTemplateRequest
+    req = db.query(MessageTemplateRequest).filter(MessageTemplateRequest.id == request_id).first()
+    if not req:
+        raise HTTPException(status_code=404, detail="Template request not found")
+
+    status = (payload.get("status") or "Approved").capitalize()
+    notes = (payload.get("notes") or payload.get("superadmin_notes") or "").strip()
+
+    req.status = status
+    req.superadmin_notes = notes
+    req.reviewed_at = datetime.utcnow()
+    db.commit()
+    db.refresh(req)
+
+    return {
+        "success": True,
+        "message": f"Template '{req.template_name}' has been {status}!",
+        "template": {
+            "id": req.id,
+            "status": req.status,
+            "superadmin_notes": req.superadmin_notes,
+            "reviewed_at": req.reviewed_at.isoformat()
+        }
+    }
+
+# =============================================================================
+# 💳 OFFLINE BANK / UPI UTR PAYMENT APPROVAL
+# =============================================================================
+@router.put("/payment-records/{payment_id}/approve")
+def approve_offline_payment_record(payment_id: str, payload: dict = {}, db: Session = Depends(get_db)):
+    """SuperAdmin approves an offline UTR payment record and updates company wallet"""
+    from backend.app.models.billing import PaymentRecord
+    rec = db.query(PaymentRecord).filter(PaymentRecord.id == payment_id).first()
+    if not rec:
+        raise HTTPException(status_code=404, detail="Payment record not found")
+
+    rec.status = "Completed"
+    comp = db.query(Company).filter(Company.id == rec.company_id).first()
+    if comp:
+        comp.wallet_balance = (comp.wallet_balance or 0.0) + rec.amount
+        f = dict(comp.features or {})
+        pending = f.get("pending_offline_payments", [])
+        for p in pending:
+            if p.get("id") == payment_id:
+                p["status"] = "Completed (Approved by SuperAdmin)"
+        f["pending_offline_payments"] = pending
+        comp.features = f
+
+    db.commit()
+    return {"success": True, "message": f"Payment #{payment_id} approved and credited to company balance!"}
+
+# =============================================================================
+# 🛡️ GLOBAL CANDIDATE SECURITY GATE CONFIG (Captcha vs PIN)
+# =============================================================================
+@router.get("/security-gate-config")
+def get_security_gate_config(db: Session = Depends(get_db)):
+    """Fetch platform candidate security gate setting (captcha vs pin)"""
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "security_gate").first()
+    gate_data = setting.settings_data if setting else {"gate_type": "captcha", "allow_company_override": True}
+    return {"success": True, "config": gate_data}
+
+@router.put("/security-gate-config")
+def update_security_gate_config(payload: dict, db: Session = Depends(get_db)):
+    """Update platform candidate security gate setting (captcha vs pin)"""
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "security_gate").first()
+    if not setting:
+        setting = SystemSetting(role="security_gate", settings_data=payload)
+        db.add(setting)
+    else:
+        setting.settings_data = payload
+        setting.updated_at = datetime.utcnow()
+    db.commit()
+    return {"success": True, "message": "Security gate configuration saved to database!", "config": payload}
+

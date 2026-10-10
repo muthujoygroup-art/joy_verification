@@ -1565,7 +1565,71 @@ export const api = {
   testEmailDispatch: (payload) => request('/settings/test-email', {
     method: 'POST',
     body: JSON.stringify(payload)
-  })
+  }),
+
+  // 🔐 Universal Two-Factor Authentication (2FA) APIs
+  request2FaOtp: (payload) => request('/auth/request-2fa', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  verify2FaAndLogin: async (payload) => {
+    const data = await request('/auth/verify-2fa', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    if (data.access_token) {
+      setAuthToken(data.access_token);
+    }
+    return data;
+  },
+
+  // 📝 Master Form Fields Management
+  deleteMasterFormField: (fieldId) => request(`/master-data/form-fields/${fieldId}`, { method: 'DELETE' }),
+
+  // 💬 Messaging Template Governance (WhatsApp & Carrier SMS)
+  requestMessageTemplate: (companyId, payload) => request(`/company/${companyId}/templates/request`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  getCompanyTemplates: (companyId) => request(`/company/${companyId}/templates`, {}, false),
+  getSuperAdminTemplateRequests: () => request('/superadmin/templates/requests', {}, false),
+  reviewTemplateRequest: (requestId, payload) => request(`/superadmin/templates/requests/${requestId}/review`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+  getApprovedHrTemplates: (companyId = null) => request(`/hr/templates${companyId ? `?company_id=${companyId}` : ''}`, {}, false),
+
+  // 🚀 HR Link Dispatch & Communication Telemetry Tracking
+  dispatchCandidateLink: (candidateId, payload) => request(`/hr/candidates/${candidateId}/dispatch`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+
+  // ⚙️ Candidate Form Field Rules (Company sets for HR & Employees)
+  getCandidateFieldRules: (companyId) => request(`/company/${companyId}/candidate-field-rules`, {}, false),
+  updateCandidateFieldRules: (companyId, rules) => request(`/company/${companyId}/candidate-field-rules`, {
+    method: 'PUT',
+    body: JSON.stringify({ rules })
+  }),
+
+  // 💳 Direct Bank & UPI Offline Settlement (UTR Submission & Approval)
+  submitOfflinePaymentProof: (companyId, payload) => request(`/company/${companyId}/offline-payment`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  approveOfflinePayment: (paymentId) => request(`/superadmin/payment-records/${paymentId}/approve`, {
+    method: 'PUT'
+  }),
+
+  // 🛡️ Candidate Security Gate Configuration (Captcha vs PIN)
+  getSecurityGateConfig: () => request('/superadmin/security-gate-config', {}, false),
+  updateSecurityGateConfig: (payload) => request('/superadmin/security-gate-config', {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+
+  // ⏳ 60-Day Retention & Verification Expiry Alerts
+  getExpiryAlerts: (companyId = null) => request(`/hr/candidates/expiry-alerts${companyId ? `?company_id=${companyId}` : ''}`, {}, false)
 };
 
 export default api;

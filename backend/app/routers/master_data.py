@@ -58,10 +58,42 @@ def remove_dropdown_option(category: str, option_value: str, db: Session = Depen
     db.commit()
     return {"success": True, "message": f"Removed '{option_value}' from {category}"}
 
+DEFAULT_MASTER_FIELDS = [
+    {"id": "name", "label": "Candidate Full Name", "field_type": "text", "category": "Personal Info", "default_mandatory": True},
+    {"id": "empId", "label": "Employee ID Code", "field_type": "text", "category": "Personal Info", "default_mandatory": True},
+    {"id": "designation", "label": "Job Designation / Title", "field_type": "select", "category": "Employment", "default_mandatory": True},
+    {"id": "mobile", "label": "Registered Mobile Number (SMS Link)", "field_type": "tel", "category": "Contact", "default_mandatory": True},
+    {"id": "email", "label": "Official Email Address", "field_type": "email", "category": "Contact", "default_mandatory": True},
+    {"id": "aadhaarNo", "label": "Aadhaar Identity Number (12 Digits)", "field_type": "text", "category": "Government ID", "default_mandatory": True},
+    {"id": "panNo", "label": "Tax PAN Card Number", "field_type": "text", "category": "Tax ID", "default_mandatory": False},
+    {"id": "bankAccount", "label": "Bank Account Number & IFSC", "field_type": "text", "category": "Financial", "default_mandatory": False},
+    {"id": "uan", "label": "Universal Account Number (EPFO UAN)", "field_type": "text", "category": "Employment", "default_mandatory": False},
+    {"id": "nominee", "label": "Nominee Details & Relationship", "field_type": "text", "category": "Personal Info", "default_mandatory": True},
+    {"id": "faceCapture", "label": "AI Biometric Facial Liveness Match", "field_type": "camera", "category": "Biometrics", "default_mandatory": True},
+    {"id": "signature", "label": "Candidate Specimen Digital Signature", "field_type": "signature", "category": "Compliance", "default_mandatory": True}
+]
+
 @router.get("/form-fields", response_model=List[MasterFormFieldResponse])
 def get_master_form_fields(db: Session = Depends(get_db)):
-    """Fetch all default & custom master form fields"""
-    return db.query(MasterFormField).all()
+    """Fetch all default & custom master form fields; seeds standard fields if table is empty"""
+    existing = db.query(MasterFormField).all()
+    if not existing:
+        for f in DEFAULT_MASTER_FIELDS:
+            nf = MasterFormField(
+                id=f["id"],
+                label=f["label"],
+                field_type=f["field_type"],
+                category=f["category"],
+                default_mandatory=f["default_mandatory"]
+            )
+            db.add(nf)
+        try:
+            db.commit()
+            existing = db.query(MasterFormField).all()
+        except Exception:
+            db.rollback()
+            existing = []
+    return existing
 
 @router.post("/form-fields", response_model=MasterFormFieldResponse)
 def add_master_form_field(payload: MasterFormFieldCreate, db: Session = Depends(get_db)):
@@ -78,3 +110,13 @@ def add_master_form_field(payload: MasterFormFieldCreate, db: Session = Depends(
     db.commit()
     db.refresh(new_field)
     return new_field
+
+@router.delete("/form-fields/{field_id}")
+def delete_master_form_field(field_id: str, db: Session = Depends(get_db)):
+    """Delete a custom master form field from database"""
+    field = db.query(MasterFormField).filter(MasterFormField.id == field_id).first()
+    if not field:
+        raise HTTPException(status_code=404, detail="Master form field not found")
+    db.delete(field)
+    db.commit()
+    return {"success": True, "message": f"Master field '{field.label}' removed from database"}

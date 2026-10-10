@@ -129,7 +129,13 @@ export const CompanyAdminView = () => {
     updateCompanyPostpaidPlan,
     requestCompanyPlanUpgrade,
     settlePostpaidInvoice,
-    setActiveInvoiceModal
+    setActiveInvoiceModal,
+    masterFormFields,
+    templateRequests,
+    requestMessageTemplate,
+    submitOfflinePaymentProof,
+    getCandidateFieldRules,
+    updateCandidateFieldRules
   } = useApp();
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => {
     return currentUser?.id || currentUser?.companyId || localStorage.getItem('joy_active_company_id') || 'comp-joy';
@@ -207,6 +213,59 @@ export const CompanyAdminView = () => {
   const [upgradeEffectiveDate, setUpgradeEffectiveDate] = useState('Immediate / Next Billing Cycle');
   const [upgradeRemarks, setUpgradeRemarks] = useState('');
   const [isSubmittingUpgrade, setIsSubmittingUpgrade] = useState(false);
+
+  // 📋 Candidate Form Requirements (Mandatory vs Optional) States
+  const [showFieldRulesModal, setShowFieldRulesModal] = useState(false);
+  const [candidateFieldRules, setCandidateFieldRules] = useState({
+    aadhaar: true,
+    pan: true,
+    bank: true,
+    uan: false,
+    passport: false,
+    dl: false,
+    education: true,
+    experience: false,
+    nominee: false,
+    face_capture: true,
+    signature: true
+  });
+  const [isSavingFieldRules, setIsSavingFieldRules] = useState(false);
+
+  // 💬 Messaging Template Request States (WhatsApp & SMS)
+  const [showRequestTemplateModal, setShowRequestTemplateModal] = useState(false);
+  const [templateForm, setTemplateForm] = useState({
+    channel: 'WHATSAPP',
+    category: 'ONBOARDING',
+    name: '',
+    body: 'Hello {{candidate_name}}, welcome to {{company_name}}! Please complete your sovereign identity verification using this secure onboarding link: {{verification_link}}. Valid for 15 minutes.'
+  });
+  const [isSubmittingTemplate, setIsSubmittingTemplate] = useState(false);
+
+  // 💳 Direct Bank & UPI Offline Settlement (UTR Proof) States
+  const [showOfflinePaymentModal, setShowOfflinePaymentModal] = useState(false);
+  const [offlinePaymentForm, setOfflinePaymentForm] = useState({
+    amount: '',
+    utr_number: '',
+    payment_type: 'Postpaid Monthly Invoice Settlement',
+    notes: ''
+  });
+  const [isSubmittingUtr, setIsSubmittingUtr] = useState(false);
+  const [submittedUtrRecords, setSubmittedUtrRecords] = useState([]);
+
+  // Fetch company field rules on load
+  useEffect(() => {
+    if (company?.id && typeof getCandidateFieldRules === 'function') {
+      getCandidateFieldRules(company.id)
+        .then(res => {
+          if (res && res.rules) {
+            setCandidateFieldRules(prev => ({ ...prev, ...res.rules }));
+          } else if (res && typeof res === 'object' && !res.rules) {
+            setCandidateFieldRules(prev => ({ ...prev, ...res }));
+          }
+        })
+        .catch(err => console.warn('Could not fetch field rules:', err));
+    }
+  }, [company?.id]);
 
   // 🤝 Enterprise Vendor Management & Verification States
   const [selectedCertVendor, setSelectedCertVendor] = useState(null);
@@ -1461,6 +1520,16 @@ export const CompanyAdminView = () => {
             >
               <Download className="w-3.5 h-3.5 text-indigo-600" />
               <span>Date-Filtered Reports 📥</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowFieldRulesModal(true)}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-slate-800 bg-white border-slate-300 hover:bg-slate-50 shadow-2xs cursor-pointer transition-all"
+              title="Set mandatory vs optional fields for candidate onboarding"
+            >
+              <Sliders className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Form Rules (Mandatory / Optional) 📋</span>
             </button>
 
             <button
@@ -5499,6 +5568,15 @@ export const CompanyAdminView = () => {
                   <FileText className="w-4 h-4 text-indigo-200" />
                   <span>Official GST Tax Invoice 📄</span>
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowOfflinePaymentModal(true)}
+                  className="btn btn-secondary text-xs py-2.5 px-4 flex items-center gap-2 font-black shadow-md cursor-pointer hover:scale-102 transition-all bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100"
+                >
+                  <Building2 className="w-4 h-4 text-emerald-600" />
+                  <span>Direct Bank / UPI (UTR Proof) 🏦</span>
+                </button>
               </div>
             </div>
 
@@ -6035,6 +6113,168 @@ export const CompanyAdminView = () => {
                     </label>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Category 5: Candidate Form Requirements (Mandatory vs Optional) */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5 md:col-span-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-2.5">
+                <div>
+                  <h4 className="font-extrabold text-xs text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sliders className="w-4 h-4 text-indigo-600" />
+                    <span>5. Candidate Onboarding Form Mandatory vs Optional Rules (DPDP & Statutory Hierarchy)</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Enforce strict document gates for candidate registration. When marked 'Mandatory', candidate cannot submit without completing the check.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsSavingFieldRules(true);
+                      try {
+                        await updateCandidateFieldRules(company.id, candidateFieldRules);
+                      } catch (err) {
+                        // toast handled
+                      } finally {
+                        setIsSavingFieldRules(false);
+                      }
+                    }}
+                    disabled={isSavingFieldRules}
+                    className="btn btn-superadmin text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold shadow-xs cursor-pointer disabled:opacity-60"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{isSavingFieldRules ? 'Saving...' : 'Save Form Rules in DB 💾'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[
+                  { key: 'aadhaar', label: 'Aadhaar Card (e-KYC / OTP / DigiLocker)', desc: '12-digit UIDAI proof & address validation', default: true },
+                  { key: 'pan', label: 'PAN Card (Permanent Account No)', desc: 'NSDL / Income Tax verification', default: true },
+                  { key: 'bank', label: 'Bank Account & IFSC (Penny Drop)', desc: 'NPCI bank account beneficiary validation', default: true },
+                  { key: 'uan', label: 'EPFO UAN (Universal Account Number)', desc: 'EPFO Form 11 dual employment check', default: false },
+                  { key: 'passport', label: 'Passport (Ministry of External Affairs)', desc: 'Passport number & MRZ verification', default: false },
+                  { key: 'dl', label: 'Driving Licence (Sarathi Parivahan)', desc: 'DL & vehicle class endorsement', default: false },
+                  { key: 'education', label: 'Educational Qualifications', desc: 'Degree / marksheet credential certificates', default: true },
+                  { key: 'experience', label: 'Previous Work Experience & Relieving', desc: 'Prior employer tenure & payslips', default: false },
+                  { key: 'nominee', label: 'Family & Statutory Nominee Details', desc: 'EPFO Form 2 & Gratuity Form F nominee info', default: false },
+                  { key: 'face_capture', label: 'AI 3-Pose Live Face Biometrics', desc: '3D facial landmark anti-spoofing capture', default: true },
+                  { key: 'signature', label: 'Digital Specimen Signature', desc: 'Touch/Stylus specimen signature capture', default: true },
+                  ...(Array.isArray(masterFormFields) ? masterFormFields.map(f => ({
+                    key: f.id,
+                    label: `${f.label} [Master Field]`,
+                    desc: `Dynamic master form field in ${f.category || 'General'} category`,
+                    default: f.defaultMandatory ?? false
+                  })) : [])
+                ].map(rule => {
+                  const isMandatory = candidateFieldRules[rule.key] ?? rule.default;
+                  return (
+                    <div key={rule.key} className="p-3 bg-white rounded-xl border border-slate-200 space-y-2 hover:border-indigo-300 transition-all shadow-2xs">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="font-bold text-xs text-slate-900 block leading-tight">{rule.label}</span>
+                          <span className="text-[10px] text-slate-500 font-medium block mt-0.5">{rule.desc}</span>
+                        </div>
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full shrink-0 ${isMandatory ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
+                          {isMandatory ? 'Required 🔴' : 'Optional ⚪'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 pt-1 border-t border-slate-100">
+                        <label className="flex items-center gap-1.5 text-xs text-slate-700 font-bold cursor-pointer">
+                          <input 
+                            type="radio"
+                            name={`rule_${rule.key}`}
+                            checked={isMandatory === true}
+                            onChange={() => setCandidateFieldRules(prev => ({ ...prev, [rule.key]: true }))}
+                            className="accent-rose-600"
+                          />
+                          <span>Mandatory</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs text-slate-700 font-bold cursor-pointer">
+                          <input 
+                            type="radio"
+                            name={`rule_${rule.key}`}
+                            checked={isMandatory === false}
+                            onChange={() => setCandidateFieldRules(prev => ({ ...prev, [rule.key]: false }))}
+                            className="accent-slate-500"
+                          />
+                          <span>Optional</span>
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category 6: Enterprise Messaging Templates (WhatsApp & Carrier SMS) */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5 md:col-span-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-2.5">
+                <div>
+                  <h4 className="font-extrabold text-xs text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <MessageSquare className="w-4 h-4 text-emerald-600" />
+                    <span>6. Enterprise Messaging Templates (WhatsApp & Carrier SMS Governance)</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Corporate WhatsApp line (+91 94426 77726) & Carrier SMS gateways are configured centrally in SuperAdmin. Request custom templates for HR recruiter dispatch below.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowRequestTemplateModal(true)}
+                  className="btn btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>+ Request New Template</span>
+                </button>
+              </div>
+
+              {/* Template Requests List */}
+              <div className="space-y-2">
+                {(() => {
+                  const companyTemplates = (templateRequests || []).filter(t => t.company_id === company.id);
+                  if (companyTemplates.length === 0) {
+                    return (
+                      <div className="p-4 bg-white rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-500 font-medium">
+                        No custom message templates requested yet. Default system templates are currently active for HR onboarding dispatches.
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {companyTemplates.map(t => (
+                        <div key={t.id} className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`badge ${t.channel === 'WHATSAPP' ? 'badge-emerald' : 'badge-cyan'} text-[9px] font-black`}>
+                                {t.channel === 'WHATSAPP' ? '💬 WhatsApp' : '📱 SMS'}
+                              </span>
+                              <span className="font-bold text-xs text-slate-900">{t.template_name}</span>
+                            </div>
+                            <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                              t.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                              t.status === 'REJECTED' ? 'bg-rose-100 text-rose-800 border border-rose-300' :
+                              'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
+                            }`}>
+                              {t.status === 'APPROVED' ? 'Approved 🟢' : t.status === 'REJECTED' ? 'Rejected 🔴' : 'Pending Review ⏳'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 italic font-mono bg-slate-50 p-2 rounded-lg border border-slate-100 leading-relaxed">
+                            "{t.template_body}"
+                          </p>
+                          {t.superadmin_notes && (
+                            <p className="text-[10px] text-slate-500 font-medium">
+                              <strong>SuperAdmin Notes:</strong> {t.superadmin_notes}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -7726,6 +7966,502 @@ export const CompanyAdminView = () => {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* 📋 MODAL 1: CANDIDATE FORM MANDATORY VS OPTIONAL GOVERNANCE RULES */}
+      {showFieldRulesModal && (
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-3 sm:p-5 flex justify-center items-center animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-3xl rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-indigo-200 animate-modal-spring max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  <Sliders className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Candidate Onboarding Form Requirements Matrix 📋</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Configure mandatory vs optional candidate documents for {company.name}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowFieldRulesModal(false)}
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-2xl text-xs text-indigo-950 flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+              <div className="text-[11px] leading-relaxed">
+                <strong>Statutory Compliance Rule Hierarchy:</strong> SuperAdmin sets master available fields, and you determine company onboarding requirements. HR recruiters and candidate registration portals strictly adhere to these mandatory gates.
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1">
+              {[
+                { key: 'aadhaar', label: 'Aadhaar Card (e-KYC / OTP / DigiLocker)', desc: '12-digit UIDAI proof & address validation', default: true },
+                { key: 'pan', label: 'PAN Card (Permanent Account No)', desc: 'NSDL / Income Tax verification', default: true },
+                { key: 'bank', label: 'Bank Account & IFSC (Penny Drop)', desc: 'NPCI bank account beneficiary validation', default: true },
+                { key: 'uan', label: 'EPFO UAN (Universal Account Number)', desc: 'EPFO Form 11 dual employment check', default: false },
+                { key: 'passport', label: 'Passport (Ministry of External Affairs)', desc: 'Passport number & MRZ verification', default: false },
+                { key: 'dl', label: 'Driving Licence (Sarathi Parivahan)', desc: 'DL & vehicle class endorsement', default: false },
+                { key: 'education', label: 'Educational Qualifications', desc: 'Degree / marksheet credential certificates', default: true },
+                { key: 'experience', label: 'Previous Work Experience & Relieving', desc: 'Prior employer tenure & payslips', default: false },
+                { key: 'nominee', label: 'Family & Statutory Nominee Details', desc: 'EPFO Form 2 & Gratuity Form F nominee info', default: false },
+                { key: 'face_capture', label: 'AI 3-Pose Live Face Biometrics', desc: '3D facial landmark anti-spoofing capture', default: true },
+                { key: 'signature', label: 'Digital Specimen Signature', desc: 'Touch/Stylus specimen signature capture', default: true },
+                ...(Array.isArray(masterFormFields) ? masterFormFields.map(f => ({
+                  key: f.id,
+                  label: `${f.label} [Master Field]`,
+                  desc: `Dynamic master form field in ${f.category || 'General'} category`,
+                  default: f.defaultMandatory ?? false
+                })) : [])
+              ].map(rule => {
+                const isMandatory = candidateFieldRules[rule.key] ?? rule.default;
+                return (
+                  <div key={rule.key} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-bold text-xs text-slate-900 block leading-tight">{rule.label}</span>
+                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full shrink-0 ${isMandatory ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-slate-200 text-slate-700'}`}>
+                        {isMandatory ? 'Mandatory' : 'Optional'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 pt-1">
+                      <label className="flex items-center gap-1.5 text-xs text-slate-700 font-bold cursor-pointer">
+                        <input 
+                          type="radio"
+                          name={`modal_rule_${rule.key}`}
+                          checked={isMandatory === true}
+                          onChange={() => setCandidateFieldRules(prev => ({ ...prev, [rule.key]: true }))}
+                          className="accent-rose-600"
+                        />
+                        <span>Mandatory 🔴</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 text-xs text-slate-700 font-bold cursor-pointer">
+                        <input 
+                          type="radio"
+                          name={`modal_rule_${rule.key}`}
+                          checked={isMandatory === false}
+                          onChange={() => setCandidateFieldRules(prev => ({ ...prev, [rule.key]: false }))}
+                          className="accent-slate-500"
+                        />
+                        <span>Optional ⚪</span>
+                      </label>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowFieldRulesModal(false)}
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 cursor-pointer text-xs"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsSavingFieldRules(true);
+                  try {
+                    await updateCandidateFieldRules(company.id, candidateFieldRules);
+                    setShowFieldRulesModal(false);
+                  } catch (err) {
+                    // handled
+                  } finally {
+                    setIsSavingFieldRules(false);
+                  }
+                }}
+                disabled={isSavingFieldRules}
+                className="btn btn-superadmin text-xs py-2 px-5 font-black shadow-md cursor-pointer flex items-center gap-1.5"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>{isSavingFieldRules ? 'Saving...' : 'Save Requirements in DB 💾'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 💬 MODAL 2: REQUEST MESSAGE TEMPLATE (WHATSAPP & CARRIER SMS) */}
+      {showRequestTemplateModal && (
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-3 sm:p-5 flex justify-center items-center animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-xl rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-emerald-200 animate-modal-spring max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <MessageSquare className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Request Custom Messaging Template 💬</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Submit WhatsApp or Carrier SMS template to SuperAdmin for telecom approval
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowRequestTemplateModal(false)}
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-2xl text-xs text-emerald-950 flex items-start gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <span className="text-[11px] leading-relaxed">
+                <strong>Central Telecom Channel:</strong> All WhatsApp notifications route through the Joy Sovereign corporate line (+91 94426 77726). Upon SuperAdmin review, this template becomes available to all your HR staff.
+              </span>
+            </div>
+
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!templateForm.name || !templateForm.body) {
+                  showToast('Please fill template name and message body', 'error');
+                  return;
+                }
+                setIsSubmittingTemplate(true);
+                try {
+                  await requestMessageTemplate(company.id, {
+                    channel: templateForm.channel,
+                    category: templateForm.category,
+                    template_name: templateForm.name,
+                    template_body: templateForm.body
+                  });
+                  setShowRequestTemplateModal(false);
+                  setTemplateForm({
+                    channel: 'WHATSAPP',
+                    category: 'ONBOARDING',
+                    name: '',
+                    body: 'Hello {{candidate_name}}, welcome to {{company_name}}! Please complete your verification using: {{verification_link}}'
+                  });
+                } catch (err) {
+                  // handled
+                } finally {
+                  setIsSubmittingTemplate(false);
+                }
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Channel Gateway</label>
+                  <select
+                    value={templateForm.channel}
+                    onChange={(e) => setTemplateForm(prev => ({ ...prev, channel: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-medium"
+                  >
+                    <option value="WHATSAPP">💬 WhatsApp Business API</option>
+                    <option value="SMS">📱 DLT Registered Carrier SMS</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Message Category</label>
+                  <select
+                    value={templateForm.category}
+                    onChange={(e) => setTemplateForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-medium"
+                  >
+                    <option value="ONBOARDING">Candidate Onboarding Link</option>
+                    <option value="OTP">2FA Passcode / Security Gate</option>
+                    <option value="BILLING">Month-End Postpaid Invoice</option>
+                    <option value="REMINDER">60-Day Expiry / Action Reminder</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Template Identifier / Name</label>
+                <input 
+                  type="text"
+                  required
+                  placeholder="e.g. joy_candidate_onboarding_v2"
+                  value={templateForm.name}
+                  onChange={(e) => setTemplateForm(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-bold text-slate-700">Message Body Template</label>
+                  <span className="text-[10px] text-slate-500 font-medium">Click pill to insert tag</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {[
+                    '{{candidate_name}}',
+                    '{{company_name}}',
+                    '{{verification_link}}',
+                    '{{expiry_date}}',
+                    '{{otp_code}}'
+                  ].map(tag => (
+                    <button
+                      type="button"
+                      key={tag}
+                      onClick={() => setTemplateForm(prev => ({ ...prev, body: prev.body + ' ' + tag }))}
+                      className="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[10px] font-bold border border-slate-200 cursor-pointer"
+                    >
+                      +{tag}
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  rows={4}
+                  required
+                  value={templateForm.body}
+                  onChange={(e) => setTemplateForm(prev => ({ ...prev, body: e.target.value }))}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-sans text-xs leading-relaxed"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowRequestTemplateModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 cursor-pointer text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingTemplate}
+                  className="btn btn-superadmin text-xs py-2 px-5 font-black shadow-md cursor-pointer flex items-center gap-1.5"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{isSubmittingTemplate ? 'Submitting...' : 'Submit to SuperAdmin for Review 🚀'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 💳 MODAL 3: DIRECT BANK / UPI OFFLINE SETTLEMENT (UTR PROOF SUBMISSION) */}
+      {showOfflinePaymentModal && (
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-3 sm:p-5 flex justify-center items-center animate-fadeIn">
+          <div className="bg-white text-slate-900 w-full max-w-2xl rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl border border-emerald-200 animate-modal-spring max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <Building2 className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+                    <span>Direct Sovereign Bank Transfer & UPI Settlement 🏦</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Zero payment gateway surcharge. Submit 12-digit UTR transaction reference for SuperAdmin reconciliation.
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowOfflinePaymentModal(false)}
+                className="text-slate-400 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer text-xs font-bold"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Sovereign Bank Account & UPI Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-gradient-to-br from-emerald-50/60 to-slate-50 border border-emerald-200 text-xs">
+              <div className="space-y-2">
+                <span className="text-[10px] font-black uppercase text-emerald-900 tracking-wider block">Official Bank Details</span>
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Beneficiary:</span>
+                    <span className="font-bold text-slate-900">Joy Corporate Solutions Pvt Ltd</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Bank:</span>
+                    <span className="font-bold text-slate-900">HDFC Bank Ltd</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">A/C Number:</span>
+                    <div className="flex items-center gap-1 font-mono font-black text-slate-900">
+                      <span>50200084920193</span>
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          navigator.clipboard.writeText('50200084920193');
+                          showToast('A/C Number copied!');
+                        }}
+                        className="text-emerald-700 hover:text-emerald-900 cursor-pointer"
+                        title="Copy A/C"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">IFSC Code:</span>
+                    <div className="flex items-center gap-1 font-mono font-black text-slate-900">
+                      <span>HDFC0000240</span>
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          navigator.clipboard.writeText('HDFC0000240');
+                          showToast('IFSC copied!');
+                        }}
+                        className="text-emerald-700 hover:text-emerald-900 cursor-pointer"
+                        title="Copy IFSC"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Branch:</span>
+                    <span className="font-bold text-slate-900">Anna Nagar, Chennai</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* UPI ID & QR Code */}
+              <div className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-emerald-200 text-center space-y-2">
+                <span className="text-[10px] font-black uppercase text-emerald-900 tracking-wider">Instant UPI QR Code</span>
+                <div className="w-28 h-28 bg-slate-50 rounded-xl border border-slate-200 flex flex-col items-center justify-center p-2 shadow-inner">
+                  <QrCode className="w-20 h-20 text-slate-800" />
+                  <span className="text-[8px] font-mono text-slate-400 font-bold">BHIM UPI / GPay / PhonePe</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-mono text-xs font-black text-indigo-950">
+                  <span>muthujoy@hdfcbank</span>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      navigator.clipboard.writeText('muthujoy@hdfcbank');
+                      showToast('UPI ID copied!');
+                    }}
+                    className="text-emerald-700 hover:text-emerald-900 cursor-pointer"
+                    title="Copy UPI ID"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* UTR Submission Form */}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!offlinePaymentForm.amount || !offlinePaymentForm.utr_number) {
+                  showToast('Please enter both Amount and UTR Number', 'error');
+                  return;
+                }
+                setIsSubmittingUtr(true);
+                try {
+                  const res = await submitOfflinePaymentProof(company.id, {
+                    amount: parseFloat(offlinePaymentForm.amount),
+                    utr_number: offlinePaymentForm.utr_number.trim(),
+                    payment_type: offlinePaymentForm.payment_type,
+                    notes: offlinePaymentForm.notes
+                  });
+                  setSubmittedUtrRecords(prev => [
+                    {
+                      id: res?.record?.id || Date.now(),
+                      amount: parseFloat(offlinePaymentForm.amount),
+                      utr: offlinePaymentForm.utr_number.trim(),
+                      type: offlinePaymentForm.payment_type,
+                      date: new Date().toLocaleDateString('en-IN'),
+                      status: 'Pending Verification ⏳'
+                    },
+                    ...prev
+                  ]);
+                  setShowOfflinePaymentModal(false);
+                  setOfflinePaymentForm({
+                    amount: '',
+                    utr_number: '',
+                    payment_type: 'Postpaid Monthly Invoice Settlement',
+                    notes: ''
+                  });
+                } catch (err) {
+                  // handled
+                } finally {
+                  setIsSubmittingUtr(false);
+                }
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Transferred Amount (₹ INR)</label>
+                  <input 
+                    type="number"
+                    step="any"
+                    required
+                    placeholder={postpaidBill?.totalAmountDue ? `e.g. ${postpaidBill.totalAmountDue}` : 'e.g. 15000'}
+                    value={offlinePaymentForm.amount}
+                    onChange={(e) => setOfflinePaymentForm(prev => ({ ...prev, amount: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-mono font-bold text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">12-Digit Banking UTR / Transaction No</label>
+                  <input 
+                    type="text"
+                    required
+                    placeholder="e.g. 429188291034"
+                    value={offlinePaymentForm.utr_number}
+                    onChange={(e) => setOfflinePaymentForm(prev => ({ ...prev, utr_number: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-mono font-bold text-sm uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Payment Purpose</label>
+                  <select
+                    value={offlinePaymentForm.payment_type}
+                    onChange={(e) => setOfflinePaymentForm(prev => ({ ...prev, payment_type: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-medium"
+                  >
+                    <option value="Postpaid Monthly Invoice Settlement">Postpaid Monthly Invoice Settlement</option>
+                    <option value="Wallet Balance Top-up">Wallet Balance Top-up</option>
+                    <option value="Plan Tier Expansion Deposit">Plan Tier Expansion Deposit</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Transaction Remarks / Notes</label>
+                  <input 
+                    type="text"
+                    placeholder="e.g. Settled from Axis Bank Current Account"
+                    value={offlinePaymentForm.notes}
+                    onChange={(e) => setOfflinePaymentForm(prev => ({ ...prev, notes: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowOfflinePaymentModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 cursor-pointer text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingUtr}
+                  className="btn btn-superadmin text-xs py-2 px-5 font-black shadow-md cursor-pointer flex items-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>{isSubmittingUtr ? 'Verifying...' : 'Submit UTR Settlement Proof 📄'}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

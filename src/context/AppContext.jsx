@@ -1299,6 +1299,18 @@ export const AppProvider = ({ children }) => {
     { id: 'bankAccount', label: 'Bank Account Number & IFSC', type: 'text', defaultMandatory: false, category: 'Financial' }
   ]);
 
+  // 🛡️ SUPER ADMIN CANDIDATE SECURITY GATE STATE (Captcha vs PIN)
+  const [securityGateConfig, setSecurityGateConfig] = useState({
+    gate_type: 'captcha',
+    allow_company_override: true
+  });
+
+  // 💬 MESSAGE TEMPLATE REQUESTS (WhatsApp / SMS)
+  const [templateRequests, setTemplateRequests] = useState([]);
+
+  // ⏳ 60-DAY CANDIDATE RETENTION & EXPIRY ALERTS
+  const [candidateExpiryAlerts, setCandidateExpiryAlerts] = useState([]);
+
   // SUPER ADMIN SYSTEM ERROR & ISSUE LOGS STATE
   const [systemErrorLogs, setSystemErrorLogs] = useState([
     { id: 'LOG-901', timestamp: '2026-08-20 12:24:10', section: 'Aadhaar UIDAI Gateway', event: 'Invalid Aadhaar OTP Attempt', details: 'Candidate entered incorrect OTP code 3 times in succession.', severity: 'Warning', solved: false, company: 'JOY CORPORATE SOLUTIONS' },
@@ -1635,15 +1647,41 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchBackendData = async () => {
       try {
-        const [comps, cands, dropdowns, logs, tickets, apiCfgs, hrList] = await Promise.all([
+        const [comps, cands, dropdowns, logs, tickets, apiCfgs, hrList, masterFields, secGate, tmplReqs, expAlerts] = await Promise.all([
           api.getCompanies().catch(() => null),
           api.getCandidates().catch(() => null),
           api.getMasterDropdowns().catch(() => null),
           api.getLogs().catch(() => null),
           api.getTickets().catch(() => null),
           api.getApiConfigs().catch(() => null),
-          api.getAllHrUsers().catch(() => null)
+          api.getAllHrUsers().catch(() => null),
+          api.getMasterFormFields().catch(() => null),
+          api.getSecurityGateConfig().catch(() => null),
+          api.getSuperAdminTemplateRequests().catch(() => null),
+          api.getExpiryAlerts().catch(() => null)
         ]);
+
+        if (masterFields && Array.isArray(masterFields) && masterFields.length > 0) {
+          setMasterFormFields(masterFields.map(f => ({
+            id: f.id,
+            label: f.label,
+            type: f.field_type || f.type || 'text',
+            category: f.category || 'Personal Info',
+            defaultMandatory: f.default_mandatory ?? f.defaultMandatory ?? false
+          })));
+        }
+
+        if (secGate && secGate.config) {
+          setSecurityGateConfig(secGate.config);
+        }
+
+        if (tmplReqs && Array.isArray(tmplReqs)) {
+          setTemplateRequests(tmplReqs);
+        }
+
+        if (expAlerts && Array.isArray(expAlerts)) {
+          setCandidateExpiryAlerts(expAlerts);
+        }
 
         if (hrList && Array.isArray(hrList)) {
           const seenHr = new Set();
@@ -3263,6 +3301,140 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const deleteMasterFormField = async (fieldId) => {
+    try {
+      await api.deleteMasterFormField(fieldId);
+      setMasterFormFields(prev => prev.filter(f => f.id !== fieldId));
+      showToast('Master form field removed from database.');
+    } catch (err) {
+      setMasterFormFields(prev => prev.filter(f => f.id !== fieldId));
+      showToast('Master form field deleted.');
+    }
+  };
+
+  // 🛡️ Candidate Security Gate Configuration (Captcha vs PIN)
+  const updateSecurityGateConfig = async (newConfig) => {
+    try {
+      const res = await api.updateSecurityGateConfig(newConfig);
+      setSecurityGateConfig(newConfig);
+      showToast('🛡️ Security gate settings saved in PostgreSQL!');
+      return res;
+    } catch (err) {
+      showToast('Failed to update security gate config: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  // 💬 Messaging Template Requests (WhatsApp & Carrier SMS)
+  const requestMessageTemplate = async (companyId, payload) => {
+    try {
+      const res = await api.requestMessageTemplate(companyId, payload);
+      showToast(`💬 Template "${payload.template_name || payload.name}" submitted to SuperAdmin for approval!`);
+      try {
+        const updated = await api.getSuperAdminTemplateRequests();
+        if (updated && Array.isArray(updated)) setTemplateRequests(updated);
+      } catch (e) {}
+      return res;
+    } catch (err) {
+      showToast('Failed to submit template request: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  const reviewTemplateRequest = async (requestId, status, notes = '') => {
+    try {
+      const res = await api.reviewTemplateRequest(requestId, { status, notes });
+      showToast(`Template request marked as ${status}!`);
+      setTemplateRequests(prev => prev.map(t => t.id === requestId ? { ...t, status, superadmin_notes: notes } : t));
+      return res;
+    } catch (err) {
+      showToast('Failed to review template: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  // 💳 Offline Bank / UPI Settlement (UTR Proof Submission & Approval)
+  const submitOfflinePaymentProof = async (companyId, payload) => {
+    try {
+      const res = await api.submitOfflinePaymentProof(companyId, payload);
+      showToast(`💳 Payment proof submitted (UTR: ${payload.utr_number || payload.utr}). SuperAdmin notified.`);
+      return res;
+    } catch (err) {
+      showToast('Failed to submit payment proof: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  const approveOfflinePayment = async (paymentId) => {
+    try {
+      const res = await api.approveOfflinePayment(paymentId);
+      showToast(`✅ Payment #${paymentId} verified and settled!`);
+      return res;
+    } catch (err) {
+      showToast('Failed to approve payment: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  // ⚙️ Candidate Form Field Rules (Company sets for HR & Employees)
+  const getCandidateFieldRules = async (companyId) => {
+    return await api.getCandidateFieldRules(companyId);
+  };
+
+  const updateCandidateFieldRules = async (companyId, rules) => {
+    try {
+      const res = await api.updateCandidateFieldRules(companyId, rules);
+      showToast('⚙️ Candidate onboarding form requirements saved in database!');
+      return res;
+    } catch (err) {
+      showToast('Failed to save field rules: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  // 🚀 HR Link Dispatch & Communication Telemetry Tracking
+  const dispatchCandidateLink = async (candidateId, payload) => {
+    try {
+      const res = await api.dispatchCandidateLink(candidateId, payload);
+      const chName = (payload.channel || 'EMAIL').toUpperCase();
+      showToast(`🚀 Verification link dispatched via ${chName}!`);
+      if (res.candidate) {
+        setCandidates(prev => prev.map(c => c.id === candidateId || c.token === candidateId ? { 
+          ...c, 
+          dispatchChannel: payload.channel, 
+          dispatchedAt: new Date().toISOString(),
+          status: c.status === 'Verified' ? 'Verified' : 'Link Sent'
+        } : c));
+      }
+      return res;
+    } catch (err) {
+      showToast('Failed to dispatch link: ' + err.message, 'error');
+      throw err;
+    }
+  };
+
+  // ⏳ 60-Day Retention Expiry Alerts
+  const fetchExpiryAlerts = async (companyId = null) => {
+    try {
+      const alerts = await api.getExpiryAlerts(companyId);
+      if (alerts && Array.isArray(alerts)) {
+        setCandidateExpiryAlerts(alerts);
+      }
+      return alerts;
+    } catch (e) {
+      console.warn('Could not fetch expiry alerts:', e);
+    }
+  };
+
+  // 🔐 Universal Two-Factor Authentication (2FA)
+  const request2FaOtp = async (email, role) => {
+    return await api.request2FaOtp({ email, role });
+  };
+
+  const verify2FaAndLogin = async (payload) => {
+    return await api.verify2FaAndLogin(payload);
+  };
+
   // Fetch System Logs with Multi-Criteria Filtering
   const fetchSystemLogs = async (params = {}) => {
     try {
@@ -4734,7 +4906,27 @@ export const AppProvider = ({ children }) => {
       calculateCompanyPostpaidBill,
       updateCompanyPostpaidPlan,
       requestCompanyPlanUpgrade,
-      settlePostpaidInvoice
+      settlePostpaidInvoice,
+      // 🛡️ Candidate Security Gate & 2FA
+      securityGateConfig,
+      updateSecurityGateConfig,
+      request2FaOtp,
+      verify2FaAndLogin,
+      // 💬 Messaging Template Governance (WhatsApp / SMS)
+      templateRequests,
+      requestMessageTemplate,
+      reviewTemplateRequest,
+      // 💳 Direct Bank & UPI Offline Settlement (UTR)
+      submitOfflinePaymentProof,
+      approveOfflinePayment,
+      // ⚙️ Candidate Form Field Rules & Master Fields
+      deleteMasterFormField,
+      getCandidateFieldRules,
+      updateCandidateFieldRules,
+      // 🚀 Candidate Link Dispatch & Expiry Alerts
+      dispatchCandidateLink,
+      candidateExpiryAlerts,
+      fetchExpiryAlerts
     }}>
       {children}
     </AppContext.Provider>

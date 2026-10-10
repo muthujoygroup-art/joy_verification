@@ -14,13 +14,16 @@ import {
   Clock, 
   AlertCircle,
   CreditCard,
-  QrCode
+  QrCode,
+  Copy,
+  Check,
+  Send
 } from 'lucide-react';
 
 export const InvoiceModal = ({ company, postpaidBill: initialPostpaidBill, transaction, onClose }) => {
   if (!company) return null;
 
-  const { candidates, vendors, POSTPAID_PLANS, calculateCompanyPostpaidBill } = useApp();
+  const { candidates, vendors, POSTPAID_PLANS, calculateCompanyPostpaidBill, submitOfflinePaymentProof, showToast } = useApp();
 
   // Calculate live or resolve from transaction
   const computedBill = initialPostpaidBill || (typeof calculateCompanyPostpaidBill === 'function' ? calculateCompanyPostpaidBill(company, candidates, vendors) : null);
@@ -53,6 +56,43 @@ export const InvoiceModal = ({ company, postpaidBill: initialPostpaidBill, trans
     '100% Postpaid monthly verification billing statement. SAC: 998311. Verifications never interrupted.'
   );
   const [isEditingControls, setIsEditingControls] = useState(false);
+  const [showUtrForm, setShowUtrForm] = useState(false);
+  const [utrNumber, setUtrNumber] = useState('');
+  const [isSubmittingUtr, setIsSubmittingUtr] = useState(false);
+  const [utrSuccessMsg, setUtrSuccessMsg] = useState('');
+  const [copiedBankField, setCopiedBankField] = useState(null);
+
+  const handleCopyField = (text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedBankField(fieldName);
+    setTimeout(() => setCopiedBankField(null), 2000);
+  };
+
+  const handleUtrSubmit = async (e) => {
+    e.preventDefault();
+    if (!utrNumber.trim()) {
+      if (showToast) showToast('Please enter the 12-digit UTR transaction number', 'error');
+      return;
+    }
+    setIsSubmittingUtr(true);
+    try {
+      if (typeof submitOfflinePaymentProof === 'function') {
+        await submitOfflinePaymentProof(company.id, {
+          amount: grandTotal,
+          utr_number: utrNumber.trim(),
+          payment_type: `Postpaid Invoice #${invoiceNumber}`,
+          notes: `Settlement against invoice ${invoiceNumber}`
+        });
+      }
+      setUtrSuccessMsg(`✅ UTR ${utrNumber.trim()} submitted successfully! Sent to SuperAdmin for verification.`);
+      if (showToast) showToast('UTR Settlement Proof submitted to SuperAdmin!');
+      setShowUtrForm(false);
+    } catch (err) {
+      if (showToast) showToast(`Submission error: ${err.message}`, 'error');
+    } finally {
+      setIsSubmittingUtr(false);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -413,6 +453,99 @@ export const InvoiceModal = ({ company, postpaidBill: initialPostpaidBill, trans
                 <span className="text-emerald-700 font-extrabold text-base font-mono">₹{grandTotal.toLocaleString('en-IN')}.00</span>
               </div>
             </div>
+          </div>
+
+          {/* Sovereign Bank Account & UPI Settlement Section */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50/70 via-slate-50 to-indigo-50/60 border border-emerald-200 text-xs space-y-3 no-print">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200/60 pb-2">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-emerald-700" />
+                <span className="font-black text-slate-900">Direct Bank Wire & UPI Settlement Details</span>
+                <span className="badge badge-emerald text-[9px] font-bold">Zero Gateway Fee</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowUtrForm(prev => !prev)}
+                className="btn btn-secondary text-xs py-1 px-3 font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border-emerald-300 shadow-2xs cursor-pointer"
+              >
+                {showUtrForm ? 'Cancel UTR Entry' : 'Pay via Bank Transfer / Submit UTR 🏦'}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="p-2.5 bg-white rounded-xl border border-slate-200 space-y-0.5">
+                <span className="text-[10px] text-slate-500 font-bold block uppercase">Beneficiary Name</span>
+                <span className="font-bold text-slate-900 text-xs block">Joy Corporate Solutions Pvt Ltd</span>
+              </div>
+
+              <div className="p-2.5 bg-white rounded-xl border border-slate-200 space-y-0.5">
+                <span className="text-[10px] text-slate-500 font-bold block uppercase">Bank & Branch</span>
+                <span className="font-bold text-slate-900 text-xs block">HDFC Bank Ltd • Anna Nagar</span>
+              </div>
+
+              <div className="p-2.5 bg-white rounded-xl border border-slate-200 space-y-0.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Current A/C No</span>
+                  <button 
+                    type="button" 
+                    onClick={() => handleCopyField('50200084920193', 'ac')}
+                    className="text-emerald-700 hover:text-emerald-900 cursor-pointer text-[10px] font-bold"
+                  >
+                    {copiedBankField === 'ac' ? 'Copied ✓' : 'Copy'}
+                  </button>
+                </div>
+                <span className="font-mono font-black text-slate-900 text-xs block">50200084920193</span>
+              </div>
+
+              <div className="p-2.5 bg-white rounded-xl border border-slate-200 space-y-0.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">IFSC / UPI ID</span>
+                  <button 
+                    type="button" 
+                    onClick={() => handleCopyField('muthujoy@hdfcbank', 'upi')}
+                    className="text-emerald-700 hover:text-emerald-900 cursor-pointer text-[10px] font-bold"
+                  >
+                    {copiedBankField === 'upi' ? 'Copied ✓' : 'Copy'}
+                  </button>
+                </div>
+                <span className="font-mono font-black text-slate-900 text-xs block">HDFC0000240 / muthujoy@hdfcbank</span>
+              </div>
+            </div>
+
+            {/* Inline UTR Submission Drawer */}
+            {showUtrForm && (
+              <form onSubmit={handleUtrSubmit} className="p-3 bg-white rounded-xl border-2 border-emerald-300 space-y-2 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <span className="font-black text-xs text-slate-900">Submit Bank UTR Proof for Invoice Settlement</span>
+                  <span className="text-[10px] text-slate-500">Net Payable: ₹{grandTotal.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter 12-Digit Banking UTR Number (e.g. 429188291034)"
+                    value={utrNumber}
+                    onChange={(e) => setUtrNumber(e.target.value)}
+                    className="flex-1 p-2 rounded-xl border border-slate-300 font-mono text-xs font-bold uppercase"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmittingUtr}
+                    className="btn btn-superadmin text-xs py-2 px-4 font-black shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{isSubmittingUtr ? 'Submitting...' : 'Submit UTR Proof 📄'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {utrSuccessMsg && (
+              <div className="p-2.5 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-950 font-bold text-xs flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span>{utrSuccessMsg}</span>
+              </div>
+            )}
           </div>
 
           {/* Footer Electronic Certification Stamp */}

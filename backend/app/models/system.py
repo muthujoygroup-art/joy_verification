@@ -48,3 +48,21 @@ class CommunicationGateway(Base):
     settings_data = Column(JSON, default=dict)
     is_active = Column(Boolean, default=True)
     updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class MessageTemplateRequest(Base):
+    __tablename__ = "message_template_requests"
+
+    id = Column(String(50), primary_key=True, index=True)
+    company_id = Column(String(50), nullable=False, index=True)
+    company_name = Column(String(200), nullable=True)
+    channel = Column(String(20), default="whatsapp") # 'whatsapp' | 'sms'
+    template_name = Column(String(100), nullable=False)
+    category = Column(String(50), default="Onboarding Link") # 'OTP' | 'Onboarding Link' | 'Monthly Bill' | 'Verification Report' | 'General'
+    template_content = Column(Text, nullable=False)
+    variables = Column(JSON, default=list) # ["candidate_name", "link", "company_name"]
+    status = Column(String(30), default="Pending") # 'Pending' | 'Approved' | 'Rejected'
+    superadmin_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    reviewed_at = Column(DateTime, nullable=True)
+

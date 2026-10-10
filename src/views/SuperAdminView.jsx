@@ -124,6 +124,7 @@ export const SuperAdminView = () => {
     hrUsers,
     masterFormFields, 
     addMasterFormField, 
+    deleteMasterFormField,
     masterDropdownOptions, 
     addMasterDropdownOption, 
     removeMasterDropdownOption, 
@@ -167,7 +168,12 @@ export const SuperAdminView = () => {
     updateCompanyPostpaidPlan,
     settlePostpaidInvoice,
     purgeClientCacheAndReset,
-    purgeDuplicateCandidates
+    purgeDuplicateCandidates,
+    securityGateConfig,
+    updateSecurityGateConfig,
+    templateRequests,
+    reviewTemplateRequest,
+    approveOfflinePayment
   } = useApp();
 
   const navigate = useNavigate();
@@ -232,6 +238,55 @@ export const SuperAdminView = () => {
       showToast('Failed to save messaging gateways: ' + e.message, 'error');
     } finally {
       setIsSavingGateways(false);
+    }
+  };
+
+  // 🛡️ Candidate Security Gate State (Captcha vs PIN)
+  const [secGateState, setSecGateState] = useState(() => ({
+    gate_type: securityGateConfig?.gate_type || 'captcha',
+    allow_company_override: securityGateConfig?.allow_company_override ?? true
+  }));
+  const [isSavingSecGate, setIsSavingSecGate] = useState(false);
+
+  const handleSaveSecurityGate = async () => {
+    setIsSavingSecGate(true);
+    try {
+      if (typeof updateSecurityGateConfig === 'function') {
+        await updateSecurityGateConfig(secGateState);
+      }
+    } catch (e) {
+      showToast('Failed to save security gate: ' + e.message, 'error');
+    } finally {
+      setIsSavingSecGate(false);
+    }
+  };
+
+  // 💬 Messaging Template Reviews
+  const [templateReviewNotes, setTemplateReviewNotes] = useState({});
+  const [isReviewingTemplate, setIsReviewingTemplate] = useState(false);
+
+  const handleReviewTemplate = async (reqId, status) => {
+    setIsReviewingTemplate(true);
+    try {
+      const notes = templateReviewNotes[reqId] || '';
+      await reviewTemplateRequest(reqId, status, notes);
+    } catch (e) {
+      showToast('Failed to review template: ' + e.message, 'error');
+    } finally {
+      setIsReviewingTemplate(false);
+    }
+  };
+
+  // 💳 Offline Bank / UPI Payment Approval
+  const [isApprovingPayment, setIsApprovingPayment] = useState(false);
+  const handleApproveOfflinePayment = async (paymentId) => {
+    setIsApprovingPayment(true);
+    try {
+      await approveOfflinePayment(paymentId);
+    } catch (e) {
+      showToast('Failed to approve payment: ' + e.message, 'error');
+    } finally {
+      setIsApprovingPayment(false);
     }
   };
 
@@ -3174,6 +3229,90 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* 5. Direct Bank Transfer & UPI UTR Settlement Pipeline */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-emerald-600" />
+                  <span>Direct Bank / UPI UTR Settlement & Proof Verification Pipeline</span>
+                </h4>
+                <p className="text-xs text-slate-500 font-medium">
+                  Review and verify offline NEFT / RTGS / IMPS and UPI transaction receipts submitted by enterprise companies.
+                </p>
+              </div>
+              <span className="badge badge-emerald text-[9px] font-bold">SOVEREIGN LEDGER</span>
+            </div>
+
+            {(() => {
+              const allPendingOffline = [];
+              companies.forEach(comp => {
+                const pend = (comp.features || {}).pending_offline_payments || [];
+                pend.forEach(p => {
+                  allPendingOffline.push({ ...p, companyName: comp.name, companyId: comp.id });
+                });
+              });
+
+              if (allPendingOffline.length === 0) {
+                return (
+                  <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-200 text-slate-500 text-xs">
+                    No pending offline bank/UPI payments awaiting SuperAdmin approval. All corporate settlements up to date.
+                  </div>
+                );
+              }
+
+              return (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 font-bold">
+                        <th className="p-3">Company</th>
+                        <th className="p-3">Amount Due</th>
+                        <th className="p-3">Method</th>
+                        <th className="p-3">UTR / Transaction Ref</th>
+                        <th className="p-3">Submitted At</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {allPendingOffline.map(p => (
+                        <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="p-3 font-bold text-slate-900">{p.companyName}</td>
+                          <td className="p-3 font-mono font-bold text-emerald-700">₹{p.amount?.toLocaleString('en-IN')}.00</td>
+                          <td className="p-3 font-medium text-slate-600">{p.payment_method}</td>
+                          <td className="p-3 font-mono font-bold text-slate-800 bg-slate-100/60 rounded px-2 py-1">
+                            {p.utr_number}
+                          </td>
+                          <td className="p-3 text-slate-500 font-mono text-[10px]">
+                            {new Date(p.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="p-3">
+                            <span className={`badge ${p.status?.includes('Completed') ? 'badge-emerald' : 'badge-amber'} text-[10px] font-bold`}>
+                              {p.status}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right">
+                            {!p.status?.includes('Completed') && (
+                              <button
+                                type="button"
+                                onClick={() => handleApproveOfflinePayment(p.id)}
+                                disabled={isApprovingPayment}
+                                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer shadow-xs"
+                              >
+                                {isApprovingPayment ? 'Approving...' : 'Approve & Credit Balance ✓'}
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </div>
 
         </div>
@@ -6522,6 +6661,95 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
 
+          {/* 🛡️ Candidate Security Gate Configuration (Captcha vs PIN) */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 border-2 border-indigo-200 text-indigo-700 flex items-center justify-center font-black shadow-xs shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900">Global Candidate Onboarding Security Gate</h3>
+                    <span className="badge badge-purple text-[10px] font-bold">SOVEREIGN GOVERNANCE</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Configure whether candidates unlock their sovereign verification link using Visual CAPTCHA or a 4-digit PIN passcode.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSaveSecurityGate}
+                disabled={isSavingSecGate}
+                className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer"
+              >
+                {isSavingSecGate ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                <span>{isSavingSecGate ? 'Saving Gate...' : 'Save Gate Policy 💾'}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div 
+                onClick={() => setSecGateState(prev => ({ ...prev, gate_type: 'captcha' }))}
+                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                  secGateState.gate_type === 'captcha' 
+                    ? 'border-indigo-600 bg-indigo-50/60 shadow-sm' 
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center border-indigo-600">
+                      {secGateState.gate_type === 'captcha' && <div className="w-2 h-2 rounded-full bg-indigo-600" />}
+                    </div>
+                    <span className="font-black text-sm text-slate-900">Visual Security CAPTCHA (Recommended)</span>
+                  </div>
+                  <span className="badge badge-emerald text-[9px] font-bold">DPDP ACT COMPLIANT</span>
+                </div>
+                <p className="text-[11px] text-slate-600 font-medium mt-2 leading-relaxed">
+                  Candidates solve a dynamic distorted visual CAPTCHA with audio speech support. Prevents bot scrapers, eliminates friction of remembering 4-digit PINs, and complies with DPDP Section 7 bot mitigation standards.
+                </p>
+              </div>
+
+              <div 
+                onClick={() => setSecGateState(prev => ({ ...prev, gate_type: 'pin' }))}
+                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                  secGateState.gate_type === 'pin' 
+                    ? 'border-indigo-600 bg-indigo-50/60 shadow-sm' 
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center border-indigo-600">
+                      {secGateState.gate_type === 'pin' && <div className="w-2 h-2 rounded-full bg-indigo-600" />}
+                    </div>
+                    <span className="font-black text-sm text-slate-900">4-Digit Security PIN Passcode</span>
+                  </div>
+                  <span className="badge badge-amber text-[9px] font-bold">LEGACY MODE</span>
+                </div>
+                <p className="text-[11px] text-slate-600 font-medium mt-2 leading-relaxed">
+                  Candidates must enter the 4-digit PIN issued by HR in the onboarding invitation dispatch message. Provides password-gated access per candidate profile.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+              <label className="flex items-center gap-2.5 font-bold text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={secGateState.allow_company_override}
+                  onChange={(e) => setSecGateState(prev => ({ ...prev, allow_company_override: e.target.checked }))}
+                  className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                />
+                <span>Allow individual Enterprise Companies to override default gate preference</span>
+              </label>
+              <span className="text-[10px] text-slate-500">Active Selection: <strong className="text-indigo-700 uppercase font-mono">{secGateState.gate_type}</strong></span>
+            </div>
+          </div>
+
           {/* 🧹 Client Storage Cache & Directory Synchronization Maintenance */}
           <div className="glass-panel p-6 border-slate-200 bg-white space-y-4 rounded-2xl shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
@@ -7638,6 +7866,103 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* 4. COMPANY MESSAGE TEMPLATE REQUESTS APPROVAL QUEUE (WhatsApp & SMS) */}
+          <div className="glass-panel p-6 border-slate-200 bg-white rounded-3xl shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-black text-slate-900 text-sm sm:text-base">Enterprise Message Template Review & Approval Pipeline</h4>
+                    <span className="badge badge-purple text-[9px] font-black">SUPERADMIN SOVEREIGNTY</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    Companies submit requested WhatsApp & SMS message templates. SuperAdmin reviews and approves before HR can dispatch.
+                  </span>
+                </div>
+              </div>
+              <span className="badge badge-indigo text-[10px] font-mono">
+                {templateRequests.length} Total Registered Templates
+              </span>
+            </div>
+
+            {templateRequests.length === 0 ? (
+              <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-xs">
+                No custom message templates requested yet. Standard enterprise templates are active.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 font-bold">
+                      <th className="p-3">Company</th>
+                      <th className="p-3">Channel</th>
+                      <th className="p-3">Template Name & Category</th>
+                      <th className="p-3">Message Content</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {templateRequests.map(t => (
+                      <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="p-3 font-bold text-slate-900">{t.company_name || t.company_id}</td>
+                        <td className="p-3">
+                          <span className={`badge ${t.channel === 'whatsapp' ? 'badge-emerald' : 'badge-sky'} text-[10px] uppercase font-bold`}>
+                            {t.channel}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <div className="font-bold text-slate-800">{t.template_name}</div>
+                          <div className="text-[10px] text-slate-500">{t.category}</div>
+                        </td>
+                        <td className="p-3 max-w-xs">
+                          <div className="p-2 rounded-lg bg-slate-100/80 text-[11px] font-mono text-slate-800 line-clamp-2">
+                            {t.template_content}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <span className={`badge ${
+                            t.status === 'Approved' ? 'badge-emerald' : t.status === 'Rejected' ? 'badge-rose' : 'badge-amber'
+                          } text-[10px] font-bold`}>
+                            {t.status}
+                          </span>
+                        </td>
+                        <td className="p-3 text-right space-x-2">
+                          {t.status === 'Pending' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleReviewTemplate(t.id, 'Approved')}
+                                disabled={isReviewingTemplate}
+                                className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                Approve ✓
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleReviewTemplate(t.id, 'Rejected')}
+                                disabled={isReviewingTemplate}
+                                className="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                Reject ✕
+                              </button>
+                            </>
+                          )}
+                          {t.status !== 'Pending' && (
+                            <span className="text-[10px] text-slate-400 font-mono">Reviewed</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
         </div>
