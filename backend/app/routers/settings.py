@@ -140,6 +140,20 @@ def save_communication_gateway(payload: dict, db: Session = Depends(get_db)):
             if existing_sd.get("password"):
                 settings_data["password"] = existing_sd["password"]
 
+        # Retain existing accessToken if empty or masked so it never vanishes
+        incoming_token = settings_data.get("accessToken") or settings_data.get("access_token")
+        if not incoming_token or incoming_token.startswith("••") or incoming_token.startswith("**") or incoming_token == "":
+            if existing_sd.get("accessToken"):
+                settings_data["accessToken"] = existing_sd["accessToken"]
+            elif existing_sd.get("access_token"):
+                settings_data["accessToken"] = existing_sd["access_token"]
+
+        # Retain existing phoneNumberId and wabaId if empty
+        if not settings_data.get("phoneNumberId") and existing_sd.get("phoneNumberId"):
+            settings_data["phoneNumberId"] = existing_sd["phoneNumberId"]
+        if not settings_data.get("wabaId") and (existing_sd.get("wabaId") or existing_sd.get("businessAccountId")):
+            settings_data["wabaId"] = existing_sd.get("wabaId") or existing_sd.get("businessAccountId")
+
         if not gw:
             gw = CommunicationGateway(
                 id=gw_id,
@@ -488,12 +502,31 @@ async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db
     phone = (payload.get("phone") or payload.get("to") or "").replace("+", "").replace(" ", "").replace("-", "")
     message_text = payload.get("message") or "Hello from JOY TrueProfile! Your Meta WhatsApp Cloud API is successfully connected & 100% active. 🚀"
     
-    # 1. Resolve credentials from Database first, fallback to .env / config
+    # 1. Resolve credentials: prioritize payload (instant test), then Database, then settings (.env)
     gw = db.query(CommunicationGateway).filter(CommunicationGateway.gateway_type == "whatsapp").first()
     gw_settings = gw.settings_data if gw and gw.settings_data else {}
     
-    phone_number_id = gw_settings.get("phoneNumberId") or settings.WHATSAPP_PHONE_NUMBER_ID
-    access_token = gw_settings.get("accessToken") or settings.WHATSAPP_API_TOKEN
+    phone_number_id = (
+        payload.get("phoneNumberId") or 
+        payload.get("phone_number_id") or 
+        gw_settings.get("phoneNumberId") or 
+        gw_settings.get("phone_number_id") or 
+        settings.WHATSAPP_PHONE_NUMBER_ID
+    )
+    access_token = (
+        payload.get("accessToken") or 
+        payload.get("access_token") or 
+        gw_settings.get("accessToken") or 
+        gw_settings.get("access_token") or 
+        settings.WHATSAPP_API_TOKEN
+    )
+    waba_id = (
+        payload.get("wabaId") or 
+        payload.get("businessAccountId") or 
+        gw_settings.get("wabaId") or 
+        gw_settings.get("businessAccountId") or 
+        settings.WHATSAPP_BUSINESS_ACCOUNT_ID
+    )
     
     if not phone_number_id or not access_token:
         raise HTTPException(
@@ -528,10 +561,19 @@ async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db
             res_data = resp.json()
             if resp.status_code >= 400:
                 err_msg = res_data.get("error", {}).get("message", "Meta API Error")
-                return JSONResponse(status_code=resp.status_code, content={"success": False, "error": err_msg, "meta_response": res_data})
+                err_code = res_data.get("error", {}).get("code")
+                formatted_err = f"Meta Error ({err_code}): {err_msg}" if err_code else err_msg
+                return JSONResponse(status_code=resp.status_code, content={"success": False, "error": formatted_err, "meta_response": res_data})
+            
+            message_id = None
+            if isinstance(res_data.get("messages"), list) and len(res_data["messages"]) > 0:
+                message_id = res_data["messages"][0].get("id")
+
             return {
                 "success": True,
                 "message": f"WhatsApp test message dispatched to +{phone} successfully!",
+                "message_id": message_id,
+                "phone": f"+{phone}",
                 "meta_response": res_data
             }
     except Exception as e:

@@ -22,34 +22,54 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('whatsapp'); // 'whatsapp' | 'sms'
 
   // WhatsApp Local Form State
-  const [waState, setWaState] = useState({
+  const [waState, setWaState] = useState(() => ({
     enabled: true,
-    wabaId: 'WABA-99823412091',
-    phoneNumberId: 'PN-919876543210',
-    accessToken: 'EAAG99823412091ZABCPASSWORDTOKEN',
-    webhookUrl: 'https://api.joyverification.com/v1/whatsapp/webhook',
+    wabaId: (whatsappConfig && (whatsappConfig.wabaId || whatsappConfig.businessAccountId)) || '',
+    phoneNumberId: whatsappConfig?.phoneNumberId || '',
+    accessToken: whatsappConfig?.accessToken || '',
+    webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/v1/whatsapp/webhook',
+    webhookSecret: 'whsec_JoyWhatsApp2026_x89',
     autoSendOnboardingLink: true,
     autoSendOtpCode: true,
     autoSendPdfCertificate: true,
     status: 'Connected 🟢',
     ...(whatsappConfig || {})
-  });
+  }));
 
   // Carrier SMS Local Form State
-  const [smsState, setSmsState] = useState({
+  const [smsState, setSmsState] = useState(() => ({
     enabled: true,
     provider: 'Twilio',
-    accountSid: 'AC99823412091_TWILIO_LIVE',
-    authToken: 'AUTH_TOKEN_99823412091_JOY',
-    senderId: 'JOYVER',
-    dltEntityId: '1101234567890123456',
-    dltTemplateId: 'DLT_1107161829304859',
+    accountSid: smsConfig?.accountSid || '',
+    authToken: smsConfig?.authToken || '',
+    senderId: smsConfig?.senderId || 'JOYVER',
+    dltEntityId: smsConfig?.dltEntityId || '',
+    dltTemplateId: smsConfig?.dltTemplateId || '',
     autoSendOnboardingSms: true,
     autoSendOtpSms: true,
     autoSendReportSms: true,
     status: 'Connected 🟢',
     ...(smsConfig || {})
-  });
+  }));
+
+  useEffect(() => {
+    if (whatsappConfig) {
+      setWaState(prev => ({
+        ...prev,
+        ...whatsappConfig,
+        wabaId: whatsappConfig.wabaId || whatsappConfig.businessAccountId || prev.wabaId
+      }));
+    }
+  }, [whatsappConfig]);
+
+  useEffect(() => {
+    if (smsConfig) {
+      setSmsState(prev => ({
+        ...prev,
+        ...smsConfig
+      }));
+    }
+  }, [smsConfig]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

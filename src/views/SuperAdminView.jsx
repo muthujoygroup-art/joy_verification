@@ -212,19 +212,50 @@ export const SuperAdminView = () => {
       autoSendPdfCertificate: true,
       status: 'Connected 🟢',
       ...(cached || {}),
-      ...(whatsappConfig || {})
+      ...(whatsappConfig || {}),
+      wabaId: (whatsappConfig && (whatsappConfig.wabaId || whatsappConfig.businessAccountId)) || (cached && (cached.wabaId || cached.businessAccountId)) || ''
     };
   });
 
   // Sync waConfigState when loaded from database
   useEffect(() => {
-    if (whatsappConfig && (whatsappConfig.wabaId || whatsappConfig.phoneNumberId || whatsappConfig.accessToken)) {
+    if (whatsappConfig && (whatsappConfig.wabaId || whatsappConfig.businessAccountId || whatsappConfig.phoneNumberId || whatsappConfig.accessToken)) {
       setWaConfigState(prev => ({
         ...prev,
-        ...whatsappConfig
+        ...whatsappConfig,
+        wabaId: whatsappConfig.wabaId || whatsappConfig.businessAccountId || prev.wabaId
       }));
     }
   }, [whatsappConfig]);
+
+  // Guaranteed fetch directly from backend on mount so fields never vanish
+  useEffect(() => {
+    const fetchFreshGateways = async () => {
+      try {
+        const gws = await api.getGateways();
+        if (Array.isArray(gws)) {
+          const wa = gws.find(g => g.gateway_type === 'whatsapp' || g.id === 'gw_whatsapp');
+          if (wa && wa.settings_data) {
+            setWaConfigState(prev => ({
+              ...prev,
+              ...wa.settings_data,
+              wabaId: wa.settings_data.wabaId || wa.settings_data.businessAccountId || prev.wabaId
+            }));
+          }
+          const sms = gws.find(g => g.gateway_type === 'sms' || g.id === 'gw_sms');
+          if (sms && sms.settings_data) {
+            setSmsConfigState(prev => ({
+              ...prev,
+              ...sms.settings_data
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch fresh gateways directly:', err);
+      }
+    };
+    fetchFreshGateways();
+  }, []);
 
   const [smsConfigState, setSmsConfigState] = useState(() => {
     let cached = null;
@@ -250,22 +281,42 @@ export const SuperAdminView = () => {
   });
 
   const [isSavingGateways, setIsSavingGateways] = useState(false);
-  const [testMessagingPhone, setTestMessagingPhone] = useState('+91 9994699044');
+  const [gatewaySaveResult, setGatewaySaveResult] = useState(null);
+  const [testMessagingPhone, setTestMessagingPhone] = useState('+91 9994644044');
+  const [isDispatchingWhatsApp, setIsDispatchingWhatsApp] = useState(false);
+  const [whatsAppDispatchResult, setWhatsAppDispatchResult] = useState(null);
+  const [showWaToken, setShowWaToken] = useState(false);
   const [activeMessagingChannel, setActiveMessagingChannel] = useState('all');
 
   const handleSaveMessagingGateways = async () => {
     setIsSavingGateways(true);
+    setGatewaySaveResult(null);
     try {
       try {
         localStorage.setItem('joy_wa_config', JSON.stringify(waConfigState));
         localStorage.setItem('joy_sms_config', JSON.stringify(smsConfigState));
       } catch (e) {}
+
+      // Explicit direct backend API call to persist to PostgreSQL
+      await api.saveGateway({ gateway_type: 'whatsapp', settings: waConfigState });
+      await api.saveGateway({ gateway_type: 'sms', settings: smsConfigState });
+
       if (typeof updateCommunicationGateways === 'function') {
         await updateCommunicationGateways(waConfigState, smsConfigState);
       }
-      showToast('⚡ WhatsApp & SMS Gateway configurations saved in Database!');
+      showToast('⚡ WhatsApp & SMS Gateway configurations saved in Database!', 'success');
+      setGatewaySaveResult({
+        status: 'success',
+        message: 'WhatsApp & SMS Gateway configurations permanently saved to PostgreSQL Database!',
+        timestamp: new Date().toLocaleTimeString()
+      });
     } catch (e) {
-      showToast('Failed to save messaging gateways: ' + e.message, 'error');
+      showToast('Failed to save messaging gateways: ' + (e.message || e), 'error');
+      setGatewaySaveResult({
+        status: 'error',
+        message: 'Failed to save gateways: ' + (e.message || e),
+        timestamp: new Date().toLocaleTimeString()
+      });
     } finally {
       setIsSavingGateways(false);
     }
@@ -322,24 +373,57 @@ export const SuperAdminView = () => {
 
   const handleTestDispatchMessaging = async (channel) => {
     if (channel === 'whatsapp') {
+      setIsDispatchingWhatsApp(true);
+      setWhatsAppDispatchResult(null);
       try {
         const cleanPhone = testMessagingPhone.replace(/\D/g, '');
         if (!cleanPhone || cleanPhone.length < 10) {
           showToast('Please enter a valid 10-digit mobile number for WhatsApp test dispatch', 'error');
+          setWhatsAppDispatchResult({
+            status: 'error',
+            error: 'Please enter a valid 10-digit mobile number.',
+            timestamp: new Date().toLocaleTimeString()
+          });
+          setIsDispatchingWhatsApp(false);
           return;
         }
-        showToast('Initiating Meta Cloud API test message dispatch...');
-        const res = await api.testWhatsAppDispatch({ phone: cleanPhone });
+        showToast('Initiating Meta Cloud API test message dispatch...', 'info');
+        const res = await api.testWhatsAppDispatch({
+          phone: cleanPhone,
+          phoneNumberId: waConfigState.phoneNumberId,
+          accessToken: waConfigState.accessToken,
+          wabaId: waConfigState.wabaId
+        });
         if (res.success) {
-          showToast(`⚡ WhatsApp Cloud Message dispatched to +${cleanPhone}! Meta 200 OK.`);
+          showToast(`⚡ WhatsApp Cloud Message dispatched to +${cleanPhone}! Meta 200 OK.`, 'success');
+          setWhatsAppDispatchResult({
+            status: 'success',
+            phone: `+${cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone}`,
+            messageId: res.message_id || res.meta_response?.messages?.[0]?.id || 'Dispatched (HTTP 200 OK)',
+            timestamp: new Date().toLocaleTimeString(),
+            deliveryNote: 'Meta Graph API v19.0 accepted the dispatch with HTTP 200 OK.'
+          });
         } else {
-          showToast(`Meta WhatsApp Notice: ${res.error || 'Failed to dispatch message'}`, 'error');
+          const errMsg = res.error || 'Failed to dispatch message';
+          showToast(`Meta WhatsApp Notice: ${errMsg}`, 'error');
+          setWhatsAppDispatchResult({
+            status: 'error',
+            error: errMsg,
+            timestamp: new Date().toLocaleTimeString()
+          });
         }
       } catch (err) {
         showToast(`Meta WhatsApp API Notice: ${err.message}`, 'error');
+        setWhatsAppDispatchResult({
+          status: 'error',
+          error: err.message,
+          timestamp: new Date().toLocaleTimeString()
+        });
+      } finally {
+        setIsDispatchingWhatsApp(false);
       }
     } else {
-      showToast(`⚡ Test Carrier SMS dispatched to ${testMessagingPhone}! Gateway 200 OK.`);
+      showToast(`⚡ Test Carrier SMS dispatched to ${testMessagingPhone}! Gateway 200 OK.`, 'success');
     }
   };
 
@@ -7394,6 +7478,27 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
             </div>
 
+            {/* Gateway Save Feedback Banner */}
+            {gatewaySaveResult && (
+              <div
+                className={`p-3 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-xs transition-all ${
+                  gatewaySaveResult.status === 'success'
+                    ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                    : 'bg-rose-50 text-rose-900 border-rose-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {gatewaySaveResult.status === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  )}
+                  <span>{gatewaySaveResult.message}</span>
+                </div>
+                <span className="text-[10px] font-mono opacity-70 shrink-0">{gatewaySaveResult.timestamp}</span>
+              </div>
+            )}
+
             {/* Quick Summary Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs">
               <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
@@ -7487,13 +7592,23 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <label className="block text-slate-700 font-bold mb-1">
                     Meta Permanent System User Access Token *
                   </label>
-                  <input
-                    type="password"
-                    value={waConfigState.accessToken}
-                    onChange={(e) => setWaConfigState({ ...waConfigState, accessToken: e.target.value })}
-                    placeholder="EAAG99823412091ZABCPASSWORDTOKEN..."
-                    className="form-input font-mono"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showWaToken ? 'text' : 'password'}
+                      value={waConfigState.accessToken}
+                      onChange={(e) => setWaConfigState({ ...waConfigState, accessToken: e.target.value })}
+                      placeholder="EAAG99823412091ZABCPASSWORDTOKEN..."
+                      className="form-input font-mono pr-20"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowWaToken(!showWaToken)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                    >
+                      {showWaToken ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      <span>{showWaToken ? 'Hide' : 'Show'}</span>
+                    </button>
+                  </div>
                   <span className="text-[10px] text-slate-400 mt-0.5 block">System user token with whatsapp_business_messaging permissions</span>
                 </div>
 
@@ -7572,31 +7687,101 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
 
                 {/* WhatsApp Test Dispatch */}
-                <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2">
+                <div className="p-4 rounded-2xl bg-emerald-50/80 border-2 border-emerald-300/80 space-y-3 shadow-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-black text-emerald-950 flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
+                      <Zap className="w-4 h-4 text-emerald-600" />
                       <span>Live WhatsApp Test Dispatch</span>
                     </span>
-                    <span className="badge badge-emerald text-[9px]">REST API v19.0</span>
+                    <span className="badge badge-emerald text-[9px] font-black">REST API v19.0</span>
                   </div>
-                  <div className="flex gap-2">
+
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="tel"
                       value={testMessagingPhone}
                       onChange={(e) => setTestMessagingPhone(e.target.value)}
-                      placeholder="+91 9876543210"
-                      className="form-input text-xs font-mono font-bold bg-white"
+                      disabled={isDispatchingWhatsApp}
+                      placeholder="+91 9994644044"
+                      className="form-input text-xs font-mono font-bold bg-white flex-1 disabled:opacity-60"
                     />
                     <button
                       type="button"
                       onClick={() => handleTestDispatchMessaging('whatsapp')}
-                      className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 font-black shrink-0 cursor-pointer shadow-sm"
+                      disabled={isDispatchingWhatsApp}
+                      className="btn bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white text-xs px-4 py-2 font-black shrink-0 cursor-pointer shadow-sm flex items-center justify-center gap-2 transition-all rounded-xl"
                     >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>Send WhatsApp</span>
+                      {isDispatchingWhatsApp ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Dispatching...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Send WhatsApp</span>
+                        </>
+                      )}
                     </button>
                   </div>
+
+                  {/* Real-Time Inline Status Feedback */}
+                  {isDispatchingWhatsApp && (
+                    <div className="p-2.5 rounded-xl bg-blue-50/90 border border-blue-200 text-blue-900 text-[11px] flex items-center gap-2 animate-pulse">
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600 shrink-0" />
+                      <span>Connecting to Meta Graph API v19.0 and transmitting WhatsApp payload...</span>
+                    </div>
+                  )}
+
+                  {whatsAppDispatchResult && !isDispatchingWhatsApp && (
+                    <div
+                      className={`p-3 rounded-xl border text-xs space-y-2 transition-all ${
+                        whatsAppDispatchResult.status === 'success'
+                          ? 'bg-emerald-100/90 border-emerald-300 text-emerald-950'
+                          : 'bg-rose-50 border-rose-300 text-rose-950'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between font-black">
+                        <span className="flex items-center gap-1.5">
+                          {whatsAppDispatchResult.status === 'success' ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                          )}
+                          <span>
+                            {whatsAppDispatchResult.status === 'success'
+                              ? 'Meta API 200 OK — Dispatched Successfully!'
+                              : 'Meta WhatsApp Dispatch Notice'}
+                          </span>
+                        </span>
+                        <span className="text-[10px] font-mono opacity-70">
+                          {whatsAppDispatchResult.timestamp}
+                        </span>
+                      </div>
+
+                      {whatsAppDispatchResult.status === 'success' ? (
+                        <>
+                          <div className="text-[11px] font-mono bg-white/80 p-2.5 rounded-lg border border-emerald-200 space-y-1">
+                            <div>
+                              <span className="text-slate-500 font-medium">Destination: </span>
+                              <strong className="text-slate-900">{whatsAppDispatchResult.phone}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-500 font-medium">Meta Message ID: </span>
+                              <strong className="text-emerald-700 break-all">{whatsAppDispatchResult.messageId}</strong>
+                            </div>
+                          </div>
+                          <div className="text-[10px] bg-emerald-50/90 p-2.5 rounded-lg border border-emerald-200 text-emerald-900 leading-relaxed">
+                            💡 <strong>Handset Delivery Notice:</strong> Meta Graph API has processed this message with HTTP 200. If your test phone hasn't received the notification banner, send a quick <em>"Hi"</em> on WhatsApp to business number <strong>+91 74483 69485</strong> to open Meta's 24-hour conversational window.
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-[11px] font-mono bg-white/80 p-2.5 rounded-lg border border-rose-200 text-rose-800 break-all">
+                          {whatsAppDispatchResult.error}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -7823,13 +8008,33 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   type="button"
                   onClick={handleSaveMessagingGateways}
                   disabled={isSavingGateways}
-                  className="btn btn-superadmin text-xs py-2 px-4 font-bold cursor-pointer"
+                  className="btn btn-superadmin text-xs py-2 px-4 font-bold cursor-pointer flex items-center gap-2"
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save All Messaging Settings 💾</span>
+                  {isSavingGateways ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{isSavingGateways ? 'Saving Settings...' : 'Save All Messaging Settings 💾'}</span>
                 </button>
               </div>
             </div>
+
+            {gatewaySaveResult && (
+              <div
+                className={`p-3 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-xs transition-all ${
+                  gatewaySaveResult.status === 'success'
+                    ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                    : 'bg-rose-50 text-rose-900 border-rose-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {gatewaySaveResult.status === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  )}
+                  <span>{gatewaySaveResult.message}</span>
+                </div>
+                <span className="text-[10px] font-mono opacity-70 shrink-0">{gatewaySaveResult.timestamp}</span>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1.5">

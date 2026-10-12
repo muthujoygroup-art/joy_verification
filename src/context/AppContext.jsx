@@ -3723,8 +3723,14 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateCommunicationGateways = async (waData, smsData, mailData) => {
-    if (waData) setWhatsappConfig(prev => ({ ...prev, ...waData }));
-    if (smsData) setSmsConfig(prev => ({ ...prev, ...smsData }));
+    if (waData) {
+      setWhatsappConfig(prev => ({ ...prev, ...waData }));
+      try { localStorage.setItem('joy_wa_config', JSON.stringify(waData)); } catch (e) {}
+    }
+    if (smsData) {
+      setSmsConfig(prev => ({ ...prev, ...smsData }));
+      try { localStorage.setItem('joy_sms_config', JSON.stringify(smsData)); } catch (e) {}
+    }
     if (mailData) setEmailConfig(prev => ({ ...prev, ...mailData }));
     showToast('⚡ SuperAdmin Automated Messaging (WhatsApp & SMS) credentials saved in Database!');
     try {
@@ -4900,6 +4906,7 @@ export const AppProvider = ({ children }) => {
       activeInvoiceModal,
       setActiveInvoiceModal,
       toastMessage,
+      setToastMessage,
       showToast,
       isBackendConnected,
       sessionData,

@@ -20,6 +20,7 @@ import { CompanyActivationView } from './views/CompanyActivationView';
 import { HrActivationView } from './views/HrActivationView';
 import { OfficialVerificationCertificateModal } from './components/OfficialVerificationCertificateModal';
 import { DigiLockerCallbackView } from './views/DigiLockerCallbackView';
+import { GlobalToastContainer } from './components/GlobalToastContainer';
 
 // Authentic Brand Loading Animation for Suspense Fallback
 const RouteLoadingSpinner = () => (
@@ -347,6 +348,9 @@ export const App = () => {
 
             {/* Guided Tour Spotlight */}
             <GuidedTourSpotlight />
+
+            {/* Global System & Dispatch Notifications */}
+            <GlobalToastContainer />
           </div>
         </BrowserRouter>
       </AppProvider>
