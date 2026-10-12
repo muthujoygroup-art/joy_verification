@@ -290,8 +290,27 @@ export const SuperAdminView = () => {
     }
   };
 
-  const handleTestDispatchMessaging = (channel) => {
-    showToast(`⚡ Test ${channel === 'whatsapp' ? 'WhatsApp Cloud Message' : 'Carrier SMS'} dispatched to ${testMessagingPhone}! Gateway 200 OK.`);
+  const handleTestDispatchMessaging = async (channel) => {
+    if (channel === 'whatsapp') {
+      try {
+        const cleanPhone = testMessagingPhone.replace(/\D/g, '');
+        if (!cleanPhone || cleanPhone.length < 10) {
+          showToast('Please enter a valid 10-digit mobile number for WhatsApp test dispatch', 'error');
+          return;
+        }
+        showToast('Initiating Meta Cloud API test message dispatch...');
+        const res = await api.testWhatsAppDispatch({ phone: cleanPhone });
+        if (res.success) {
+          showToast(`⚡ WhatsApp Cloud Message dispatched to +${cleanPhone}! Meta 200 OK.`);
+        } else {
+          showToast(`Meta WhatsApp Notice: ${res.error || 'Failed to dispatch message'}`, 'error');
+        }
+      } catch (err) {
+        showToast(`Meta WhatsApp API Notice: ${err.message}`, 'error');
+      }
+    } else {
+      showToast(`⚡ Test Carrier SMS dispatched to ${testMessagingPhone}! Gateway 200 OK.`);
+    }
   };
 
   const [newOptionInputs, setNewOptionInputs] = useState({

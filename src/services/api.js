@@ -1355,6 +1355,10 @@ export const api = {
       body: JSON.stringify(gatewayData),
     });
   },
+  testWhatsAppDispatch: (data) => request('/settings/test-whatsapp', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
 
   // Dedicated Document Exporters & Robust Blob Downloader
   downloadDocument: async (endpointOrUrl, defaultFilename = 'document.pdf') => {

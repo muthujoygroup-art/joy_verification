@@ -474,3 +474,65 @@ def save_legal_governance_settings(payload: dict, db: Session = Depends(get_db))
         "message": "Legal & DPDP Governance policies updated successfully!",
         "settings": setting.settings_data
     }
+
+
+# -------------------------------------------------------------
+# 💬 LIVE META WHATSAPP TEST DISPATCH
+# -------------------------------------------------------------
+@router.post("/test-whatsapp")
+@router.post("/gateways/test-whatsapp")
+async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db)):
+    """Dispatch real live WhatsApp test message via Meta Cloud API v19.0"""
+    import httpx
+    from fastapi.responses import JSONResponse
+    phone = (payload.get("phone") or payload.get("to") or "").replace("+", "").replace(" ", "").replace("-", "")
+    message_text = payload.get("message") or "Hello from JOY TrueProfile! Your Meta WhatsApp Cloud API is successfully connected & 100% active. 🚀"
+    
+    # 1. Resolve credentials from Database first, fallback to .env / config
+    gw = db.query(CommunicationGateway).filter(CommunicationGateway.gateway_type == "whatsapp").first()
+    gw_settings = gw.settings_data if gw and gw.settings_data else {}
+    
+    phone_number_id = gw_settings.get("phoneNumberId") or settings.WHATSAPP_PHONE_NUMBER_ID
+    access_token = gw_settings.get("accessToken") or settings.WHATSAPP_API_TOKEN
+    
+    if not phone_number_id or not access_token:
+        raise HTTPException(
+            status_code=400, 
+            detail="Missing WhatsApp credentials. Please configure Phone Number ID and Meta Access Token in SuperAdmin first."
+        )
+        
+    # Standardize phone number for India (add 91 if 10 digits)
+    if len(phone) == 10:
+        phone = f"91{phone}"
+        
+    meta_url = f"https://graph.facebook.com/v19.0/{phone_number_id}/messages"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    req_body = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": phone,
+        "type": "text",
+        "text": {
+            "preview_url": True,
+            "body": message_text
+        }
+    }
+    
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(meta_url, json=req_body, headers=headers)
+            res_data = resp.json()
+            if resp.status_code >= 400:
+                err_msg = res_data.get("error", {}).get("message", "Meta API Error")
+                return JSONResponse(status_code=resp.status_code, content={"success": False, "error": err_msg, "meta_response": res_data})
+            return {
+                "success": True,
+                "message": f"WhatsApp test message dispatched to +{phone} successfully!",
+                "meta_response": res_data
+            }
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"success": False, "error": str(e)})
