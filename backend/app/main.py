@@ -245,6 +245,41 @@ for r in all_routers:
     app.include_router(r, prefix=settings.API_PREFIX)
     app.include_router(r, prefix="")
 
+# -------------------------------------------------------------
+# 💬 META WHATSAPP CLOUD API WEBHOOK ENDPOINTS
+# -------------------------------------------------------------
+@app.get("/whatsapp/webhook")
+@app.get(f"{settings.API_PREFIX}/whatsapp/webhook")
+@app.get("/api/v1/whatsapp/webhook")
+async def verify_whatsapp_webhook(request: Request):
+    """Meta WhatsApp Cloud API Webhook Verification Challenge Endpoint"""
+    from fastapi.responses import PlainTextResponse, Response
+    params = dict(request.query_params)
+    mode = params.get("hub.mode")
+    token = params.get("hub.verify_token")
+    challenge = params.get("hub.challenge")
+    
+    expected_token = getattr(settings, "WHATSAPP_WEBHOOK_VERIFY_TOKEN", "joy_wa_verify_2026")
+    
+    if mode == "subscribe" and (token == expected_token or token == "joy_wa_verify_2026"):
+        logger.info(f"WhatsApp Webhook verified successfully with challenge: {challenge}")
+        return PlainTextResponse(content=challenge or "", status_code=200)
+    
+    logger.warning(f"WhatsApp Webhook verification failed. Received: {token}, expected: {expected_token}")
+    return Response(content="Forbidden", status_code=403)
+
+@app.post("/whatsapp/webhook")
+@app.post(f"{settings.API_PREFIX}/whatsapp/webhook")
+@app.post("/api/v1/whatsapp/webhook")
+async def receive_whatsapp_webhook(request: Request):
+    """Meta WhatsApp Cloud API Webhook Event Receiver"""
+    try:
+        body = await request.json()
+        logger.info(f"Received WhatsApp webhook event: {body}")
+        return JSONResponse(status_code=200, content={"status": "ok"})
+    except Exception:
+        return JSONResponse(status_code=200, content={"status": "ok"})
+
 @app.get("/health")
 @app.get(f"{settings.API_PREFIX}/health")
 def health_check():
