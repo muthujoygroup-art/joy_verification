@@ -544,16 +544,39 @@ async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db
         "Content-Type": "application/json"
     }
     
-    req_body = {
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": phone,
-        "type": "text",
-        "text": {
-            "preview_url": True,
-            "body": message_text
+    template_name = payload.get("template_name") or payload.get("template")
+    template_params = payload.get("template_params") or payload.get("params") or []
+    
+    if template_name:
+        req_body = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": phone,
+            "type": "template",
+            "template": {
+                "name": template_name,
+                "language": {"code": payload.get("language_code", "en_US")},
+                "components": [
+                    {
+                        "type": "body",
+                        "parameters": [
+                            {"type": "text", "text": str(p)} for p in template_params
+                        ]
+                    }
+                ] if template_params else []
+            }
         }
-    }
+    else:
+        req_body = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": phone,
+            "type": "text",
+            "text": {
+                "preview_url": True,
+                "body": message_text
+            }
+        }
     
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
