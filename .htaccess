@@ -1,18 +1,30 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteBase /
   
-  # 1. Do NOT rewrite API endpoints to dist/ (preserve for Python backend)
-  RewriteCond %{REQUEST_URI} ^/api [NC]
+  # 1. Do NOT rewrite API endpoints, Docs, or Passenger WSGI to dist/ (preserve for Python backend)
+  RewriteCond %{REQUEST_URI} ^/api [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/docs [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/openapi\.json [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/passenger_wsgi\.py [NC]
   RewriteRule .* - [L]
 
-  # 2. If requested path is in dist, rewrite internally to dist/
+  # 2. Directly rewrite /assets/* to dist/assets/*
+  RewriteRule ^assets/(.*)$ dist/assets/$1 [L]
+  RewriteRule ^favicon(.*)$ dist/favicon$1 [L]
+
+  # 3. If requested path is in dist, rewrite internally to dist/
   RewriteCond %{REQUEST_URI} !^/dist/
   RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -f [OR]
   RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -d
-  RewriteRule ^(.*)$ /dist/$1 [L]
+  RewriteRule ^(.*)$ dist/$1 [L]
 
-  # 3. Route all other root requests to dist/index.html for React SPA
+  # 4. If actual file exists directly, serve it
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # 5. Route all other root requests to dist/index.html for React SPA
   RewriteCond %{REQUEST_URI} !^/dist/
   RewriteCond %{REQUEST_URI} !^/api [NC]
-  RewriteRule ^(.*)$ /dist/index.html [L]
+  RewriteRule ^(.*)$ dist/index.html [L]
 </IfModule>

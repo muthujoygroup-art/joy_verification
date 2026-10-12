@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="jmBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#0369a1" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="jmGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+    <linearGradient id="jmAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e0f2fe" />
+    </linearGradient>
+    <filter id="jmShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0369a1" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Background Base Container -->
+  <rect width="512" height="512" rx="112" fill="url(#jmBg)" filter="url(#jmShadow)" />
+  
+  <!-- Subtle Inner Border -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="rgba(255, 255, 255, 0.15)" stroke-width="4" />
+
+  <!-- Central Dynamic Workforce & Manpower Emblem -->
+  <g transform="translate(256, 210)" text-anchor="middle">
+    <!-- Left Person (Workforce Partner) -->
+    <circle cx="-76" cy="-45" r="32" fill="url(#jmGold)" opacity="0.9" />
+    <path d="M -125 45 C -125 -10, -25 -10, -25 45 Z" fill="url(#jmGold)" opacity="0.75" />
+
+    <!-- Right Person (Workforce Partner) -->
+    <circle cx="76" cy="-45" r="32" fill="url(#jmGold)" opacity="0.9" />
+    <path d="M 25 45 C 25 -10, 125 -10, 125 45 Z" fill="url(#jmGold)" opacity="0.75" />
+
+    <!-- Center Leader Figure (Primary Focus) -->
+    <circle cx="0" cy="-75" r="42" fill="url(#jmAccent)" />
+    <path d="M -65 50 C -65 -20, 65 -20, 65 50 Z" fill="url(#jmAccent)" />
+
+    <!-- Dynamic Arch / Horizon Swoosh -->
+    <path d="M -140 70 Q 0 115 140 70" fill="none" stroke="url(#jmGold)" stroke-width="12" stroke-linecap="round" />
+  </g>
+
+  <!-- Brand Typography -->
+  <!-- JOY Text -->
+  <text x="256" y="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="46" font-weight="900" fill="#ffffff" letter-spacing="6" text-anchor="middle">
+    JOY
+  </text>
+  
+  <!-- MANPOWER SERVICE Text -->
+  <text x="256" y="425" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24" font-weight="800" fill="#38bdf8" letter-spacing="4" text-anchor="middle">
+    MANPOWER SERVICE
+  </text>
+</svg>

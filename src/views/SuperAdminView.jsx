@@ -194,42 +194,72 @@ export const SuperAdminView = () => {
   });
 
   // 💬 Messaging Gateways (WhatsApp & Carrier SMS) State
-  const [waConfigState, setWaConfigState] = useState(() => ({
-    enabled: true,
-    wabaId: 'WABA-99823412091',
-    phoneNumberId: 'PN-919876543210',
-    accessToken: 'EAAG99823412091ZABCPASSWORDTOKEN',
-    webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/v1/whatsapp/webhook',
-    webhookSecret: 'whsec_JoyWhatsApp2026_x89',
-    autoSendOnboardingLink: true,
-    autoSendOtpCode: true,
-    autoSendPdfCertificate: true,
-    status: 'Connected 🟢',
-    ...(whatsappConfig || {})
-  }));
+  const [waConfigState, setWaConfigState] = useState(() => {
+    let cached = null;
+    try {
+      const saved = localStorage.getItem('joy_wa_config');
+      if (saved) cached = JSON.parse(saved);
+    } catch (e) {}
+    return {
+      enabled: true,
+      wabaId: '',
+      phoneNumberId: '',
+      accessToken: '',
+      webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/v1/whatsapp/webhook',
+      webhookSecret: 'whsec_JoyWhatsApp2026_x89',
+      autoSendOnboardingLink: true,
+      autoSendOtpCode: true,
+      autoSendPdfCertificate: true,
+      status: 'Connected 🟢',
+      ...(cached || {}),
+      ...(whatsappConfig || {})
+    };
+  });
 
-  const [smsConfigState, setSmsConfigState] = useState(() => ({
-    enabled: true,
-    provider: 'Twilio',
-    accountSid: 'AC99823412091_TWILIO_LIVE',
-    authToken: 'AUTH_TOKEN_99823412091_JOY',
-    senderId: 'JOYVER',
-    dltEntityId: '1101234567890123456',
-    dltTemplateId: 'DLT_1107161829304859',
-    autoSendOnboardingSms: true,
-    autoSendOtpSms: true,
-    autoSendReportSms: true,
-    status: 'Connected 🟢',
-    ...(smsConfig || {})
-  }));
+  // Sync waConfigState when loaded from database
+  useEffect(() => {
+    if (whatsappConfig && (whatsappConfig.wabaId || whatsappConfig.phoneNumberId || whatsappConfig.accessToken)) {
+      setWaConfigState(prev => ({
+        ...prev,
+        ...whatsappConfig
+      }));
+    }
+  }, [whatsappConfig]);
+
+  const [smsConfigState, setSmsConfigState] = useState(() => {
+    let cached = null;
+    try {
+      const saved = localStorage.getItem('joy_sms_config');
+      if (saved) cached = JSON.parse(saved);
+    } catch (e) {}
+    return {
+      enabled: true,
+      provider: 'Twilio',
+      accountSid: '',
+      authToken: '',
+      senderId: 'JOYVER',
+      dltEntityId: '',
+      dltTemplateId: '',
+      autoSendOnboardingSms: true,
+      autoSendOtpSms: true,
+      autoSendReportSms: true,
+      status: 'Connected 🟢',
+      ...(cached || {}),
+      ...(smsConfig || {})
+    };
+  });
 
   const [isSavingGateways, setIsSavingGateways] = useState(false);
-  const [testMessagingPhone, setTestMessagingPhone] = useState('+91 9876543210');
+  const [testMessagingPhone, setTestMessagingPhone] = useState('+91 9994699044');
   const [activeMessagingChannel, setActiveMessagingChannel] = useState('all');
 
   const handleSaveMessagingGateways = async () => {
     setIsSavingGateways(true);
     try {
+      try {
+        localStorage.setItem('joy_wa_config', JSON.stringify(waConfigState));
+        localStorage.setItem('joy_sms_config', JSON.stringify(smsConfigState));
+      } catch (e) {}
       if (typeof updateCommunicationGateways === 'function') {
         await updateCommunicationGateways(waConfigState, smsConfigState);
       }

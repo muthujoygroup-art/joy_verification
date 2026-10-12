@@ -1319,16 +1319,22 @@ export const AppProvider = ({ children }) => {
   ]);
 
   // WHATSAPP & AUTOMATED MESSAGING INTEGRATION GATEWAYS (SUPERADMIN ONLY)
-  const [whatsappConfig, setWhatsappConfig] = useState({
-    enabled: true,
-    wabaId: 'WABA-99823412091',
-    phoneNumberId: 'PN-919876543210',
-    accessToken: 'EAAG99823412091ZABCPASSWORDTOKEN',
-    webhookUrl: 'https://api.joyverification.com/v1/whatsapp/webhook',
-    autoSendOnboardingLink: true,
-    autoSendOtpCode: true,
-    autoSendPdfCertificate: true,
-    status: 'Connected 🟢'
+  const [whatsappConfig, setWhatsappConfig] = useState(() => {
+    try {
+      const cached = localStorage.getItem('joy_wa_config');
+      if (cached) return JSON.parse(cached);
+    } catch (e) {}
+    return {
+      enabled: true,
+      wabaId: '',
+      phoneNumberId: '',
+      accessToken: '',
+      webhookUrl: 'https://trueprofile.joycorporatesolutions.com/api/v1/whatsapp/webhook',
+      autoSendOnboardingLink: true,
+      autoSendOtpCode: true,
+      autoSendPdfCertificate: true,
+      status: 'Connected 🟢'
+    };
   });
 
   // CARRIER SMS GATEWAY INTEGRATION STATE (SUPERADMIN ONLY)
@@ -1647,7 +1653,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchBackendData = async () => {
       try {
-        const [comps, cands, dropdowns, logs, tickets, apiCfgs, hrList, masterFields, secGate, tmplReqs, expAlerts] = await Promise.all([
+        const [comps, cands, dropdowns, logs, tickets, apiCfgs, hrList, masterFields, secGate, tmplReqs, expAlerts, gateways] = await Promise.all([
           api.getCompanies().catch(() => null),
           api.getCandidates().catch(() => null),
           api.getMasterDropdowns().catch(() => null),
@@ -1658,8 +1664,34 @@ export const AppProvider = ({ children }) => {
           api.getMasterFormFields().catch(() => null),
           api.getSecurityGateConfig().catch(() => null),
           api.getSuperAdminTemplateRequests().catch(() => null),
-          api.getExpiryAlerts().catch(() => null)
+          api.getExpiryAlerts().catch(() => null),
+          api.getGateways().catch(() => null)
         ]);
+
+        if (gateways && Array.isArray(gateways)) {
+          const waGw = gateways.find(g => g.gateway_type === 'whatsapp' || g.id === 'gw_whatsapp');
+          if (waGw && waGw.settings_data) {
+            setWhatsappConfig(prev => ({
+              ...prev,
+              ...waGw.settings_data,
+              enabled: waGw.is_active ?? true
+            }));
+            try {
+              localStorage.setItem('joy_wa_config', JSON.stringify(waGw.settings_data));
+            } catch (e) {}
+          }
+          const smsGw = gateways.find(g => g.gateway_type === 'sms' || g.id === 'gw_sms');
+          if (smsGw && smsGw.settings_data) {
+            setSmsConfig(prev => ({
+              ...prev,
+              ...smsGw.settings_data,
+              enabled: smsGw.is_active ?? true
+            }));
+            try {
+              localStorage.setItem('joy_sms_config', JSON.stringify(smsGw.settings_data));
+            } catch (e) {}
+          }
+        }
 
         if (masterFields && Array.isArray(masterFields) && masterFields.length > 0) {
           setMasterFormFields(masterFields.map(f => ({
