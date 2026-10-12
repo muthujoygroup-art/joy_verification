@@ -36,4 +36,5 @@ tmp/
 scratch/
 scratch_*
 *.db
+/assets/
 
