@@ -605,6 +605,10 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ token, aadhaar_number: aadhaarNumber, otp }),
   }),
+  verifyAadhaarDigilocker: (payload) => request('/verification/verify-aadhaar-digilocker', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
   verifyPanLive: (token, panNumber) => request('/verification/verify-pan', {
     method: 'POST',
     body: JSON.stringify({ token, pan_number: panNumber }),

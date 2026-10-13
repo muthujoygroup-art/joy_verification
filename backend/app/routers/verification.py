@@ -437,6 +437,50 @@ def endpoint_verify_aadhaar(payload: VerifyAadhaarRequest, db: Session = Depends
         logger.error(f"Error in endpoint_verify_aadhaar: {e}", exc_info=True)
         return {"success": False, "message": f"Aadhaar verification error: {str(e)}", "data": {}}
 
+@router.post("/verify-aadhaar-digilocker")
+def endpoint_verify_aadhaar_digilocker(payload: dict, db: Session = Depends(get_db)):
+    """
+    Directly authenticates & pulls verified e-Aadhaar demographics from DigiLocker / API Setu
+    under Section 9A of the IT Act 2000.
+    Enriches candidate record in PostgreSQL, marks verifications_completed['aadhaar'] = True,
+    and returns authoritative UIDAI data (full name, DOB, gender, permanent address, photo, sha256_seal).
+    """
+    try:
+        clean_target = (payload.get("identifier") or payload.get("aadhaar_number") or payload.get("mobile") or payload.get("token") or "").strip()
+        cand_id = payload.get("candidate_id")
+        clean_token = (payload.get("token") or "").strip()
+        
+        if not clean_target and clean_token:
+            candidate = resolve_candidate_live(db, clean_token)
+            if candidate:
+                clean_target = candidate.mobile or candidate.aadhaar_no or candidate.token
+                cand_id = cand_id or candidate.id
+
+        if not clean_target:
+            raise HTTPException(status_code=400, detail="Mobile number, Aadhaar number, or candidate token is required.")
+
+        result = process_digilocker_verification(
+            db=db,
+            identifier=clean_target,
+            auth_type="aadhaar" if (len("".join(c for c in clean_target if c.isdigit())) == 12) else "mobile",
+            user_type=payload.get("user_type", "individual"),
+            purpose=payload.get("purpose", "Employee onboarding (private sector)"),
+            service_name=payload.get("service_name", "JoyVerify"),
+            doc_types=["aadhaar"],
+            candidate_id=cand_id,
+            company_id=payload.get("company_id"),
+            hr_id=payload.get("hr_id")
+        )
+        return {
+            "success": True,
+            "message": "Aadhaar e-KYC verified successfully via DigiLocker Government Gateway!",
+            "data": result,
+            **result
+        }
+    except Exception as e:
+        logger.error(f"Error in endpoint_verify_aadhaar_digilocker: {e}", exc_info=True)
+        return {"success": False, "message": f"DigiLocker Aadhaar verification error: {str(e)}", "data": {}}
+
 @router.post("/verify-pan")
 def endpoint_verify_pan(payload: VerifyPanRequest, db: Session = Depends(get_db)):
     """Verifies PAN with NSDL Income Tax and stores verified attributes"""

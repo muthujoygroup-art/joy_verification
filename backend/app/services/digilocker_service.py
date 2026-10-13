@@ -1057,25 +1057,99 @@ def process_digilocker_verification(
                 "cryptographic_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
             }
 
+            # Comprehensive e-KYC payload for Aadhaar
+            cand_aadhaar_data = {
+                "verified": True,
+                "verification_source": "DigiLocker NeGD Sovereign Gateway",
+                "digilocker_id": digilocker_id,
+                "masked_aadhaar": masked_aadhaar,
+                "full_name": full_name,
+                "dob": dob,
+                "gender": gender,
+                "father_name": father_name,
+                "care_of": father_name,
+                "address": address,
+                "pincode": pincode,
+                "verified_at": now.isoformat(),
+                "legal_basis": "Section 9A Information Technology Act 2000 (Deemed Original Document)",
+                "sha256_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
+            }
+
             try:
+                # Retrieve current verifications_completed & verified_attributes
+                curr_row = db.execute(
+                    text("SELECT verifications_completed, verified_attributes, aadhaar_no, dob, gender, permanent_address FROM candidates WHERE id = :cid LIMIT 1"),
+                    {"cid": candidate.id}
+                ).fetchone()
+                
+                v_comp = {}
+                v_attr = {}
+                if curr_row:
+                    c_map = dict(curr_row._mapping)
+                    raw_vc = c_map.get("verifications_completed")
+                    if isinstance(raw_vc, str):
+                        try: v_comp = json.loads(raw_vc)
+                        except Exception: pass
+                    elif isinstance(raw_vc, dict):
+                        v_comp = dict(raw_vc)
+                    
+                    raw_va = c_map.get("verified_attributes")
+                    if isinstance(raw_va, str):
+                        try: v_attr = json.loads(raw_va)
+                        except Exception: pass
+                    elif isinstance(raw_va, dict):
+                        v_attr = dict(raw_va)
+
+                v_comp["aadhaar"] = True
+                v_comp["digilocker"] = True
+                v_attr["aadhaar"] = cand_aadhaar_data
+                v_attr["digilocker"] = cand_dl_data
+
                 db.execute(
                     text("""
                         UPDATE candidates 
                         SET digilocker_verified = TRUE,
-                            digilocker_data = :dl_data
+                            digilocker_data = :dl_data,
+                            aadhaar_data = :aadh_data,
+                            verifications_completed = :v_comp,
+                            verified_attributes = :v_attr,
+                            aadhaar_no = COALESCE(NULLIF(aadhaar_no, ''), :aadh_no),
+                            dob = COALESCE(NULLIF(dob, ''), :dob),
+                            gender = COALESCE(NULLIF(gender, ''), :gender),
+                            permanent_address = COALESCE(NULLIF(permanent_address, ''), :address),
+                            pincode = COALESCE(NULLIF(pincode, ''), :pincode)
                         WHERE id = :cid
                     """),
                     {
                         "dl_data": json.dumps(cand_dl_data),
+                        "aadh_data": json.dumps(cand_aadhaar_data),
+                        "v_comp": json.dumps(v_comp),
+                        "v_attr": json.dumps(v_attr),
+                        "aadh_no": masked_aadhaar,
+                        "dob": dob,
+                        "gender": gender,
+                        "address": address,
+                        "pincode": pincode,
                         "cid": candidate.id
                     }
                 )
                 db.commit()
-            except Exception:
+            except Exception as sql_upd_err:
+                logger.warning(f"SQL update for candidate digilocker enrichment fallback: {sql_upd_err}")
                 db.rollback()
                 if isinstance(candidate, Candidate):
                     candidate.digilocker_verified = True
                     candidate.digilocker_data = cand_dl_data
+                    candidate.aadhaar_data = cand_aadhaar_data
+                    vc = dict(candidate.verifications_completed or {})
+                    vc["aadhaar"] = True
+                    vc["digilocker"] = True
+                    candidate.verifications_completed = vc
+                    if not candidate.aadhaar_no: candidate.aadhaar_no = masked_aadhaar
+                    if not candidate.dob: candidate.dob = dob
+                    if not candidate.gender: candidate.gender = gender
+                    if not candidate.permanent_address: candidate.permanent_address = address
+                    if not candidate.pincode: candidate.pincode = pincode
                     db.commit()
         except Exception as cand_err:
             logger.warning(f"Error enriching candidate with digilocker data: {cand_err}")
