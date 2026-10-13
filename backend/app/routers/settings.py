@@ -601,3 +601,116 @@ async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db
             }
     except Exception as e:
         return JSONResponse(status_code=500, content={"success": False, "error": str(e)})
+
+
+@router.post("/simulate-whatsapp-bot")
+async def simulate_whatsapp_bot(payload: dict, db: Session = Depends(get_db)):
+    """Simulates an inbound WhatsApp user message and returns the bot's dynamic response"""
+    phone = (payload.get("phone") or payload.get("from") or "9994699044").strip()
+    msg = (payload.get("message") or payload.get("text") or "Hi").strip()
+    
+    from backend.app.services.whatsapp_bot_service import (
+        resolve_user_by_phone,
+        get_or_create_session,
+        reset_session_state,
+        format_company_main_menu,
+        handle_company_today_report,
+        handle_company_generate_invite,
+        handle_company_invoice_menu,
+        handle_company_invoice_detail,
+        handle_company_tariff_quota,
+        handle_company_support,
+        format_hr_main_menu,
+        handle_hr_today_digest,
+        handle_hr_pending_candidates,
+        format_candidate_main_menu,
+        handle_candidate_status,
+        handle_candidate_portal_link,
+        handle_candidate_pending_docs,
+        handle_candidate_download_dossier,
+        handle_candidate_employer_support,
+        format_guest_main_menu,
+        handle_guest_about,
+        handle_guest_register,
+        send_whatsapp_message
+    )
+    
+    role, user_obj, company_obj = resolve_user_by_phone(phone, db)
+    sess = get_or_create_session(phone, role, user_obj)
+    
+    lower_text = msg.lower()
+    reply = ""
+    
+    if lower_text in ("hi", "hello", "hey", "menu", "start", "back", "restart"):
+        reset_session_state(phone, "MAIN_MENU")
+        if role == "company" and company_obj:
+            reply = format_company_main_menu(company_obj)
+        elif role == "hr" and user_obj:
+            reply = format_hr_main_menu(user_obj, company_obj)
+        elif role == "candidate" and user_obj:
+            reply = format_candidate_main_menu(user_obj, company_obj)
+        else:
+            reply = format_guest_main_menu()
+    else:
+        current_state = sess.get("state", "MAIN_MENU")
+        if role == "company" and company_obj:
+            if current_state == "AWAITING_INVOICE_MONTH":
+                reply = handle_company_invoice_detail(company_obj, msg, db)
+                reset_session_state(phone, "MAIN_MENU")
+            elif msg in ("1", "report", "today", "digest"):
+                reply = handle_company_today_report(company_obj, db)
+            elif msg in ("2", "invite", "link", "onboard"):
+                reply = handle_company_generate_invite(company_obj)
+            elif msg in ("3", "invoice", "bill", "billing", "invoices"):
+                reset_session_state(phone, "AWAITING_INVOICE_MONTH")
+                reply = handle_company_invoice_menu()
+            elif msg in ("4", "tariff", "quota", "balance", "wallet"):
+                reply = handle_company_tariff_quota(company_obj)
+            elif msg in ("5", "support", "help", "contact"):
+                reply = handle_company_support()
+            else:
+                reply = f"⚠️ Command not recognized.\n\n{format_company_main_menu(company_obj)}"
+        elif role == "hr" and user_obj:
+            if msg in ("1", "digest", "pipeline", "report"):
+                reply = handle_hr_today_digest(user_obj, company_obj, db)
+            elif msg in ("2", "pending", "action"):
+                reply = handle_hr_pending_candidates(user_obj, db)
+            elif msg in ("3", "invite", "link"):
+                reply = handle_company_generate_invite(company_obj)
+            elif msg in ("5", "support", "help"):
+                reply = handle_company_support()
+            else:
+                reply = f"⚠️ Command not recognized.\n\n{format_hr_main_menu(user_obj, company_obj)}"
+        elif role == "candidate" and user_obj:
+            if msg in ("1", "status", "progress"):
+                reply = handle_candidate_status(user_obj)
+            elif msg in ("2", "link", "pin", "portal"):
+                reply = handle_candidate_portal_link(user_obj)
+            elif msg in ("3", "docs", "pending"):
+                reply = handle_candidate_pending_docs(user_obj)
+            elif msg in ("4", "cert", "download"):
+                reply = handle_candidate_download_dossier(user_obj)
+            elif msg in ("5", "hr", "contact"):
+                reply = handle_candidate_employer_support(user_obj, company_obj)
+            else:
+                reply = f"⚠️ Command not recognized.\n\n{format_candidate_main_menu(user_obj, company_obj)}"
+        else:
+            if msg in ("1", "about"):
+                reply = handle_guest_about()
+            elif msg in ("2", "register"):
+                reply = handle_guest_register()
+            else:
+                reply = format_guest_main_menu()
+                
+    dispatch_res = None
+    if payload.get("dispatch_live"):
+        dispatch_res = await send_whatsapp_message(phone, reply, db)
+        
+    return {
+        "success": True,
+        "sender_phone": phone,
+        "recognized_role": role,
+        "organization": getattr(company_obj, "name", "None") if company_obj else "None",
+        "bot_reply": reply,
+        "live_dispatch": dispatch_res
+    }

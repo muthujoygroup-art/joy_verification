@@ -1,7 +1,7 @@
 import time
 import os
 import logging
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -271,13 +271,19 @@ async def verify_whatsapp_webhook(request: Request):
 @app.post("/whatsapp/webhook")
 @app.post(f"{settings.API_PREFIX}/whatsapp/webhook")
 @app.post("/api/v1/whatsapp/webhook")
-async def receive_whatsapp_webhook(request: Request):
+async def receive_whatsapp_webhook(request: Request, background_tasks: BackgroundTasks):
     """Meta WhatsApp Cloud API Webhook Event Receiver"""
     try:
         body = await request.json()
         logger.info(f"Received WhatsApp webhook event: {body}")
+        
+        # Schedule conversational bot processing asynchronously
+        from backend.app.services.whatsapp_bot_service import parse_and_route_webhook_event
+        background_tasks.add_task(parse_and_route_webhook_event, body)
+        
         return JSONResponse(status_code=200, content={"status": "ok"})
-    except Exception:
+    except Exception as e:
+        logger.error(f"Error receiving WhatsApp webhook: {e}")
         return JSONResponse(status_code=200, content={"status": "ok"})
 
 @app.get("/health")
