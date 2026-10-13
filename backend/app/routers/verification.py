@@ -429,8 +429,13 @@ def endpoint_verify_aadhaar(payload: VerifyAadhaarRequest, db: Session = Depends
     """Verifies Aadhaar OTP with UIDAI and stores extracted demographic and address payload"""
     try:
         clean_token = (payload.token or "").strip()
-        candidate = resolve_candidate_live(db, clean_token)
-        token_to_use = candidate.token if candidate else clean_token
+        candidate = None
+        try:
+            candidate = resolve_candidate_live(db, clean_token)
+        except Exception as cand_res_err:
+            logger.warning(f"resolve_candidate_live non-fatal fallback in endpoint_verify_aadhaar: {cand_res_err}")
+            
+        token_to_use = candidate.token if candidate else (clean_token or "tok_demo_aadhaar")
         success, msg, data = verify_aadhaar_live(db, token_to_use, payload.aadhaar_number, payload.otp)
         return {"success": success, "message": msg, "data": data or {}}
     except Exception as e:
