@@ -500,7 +500,27 @@ async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db
     import httpx
     from fastapi.responses import JSONResponse
     phone = (payload.get("phone") or payload.get("to") or "").replace("+", "").replace(" ", "").replace("-", "")
-    message_text = payload.get("message") or "Hello from JOY TrueProfile! Your Meta WhatsApp Cloud API is successfully connected & 100% active. 🚀"
+    
+    # Resolve user role for dynamic interactive greeting
+    from backend.app.services.whatsapp_bot_service import (
+        resolve_user_by_phone,
+        format_company_main_menu,
+        format_hr_main_menu,
+        format_candidate_main_menu,
+        format_guest_main_menu
+    )
+    role, user_obj, company_obj = resolve_user_by_phone(phone, db)
+    
+    message_text = payload.get("message")
+    if not message_text:
+        if role == "company" and company_obj:
+            message_text = format_company_main_menu(company_obj)
+        elif role == "hr" and user_obj:
+            message_text = format_hr_main_menu(user_obj, company_obj)
+        elif role == "candidate" and user_obj:
+            message_text = format_candidate_main_menu(user_obj, company_obj)
+        else:
+            message_text = format_guest_main_menu(phone)
     
     # 1. Resolve credentials: prioritize payload (instant test), then Database, then settings (.env)
     gw = db.query(CommunicationGateway).filter(CommunicationGateway.gateway_type == "whatsapp").first()
@@ -597,6 +617,8 @@ async def test_send_whatsapp_message(payload: dict, db: Session = Depends(get_db
                 "message": f"WhatsApp test message dispatched to +{phone} successfully!",
                 "message_id": message_id,
                 "phone": f"+{phone}",
+                "recognized_role": role,
+                "is_registered": role != "guest",
                 "meta_response": res_data
             }
     except Exception as e:
@@ -650,7 +672,7 @@ async def simulate_whatsapp_bot(payload: dict, db: Session = Depends(get_db)):
         elif role == "candidate" and user_obj:
             reply = format_candidate_main_menu(user_obj, company_obj)
         else:
-            reply = format_guest_main_menu()
+            reply = format_guest_main_menu(phone)
     else:
         current_state = sess.get("state", "MAIN_MENU")
         if role == "company" and company_obj:
@@ -700,7 +722,7 @@ async def simulate_whatsapp_bot(payload: dict, db: Session = Depends(get_db)):
             elif msg in ("2", "register"):
                 reply = handle_guest_register()
             else:
-                reply = format_guest_main_menu()
+                reply = format_guest_main_menu(phone)
                 
     dispatch_res = None
     if payload.get("dispatch_live"):

@@ -573,17 +573,18 @@ def handle_candidate_employer_support(cand: Candidate, company: Optional[Company
 
 
 # --- D. GUEST / UNREGISTERED USER FLOWS ---
-def format_guest_main_menu() -> str:
+def format_guest_main_menu(phone: Optional[str] = None) -> str:
+    clean_p = f"+{phone}" if phone and not str(phone).startswith("+") else (phone or "your mobile number")
     return (
-        f"👋 *Welcome to JOY TrueProfile!*\n"
-        f"Sovereign Indian Workforce Identity & Background Verification Platform.\n\n"
-        f"Your mobile number is not currently linked to an active employer or candidate profile.\n\n"
-        f"How can we help you today?\n"
-        f"1️⃣ *About JOY TrueProfile Verification*\n"
-        f"2️⃣ *Register as an Enterprise Employer*\n"
-        f"3️⃣ *Candidate Verification Assistance*\n"
-        f"4️⃣ *Interactive Demo Mode (Preview Bot)*\n\n"
-        f"_Reply with 1, 2, 3, or 4_"
+        f"⚠️ *You are not a registered user of this platform.*\n\n"
+        f"🛡️ *JOY TrueProfile Sovereign Verification*\n"
+        f"Your mobile number ({clean_p}) is not currently associated with any active Enterprise Employer, HR Recruiter, or Candidate profile in our database.\n\n"
+        f"📌 *How can we help you get started?*\n"
+        f"1️⃣ *Register as an Enterprise Company* (Corporate Onboarding)\n"
+        f"2️⃣ *Candidate Verification Assistance* (Find My Invite / Login)\n"
+        f"3️⃣ *About JOY TrueProfile Verification Suite*\n"
+        f"4️⃣ *Interactive Demo Simulator* (Preview Bot Capabilities)\n\n"
+        f"_Reply with 1, 2, 3, or 4 (or contact onboarding@joycorporatesolutions.com)_"
     )
 
 def handle_guest_about() -> str:
@@ -648,7 +649,7 @@ async def process_inbound_whatsapp_message(from_phone: str, message_text: str, i
             elif role == "candidate" and user_obj:
                 reply = format_candidate_main_menu(user_obj, company_obj)
             else:
-                reply = format_guest_main_menu()
+                reply = format_guest_main_menu(from_phone)
             await send_whatsapp_message(from_phone, reply, db)
             return
             
@@ -749,7 +750,7 @@ async def process_inbound_whatsapp_message(from_phone: str, message_text: str, i
                     reply = f"🎭 *Demo Mode: Candidate Activated*\n\n{format_candidate_main_menu(sample_cand, sample_comp)}"
                 else:
                     reset_session_state(from_phone, "MAIN_MENU")
-                    reply = format_guest_main_menu()
+                    reply = format_guest_main_menu(from_phone)
                 await send_whatsapp_message(from_phone, reply, db)
                 return
 
@@ -775,7 +776,7 @@ async def process_inbound_whatsapp_message(from_phone: str, message_text: str, i
                     f"_Reply with 1, 2, or 3 (or 'back' to cancel)_"
                 )
             else:
-                reply = format_guest_main_menu()
+                reply = format_guest_main_menu(from_phone)
             await send_whatsapp_message(from_phone, reply, db)
             return
 

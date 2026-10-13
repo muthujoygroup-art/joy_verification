@@ -395,12 +395,15 @@ export const SuperAdminView = () => {
           wabaId: waConfigState.wabaId
         });
         if (res.success) {
-          showToast(`⚡ WhatsApp Cloud Message dispatched to +${cleanPhone}! Meta 200 OK.`, 'success');
+          const roleLabel = res.recognized_role === 'guest' ? 'Unregistered User (Guest Warning Dispatched)' : `${res.recognized_role} (Role Menu Dispatched)`;
+          showToast(`⚡ WhatsApp Message dispatched to +${cleanPhone}! (${roleLabel})`, 'success');
           setWhatsAppDispatchResult({
             status: 'success',
             phone: `+${cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone}`,
             messageId: res.message_id || res.meta_response?.messages?.[0]?.id || 'Dispatched (HTTP 200 OK)',
             timestamp: new Date().toLocaleTimeString(),
+            recognizedRole: res.recognized_role,
+            isRegistered: res.is_registered,
             deliveryNote: 'Meta Graph API v19.0 accepted the dispatch with HTTP 200 OK.'
           });
         } else {
@@ -7765,6 +7768,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             <div>
                               <span className="text-slate-500 font-medium">Destination: </span>
                               <strong className="text-slate-900">{whatsAppDispatchResult.phone}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-500 font-medium">Platform Role: </span>
+                              {whatsAppDispatchResult.isRegistered ? (
+                                <strong className="text-emerald-700 uppercase font-black">
+                                  {whatsAppDispatchResult.recognizedRole} (Registered in DB)
+                                </strong>
+                              ) : (
+                                <span className="text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded text-[10px]">
+                                  ⚠️ Unregistered Phone — Dispatched Guest Warning & Registration Guide
+                                </span>
+                              )}
                             </div>
                             <div>
                               <span className="text-slate-500 font-medium">Meta Message ID: </span>
