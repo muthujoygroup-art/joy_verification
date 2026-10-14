@@ -5,8 +5,9 @@ JOY TrueProfile is an enterprise-grade sovereign Indian identity verification, c
 
 ## Master Context & Complete Conversation History
 > **CRITICAL**: The complete architectural blueprints, conversation history, API specifications (Neev 81 APIs), database schemas, role matrices, DigiLocker flows, and runbooks are documented in:
-> `MIGRATION_AND_PROJECT_MASTER_CONTEXT.md` (located at the project root).
-> Always refer to `MIGRATION_AND_PROJECT_MASTER_CONTEXT.md` whenever developing or refactoring features.
+> - `MIGRATION_AND_PROJECT_MASTER_CONTEXT.md` (located at the project root).
+> - `PROJECT_CONVERSATION_HISTORY.md` (chronological session-by-session conversation and debugging log).
+> Always refer to and update `PROJECT_CONVERSATION_HISTORY.md` whenever developing or refactoring features.
 
 ## Architecture & Conventions
 1. **Frontend**: React 19 + Vite + Tailwind CSS v4. Central state is managed in `src/context/AppContext.jsx`.

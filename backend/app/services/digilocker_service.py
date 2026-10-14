@@ -695,23 +695,31 @@ def process_digilocker_verification(
             candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
         
         if not candidate:
-            if auth_type == "mobile" and len(clean_digits) >= 10:
-                candidate = db.query(Candidate).filter(
-                    (Candidate.mobile == clean_digits[-10:]) | 
-                    (Candidate.mobile.ilike(f"%{clean_digits[-10:]}%"))
-                ).first()
-            elif auth_type == "aadhaar" and len(clean_digits) >= 12:
-                candidate = db.query(Candidate).filter(Candidate.aadhaar_no == clean_digits[-12:]).first()
-            elif auth_type == "pan":
-                clean_pan = clean_id.upper()
-                candidate = db.query(Candidate).filter(Candidate.pan_no == clean_pan).first()
+            dl_cand_id = f"cand_dl_{clean_digits[-10:]}" if len(clean_digits) >= 10 else None
+            if dl_cand_id:
+                candidate = db.query(Candidate).filter(Candidate.id == dl_cand_id).first()
+
+            if not candidate:
+                if auth_type == "mobile" and len(clean_digits) >= 10:
+                    candidate = db.query(Candidate).filter(
+                        (Candidate.mobile == clean_digits[-10:]) | 
+                        (Candidate.mobile.ilike(f"%{clean_digits[-10:]}%"))
+                    ).first()
+                elif auth_type == "aadhaar" and len(clean_digits) >= 12:
+                    candidate = db.query(Candidate).filter(
+                        (Candidate.aadhaar_no == clean_digits[-12:]) |
+                        (Candidate.aadhaar_no.ilike(f"%{clean_digits[-4:]}%"))
+                    ).first()
+                elif auth_type == "pan":
+                    clean_pan = clean_id.upper()
+                    candidate = db.query(Candidate).filter(Candidate.pan_no == clean_pan).first()
     except Exception as cand_q_err:
         logger.warning(f"Could not query full Candidate model, falling back to safe SQL: {cand_q_err}")
         db.rollback()
         try:
             raw_res = db.execute(
-                text("SELECT id, name, mobile, email, dob, gender, pan_no, uan_no, aadhaar_no, company_id, hr_id FROM candidates WHERE mobile LIKE :m OR mobile = :m_exact LIMIT 1"),
-                {"m": f"%{clean_digits[-10:]}%", "m_exact": clean_digits[-10:]}
+                text("SELECT id, name, mobile, email, dob, gender, pan_no, uan_no, aadhaar_no, company_id, hr_id FROM candidates WHERE id = :dl_id OR mobile LIKE :m OR mobile = :m_exact LIMIT 1"),
+                {"dl_id": f"cand_dl_{clean_digits[-10:]}" if len(clean_digits) >= 10 else "none", "m": f"%{clean_digits[-10:]}%", "m_exact": clean_digits[-10:]}
             ).fetchone()
             if raw_res:
                 cand_map = dict(raw_res._mapping)
@@ -1033,47 +1041,48 @@ def process_digilocker_verification(
         db.rollback()
 
     # 5. Enrich Candidate Record in PostgreSQL if matched
+    cand_dl_data = {
+        "digilocker_id": digilocker_id,
+        "verified_at": now.isoformat(),
+        "account_status": "VERIFIED_ACTIVE",
+        "full_name": full_name,
+        "mobile": phone_display,
+        "email": email,
+        "dob": dob,
+        "gender": gender,
+        "address": address,
+        "pincode": pincode,
+        "masked_aadhaar": masked_aadhaar,
+        "pan_no": pan_num,
+        "uan_no": uan_num,
+        "dl_no": dl_num,
+        "purpose": purpose[:50],
+        "service_name": service_name[:50],
+        "documents_count": len(issued_documents),
+        "documents": issued_documents,
+        "cryptographic_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
+    }
+
+    # Comprehensive e-KYC payload for Aadhaar
+    cand_aadhaar_data = {
+        "verified": True,
+        "verification_source": "DigiLocker NeGD Sovereign Gateway",
+        "digilocker_id": digilocker_id,
+        "masked_aadhaar": masked_aadhaar,
+        "full_name": full_name,
+        "dob": dob,
+        "gender": gender,
+        "father_name": father_name,
+        "care_of": father_name,
+        "address": address,
+        "pincode": pincode,
+        "verified_at": now.isoformat(),
+        "legal_basis": "Section 9A Information Technology Act 2000 (Deemed Original Document)",
+        "sha256_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
+    }
+
     if candidate and hasattr(candidate, 'id') and candidate.id:
         try:
-            cand_dl_data = {
-                "digilocker_id": digilocker_id,
-                "verified_at": now.isoformat(),
-                "account_status": "VERIFIED_ACTIVE",
-                "full_name": full_name,
-                "mobile": phone_display,
-                "email": email,
-                "dob": dob,
-                "gender": gender,
-                "address": address,
-                "pincode": pincode,
-                "masked_aadhaar": masked_aadhaar,
-                "pan_no": pan_num,
-                "uan_no": uan_num,
-                "dl_no": dl_num,
-                "purpose": purpose[:50],
-                "service_name": service_name[:50],
-                "documents_count": len(issued_documents),
-                "documents": issued_documents,
-                "cryptographic_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
-            }
-
-            # Comprehensive e-KYC payload for Aadhaar
-            cand_aadhaar_data = {
-                "verified": True,
-                "verification_source": "DigiLocker NeGD Sovereign Gateway",
-                "digilocker_id": digilocker_id,
-                "masked_aadhaar": masked_aadhaar,
-                "full_name": full_name,
-                "dob": dob,
-                "gender": gender,
-                "father_name": father_name,
-                "care_of": father_name,
-                "address": address,
-                "pincode": pincode,
-                "verified_at": now.isoformat(),
-                "legal_basis": "Section 9A Information Technology Act 2000 (Deemed Original Document)",
-                "sha256_seal": f"SHA256:{hashlib.sha256(f'{digilocker_id}:{phone_display}'.encode()).hexdigest()[:24].upper()}"
-            }
 
             try:
                 # Retrieve current verifications_completed & verified_attributes
@@ -1153,6 +1162,107 @@ def process_digilocker_verification(
                     db.commit()
         except Exception as cand_err:
             logger.warning(f"Error enriching candidate with digilocker data: {cand_err}")
+            db.rollback()
+    else:
+        # Candidate was not pre-registered: Auto-create in PostgreSQL candidates table
+        # so this newly verified profile appears directly in the JOY TrueProfile Candidates directory!
+        try:
+            cand_id_gen = f"cand_dl_{clean_digits[-10:] if clean_digits else secrets.token_hex(4)}"
+            cand_tok_gen = f"tok_dl_{clean_digits[-10:] if clean_digits else secrets.token_hex(6)}"
+            emp_num = f"EMP-DL-{phone_display[-4:] if len(phone_display)>=4 else secrets.token_hex(2).upper()}"
+            
+            # Resolve valid company_id
+            valid_comp_id = "COMP001"
+            if company_id:
+                try:
+                    c_row = db.execute(text("SELECT id FROM companies WHERE id = :cid LIMIT 1"), {"cid": company_id}).fetchone()
+                    if c_row:
+                        valid_comp_id = c_row[0]
+                except Exception:
+                    pass
+
+            # Resolve valid hr_id (nullable, or fallback to first active HR for company)
+            valid_hr_id = None
+            if hr_id:
+                try:
+                    h_row = db.execute(text("SELECT id FROM hr_users WHERE id = :hid LIMIT 1"), {"hid": hr_id}).fetchone()
+                    if h_row:
+                        valid_hr_id = h_row[0]
+                except Exception:
+                    pass
+            if not valid_hr_id:
+                try:
+                    h_fallback = db.execute(text("SELECT id FROM hr_users WHERE company_id = :cid ORDER BY id LIMIT 1"), {"cid": valid_comp_id}).fetchone()
+                    if h_fallback:
+                        valid_hr_id = h_fallback[0]
+                except Exception:
+                    pass
+
+            db.execute(
+                text("""
+                    INSERT INTO candidates (
+                        id, token, name, emp_id, employee_number, email, mobile,
+                        aadhaar_no, pan_no, uan_no, driving_license_no,
+                        dob, gender, permanent_address, present_address, pincode,
+                        company_id, hr_id, status, digilocker_verified,
+                        digilocker_data, aadhaar_data, verifications_completed, verified_attributes
+                    ) VALUES (
+                        :id, :token, :name, :emp_id, :emp_no, :email, :mobile,
+                        :aadhaar_no, :pan_no, :uan_no, :dl_no,
+                        :dob, :gender, :address, :address, :pincode,
+                        :company_id, :hr_id, 'Verified', TRUE,
+                        :dl_data, :aadh_data, :v_comp, :v_attr
+                    )
+                    ON CONFLICT (id) DO UPDATE SET
+                        digilocker_verified = TRUE,
+                        digilocker_data = EXCLUDED.digilocker_data,
+                        aadhaar_data = EXCLUDED.aadhaar_data,
+                        verifications_completed = EXCLUDED.verifications_completed,
+                        verified_attributes = EXCLUDED.verified_attributes,
+                        aadhaar_no = COALESCE(NULLIF(candidates.aadhaar_no, ''), EXCLUDED.aadhaar_no),
+                        pan_no = COALESCE(NULLIF(candidates.pan_no, ''), EXCLUDED.pan_no),
+                        uan_no = COALESCE(NULLIF(candidates.uan_no, ''), EXCLUDED.uan_no),
+                        driving_license_no = COALESCE(NULLIF(candidates.driving_license_no, ''), EXCLUDED.driving_license_no),
+                        dob = COALESCE(NULLIF(candidates.dob, ''), EXCLUDED.dob),
+                        gender = COALESCE(NULLIF(candidates.gender, ''), EXCLUDED.gender),
+                        permanent_address = COALESCE(NULLIF(candidates.permanent_address, ''), EXCLUDED.permanent_address),
+                        pincode = COALESCE(NULLIF(candidates.pincode, ''), EXCLUDED.pincode)
+                """),
+                {
+                    "id": cand_id_gen,
+                    "token": cand_tok_gen,
+                    "name": full_name,
+                    "emp_id": emp_num,
+                    "emp_no": emp_num,
+                    "email": email,
+                    "mobile": phone_display,
+                    "aadhaar_no": masked_aadhaar,
+                    "pan_no": pan_num,
+                    "uan_no": uan_num,
+                    "dl_no": dl_num,
+                    "dob": dob,
+                    "gender": gender,
+                    "address": address,
+                    "pincode": pincode,
+                    "company_id": valid_comp_id,
+                    "hr_id": valid_hr_id,
+                    "dl_data": json.dumps(cand_dl_data),
+                    "aadh_data": json.dumps(cand_aadhaar_data),
+                    "v_comp": json.dumps({"aadhaar": True, "digilocker": True, "pan": bool(pan_num)}),
+                    "v_attr": json.dumps({"aadhaar": cand_aadhaar_data, "digilocker": cand_dl_data})
+                }
+            )
+            db.commit()
+            
+            class CandidateProxy:
+                pass
+            candidate = CandidateProxy()
+            candidate.id = cand_id_gen
+            candidate.token = cand_tok_gen
+            candidate.company_id = company_id or "COMP001"
+            logger.info(f"Auto-created new verified candidate {cand_id_gen} ({full_name}) from DigiLocker verification in candidates table.")
+        except Exception as cand_create_err:
+            logger.warning(f"Could not auto-create candidate from digilocker: {cand_create_err}")
             db.rollback()
 
     # 6. Log API call in api_call_logs for Superadmin & Ledger Audits
