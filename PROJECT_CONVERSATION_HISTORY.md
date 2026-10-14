@@ -230,8 +230,11 @@
      - Removed hardcoded phone checks (`8610597895`) and mock Muthukumar P demographic normalization.
 
 #### Verification & Quality Gates:
-- **Build Status**: `npm run build` executed cleanly in **1.11s** with 0 errors (`dist/assets/index-IvhE2zS_.js`).
+- **Build Status**: `npm run build` executed cleanly in **1.11s** with 0 errors (`dist/assets/index-BZMvhqBV.js`).
 - **Grep Audit**: 0 matches for "sovereign", 0 matches for demo OTPs (`482910`, `492018`).
+- **Government Gateway Analysis (Error #499)**:
+  - Documented that `Invalid Response.[#499]` on `https://accounts.digitallocker.gov.in/signin/auth/verify_uid_otp` is an external server timeout between DigiLocker and UIDAI CIDR.
+  - Updated alert notice guiding users to use the in-app **Direct UIDAI OTP (Zero PIN) ⚡** mode which operates via direct API gateway without external redirect drops.
 
 ---
 

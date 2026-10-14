@@ -1103,13 +1103,13 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
               ) : (
                 <form onSubmit={handleRedirectToDigilocker} className="space-y-4">
                   
-                  {/* Government Server UIDAI 503 Precaution Notice */}
+                  {/* Government Server UIDAI 503 / 499 Precaution Notice */}
                   <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs flex items-start gap-2.5">
                     <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                     <div className="space-y-0.5">
-                      <span className="font-bold block text-amber-900">UIDAI Government Server Alert [#503 Error Notice]:</span>
+                      <span className="font-bold block text-amber-900">UIDAI Government Server Alert [#499 & #503 Error Notice]:</span>
                       <p className="text-[11px] text-amber-800 leading-relaxed">
-                        Accounts on <code className="bg-amber-100 text-amber-900 px-1 font-mono font-bold rounded">accounts.digitallocker.gov.in</code> may occasionally throw <code className="bg-rose-100 text-rose-800 px-1 font-mono font-bold rounded">Unknown error from UIDAI [#503]</code> due to UIDAI central portal downtime. For guaranteed 100% success without external redirects, please use the <strong>Direct UIDAI OTP (Zero PIN)</strong> mode above.
+                        Accounts on <code className="bg-amber-100 text-amber-900 px-1 font-mono font-bold rounded">accounts.digitallocker.gov.in</code> frequently throw <code className="bg-rose-100 text-rose-800 px-1 font-mono font-bold rounded">Invalid Response.[#499]</code> or <code className="bg-rose-100 text-rose-800 px-1 font-mono font-bold rounded">Unknown error from UIDAI [#503]</code> due to DigiLocker-to-UIDAI connection timeouts. For guaranteed 100% success without external redirects, please switch to the <strong>Direct UIDAI OTP (Zero PIN) ⚡</strong> tab above.
                       </p>
                     </div>
                   </div>
