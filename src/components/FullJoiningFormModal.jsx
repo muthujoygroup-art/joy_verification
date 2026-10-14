@@ -15,8 +15,30 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import { api } from '../services/api';
-import { evaluateVerificationReadiness } from '../utils/verificationRequirements';
-import { checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
+import { 
+  checkProfileDocumentConflict, 
+  parseAnyDate, 
+  calculateAccurateAge, 
+  toIsoDateString, 
+  formatDisplayDate, 
+  formatDobAndAge,
+  sanitizeAadhaar,
+  sanitizePan,
+  sanitizeMobile,
+  sanitizeDrivingLicense,
+  sanitizePassport,
+  sanitizeVoterId,
+  sanitizeUan,
+  sanitizeEsic,
+  sanitizeBankAccount,
+  sanitizeIfsc,
+  sanitizePincode,
+  sanitizeOtp,
+  formatAadhaar,
+  COUNTRY_PHONE_CODES,
+  getCountryConfig
+} from '../utils/validationRules';
+import CountryPhoneInput from './common/CountryPhoneInput';
 import { convertPdfToImages } from '../utils/pdfToImage';
 import { getIndianStates, getDistrictsByState, getCitiesByDistrict, isOtherLocation, isOtherCity } from '../data/indiaLocations';
 import { 
@@ -1428,12 +1450,14 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  {renderCandidateFieldLabel('Mobile Number (SMS & WhatsApp)', 'mobile', true)}
-                  <input 
-                    type="tel" 
+                  <CountryPhoneInput 
+                    label="Mobile Number (SMS & WhatsApp)"
+                    name="mobile"
                     required 
                     value={formData.mobile} 
-                    onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                    countryCode={formData.mobileCountryCode || '+91'}
+                    onChange={(cleanVal) => setFormData({ ...formData, mobile: cleanVal })}
+                    onCountryChange={(code) => setFormData({ ...formData, mobileCountryCode: code })}
                     className={getCandidateFieldInputClass('mobile', 'form-input font-bold')} 
                   />
                 </div>
@@ -1589,13 +1613,18 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Postal Pincode', 'pincode', true)}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('Postal Pincode', 'pincode', true)}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.pincode || '').length}/6 Digits
+                    </span>
+                  </div>
                   <input 
                     type="text" 
                     required 
                     maxLength="6"
                     value={formData.pincode} 
-                    onChange={e => setFormData({ ...formData, pincode: e.target.value })}
+                    onChange={e => setFormData({ ...formData, pincode: sanitizePincode(e.target.value) })}
                     placeholder="e.g. 560034"
                     className={getCandidateFieldInputClass('pincode', 'form-input font-mono font-bold')} 
                   />
@@ -1615,14 +1644,15 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Emergency Phone Number', 'emergencyContactPhone', true)}
-                  <input 
-                    type="tel" 
+                  <CountryPhoneInput 
+                    label="Emergency Phone Number"
+                    name="emergencyContactPhone"
                     required 
                     value={formData.emergencyContactPhone} 
-                    onChange={e => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
-                    placeholder="e.g. +91 98765 43211"
-                    className={getCandidateFieldInputClass('emergencyContactPhone')} 
+                    countryCode={formData.emergencyCountryCode || '+91'}
+                    onChange={(cleanVal) => setFormData({ ...formData, emergencyContactPhone: cleanVal })}
+                    onCountryChange={(code) => setFormData({ ...formData, emergencyCountryCode: code })}
+                    className={getCandidateFieldInputClass('emergencyContactPhone', 'form-input font-bold')} 
                   />
                 </div>
               </div>
@@ -1640,49 +1670,86 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 <span className="text-[10px] text-slate-500 font-bold">Instant e-KYC Verification</span>
               </div>
 
-              {/* Statutory Numbers */}
+              {/* Statutory Numbers with Strict Statutory Constraints */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
-                  {renderCandidateFieldLabel('Aadhaar Number (12 Digits)', 'aadhaarNo', true)}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('Aadhaar Number (12 Digits)', 'aadhaarNo', true)}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.aadhaarNo || '').replace(/\D/g, '').length}/12 Digits
+                    </span>
+                  </div>
                   <input 
                     type="text" 
                     required 
+                    maxLength="12"
+                    placeholder="XXXX XXXX XXXX"
                     value={formData.aadhaarNo} 
-                    onChange={e => setFormData({ ...formData, aadhaarNo: e.target.value })}
+                    onChange={e => setFormData({ ...formData, aadhaarNo: sanitizeAadhaar(e.target.value) })}
                     className={getCandidateFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')} 
                   />
+                  {formData.aadhaarNo && (formData.aadhaarNo.length > 0) && (
+                    <span className="block text-[10px] font-mono text-sky-800 font-bold mt-1">
+                      Preview: {formatAadhaar(formData.aadhaarNo)}
+                    </span>
+                  )}
                   <OfficialDocRedirectPill fieldKey="aadhaarNo" />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Tax PAN Card Number', 'panNo', true)}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('Tax PAN Card Number', 'panNo', true)}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.panNo || '').length}/10 Chars
+                    </span>
+                  </div>
                   <input 
                     type="text" 
                     required 
+                    maxLength="10"
+                    placeholder="ABCDE1234F"
                     value={formData.panNo} 
-                    onChange={e => setFormData({ ...formData, panNo: e.target.value })}
-                    className={getCandidateFieldInputClass('panNo', 'form-input font-mono font-bold')} 
+                    onChange={e => setFormData({ ...formData, panNo: sanitizePan(e.target.value) })}
+                    className={getCandidateFieldInputClass('panNo', 'form-input font-mono font-bold uppercase')} 
                   />
                   <OfficialDocRedirectPill fieldKey="panNo" />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('PF Number / UAN (EPFO)', 'pfNumber', true)}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('PF Number / UAN (EPFO)', 'pfNumber', true)}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.pfNumber || '').length}/12 Digits
+                    </span>
+                  </div>
                   <input 
                     type="text" 
                     required
+                    maxLength="12"
                     value={formData.pfNumber} 
-                    onChange={e => setFormData({ ...formData, pfNumber: e.target.value, uanEpf: e.target.value })}
+                    onChange={e => {
+                      const v = sanitizeUan(e.target.value);
+                      setFormData({ ...formData, pfNumber: v, uanEpf: v });
+                    }}
                     placeholder="12-digit UAN"
                     className={getCandidateFieldInputClass('pfNumber', 'form-input font-mono')} 
                   />
                   <OfficialDocRedirectPill fieldKey="uanEpf" />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('ESI Number (IP Number)', 'esiNumber')}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('ESI Number (IP Number)', 'esiNumber')}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.esiNumber || '').length}/17 Digits
+                    </span>
+                  </div>
                   <input 
                     type="text" 
+                    maxLength="17"
                     value={formData.esiNumber} 
-                    onChange={e => setFormData({ ...formData, esiNumber: e.target.value, esicNo: e.target.value })}
-                    placeholder="10-digit IP No"
+                    onChange={e => {
+                      const v = sanitizeEsic(e.target.value);
+                      setFormData({ ...formData, esiNumber: v, esicNo: v });
+                    }}
+                    placeholder="10 to 17-digit IP No"
                     className={getCandidateFieldInputClass('esiNumber', 'form-input font-mono')} 
                   />
                   <OfficialDocRedirectPill fieldKey="esiNumber" />
@@ -1912,30 +1979,51 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  {renderCandidateFieldLabel('Driving License (DL) Number', 'drivingLicense')}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('Driving License (DL) Number', 'drivingLicense')}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.drivingLicense || '').length}/16 Chars
+                    </span>
+                  </div>
                   <input 
                     type="text" 
+                    maxLength="16"
+                    placeholder="SS-RR-YYYY-NNNNNNN"
                     value={formData.drivingLicense} 
-                    onChange={e => setFormData({ ...formData, drivingLicense: e.target.value })}
-                    className={getCandidateFieldInputClass('drivingLicense', 'form-input font-mono')} 
+                    onChange={e => setFormData({ ...formData, drivingLicense: sanitizeDrivingLicense(e.target.value) })}
+                    className={getCandidateFieldInputClass('drivingLicense', 'form-input font-mono uppercase')} 
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Passport Number', 'passportNo')}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('Passport Number', 'passportNo')}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.passportNo || '').length}/8 Chars
+                    </span>
+                  </div>
                   <input 
                     type="text" 
+                    maxLength="8"
+                    placeholder="A1234567"
                     value={formData.passportNo} 
-                    onChange={e => setFormData({ ...formData, passportNo: e.target.value })}
-                    className={getCandidateFieldInputClass('passportNo', 'form-input font-mono')} 
+                    onChange={e => setFormData({ ...formData, passportNo: sanitizePassport(e.target.value) })}
+                    className={getCandidateFieldInputClass('passportNo', 'form-input font-mono uppercase')} 
                   />
                 </div>
                 <div>
-                  {renderCandidateFieldLabel('Voter ID Card Number', 'voterId')}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderCandidateFieldLabel('Voter ID Card Number', 'voterId')}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.voterId || '').length}/10 Chars
+                    </span>
+                  </div>
                   <input 
                     type="text" 
+                    maxLength="10"
+                    placeholder="ABC1234567"
                     value={formData.voterId} 
-                    onChange={e => setFormData({ ...formData, voterId: e.target.value })}
-                    className={getCandidateFieldInputClass('voterId', 'form-input font-mono')} 
+                    onChange={e => setFormData({ ...formData, voterId: sanitizeVoterId(e.target.value) })}
+                    className={getCandidateFieldInputClass('voterId', 'form-input font-mono uppercase')} 
                   />
                 </div>
               </div>
@@ -1969,12 +2057,22 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     />
                   </div>
                   <div>
-                    {renderCandidateFieldLabel('Bank Account Number', 'bankAccountNo', true)}
+                    <div className="flex items-center justify-between mb-1">
+                      {renderCandidateFieldLabel('Bank Account Number', 'bankAccountNo', true)}
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                        {(formData.bankAccountNo || '').length}/18 Digits
+                      </span>
+                    </div>
                     <input 
                       type="text" 
                       required 
+                      maxLength="18"
+                      placeholder="9 to 18 digits"
                       value={formData.bankAccountNo} 
-                      onChange={e => setFormData({ ...formData, bankAccountNo: e.target.value })}
+                      onChange={e => {
+                        const v = sanitizeBankAccount(e.target.value);
+                        setFormData({ ...formData, bankAccountNo: v, accountNo: v });
+                      }}
                       className={getCandidateFieldInputClass('bankAccountNo', 'form-input font-mono font-bold')} 
                     />
                   </div>
@@ -1982,13 +2080,20 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                   <div>
-                    {renderCandidateFieldLabel('Bank IFSC Code', 'ifscCode', true)}
+                    <div className="flex items-center justify-between mb-1">
+                      {renderCandidateFieldLabel('Bank IFSC Code', 'ifscCode', true)}
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                        {(formData.ifscCode || '').length}/11 Chars
+                      </span>
+                    </div>
                     <input 
                       type="text" 
                       required 
+                      maxLength="11"
+                      placeholder="HDFC0001234"
                       value={formData.ifscCode} 
-                      onChange={e => setFormData({ ...formData, ifscCode: e.target.value })}
-                      className={getCandidateFieldInputClass('ifscCode', 'form-input font-mono font-bold')} 
+                      onChange={e => setFormData({ ...formData, ifscCode: sanitizeIfsc(e.target.value) })}
+                      className={getCandidateFieldInputClass('ifscCode', 'form-input font-mono font-bold uppercase')} 
                     />
                   </div>
                   <div>

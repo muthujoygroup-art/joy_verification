@@ -1,7 +1,126 @@
 /**
- * 🛡️ Validation & Formatting Utilities for Candidate Data Fields
- * Strictly enforces data types, formatting masks, and statutory constraints.
+ * 🌍 Master Country Calling Codes & Phone Number Constraints
  */
+export const COUNTRY_PHONE_CODES = [
+  { code: 'IN', dial: '+91', flag: '🇮🇳', name: 'India', minLength: 10, maxLength: 10, placeholder: '98765 43210' },
+  { code: 'US', dial: '+1', flag: '🇺🇸', name: 'United States', minLength: 10, maxLength: 10, placeholder: '202 555 0123' },
+  { code: 'GB', dial: '+44', flag: '🇬🇧', name: 'United Kingdom', minLength: 10, maxLength: 10, placeholder: '7911 123456' },
+  { code: 'AE', dial: '+971', flag: '🇦🇪', name: 'United Arab Emirates', minLength: 9, maxLength: 9, placeholder: '50 123 4567' },
+  { code: 'SG', dial: '+65', flag: '🇸🇬', name: 'Singapore', minLength: 8, maxLength: 8, placeholder: '8123 4567' },
+  { code: 'AU', dial: '+61', flag: '🇦🇺', name: 'Australia', minLength: 9, maxLength: 9, placeholder: '412 345 678' },
+  { code: 'CA', dial: '+1', flag: '🇨🇦', name: 'Canada', minLength: 10, maxLength: 10, placeholder: '416 555 0199' },
+  { code: 'DE', dial: '+49', flag: '🇩🇪', name: 'Germany', minLength: 10, maxLength: 11, placeholder: '151 23456789' },
+  { code: 'FR', dial: '+33', flag: '🇫🇷', name: 'France', minLength: 9, maxLength: 9, placeholder: '6 12 34 56 78' },
+  { code: 'SA', dial: '+966', flag: '🇸🇦', name: 'Saudi Arabia', minLength: 9, maxLength: 9, placeholder: '50 123 4567' },
+  { code: 'QA', dial: '+974', flag: '🇶🇦', name: 'Qatar', minLength: 8, maxLength: 8, placeholder: '3312 3456' },
+  { code: 'KW', dial: '+965', flag: '🇰🇼', name: 'Kuwait', minLength: 8, maxLength: 8, placeholder: '9123 4567' },
+  { code: 'OM', dial: '+968', flag: '🇴🇲', name: 'Oman', minLength: 8, maxLength: 8, placeholder: '9123 4567' },
+  { code: 'BH', dial: '+973', flag: '🇧🇭', name: 'Bahrain', minLength: 8, maxLength: 8, placeholder: '3600 1234' },
+  { code: 'MY', dial: '+60', flag: '🇲🇾', name: 'Malaysia', minLength: 9, maxLength: 10, placeholder: '12 345 6789' },
+  { code: 'NZ', dial: '+64', flag: '🇳🇿', name: 'New Zealand', minLength: 8, maxLength: 10, placeholder: '21 123 4567' },
+  { code: 'JP', dial: '+81', flag: '🇯🇵', name: 'Japan', minLength: 10, maxLength: 10, placeholder: '90 1234 5678' }
+];
+
+export const getCountryConfig = (codeOrDial = '+91') => {
+  if (!codeOrDial) return COUNTRY_PHONE_CODES[0];
+  const cleaned = String(codeOrDial).trim().toUpperCase();
+  return COUNTRY_PHONE_CODES.find(c => c.dial === cleaned || c.code === cleaned || cleaned.startsWith(c.dial)) || COUNTRY_PHONE_CODES[0];
+};
+
+/**
+ * 🏛️ Strict Statutory Document Digit & Character Limits
+ */
+export const DOCUMENT_LIMITS = {
+  AADHAAR: { length: 12, pattern: /^\d{12}$/, format: '12 Digits Numeric' },
+  PAN: { length: 10, pattern: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, format: '10 Alphanumeric (ABCDE1234F)' },
+  DRIVING_LICENSE: { min: 10, max: 16, pattern: /^[A-Z0-9-]{10,16}$/, format: 'Max 16 Characters' },
+  PASSPORT: { length: 8, pattern: /^[A-Z]{1}[0-9]{7}$/, format: '8 Alphanumeric (A1234567)' },
+  VOTER_ID: { length: 10, pattern: /^[A-Z]{3}[0-9]{7}$/, format: '10 Alphanumeric (ABC1234567)' },
+  UAN: { length: 12, pattern: /^\d{12}$/, format: '12 Digits Numeric' },
+  ESIC: { min: 10, max: 17, pattern: /^\d{10,17}$/, format: '10 to 17 Digits Numeric' },
+  BANK_ACCOUNT: { min: 9, max: 18, pattern: /^\d{9,18}$/, format: '9 to 18 Digits Numeric' },
+  IFSC: { length: 11, pattern: /^[A-Z]{4}0[A-Z0-9]{6}$/, format: '11 Alphanumeric (HDFC0001234)' },
+  PINCODE: { length: 6, pattern: /^\d{6}$/, format: '6 Digits Numeric' },
+  OTP: { length: 6, pattern: /^\d{6}$/, format: '6 Digits Numeric' }
+};
+
+/**
+ * 🔒 Strict Sanitizer & Formatter Functions for Project-Wide Use
+ */
+
+// Strict Mobile sanitizer based on country prefix
+export const sanitizeMobile = (mobile, countryDial = '+91') => {
+  if (!mobile || typeof mobile !== 'string') return '';
+  const digits = mobile.replace(/\D/g, '');
+  const config = getCountryConfig(countryDial);
+  return digits.slice(0, config.maxLength || 10);
+};
+
+// Strict 12-digit Aadhaar Number sanitizer (no letters, max 12)
+export const sanitizeAadhaar = (aadhaar) => {
+  if (!aadhaar || typeof aadhaar !== 'string') return '';
+  return aadhaar.replace(/\D/g, '').slice(0, 12);
+};
+
+// Strict 10-char PAN Card sanitizer (uppercase letters and digits only, max 10)
+export const sanitizePan = (pan) => {
+  if (!pan || typeof pan !== 'string') return '';
+  return pan.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+};
+
+// Strict Driving License sanitizer (uppercase alphanumeric and hyphens, max 16)
+export const sanitizeDrivingLicense = (dl) => {
+  if (!dl || typeof dl !== 'string') return '';
+  return dl.toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 16);
+};
+
+// Strict 8-char Passport sanitizer (uppercase alphanumeric, max 8)
+export const sanitizePassport = (pass) => {
+  if (!pass || typeof pass !== 'string') return '';
+  return pass.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+};
+
+// Strict 10-char Voter ID sanitizer (uppercase alphanumeric, max 10)
+export const sanitizeVoterId = (voterId) => {
+  if (!voterId || typeof voterId !== 'string') return '';
+  return voterId.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+};
+
+// Strict 12-digit EPFO UAN sanitizer (digits only, max 12)
+export const sanitizeUan = (uan) => {
+  if (!uan || typeof uan !== 'string') return '';
+  return uan.replace(/\D/g, '').slice(0, 12);
+};
+
+// Strict 17-digit ESIC sanitizer (digits only, max 17)
+export const sanitizeEsic = (esic) => {
+  if (!esic || typeof esic !== 'string') return '';
+  return esic.replace(/\D/g, '').slice(0, 17);
+};
+
+// Strict Bank Account sanitizer (digits only, max 18)
+export const sanitizeBankAccount = (acc) => {
+  if (!acc || typeof acc !== 'string') return '';
+  return acc.replace(/\D/g, '').slice(0, 18);
+};
+
+// Strict 11-char IFSC Code sanitizer (uppercase alphanumeric, max 11)
+export const sanitizeIfsc = (ifsc) => {
+  if (!ifsc || typeof ifsc !== 'string') return '';
+  return ifsc.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 11);
+};
+
+// Strict 6-digit Pincode sanitizer (digits only, max 6)
+export const sanitizePincode = (pincode) => {
+  if (!pincode || typeof pincode !== 'string') return '';
+  return pincode.replace(/\D/g, '').slice(0, 6);
+};
+
+// Strict 6-digit OTP sanitizer (digits only, max 6)
+export const sanitizeOtp = (otp) => {
+  if (!otp || typeof otp !== 'string') return '';
+  return otp.replace(/\D/g, '').slice(0, 6);
+};
 
 // 1. Email Validation (Must contain @ and valid domain)
 export const validateEmail = (email) => {
@@ -12,8 +131,7 @@ export const validateEmail = (email) => {
 
 // 2. PAN Card Validation & Auto-Uppercase (Format: ABCDE1234F)
 export const formatPan = (pan) => {
-  if (!pan || typeof pan !== 'string') return '';
-  return pan.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+  return sanitizePan(pan);
 };
 
 export const validatePan = (pan) => {
@@ -25,7 +143,7 @@ export const validatePan = (pan) => {
 // 3. Aadhaar Number Formatting (12 Digits with auto-spacing: XXXX-XXXX-1234)
 export const formatAadhaar = (aadhaar) => {
   if (!aadhaar || typeof aadhaar !== 'string') return '';
-  const digits = aadhaar.replace(/\D/g, '').slice(0, 12);
+  const digits = sanitizeAadhaar(aadhaar);
   if (digits.length <= 4) return digits;
   if (digits.length <= 8) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
   return `${digits.slice(0, 4)}-${digits.slice(4, 8)}-${digits.slice(8, 12)}`;
@@ -33,26 +151,25 @@ export const formatAadhaar = (aadhaar) => {
 
 export const validateAadhaar = (aadhaar) => {
   if (!aadhaar) return false;
-  const digits = aadhaar.replace(/\D/g, '');
+  const digits = sanitizeAadhaar(aadhaar);
   return digits.length === 12;
 };
 
-// 4. Mobile Number Validation (Exactly 10 Digits)
-export const formatMobile = (mobile) => {
-  if (!mobile || typeof mobile !== 'string') return '';
-  return mobile.replace(/\D/g, '').slice(0, 10);
+// 4. Mobile Number Validation (Strictly based on country)
+export const formatMobile = (mobile, countryDial = '+91') => {
+  return sanitizeMobile(mobile, countryDial);
 };
 
-export const validateMobile = (mobile) => {
+export const validateMobile = (mobile, countryDial = '+91') => {
   if (!mobile) return false;
+  const config = getCountryConfig(countryDial);
   const digits = mobile.replace(/\D/g, '');
-  return digits.length === 10;
+  return digits.length >= config.minLength && digits.length <= config.maxLength;
 };
 
 // 5. IFSC Code Validation & Formatting (Format: HDFC0001234 - 4 letters, 0, 6 alphanumeric)
 export const formatIfsc = (ifsc) => {
-  if (!ifsc || typeof ifsc !== 'string') return '';
-  return ifsc.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 11);
+  return sanitizeIfsc(ifsc);
 };
 
 export const validateIfsc = (ifsc) => {
@@ -63,73 +180,81 @@ export const validateIfsc = (ifsc) => {
 
 // 6. Bank Account Number Validation (9 to 18 digits numeric)
 export const formatBankAccount = (acc) => {
-  if (!acc || typeof acc !== 'string') return '';
-  return acc.replace(/\D/g, '').slice(0, 18);
+  return sanitizeBankAccount(acc);
 };
 
 export const validateBankAccount = (acc) => {
   if (!acc) return false;
-  const digits = acc.replace(/\D/g, '');
+  const digits = sanitizeBankAccount(acc);
   return digits.length >= 9 && digits.length <= 18;
 };
 
 // 7. Pincode Validation (Exactly 6 Digits)
 export const formatPincode = (pincode) => {
-  if (!pincode || typeof pincode !== 'string') return '';
-  return pincode.replace(/\D/g, '').slice(0, 6);
+  return sanitizePincode(pincode);
 };
 
 export const validatePincode = (pincode) => {
   if (!pincode) return false;
-  const digits = pincode.replace(/\D/g, '');
+  const digits = sanitizePincode(pincode);
   return digits.length === 6;
 };
 
 // 8. EPFO UAN / PF Number (12 Digits)
 export const formatUan = (uan) => {
-  if (!uan || typeof uan !== 'string') return '';
-  return uan.replace(/\D/g, '').slice(0, 12);
+  return sanitizeUan(uan);
 };
 
 export const validateUan = (uan) => {
   if (!uan) return false;
-  const digits = uan.replace(/\D/g, '');
+  const digits = sanitizeUan(uan);
   return digits.length === 12;
 };
 
-// 9. Passport Validation & Auto-Uppercase (Format: A1234567)
+// 9. ESIC Insurance Number (10 to 17 Digits)
+export const formatEsic = (esic) => {
+  return sanitizeEsic(esic);
+};
+
+export const validateEsic = (esic) => {
+  if (!esic) return false;
+  const digits = sanitizeEsic(esic);
+  return digits.length >= 10 && digits.length <= 17;
+};
+
+// 10. Passport Validation & Auto-Uppercase (Format: A1234567, 8 Chars)
 export const formatPassport = (pass) => {
-  if (!pass || typeof pass !== 'string') return '';
-  return pass.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  return sanitizePassport(pass);
 };
 
 export const validatePassport = (pass) => {
   if (!pass) return false;
+  const clean = sanitizePassport(pass);
   const regex = /^[A-Z]{1}[0-9]{7}$/;
-  return regex.test(pass.trim().toUpperCase());
+  return regex.test(clean);
 };
 
-// 10. Driving License Validation & Auto-Uppercase (Format: TN-01-2022-0001234 or alphanumeric)
+// 11. Driving License Validation & Auto-Uppercase (Max 16 Chars)
 export const formatDrivingLicense = (dl) => {
-  if (!dl || typeof dl !== 'string') return '';
-  return dl.toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
+  return sanitizeDrivingLicense(dl);
 };
 
 export const validateDrivingLicense = (dl) => {
   if (!dl) return false;
-  return dl.trim().length >= 10;
+  const clean = sanitizeDrivingLicense(dl);
+  return clean.length >= 10 && clean.length <= 16;
 };
 
-// 11. Voter ID Validation & Auto-Uppercase (Format: ABC1234567)
+// 12. Voter ID Validation & Auto-Uppercase (Format: ABC1234567, 10 Chars)
 export const formatVoterId = (voterId) => {
-  if (!voterId || typeof voterId !== 'string') return '';
-  return voterId.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+  return sanitizeVoterId(voterId);
 };
 
 export const validateVoterId = (voterId) => {
   if (!voterId) return false;
+  const clean = sanitizeVoterId(voterId);
   const regex = /^[A-Z]{3}[0-9]{7}$/;
-  return regex.test(voterId.trim().toUpperCase());
+  return regex.test(clean);
 };
 
 // 12. Field Warning Popup Generator

@@ -1,5 +1,6 @@
 import { logPortalError } from '../utils/errorLogger';
-import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge } from '../utils/validationRules';
+import { validateEmail, formatPan, validatePan, formatAadhaar, validateAadhaar, formatMobile, validateMobile, formatIfsc, validateIfsc, formatBankAccount, validateBankAccount, formatPincode, validatePincode, formatUan, validateUan, formatPassport, formatDrivingLicense, formatVoterId, checkProfileDocumentConflict, parseAnyDate, calculateAccurateAge, toIsoDateString, formatDisplayDate, formatDobAndAge, sanitizeAadhaar, sanitizePan, sanitizeMobile, COUNTRY_PHONE_CODES, getCountryConfig } from '../utils/validationRules';
+import CountryPhoneInput from '../components/common/CountryPhoneInput';
 import { EpfoForm11 } from '../components/statutory/EpfoForm11';
 import { EpfoForm2 } from '../components/statutory/EpfoForm2';
 import { EsicForm1 } from '../components/statutory/EsicForm1';
@@ -4429,23 +4430,26 @@ export const HrExecutiveView = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  {renderFieldLabel('Primary Mobile Number', 'mobile', true)}
-                  <input 
-                    type="tel" 
-                    placeholder="+91 98765 43210"
-                    value={formData.mobile}
-                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                    className={getFieldInputClass('mobile', 'form-input font-bold')}
+                  <CountryPhoneInput 
+                    label="Primary Mobile Number"
+                    name="mobile"
+                    required 
+                    value={formData.mobile} 
+                    countryCode={formData.mobileCountryCode || '+91'}
+                    onChange={(cleanVal) => setFormData({ ...formData, mobile: cleanVal })}
+                    onCountryChange={(code) => setFormData({ ...formData, mobileCountryCode: code })}
+                    className={getFieldInputClass('mobile', 'form-input font-bold')} 
                   />
                 </div>
                 <div>
-                  {renderFieldLabel('Alternate Phone / Emergency', 'alternateMobile')}
-                  <input 
-                    type="tel" 
-                    placeholder="+91 98111 22334"
-                    value={formData.alternateMobile}
-                    onChange={(e) => setFormData({ ...formData, alternateMobile: e.target.value })}
-                    className={getFieldInputClass('alternateMobile')}
+                  <CountryPhoneInput 
+                    label="Alternate Phone / Emergency"
+                    name="alternateMobile"
+                    value={formData.alternateMobile} 
+                    countryCode={formData.altMobileCountryCode || '+91'}
+                    onChange={(cleanVal) => setFormData({ ...formData, alternateMobile: cleanVal })}
+                    onCountryChange={(code) => setFormData({ ...formData, altMobileCountryCode: code })}
+                    className={getFieldInputClass('alternateMobile')} 
                   />
                 </div>
                 <div>
@@ -4459,15 +4463,25 @@ export const HrExecutiveView = () => {
                   />
                 </div>
                 <div>
-                  {renderFieldLabel('Aadhaar Identity Number', 'aadhaarNo', true)}
+                  <div className="flex items-center justify-between mb-1">
+                    {renderFieldLabel('Aadhaar Identity Number', 'aadhaarNo', true)}
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                      {(formData.aadhaarNo || '').replace(/\D/g, '').length}/12 Digits
+                    </span>
+                  </div>
                   <input 
                     type="text" 
-                    maxLength="14"
+                    maxLength="12"
                     placeholder="XXXX XXXX XXXX"
                     value={formData.aadhaarNo}
-                    onChange={(e) => setFormData({ ...formData, aadhaarNo: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, aadhaarNo: sanitizeAadhaar(e.target.value) })}
                     className={getFieldInputClass('aadhaarNo', 'form-input font-mono font-bold')}
                   />
+                  {formData.aadhaarNo && (formData.aadhaarNo.length > 0) && (
+                    <span className="block text-[10px] font-mono text-emerald-800 font-bold mt-1">
+                      {formatAadhaar(formData.aadhaarNo)}
+                    </span>
+                  )}
                   <OfficialDocRedirectPill fieldKey="aadhaarNo" />
                 </div>
               </div>

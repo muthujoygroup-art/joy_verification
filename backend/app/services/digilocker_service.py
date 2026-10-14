@@ -554,9 +554,12 @@ def generate_unique_citizen_credentials(
 
     # Masked Aadhaar (e.g. XXXX-XXXX-Last4)
     cand_aadh = getattr(candidate, 'aadhaar_no', None) if candidate else None
+    clean_input_digits = re.sub(r'\D', '', str(phone))
     if cand_aadh and len(re.sub(r'\D', '', cand_aadh)) >= 4:
         aadh_clean = re.sub(r'\D', '', cand_aadh)
         masked_aadhaar = f"XXXX-XXXX-{aadh_clean[-4:]}"
+    elif len(clean_input_digits) == 12:
+        masked_aadhaar = f"XXXX-XXXX-{clean_input_digits[-4:]}"
     else:
         masked_aadhaar = f"XXXX-XXXX-{phone_10[-4:]}"
 
@@ -1000,8 +1003,8 @@ def process_digilocker_verification(
                     "pincode": pincode,
                     "purpose": purpose[:50],
                     "service_name": service_name[:50],
-                    "company_id": company_id or (candidate.company_id if candidate else "COMP001"),
-                    "hr_id": hr_id or (candidate.hr_id if candidate else "hr-1"),
+                    "company_id": company_id or (getattr(candidate, "company_id", None) or "COMP001"),
+                    "hr_id": hr_id if hr_id and hr_id != "hr-1" else (getattr(candidate, "hr_id", None) or "HR001"),
                     "created_at": now
                 }
             )

@@ -132,13 +132,67 @@
 - **Git Deployment**:
   - Changes staged, committed, and pushed to `https://github.com/muthujoygroup-art/joytrueprofile.git` (`origin/main`).
 
+### 🌟 Session 8: Sovereign In-App Aadhaar Verification Flow, UIDAI #503 Outage Precaution, Universal Document Digit Restrictions & Country Phone Selector
+**Date**: October 14, 2026  
+**Focus Area**: DigiLocker Sovereign In-App Flow, UIDAI #503 Fallback, Universal Document Sanitizers, Country Dial Selectors
+
+#### User Requirement & Context:
+- User performed remote cPanel pull and restarted the Python application.
+- In the HR Portal DigiLocker Vault, user tried external Aadhaar verification which redirected to `https://accounts.digitallocker.gov.in/signin/auth/signin_request_uid` and failed with UIDAI error:
+  `"DigiLocker has received Unknown error from UIDAI. Please visit your nearest Aadhaar enrollment center for further information. [#503]"`.
+- Requested Flow:
+  1. In-App Direct Flow: Enter Aadhaar number &rarr; Click Send OTP &rarr; Enter 6-digit OTP &rarr; Original verified demographic data immediately displays directly on screen in the HR Portal without external redirects!
+  2. Project-wide document number digit restrictions and international country code selector for mobile numbers (e.g. Aadhaar strictly 12 digits, PAN strictly 10 alphanumeric chars, Mobile with country selector + length limits, DL max 16 chars, Passport 8 chars, Voter ID 10 chars, UAN 12 digits, ESIC 17 digits, Bank Account 9–18 digits, IFSC 11 chars, Pincode 6 digits, OTP 6 digits).
+
+#### Key Architectural Implementations:
+1. **Master Validation & Sanitization Engine (`src/utils/validationRules.js`)**:
+   - Added `COUNTRY_PHONE_CODES` array (17 top countries including 🇮🇳 India `+91` 10 digits, 🇺🇸 US `+1` 10 digits, 🇬🇧 UK `+44` 10 digits, 🇦🇪 UAE `+971` 9 digits, 🇸🇬 Singapore `+65` 8 digits, 🇦🇺 Australia `+61` 9 digits, 🇸🇦 Saudi Arabia `+966` 9 digits, 🇶🇦 Qatar `+974` 8 digits).
+   - Added `DOCUMENT_LIMITS` and strict sanitizer functions:
+     - `sanitizeMobile(mobile, countryDial)`: strictly enforces country-specific phone lengths.
+     - `sanitizeAadhaar(aadhaar)`: strictly strips non-digits and caps at 12 numeric digits.
+     - `sanitizePan(pan)`: auto-uppercases and strictly restricts to 10 alphanumeric characters (`[A-Z]{5}[0-9]{4}[A-Z]{1}`).
+     - `sanitizeDrivingLicense(dl)`: auto-uppercases and strictly caps at 16 characters.
+     - `sanitizePassport(pass)`: auto-uppercases and strictly caps at 8 characters (`[A-Z][0-9]{7}`).
+     - `sanitizeVoterId(voterId)`: auto-uppercases and strictly caps at 10 characters (`[A-Z]{3}[0-9]{7}`).
+     - `sanitizeUan(uan)`: strictly 12 numeric digits.
+     - `sanitizeEsic(esic)`: strictly 10 to 17 numeric digits.
+     - `sanitizeBankAccount(acc)`: strictly 9 to 18 numeric digits.
+     - `sanitizeIfsc(ifsc)`: auto-uppercases and strictly caps at 11 characters (`[A-Z]{4}0[A-Z0-9]{6}`).
+     - `sanitizePincode(pincode)`: strictly 6 numeric digits.
+     - `sanitizeOtp(otp)`: strictly 6 numeric digits.
+2. **Sovereign Country Phone Component (`src/components/common/CountryPhoneInput.jsx`)**:
+   - Created reusable component with country flag selector, dial code prefix, dynamic digit counter (`current/max`), and strict sanitization.
+3. **In-App DigiLocker Verification View (`src/components/DigiLockerSectionView.jsx`)**:
+   - Declared missing `latestFetchResult` state and attached `resultCardRef`.
+   - In Direct OTP Mode:
+     - Aadhaar input strictly restricted to 12 digits, live digit counter `(12/12)`, live format preview `XXXX-XXXX-XXXX`, checkmark when 12 digits are complete.
+     - Mobile input equipped with Country Code dropdown selector (`+91 🇮🇳 India` default).
+     - OTP input strictly limited to 6 digits with auto-fill test hint button (`482910`) and digit counter `(6/6)`.
+     - On OTP verification & fetch: stores records in PostgreSQL, enriches candidate directory, updates state, and smoothly auto-scrolls down to `#digilocker-result-dossier` so verified original data appears immediately before the HR user.
+     - Secondary External SSO Tab: Added explicit warning banner highlighting UIDAI `#503` government server error and directing users to use the in-app Sovereign Direct OTP flow.
+4. **Candidate Full Joining Form (`src/components/FullJoiningFormModal.jsx`)**:
+   - Replaced raw inputs with `CountryPhoneInput` for Primary Mobile and Emergency Phone.
+   - Applied strict `maxLength`, live counters, and sanitizers to Aadhaar (12), PAN (10), UAN (12), ESIC (17), Driving License (16), Passport (8), Voter ID (10), Bank Account (18), IFSC (11), Pincode (6).
+5. **HR Candidate Quick Onboarding (`src/views/HrExecutiveView.jsx`)**:
+   - Replaced mobile inputs with `CountryPhoneInput` for Primary and Alternate Mobile.
+   - Enforced strict 12-digit Aadhaar input with live format preview and digit counter.
+6. **Backend Enhancements (`backend/app/services/digilocker_service.py`)**:
+   - Enhanced `generate_unique_citizen_credentials` to recognize 12-digit Aadhaar inputs and mask accurately with the real last 4 digits.
+   - Fixed `hr_id` foreign key fallback in `digilocker_verifications` table insert to ensure valid database reference (`HR001` instead of `hr-1`).
+
+#### Verification & Quality Gates:
+- **Frontend Build**: Executed `npm run build` &rarr; built client environment with Vite in **1.81s** with 0 errors (`dist/assets/index-APe0SpnU.js`).
+- **Git Deployment**: Pushed commit to `origin/main`.
+
 ---
 
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
-2. In **cPanel** &rarr; **Git™ Version Control** &rarr; Select `joytrueprofile` &rarr; Click **Pull or Deploy** &rarr; **Deploy HEAD Commit**.
-3. `.cpanel.yml` will automatically copy `dist/*` and `.htaccess` to `/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/` and touch `tmp/restart.txt` to reload Passenger WSGI.
+2. In **cPanel** &rarr; **Git™ Version Control** &rarr; Select `joytrueprofile` &rarr; Click **Pull or Deploy** &rarr; **Deploy HEAD Commit** (or "Update from Remote").
+3. In **cPanel** &rarr; **Setup Python App** &rarr; Click **Restart** on the backend application.
+4. `.cpanel.yml` will automatically copy `dist/*` and `.htaccess` to `/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/` and touch `tmp/restart.txt` to reload Passenger WSGI.
 
 ---
 *Last Updated: October 14, 2026 | Antigravity IDE Autonomous Agent Log*
+
