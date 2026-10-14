@@ -499,30 +499,21 @@ def generate_unique_citizen_credentials(
     gender: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    Deterministically generates realistic, 100% unique government credentials
-    (Aadhaar, PAN, UAN, DL, CBSE roll numbers, Address, Father Name, Email)
-    for any candidate based on their registered identifier and demographics.
-    Guarantees ZERO duplicate values across different candidates.
+    Extracts authentic citizen demographics from live token payload and candidate record.
+    Strictly avoids fabricating fake PAN, Driving License, CBSE, or EPFO numbers.
     """
     clean_digits = re.sub(r'\D', '', str(phone or ''))
     phone_10 = clean_digits[-10:] if len(clean_digits) >= 10 else (
-        getattr(candidate, 'mobile', '')[-10:] if (candidate and getattr(candidate, 'mobile', '')) else "9876543210"
+        getattr(candidate, 'mobile', '')[-10:] if (candidate and getattr(candidate, 'mobile', '')) else clean_digits
     )
     
     # Resolve Candidate Name
     cand_name = (
         (getattr(candidate, 'name', None) if candidate else None) or
-        name or 
         (token_payload.get("name") if token_payload else None) or 
-        "Verified Candidate"
+        name or 
+        ""
     )
-    if candidate and getattr(candidate, 'name', None):
-        cand_name = candidate.name
-
-    # Numeric seed from phone digits and name
-    name_clean = re.sub(r'[^A-Za-z]', '', cand_name).upper()
-    phone_hash_str = hashlib.md5(f"{phone_10}_{name_clean}".encode()).hexdigest()
-    phone_hash_int = int(phone_hash_str[:8], 16)
 
     # Resolve DOB & Gender
     raw_dob = (
@@ -530,121 +521,47 @@ def generate_unique_citizen_credentials(
         (getattr(candidate, 'dob', None) if candidate else None) or 
         dob
     )
-    formatted_dob = format_dob(raw_dob)
-    if not formatted_dob:
-        calc_year = 1990 + (phone_hash_int % 12) # 1990 - 2001
-        calc_month = (phone_hash_int % 12) + 1
-        calc_day = (phone_hash_int % 27) + 1
-        formatted_dob = f"{calc_day:02d}-{calc_month:02d}-{calc_year}"
-
-    try:
-        birth_year = int(formatted_dob.split('-')[2])
-    except Exception:
-        birth_year = 1992
+    formatted_dob = format_dob(raw_dob) if raw_dob else None
 
     raw_g = (
         (token_payload.get("gender") if token_payload else None) or 
         (getattr(candidate, 'gender', None) if candidate else None) or 
-        gender or 
-        "Male"
+        gender
     )
-    final_gender = "Male" if str(raw_g).upper() in ["M", "MALE"] else ("Female" if str(raw_g).upper() in ["F", "FEMALE"] else str(raw_g))
+    final_gender = None
+    if raw_g:
+        g_str = str(raw_g).upper()
+        final_gender = "Male" if g_str in ["M", "MALE"] else ("Female" if g_str in ["F", "FEMALE"] else str(raw_g))
 
-    # Masked Aadhaar (e.g. XXXX-XXXX-Last4)
+    # Masked Aadhaar
     cand_aadh = getattr(candidate, 'aadhaar_no', None) if candidate else None
-    clean_input_digits = re.sub(r'\D', '', str(phone))
+    masked_aadhaar = None
     if cand_aadh and len(re.sub(r'\D', '', cand_aadh)) >= 4:
         aadh_clean = re.sub(r'\D', '', cand_aadh)
         masked_aadhaar = f"XXXX-XXXX-{aadh_clean[-4:]}"
-    elif len(clean_input_digits) == 12:
-        masked_aadhaar = f"XXXX-XXXX-{clean_input_digits[-4:]}"
-    else:
-        masked_aadhaar = f"XXXX-XXXX-{phone_10[-4:]}"
+    elif len(clean_digits) == 12:
+        masked_aadhaar = f"XXXX-XXXX-{clean_digits[-4:]}"
 
-    # Unique PAN Number (5 letters + 4 digits + 1 check letter)
-    cand_pan = getattr(candidate, 'pan_no', None) if candidate else None
-    if cand_pan and len(cand_pan.strip()) == 10:
-        pan_num = cand_pan.strip().upper()
-    else:
-        pan_prefixes = ["AAP", "BKP", "CKP", "DKP", "EKP", "FKP", "GKP", "HKP", "JKP", "PKP"]
-        p_prefix = pan_prefixes[phone_hash_int % len(pan_prefixes)]
-        p_type = "P" # Individual Person
-        p_last_initial = name_clean[0] if name_clean else "M"
-        p_digits = phone_10[-4:]
-        p_check = chr(65 + ((phone_hash_int + 7) % 26))
-        pan_num = f"{p_prefix[:2]}{p_type}{p_last_initial}{p_digits}{p_check}"
+    # Real documents from candidate profile if registered
+    pan_num = (getattr(candidate, 'pan_no', None) if candidate else None) or ""
+    uan_num = (getattr(candidate, 'uan_no', None) if candidate else None) or ""
+    dl_num = (getattr(candidate, 'dl_no', None) if candidate else None) or ""
 
-    # Unique EPFO UAN (12 digits, unique per mobile)
-    cand_uan = getattr(candidate, 'uan_no', None) if candidate else None
-    if cand_uan and len(re.sub(r'\D', '', str(cand_uan))) == 12:
-        uan_num = str(cand_uan).strip()
-    else:
-        uan_num = f"10{phone_10}"
-
-    # Unique Driving License (TN-RTO-YEAR-7DIGITS)
-    cand_dl = getattr(candidate, 'dl_no', None) if candidate else None
-    if cand_dl and len(cand_dl.strip()) >= 10:
-        dl_num = cand_dl.strip()
-    else:
-        rto_codes = ["TN-01", "TN-09", "TN-22", "TN-38", "TN-45", "TN-48", "TN-58", "TN-72"]
-        rto = rto_codes[phone_hash_int % len(rto_codes)]
-        dl_year = birth_year + 18
-        dl_serial = f"00{phone_10[-5:]}"
-        dl_num = f"{rto}-{dl_year}-{dl_serial}"
-
-    # Unique Class X & XII Certificate numbers
-    class_x_num = f"CBSE-10-{phone_10[-7:]}"
-    class_xii_num = f"CBSE-12-{phone_10[-7:]}"
-    class_x_year = f"{birth_year + 16}-05-24"
-    class_xii_year = f"{birth_year + 18}-05-28"
-
-    # Unique Address Pool
     cand_addr = (
         getattr(candidate, 'permanent_address', None) or 
         getattr(candidate, 'present_address', None)
     ) if candidate else None
-    
-    addresses_pool = [
-        ("Plot No. 42, 3rd Cross Street, Gandhi Nagar, Near New Bus Stand, Tiruchirappalli, Tamil Nadu, Pincode: 620001", "620001"),
-        ("Door No. 18/4, Anna Salai 2nd Street, KK Nagar, Near Apollo Pharmacy, Madurai, Tamil Nadu, Pincode: 625020", "625020"),
-        ("Flat 302, Green Meadows Enclave, Saravanampatti Main Road, Coimbatore, Tamil Nadu, Pincode: 641035", "641035"),
-        ("No. 77/B, 4th Main Road, Shanthi Colony, Anna Nagar West, Chennai, Tamil Nadu, Pincode: 600040", "600040"),
-        ("No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001", "620001"),
-        ("Door No. 56, Sri Ram Nagar, VOC Street, Palayamkottai, Tirunelveli, Tamil Nadu, Pincode: 627002", "627002"),
-        ("No. 29, Bharathiyar 1st Street, Fairlands, Near Central Bus Stand, Salem, Tamil Nadu, Pincode: 636016", "636016"),
-        ("No. 104, Thillai Nagar 11th Cross, East Extension, Tiruchirappalli, Tamil Nadu, Pincode: 620018", "620018")
-    ]
-    
-    if cand_addr and len(cand_addr.strip()) > 10:
-        final_address = cand_addr.strip()
-        final_pincode = getattr(candidate, 'pincode', None) or "620001"
-    else:
-        selected_addr_tuple = addresses_pool[phone_hash_int % len(addresses_pool)]
-        final_address = selected_addr_tuple[0]
-        final_pincode = selected_addr_tuple[1]
+    final_address = cand_addr.strip() if cand_addr else None
+    final_pincode = getattr(candidate, 'pincode', None) if candidate else None
 
-    # Father Name
-    father_pool = ["Periyasamy", "Radhakrishnan", "Balasubramanian", "Govindasamy", "Senthilvel", "Narayanasamy", "Ramanathan", "Shanmugam", "Krishnaswamy", "Thirunavukkarasu"]
     cand_father = getattr(candidate, 'father_name', None) if candidate else None
-    if cand_father and len(cand_father.strip()) > 2:
-        final_father = cand_father.strip()
-    else:
-        final_father = father_pool[phone_hash_int % len(father_pool)]
+    final_father = cand_father.strip() if cand_father else None
 
-    # Email
     cand_email = getattr(candidate, 'email', None) if candidate else None
-    if cand_email and '@' in cand_email:
-        final_email = cand_email
-    else:
-        slug = re.sub(r'[^a-zA-Z0-9]', '.', cand_name.lower()).strip('.')
-        final_email = f"{slug}@joycorporatesolutions.com"
+    final_email = cand_email if (cand_email and '@' in cand_email) else None
 
-    # DigiLocker ID
     raw_dlid = (token_payload.get("digilockerid") if token_payload else None)
-    if raw_dlid:
-        digilocker_id = raw_dlid
-    else:
-        digilocker_id = f"DL{(phone_hash_int % 90000000) + 10000000}"
+    digilocker_id = raw_dlid or (f"DL{phone_10[-8:]}" if phone_10 else "DL-PENDING")
 
     return {
         "full_name": cand_name,
@@ -658,13 +575,13 @@ def generate_unique_citizen_credentials(
         "pan_no": pan_num,
         "uan_no": uan_num,
         "dl_no": dl_num,
-        "class_x_no": class_x_num,
-        "class_xii_no": class_xii_num,
-        "class_x_year": class_x_year,
-        "class_xii_year": class_xii_year,
+        "class_x_no": "",
+        "class_xii_no": "",
+        "class_x_year": "",
+        "class_xii_year": "",
         "address": final_address,
         "pincode": final_pincode,
-        "birth_year": birth_year
+        "birth_year": None
     }
 
 def process_digilocker_verification(
@@ -800,91 +717,23 @@ def process_digilocker_verification(
                     if co_clean:
                         father_name = co_clean
 
-    # 3. Build Standard Certified Documents with 100% Unique Numbers per Candidate
-    if not issued_documents:
-        # 1. Aadhaar Card
-        issued_documents.append({
-            "name": "Aadhaar Card",
-            "issuer": "Unique Identification Authority of India (UIDAI)",
-            "doc_no": masked_aadhaar,
-            "doc_type": "aadhaar",
-            "doc_status": "Verified",
-            "doc_uri": f"in.gov.uidai-aadhaar-{phone_display[-4:]}",
-            "icon": "fa-fingerprint",
-            "description": "Official Identity Document with Biometric details & digital XML certificate.",
-            "issued_at": "2019-04-12",
-            "valid_upto": "Permanent"
-        })
-        
-        # 2. PAN Card
-        issued_documents.append({
-            "name": "PAN Card / Income Tax",
-            "issuer": "Income Tax Department (NSDL/UTIITSL)",
-            "doc_no": pan_num,
-            "doc_type": "pan",
-            "doc_status": "Verified",
-            "doc_uri": f"in.gov.incometax-pan-{pan_num}",
-            "icon": "fa-address-card",
-            "description": "Permanent Account Number Card issued by Income Tax Department.",
-            "issued_at": "2021-02-18",
-            "valid_upto": "Permanent"
-        })
-        
-        # 3. Driving License
-        issued_documents.append({
-            "name": "Driving License",
-            "issuer": "Ministry of Road Transport and Highways (MoRTH)",
-            "doc_no": dl_num,
-            "doc_type": "driving_license",
-            "doc_status": "Verified",
-            "doc_uri": f"in.gov.morth-dl-{phone_display[-5:]}",
-            "icon": "fa-car",
-            "description": "Valid LMV & MCWG Driving License issued by Transport Authority.",
-            "issued_at": f"{creds.get('birth_year', 1992) + 18}-09-14",
-            "valid_upto": f"{creds.get('birth_year', 1992) + 38}-09-13"
-        })
-        
-        # 4. Class X Certificate
-        issued_documents.append({
-            "name": "Class X School Certificate",
-            "issuer": "Central Board of Secondary Education (CBSE)",
-            "doc_no": creds["class_x_no"],
-            "doc_type": "class_x",
-            "doc_status": "Verified",
-            "doc_uri": f"in.gov.cbse-class10-{phone_display[-6:]}",
-            "icon": "fa-graduation-cap",
-            "description": "Secondary School Examination Marksheet and Passing Certificate.",
-            "issued_at": creds["class_x_year"],
-            "valid_upto": "Permanent"
-        })
-
-        # 5. Class XII Certificate
-        issued_documents.append({
-            "name": "Class XII Senior Secondary Certificate",
-            "issuer": "Central Board of Secondary Education (CBSE)",
-            "doc_no": creds["class_xii_no"],
-            "doc_type": "class_xii",
-            "doc_status": "Verified",
-            "doc_uri": f"in.gov.cbse-class12-{phone_display[-6:]}",
-            "icon": "fa-graduation-cap",
-            "description": "Senior School Certificate Examination Passing Certificate.",
-            "issued_at": creds["class_xii_year"],
-            "valid_upto": "Permanent"
-        })
-
-        # 6. UAN Card (EPFO)
-        issued_documents.append({
-            "name": "EPFO Universal Account Number (UAN) Card",
-            "issuer": "Employees' Provident Fund Organisation (EPFO)",
-            "doc_no": uan_num,
-            "doc_type": "epfo_uan",
-            "doc_status": "Verified",
-            "doc_uri": f"in.gov.epfindia-uan-{phone_display[-6:]}",
-            "icon": "fa-briefcase",
-            "description": "Official UAN Card with linked EPF Member IDs and active service history.",
-            "issued_at": "2016-11-01",
-            "valid_upto": "Active"
-        })
+    # 3. Only include authentic eAadhaar XML document if fetched and not already in issued_documents
+    now = datetime.utcnow()
+    if access_token and user_type == "individual" and (masked_aadhaar or full_name):
+        has_aadh = any("aadhaar" in str(doc.get("doc_type", "")).lower() or "aadhaar" in str(doc.get("name", "")).lower() for doc in issued_documents)
+        if not has_aadh:
+            issued_documents.insert(0, {
+                "name": "Aadhaar Card",
+                "issuer": "Unique Identification Authority of India (UIDAI)",
+                "doc_no": masked_aadhaar if masked_aadhaar else "N/A",
+                "doc_type": "aadhaar",
+                "doc_status": "Verified",
+                "doc_uri": f"in.gov.uidai-aadhaar-{phone_display[-4:] if phone_display else 'doc'}",
+                "icon": "fa-fingerprint",
+                "description": "Official UIDAI e-Aadhaar verified via DigiLocker live XML.",
+                "issued_at": now.strftime("%Y-%m-%d"),
+                "valid_upto": "Permanent"
+            })
 
     # Filter doc_types if requested
     if doc_types and len(doc_types) > 0:
@@ -1359,12 +1208,22 @@ def handle_digilocker_callback(
         redirect_uri=effective_redirect_uri
     )
 
-    access_token = token_resp.get("access_token") if token_resp.get("success") else None
+    if not token_resp.get("success"):
+        logger.error(f"DigiLocker token exchange failed: {token_resp}")
+        err_msg = token_resp.get("error") or "Failed to exchange authorization token with DigiLocker gateway."
+        err_det = token_resp.get("details") or ""
+        return {
+            "success": False,
+            "message": f"{err_msg} {err_det}".strip(),
+            "documents": []
+        }
+
+    access_token = token_resp.get("access_token")
 
     # Process full verification & DB persistence with live token_payload
     res = process_digilocker_verification(
         db=db,
-        identifier=effective_identifier or (token_resp.get("mobile") or token_resp.get("digilockerid") or "8610597895"),
+        identifier=effective_identifier or (token_resp.get("mobile") or token_resp.get("digilockerid") or ""),
         auth_type=session_data.get("auth_type", "mobile"),
         user_type=effective_user_type,
         purpose=effective_purpose,
@@ -1373,7 +1232,7 @@ def handle_digilocker_callback(
         company_id=company_id,
         hr_id=hr_id,
         access_token=access_token,
-        token_payload=token_resp if token_resp.get("success") else None
+        token_payload=token_resp
     )
 
     # Clean up session store
@@ -1434,137 +1293,32 @@ def get_all_digilocker_records(db: Session, company_id: Optional[str] = None) ->
             pan_val = str(row_dict.get("pan_no") or "").strip().upper()
             dl_id_val = str(row_dict.get("digilocker_id") or "").strip()
 
-            # Generate unique credentials for sanitation
-            creds = generate_unique_citizen_credentials(
-                phone=clean_phone_10 if clean_phone_10 else raw_phone,
-                name=name_val
-            )
-
-            # Sanitize legacy duplicate values if present
-            if not row_dict.get("pan_no"):
-                row_dict["pan_no"] = creds["pan_no"]
-            if not row_dict.get("uan_no"):
-                row_dict["uan_no"] = creds["uan_no"]
-            if not row_dict.get("dl_no"):
-                row_dict["dl_no"] = creds["dl_no"]
-            if not row_dict.get("aadhaar_no"):
-                row_dict["aadhaar_no"] = creds["masked_aadhaar"]
-            if not row_dict.get("address"):
-                row_dict["address"] = creds["address"]
-            if not row_dict.get("email"):
-                row_dict["email"] = creds["email"]
-            if not row_dict.get("father_name"):
-                row_dict["father_name"] = creds["father_name"]
-
             # Fetch associated authenticated documents for this record
             v_id = row_dict.get("id")
             doc_rows = db.execute(
                 text("SELECT * FROM digilocker_documents WHERE verification_id = :v_id ORDER BY created_at ASC"),
                 {"v_id": v_id}
             ).fetchall()
-            
+
             docs = []
             seen_doc_keys = set()
             for d in doc_rows:
                 d_dict = dict(d._mapping)
-                doc_type_clean = str(d_dict.get("doc_type", "")).lower()
-                
-                # Sanitize legacy document numbers if they duplicated
-                if "pan" in doc_type_clean:
-                    d_dict["doc_no"] = row_dict["pan_no"]
-                elif "driving" in doc_type_clean or "dl" in doc_type_clean:
-                    d_dict["doc_no"] = row_dict["dl_no"]
-                elif "uan" in doc_type_clean or "epf" in doc_type_clean:
-                    d_dict["doc_no"] = row_dict["uan_no"]
-                elif "aadhaar" in doc_type_clean:
-                    d_dict["doc_no"] = row_dict["aadhaar_no"]
-                elif "class_x" in doc_type_clean and ("8291410" in str(d_dict.get("doc_no")) and clean_phone_10 != "8610597895"):
-                    d_dict["doc_no"] = creds["class_x_no"]
-                elif "class_xii" in doc_type_clean and ("9481204" in str(d_dict.get("doc_no")) and clean_phone_10 != "8610597895"):
-                    d_dict["doc_no"] = creds["class_xii_no"]
-
                 doc_key = (d_dict.get("doc_uri") or f"{d_dict.get('doc_type')}_{d_dict.get('doc_no')}").strip()
                 if doc_key in seen_doc_keys:
                     continue
                 seen_doc_keys.add(doc_key)
-                
                 d_dict["name"] = d_dict.get("document_name") or d_dict.get("name") or "Government Certificate"
                 d_dict["status"] = d_dict.get("doc_status") or "Verified"
                 d_dict["uri"] = d_dict.get("doc_uri")
                 docs.append(d_dict)
-
-            # Fallback document pack if DB has 0 docs
-            if not docs:
-                p_suffix = clean_phone_10[-4:] if clean_phone_10 else "7895"
-                docs = [
-                    {
-                        "name": "Aadhaar Card",
-                        "issuer": "Unique Identification Authority of India (UIDAI)",
-                        "doc_no": row_dict["aadhaar_no"],
-                        "doc_type": "aadhaar",
-                        "status": "Verified",
-                        "doc_status": "Verified",
-                        "uri": f"in.gov.uidai-aadhaar-{p_suffix}",
-                        "doc_uri": f"in.gov.uidai-aadhaar-{p_suffix}"
-                    },
-                    {
-                        "name": "PAN Card / Income Tax",
-                        "issuer": "Income Tax Department (NSDL/UTIITSL)",
-                        "doc_no": row_dict["pan_no"],
-                        "doc_type": "pan",
-                        "status": "Verified",
-                        "doc_status": "Verified",
-                        "uri": f"in.gov.incometax-pan-{row_dict['pan_no']}",
-                        "doc_uri": f"in.gov.incometax-pan-{row_dict['pan_no']}"
-                    },
-                    {
-                        "name": "Driving License",
-                        "issuer": "Ministry of Road Transport and Highways (MoRTH)",
-                        "doc_no": row_dict["dl_no"],
-                        "doc_type": "driving_license",
-                        "status": "Verified",
-                        "doc_status": "Verified",
-                        "uri": f"in.gov.morth-dl-{p_suffix}",
-                        "doc_uri": f"in.gov.morth-dl-{p_suffix}"
-                    },
-                    {
-                        "name": "Class X School Certificate",
-                        "issuer": "Central Board of Secondary Education (CBSE)",
-                        "doc_no": creds["class_x_no"],
-                        "doc_type": "class_x",
-                        "status": "Verified",
-                        "doc_status": "Verified",
-                        "uri": f"in.gov.cbse-class10-{p_suffix}",
-                        "doc_uri": f"in.gov.cbse-class10-{p_suffix}"
-                    },
-                    {
-                        "name": "Class XII Senior Secondary Certificate",
-                        "issuer": "Central Board of Secondary Education (CBSE)",
-                        "doc_no": creds["class_xii_no"],
-                        "doc_type": "class_xii",
-                        "status": "Verified",
-                        "doc_status": "Verified",
-                        "uri": f"in.gov.cbse-class12-{p_suffix}",
-                        "doc_uri": f"in.gov.cbse-class12-{p_suffix}"
-                    },
-                    {
-                        "name": "EPFO Universal Account Number (UAN) Card",
-                        "issuer": "Employees' Provident Fund Organisation (EPFO)",
-                        "doc_no": row_dict["uan_no"],
-                        "doc_type": "epfo_uan",
-                        "status": "Verified",
-                        "doc_status": "Verified",
-                        "uri": f"in.gov.epfindia-uan-{p_suffix}",
-                        "doc_uri": f"in.gov.epfindia-uan-{p_suffix}"
-                    }
-                ]
 
             row_dict["documents"] = docs
             row_dict["documents_count"] = len(docs)
             row_dict["candidate_name"] = name_val
             row_dict["full_name"] = name_val
             row_dict["name"] = name_val
-            row_dict["mobile"] = clean_phone_10 if clean_phone_10 else (raw_phone if len(raw_phone) == 10 else "8610597895")
+            row_dict["mobile"] = clean_phone_10 if clean_phone_10 else raw_phone
             row_dict["identifier_value"] = row_dict["mobile"]
             row_dict["identifier"] = row_dict["mobile"]
             row_dict["account_status"] = "VERIFIED"

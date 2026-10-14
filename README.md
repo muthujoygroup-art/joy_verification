@@ -1,6 +1,6 @@
 # JOY TrueProfile (Joy Verification Platform)
 
-> Sovereign Indian Enterprise Workforce Verification, Automated Onboarding, and Statutory Labor Compliance Platform for the **Muthu Joy Group**.
+> Official Indian Enterprise Workforce Verification, Automated Onboarding, and Statutory Labor Compliance Platform for the **Muthu Joy Group**.
 
 ---
 
@@ -9,9 +9,9 @@
 **JOY TrueProfile** automates employee background verification (BGV), statutory compliance (CLRA Form XVI), and credential management into a **10-minute automated digital process** compliant with the **DPDP Act 2023** and **ISO 27001**.
 
 ### Core Platform Capabilities:
-- **81 Neev Sovereign Verification APIs**: Live and fallback mock engines covering Identity, Tax, Banking, EPFO UAN Moonlighting, Transportation, Court Records, and Corporate KYB.
+- **81 Neev National Verification APIs**: Live gateway engines covering Identity, Tax, Banking, EPFO UAN Moonlighting, Transportation, Court Records, and Corporate KYB.
 - **DigiLocker Digital Vault**: Direct XML extraction and tamper-evident storage with strict `Map`-based citizen profile deduplication.
-- **Government Document Redirect Hub**: 1-click fallback redirection to 8 sovereign portals (Instant e-PAN, myAadhaar, EPFO Member/UMANG, ESIC, Sarathi Parivahan, ECI Voter, Passport Seva, NFSA).
+- **Government Document Redirect Hub**: 1-click fallback redirection to 8 official national portals (Instant e-PAN, myAadhaar, EPFO Member/UMANG, ESIC, Sarathi Parivahan, ECI Voter, Passport Seva, NFSA).
 - **5 Multi-Tenant Role Portals**: Dedicated workspaces for Super Admin, Company Admin, HR Executive, Candidate / Employee, and Vendor / Contractor.
 - **Verifiable Digital Credentials**: Tamper-evident SHA-256 certificate hashing and anti-counterfeit dynamic QR verification codes.
 

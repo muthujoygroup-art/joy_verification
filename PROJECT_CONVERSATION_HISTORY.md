@@ -238,6 +238,40 @@
 
 ---
 
+### Session 10: Architectural Analysis of Direct UIDAI OTP (Zero PIN) vs. DigiLocker OAuth & Complete Purge of Synthetic Citizen/Document Generators
+
+**Focus Area**: In-App Direct UIDAI OTP vs DigiLocker Security PIN, Elimination of Synthetic Documents (`CKPM7895F`, `TN-58...`, `CBSE...`, `EPFO...`), Purge of Mock Citizen Demographics.
+
+#### Technical Analysis & Regulatory Architecture:
+1. **Can Direct UIDAI OTP (Zero PIN) work without any access/credentials?**
+   - **No, legally and technically impossible.**
+   - UIDAI operates the Central Identities Data Repository (CIDR) under the Aadhaar Act, 2016. Direct calls to trigger an SMS OTP from UIDAI require an authorized **AUA/KUA (Authentication User Agency)** license or an active commercial **Sub-AUA Gateway API** (such as Neev API, Sandbox.co.in, Cashfree, Zoop, Surepass, or Karza).
+   - Our DigiLocker credentials (`QEC8BCDA95`) grant access to the **DigiLocker OAuth Consent Flow**, which is an OAuth identity provider, NOT a UIDAI Sub-AUA direct OTP service.
+   - Therefore, Direct UIDAI OTP (Zero PIN) requires an active Sub-AUA provider API key configured in SuperAdmin or `.env`.
+
+2. **Why does DigiLocker ask for a 6-Digit Security PIN?**
+   - DigiLocker is an official NeGD / MeitY consent portal. Under Section 9A of the IT Act, 2000, accessing a citizen's issued government documents requires **Two-Factor Authentication (2FA)**:
+     - Factor 1: Aadhaar OTP sent to citizen's registered mobile.
+     - Factor 2: 6-digit DigiLocker Security PIN (Knowledge factor).
+   - If the candidate already has a DigiLocker account: NeGD requires them to enter their existing 6-digit PIN.
+   - If the candidate does not have an account: NeGD forces them to set a 6-digit PIN before granting document access consent.
+   - **No third-party application can bypass or suppress this PIN screen** on `accounts.digitallocker.gov.in`.
+
+3. **Purge of Synthetic Data & Mock Document Generators**:
+   - Identified that `backend/app/services/digilocker_service.py` had an algorithmic generator (`generate_unique_citizen_credentials`) and a fallback block (`if not issued_documents:`) that fabricated PAN (`CKPM7895F`), DL (`TN-58-2014-0097895`), CBSE 10th & 12th certificates, and EPFO UAN.
+   - Completely deleted lines 720-805 in `digilocker_service.py` that appended synthetic documents.
+   - Rewrote `generate_unique_citizen_credentials` to only read authentic candidate or token payload fields, returning empty strings/None for missing fields.
+   - Updated `handle_digilocker_callback` to halt immediately and return `success: False` with the live gateway error message whenever code-for-token exchange fails, instead of faking a verified profile.
+   - Removed `backend/sanitize_digilocker_db.py`.
+   - In `src/components/DigiLockerSectionView.jsx`: Removed `CKPM7895F` fallback, `8610597895` hardcoded states and placeholders, and Muthukumar P normalization.
+   - In `src/utils/digilockerExportUtils.js`: Replaced hardcoded fallback defaults with `'Verified Candidate'` and `'N/A'`.
+
+#### Verification & Quality Gates:
+- **Build Status**: `npm run build` executed cleanly in **1.16s** (`dist/assets/index-S1KuQSZk.js`).
+- **Grep Audit**: 0 matches for `CKPM7895F`, 0 matches for `8610597895` in `src` & `backend`.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.

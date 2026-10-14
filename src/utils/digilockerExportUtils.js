@@ -234,12 +234,12 @@ export const generateIndividualDocumentPdf = (docItem, profile = {}, companyName
   if (!docItem) return;
 
   const docType = (docItem.doc_type || docItem.type || '').toLowerCase();
-  const candName = val(profile.full_name || profile.candidate_name || profile.name, 'Muthukumar P');
-  const dlId = val(profile.digilocker_id || profile.digilockerId, 'DL86105978');
-  const phone = val(profile.mobile || profile.identifier_value, '8610597895');
-  const dob = val(profile.dob, '15-08-1992');
-  const gender = val(profile.gender, 'Male');
-  const address = val(profile.address, 'No. 12/A, Gandhi Street, Anna Nagar, Near City Hospital, Trichy Head Post Office, Tiruchirappalli, Tamil Nadu, Pincode: 620001');
+  const candName = val(profile.full_name || profile.candidate_name || profile.name, 'Verified Candidate');
+  const dlId = val(profile.digilocker_id || profile.digilockerId, 'N/A');
+  const phone = val(profile.mobile || profile.identifier_value, 'N/A');
+  const dob = val(profile.dob, 'N/A');
+  const gender = val(profile.gender, 'N/A');
+  const address = val(profile.address, 'N/A');
   const docName = val(docItem.name || docItem.document_name, 'Official Government Certificate');
   const issuer = val(docItem.issuer, 'Government Authority');
   const docNo = val(docItem.doc_no, 'VERIFIED-DOC-01');

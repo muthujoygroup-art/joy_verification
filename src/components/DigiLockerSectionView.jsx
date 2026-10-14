@@ -111,18 +111,8 @@ export const deduplicateAndSanitizeDigiLockerProfiles = (records = [], candidate
       }
     }
 
-    // Demo profile normalization for Muthukumar P
-    const lowerNormName = fullName.toLowerCase().replace(/[^a-z]/g, '');
-    if (lowerNormName.includes('muthukumar') || (!phone10 && lowerNormName.includes('muthu'))) {
-      fullName = 'Muthukumar P';
-      if (!phone10) phone10 = '8610597895';
-    }
-
     if (!phone10 && !isUuid && digitsOnly.length >= 10) {
       phone10 = digitsOnly.slice(-10);
-    }
-    if (!phone10) {
-      phone10 = '8610597895';
     }
 
     const normName = fullName.toLowerCase().replace(/[^a-z]/g, '');
@@ -146,15 +136,15 @@ export const deduplicateAndSanitizeDigiLockerProfiles = (records = [], candidate
     // Sanitized clean record object
     const cleanItem = {
       ...raw,
-      id: raw.id || `dlver_${phone10}`,
+      id: raw.id || `dlver_${phone10 || Date.now()}`,
       full_name: fullName || 'Verified Candidate',
       candidate_name: fullName || 'Verified Candidate',
       name: fullName || 'Verified Candidate',
-      mobile: phone10,
-      identifier_value: phone10,
-      identifier: phone10,
-      pan_no: cleanPan || raw.pan_no || 'CKPM7895F',
-      digilocker_id: dlId || raw.digilocker_id || `DL${phone10.slice(-8)}`,
+      mobile: phone10 || '',
+      identifier_value: phone10 || raw.identifier_value || '',
+      identifier: phone10 || raw.identifier || '',
+      pan_no: cleanPan || raw.pan_no || '',
+      digilocker_id: dlId || raw.digilocker_id || (phone10 ? `DL${phone10.slice(-8)}` : ''),
       status: 'success',
       account_status: 'VERIFIED',
       documents: Array.isArray(raw.documents) ? raw.documents : []
@@ -200,7 +190,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
   // Verification Form State
   const [userType, setUserType] = useState('individual'); // 'individual' | 'company'
   const [authType, setAuthType] = useState('mobile'); // 'mobile' | 'aadhaar' | 'pan'
-  const [identifierValue, setIdentifierValue] = useState('8610597895');
+  const [identifierValue, setIdentifierValue] = useState('');
   const [selectedCandidateId, setSelectedCandidateId] = useState('');
   const [selectedPurpose, setSelectedPurpose] = useState('Employee onboarding private sector');
   const [customPurpose, setCustomPurpose] = useState('');
@@ -672,7 +662,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
             type="button"
             onClick={() => {
               setActiveSubTab('create_fetch');
-              setIdentifierValue('8610597895');
+              setIdentifierValue('');
               setSelectedCandidateId('');
               setLatestFetchResult(null);
             }}
@@ -1202,7 +1192,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                         }}
                         placeholder={
                           authType === 'mobile' 
-                            ? 'e.g. 8610597895' 
+                            ? 'e.g. 9876543210' 
                             : authType === 'aadhaar' 
                             ? 'e.g. 5892 4102 8942' 
                             : 'e.g. AAAPM8942K'
@@ -1984,7 +1974,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
               <button
                 type="button"
                 onClick={() => {
-                  generateIndividualDocumentPdf(activePreviewDoc, latestFetchResult || { full_name: 'Muthukumar P' }, currentCompany?.name);
+                  generateIndividualDocumentPdf(activePreviewDoc, latestFetchResult || { full_name: 'Verified Candidate' }, currentCompany?.name);
                   showToast(`📄 Downloaded official PDF for ${activePreviewDoc.name || 'Document'}!`, 'success');
                 }}
                 className="w-full py-3 px-4 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
