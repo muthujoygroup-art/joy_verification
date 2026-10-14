@@ -3,7 +3,7 @@ import { ChevronDown, Phone } from 'lucide-react';
 import { COUNTRY_PHONE_CODES, getCountryConfig, sanitizeMobile } from '../../utils/validationRules';
 
 /**
- * 📱 Sovereign Country Phone Input Component
+ * 📱 Country Phone Input Component
  * Provides international dial code selection + strict digit restriction based on selected country.
  */
 export const CountryPhoneInput = ({

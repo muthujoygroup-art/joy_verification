@@ -3379,7 +3379,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   Review and verify offline NEFT / RTGS / IMPS and UPI transaction receipts submitted by enterprise companies.
                 </p>
               </div>
-              <span className="badge badge-emerald text-[9px] font-bold">SOVEREIGN LEDGER</span>
+              <span className="badge badge-emerald text-[9px] font-bold">COMPLIANCE LEDGER</span>
             </div>
 
             {(() => {
@@ -6807,10 +6807,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-base sm:text-lg font-black text-slate-900">Global Candidate Onboarding Security Gate</h3>
-                    <span className="badge badge-purple text-[10px] font-bold">SOVEREIGN GOVERNANCE</span>
+                    <span className="badge badge-purple text-[10px] font-bold">SECURITY GOVERNANCE</span>
                   </div>
                   <p className="text-xs text-slate-500 font-medium">
-                    Configure whether candidates unlock their sovereign verification link using Visual CAPTCHA or a 4-digit PIN passcode.
+                    Configure whether candidates unlock their official verification link using Visual CAPTCHA or a 4-digit PIN passcode.
                   </p>
                 </div>
               </div>
@@ -7446,7 +7446,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       Upstream Messaging Infrastructure
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-mono font-bold">
-                      🔒 SuperAdmin Sovereign Control
+                      🔒 SuperAdmin Master Control
                     </span>
                   </div>
                   <h3 className="text-lg sm:text-2xl font-black text-slate-900 mt-1">
@@ -8147,7 +8147,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="font-black text-slate-900 text-sm sm:text-base">Enterprise Message Template Review & Approval Pipeline</h4>
-                    <span className="badge badge-purple text-[9px] font-black">SUPERADMIN SOVEREIGNTY</span>
+                    <span className="badge badge-purple text-[9px] font-black">SUPERADMIN GOVERNANCE</span>
                   </div>
                   <span className="text-[11px] text-slate-500 font-medium">
                     Companies submit requested WhatsApp & SMS message templates. SuperAdmin reviews and approves before HR can dispatch.

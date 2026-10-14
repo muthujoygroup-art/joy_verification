@@ -480,7 +480,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                   </div>
 
                   <p className="text-sm text-[#5C6878] leading-relaxed">
-                    Cryptographically signed credential vault with tamper-evident SHA-256 signatures, candidate consent logging, and sovereign in-country storage.
+                    Cryptographically signed credential vault with tamper-evident SHA-256 signatures, candidate consent logging, and secure in-country storage.
                   </p>
 
                   <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2 text-xs">
@@ -488,7 +488,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                     <div className="flex items-center gap-2 text-[#5C6878]">✓ 256-bit AES encryption at rest & in transit</div>
                     <div className="flex items-center gap-2 text-[#5C6878]">✓ Automatic Aadhaar & PAN masking (XXXX-XXXX-1234)</div>
                     <div className="flex items-center gap-2 text-[#5C6878]">✓ Explicit candidate digital consent trail under DPDP Act</div>
-                    <div className="flex items-center gap-2 text-[#5C6878]">✓ Sovereign cloud server data residency in India</div>
+                    <div className="flex items-center gap-2 text-[#5C6878]">✓ National cloud server data residency in India</div>
                   </div>
                 </div>
 
@@ -764,7 +764,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                     <strong className="text-[#182230]">Zero Unmasked Aadhaar Storage:</strong> National identity numbers are automatically redacted (<code className="bg-slate-100 px-1 py-0.5 rounded">XXXX-XXXX-1234</code>) prior to database persistence.
                   </p>
                   <p>
-                    <strong className="text-[#182230]">Data Sovereignty:</strong> All applicant data, verification transaction logs, and encrypted PDFs reside on sovereign cloud servers located within the Republic of India.
+                    <strong className="text-[#182230]">Data Residency:</strong> All applicant data, verification transaction logs, and encrypted PDFs reside on secure cloud servers located within the Republic of India.
                   </p>
                   <p>
                     <strong className="text-[#182230]">Applicant Rights:</strong> Candidates retain the statutory right to view verification logs, request data correction, and withdraw consent through authorized grievance channels.
@@ -1463,9 +1463,9 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-[#182230] mb-2">4. Data Redaction and Sovereign Encryption</h2>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">4. Data Redaction and Advanced Encryption</h2>
                 <p>
-                  All data in transit is encrypted using TLS 1.3, and all records at rest are secured using 256-bit AES encryption. Unmasked Aadhaar numbers are never stored in plain text. All servers, verification records, and cryptographic PDF dossiers reside on sovereign cloud infrastructure physically located within the Republic of India.
+                  All data in transit is encrypted using TLS 1.3, and all records at rest are secured using 256-bit AES encryption. Unmasked Aadhaar numbers are never stored in plain text. All servers, verification records, and cryptographic PDF dossiers reside on national cloud infrastructure physically located within the Republic of India.
                 </p>
               </div>
 

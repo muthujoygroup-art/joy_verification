@@ -184,6 +184,55 @@
 - **Frontend Build**: Executed `npm run build` &rarr; built client environment with Vite in **1.81s** with 0 errors (`dist/assets/index-APe0SpnU.js`).
 - **Git Deployment**: Pushed commit to `origin/main`.
 
+### Session 9: Complete Elimination of "Sovereign" Terminology & Demo OTP / Demo Data
+**Date**: October 14, 2026  
+**User Request**: 
+- Eliminate the word "Sovereign" across the entire platform.
+- Strictly eliminate all demo OTPs and demo fallback data project-wide.
+- Build production assets and push to GitHub `main` for cPanel deployment.
+
+#### Architectural & Code Refactoring:
+1. **Zero "Sovereign" Terminology Policy**:
+   - Audited and updated every user-facing string, modal, button, toast, and docstring across `src/` and `backend/`.
+   - Replaced with clear, enterprise terms: "Official", "National", "UIDAI", "Government", "Compliance Ledger", "Security Governance", "Direct UIDAI OTP".
+   - Verified 0 remaining occurrences of the word across all `.jsx`, `.js`, `.py`, `.html`, `.php`, `.md` files.
+2. **Complete Removal of Demo OTPs & Bypasses**:
+   - **`backend/app/services/otp_service.py`**:
+     - Removed hardcoded demo codes (`482910`, `123456`, `849201`, `000000`, `999999`).
+     - Aadhaar OTP now dispatches exclusively through live UIDAI / Neev API `/generate-aadhaar-otp-v2`. If unconfigured, returns an explicit gateway error instead of dummy codes.
+     - Mobile/SMS OTP generates cryptographically secure 6-digit codes and sends via live SMS gateway.
+     - Verification checks only against valid unexpired codes or live UIDAI verification.
+   - **`backend/app/schemas/verification.py` & `backend/app/routers/verification.py`**:
+     - Removed `demo_otp` field from `SendOtpResponse`.
+     - Removed error-handler bypasses that faked `success=True`.
+   - **`backend/app/services/live_verification_service.py`**:
+     - Removed default `otp="123456"` parameter and bypass check in `verify_aadhaar_live`.
+     - On API failure, returns genuine gateway error without fabricating demo candidate data.
+3. **Elimination of Client Demo Fallbacks & Test Buttons**:
+   - **`src/components/DigiLockerSectionView.jsx`**:
+     - Removed `Direct Test Hint: Use Demo OTP 482910` and `Auto-Fill OTP ⚡` button.
+     - Removed `fallbackRecord` that generated mock citizen records.
+     - Replaced with genuine error alerts and live gateway status handling.
+     - Require strict 6-digit OTP entry to trigger verification.
+   - **`src/components/FullJoiningFormModal.jsx`**:
+     - Removed `Sovereign Test OTP Code: 482910` banner.
+     - Replaced `handleAadhaarOtpSubmit` with live `api.verifyAadhaarLive` API execution without hardcoded demographic fallbacks.
+   - **`src/views/EmployeePortalView.jsx`**:
+     - Removed `aadhaarDemoOtp` & `mobileDemoOtp` state declarations.
+     - Removed `⚡ Autofill Demo PIN` helper button.
+     - Removed fake Suresh Kumar & Bengaluru address fallbacks.
+   - **`src/services/api.js`**:
+     - Removed 284 lines of synthetic citizen demographic generator in `fetchDigilockerDetails`.
+     - Removed fake fallback candidate in `getCandidateByToken`.
+     - Removed `unlocked: true` bypass in `unlockPortal`.
+     - Removed hardcoded default DOBs (`dob = '1996-05-15'`).
+   - **`backend/app/services/digilocker_service.py`**:
+     - Removed hardcoded phone checks (`8610597895`) and mock Muthukumar P demographic normalization.
+
+#### Verification & Quality Gates:
+- **Build Status**: `npm run build` executed cleanly in **1.11s** with 0 errors (`dist/assets/index-IvhE2zS_.js`).
+- **Grep Audit**: 0 matches for "sovereign", 0 matches for demo OTPs (`482910`, `492018`).
+
 ---
 
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)

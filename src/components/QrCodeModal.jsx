@@ -245,7 +245,7 @@ export const QrCodeModal = ({
         .replace(/{{verification_link}}/g, verifyUrl)
         .replace(/{{expiry_date}}/g, '15 Minutes');
     } else {
-      message = `Hello ${candidate.name},\n\nPlease complete your official sovereign identity & background onboarding verification for ${company.name} using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n\nIssued by: ${hrSenderName} (${company.name})\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`;
+      message = `Hello ${candidate.name},\n\nPlease complete your official identity & background onboarding verification for ${company.name} using the secure link below:\n\n🔗 Verification Link: ${verifyUrl}\n\nIssued by: ${hrSenderName} (${company.name})\n🔒 256-Bit Encrypted • DPDP Act 2023 Compliant`;
     }
 
     try {

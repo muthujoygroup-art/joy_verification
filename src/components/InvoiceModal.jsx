@@ -455,7 +455,7 @@ export const InvoiceModal = ({ company, postpaidBill: initialPostpaidBill, trans
             </div>
           </div>
 
-          {/* Sovereign Bank Account & UPI Settlement Section */}
+          {/* Official Bank Account & UPI Settlement Section */}
           <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50/70 via-slate-50 to-indigo-50/60 border border-emerald-200 text-xs space-y-3 no-print">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200/60 pb-2">
               <div className="flex items-center gap-2">

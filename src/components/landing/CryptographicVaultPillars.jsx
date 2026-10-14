@@ -27,7 +27,7 @@ export const CryptographicVaultPillars = ({ onOpenLegalHandbook, onOpenDemo }) =
       <div className="text-center max-w-3xl mx-auto mb-14 relative z-10 space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>ZERO-TRUST SOVEREIGN SECURITY ARCHITECTURE</span>
+          <span>ZERO-TRUST SECURITY ARCHITECTURE</span>
         </div>
         <h3 className="text-3xl sm:text-5xl lg:text-6xl font-black font-outfit uppercase tracking-tight text-white leading-none">
           Every Profile. Every Document. <br />
@@ -36,7 +36,7 @@ export const CryptographicVaultPillars = ({ onOpenLegalHandbook, onOpenDemo }) =
           </span>
         </h3>
         <p className="text-slate-300 text-xs sm:text-base font-medium max-w-2xl mx-auto leading-relaxed">
-          JOY TrueProfile adheres strictly to Indian statutory mandates, the Digital Personal Data Protection (DPDP) Act 2023, and sovereign Indian cloud standards.
+          JOY TrueProfile adheres strictly to Indian statutory mandates, the Digital Personal Data Protection (DPDP) Act 2023, and national cloud standards.
         </p>
       </div>
 
@@ -134,7 +134,7 @@ export const CryptographicVaultPillars = ({ onOpenLegalHandbook, onOpenDemo }) =
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
           <span className="text-xs font-mono text-slate-300">
-            Sovereign Indian Cloud Infrastructure • ISO 27001 & SOC-2 Audited
+            National Cloud Infrastructure • ISO 27001 & SOC-2 Audited
           </span>
         </div>
 

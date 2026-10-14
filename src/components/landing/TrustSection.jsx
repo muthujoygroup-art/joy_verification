@@ -28,7 +28,7 @@ export const TrustSection = ({ onOpenLegalHandbook, onOpenDemo }) => {
             </div>
 
             <div className="mt-4 flex items-center justify-between text-xs text-[#5C6878] px-2">
-              <span className="font-semibold text-[#182230]">Sovereign Cloud & 256-Bit AES Vault</span>
+              <span className="font-semibold text-[#182230]">National Cloud & 256-Bit AES Vault</span>
               <span className="text-[#299C68] font-bold bg-[#EAF8F0] px-2.5 py-1 rounded-full">
                 DPDP 2023 Compliant ✓
               </span>

@@ -25,7 +25,7 @@ export const OFFICIAL_DOCUMENT_PORTALS = {
     secondaryUrl: 'https://myaadhaar.uidai.gov.in/',
     badgeText: "Don't have Aadhaar? Book Enrollment / Download e-Aadhaar ↗",
     shortLabel: 'Enroll Aadhaar ↗',
-    tooltip: 'Direct link to UIDAI Sovereign Portal for Aadhaar Enrollment & e-Aadhaar XML Download',
+    tooltip: 'Direct link to UIDAI Official Portal for Aadhaar Enrollment & e-Aadhaar XML Download',
     theme: 'emerald'
   },
   uanEpf: {

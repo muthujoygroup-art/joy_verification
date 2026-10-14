@@ -110,8 +110,6 @@ export const EmployeePortalView = ({ directToken = null }) => {
   const [candidateConsentAgreed, setCandidateConsentAgreed] = useState(true);
 
   // Live OTP dispatch states
-  const [aadhaarDemoOtp, setAadhaarDemoOtp] = useState('123456');
-  const [mobileDemoOtp, setMobileDemoOtp] = useState('123456');
   const [aadhaarOtpMasked, setAadhaarOtpMasked] = useState('');
   const [isSendingAadhaarOtp, setIsSendingAadhaarOtp] = useState(false);
   const [isSendingMobileOtp, setIsSendingMobileOtp] = useState(false);
@@ -647,16 +645,6 @@ export const EmployeePortalView = ({ directToken = null }) => {
                 )}
               </div>
 
-              {/* Quick Auto-fill helper pill for testing/demo */}
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setPasscodeDigits(expectedPin)}
-                  className="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 cursor-pointer transition-all"
-                >
-                  ⚡ Autofill Demo PIN ({expectedPin})
-                </button>
-              </div>
 
               <button
                 type="submit"
@@ -817,17 +805,17 @@ export const EmployeePortalView = ({ directToken = null }) => {
         const fetched = res.data?.fetched_data || res.fetched_data || res || {};
         const formattedAddress = typeof fetched.address === 'object' && fetched.address
           ? `${fetched.address.house || ''} ${fetched.address.street || ''} ${fetched.address.locality || ''} ${fetched.address.city || ''} ${fetched.address.state || ''} - ${fetched.address.pincode || ''}`.trim()
-          : (fetched.address || '124, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103');
+          : (fetched.address || candidate.permanent_address || candidate.present_address || '');
 
         const profileData = {
           name: fetched.full_name || fetched.name || candidate.name,
-          fatherName: fetched.care_of || fetched.father_name || 'Suresh Kumar',
-          dob: fetched.dob || '1996-05-15',
-          gender: fetched.gender || 'Male',
-          maskedAadhaar: fetched.masked_aadhaar || (candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : 'XXXX XXXX 9876'),
+          fatherName: fetched.care_of || fetched.father_name || candidate.father_name || '',
+          dob: fetched.dob || candidate.dob || '',
+          gender: fetched.gender || candidate.gender || '',
+          maskedAadhaar: fetched.masked_aadhaar || (candidate.aadhaarNo ? `XXXX XXXX ${candidate.aadhaarNo.slice(-4)}` : (candidate.aadhaar_no ? `XXXX XXXX ${candidate.aadhaar_no.slice(-4)}` : '')),
           address: formattedAddress,
-          photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
-          pincode: (typeof fetched.address === 'object' ? fetched.address?.pincode : '560034') || '560034',
+          photo: fetched.photo || candidate.photo || '',
+          pincode: (typeof fetched.address === 'object' ? fetched.address?.pincode : candidate.pincode) || '',
           uidaiTxnId: fetched.uidai_auth_code || `UIDAI-TXN-${Date.now().toString().slice(-8)}`,
           verifiedTimestamp: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' IST',
           xmlSignature: fetched.sha256_seal || 'VALID_SHA256_RSA_2048'

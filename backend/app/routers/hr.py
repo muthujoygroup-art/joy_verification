@@ -1216,13 +1216,13 @@ def get_approved_hr_templates(company_id: str = None, db: Session = Depends(get_
                 "channel": "whatsapp",
                 "template_name": "Standard Onboarding Invitation",
                 "category": "Onboarding Link",
-                "template_content": "Dear {name}, Welcome to {company}! Please complete your sovereign identity & background verification form here: {link}",
+                "template_content": "Dear {name}, Welcome to {company}! Please complete your official identity & background verification form here: {link}",
                 "status": "Approved"
             },
             {
                 "id": "def_tmpl_sms_01",
                 "channel": "sms",
-                "template_name": "DLT Sovereign Onboarding SMS",
+                "template_name": "DLT Official Onboarding SMS",
                 "category": "Onboarding Link",
                 "template_content": "{company}: Dear {name}, please submit your onboarding details at {link}. JOYVER",
                 "status": "Approved"

@@ -1,5 +1,6 @@
 import time
 import logging
+import random
 from typing import Dict, Tuple, Optional
 
 logger = logging.getLogger("otp_service")
@@ -10,7 +11,7 @@ OTP_CACHE: Dict[str, Dict] = {}
 def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bool, str, Optional[str], str]:
     """
     Generates and dispatches a live OTP via UIDAI Aadhaar Gateway or SMS/Email Carrier.
-    Returns (success, message, demo_otp, masked_target)
+    Returns (success, message, demo_otp, masked_target). demo_otp is strictly None.
     """
     try:
         # Clean identifier
@@ -24,20 +25,13 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
             if len(clean_id) != 12 or not clean_id.isdigit():
                 return False, "Please enter a valid 12-digit Aadhaar number.", None, masked
 
-            # Attempt live Neev / CoinCircle generate-aadhaar-otp-v2
+            # Live Neev / UIDAI generate-aadhaar-otp-v2
             from backend.app.services.live_verification_service import _call_neev_api, get_active_provider_info
             prov = get_active_provider_info()
             
             if not prov or not prov.get("api_key") or "TEST" in str(prov.get("api_key", "")).upper():
                 logger.warning("Active API Provider key is unset or set to dummy test key.")
-                OTP_CACHE[cache_key] = {
-                    "identifier": clean_id,
-                    "otp": "482910",
-                    "created_at": time.time(),
-                    "attempts": 0,
-                    "is_live": False
-                }
-                return True, f"UIDAI Aadhaar OTP dispatched to linked mobile number for {masked}.", "482910", masked
+                return False, "UIDAI Gateway Error: Upstream verification provider key is unconfigured.", None, masked
 
             live_ok, live_res, latency, err = _call_neev_api(
                 endpoint_slug="/generate-aadhaar-otp-v2",
@@ -58,15 +52,8 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
                 return True, f"Live UIDAI OTP successfully dispatched by Government Gateway to mobile linked with Aadhaar {masked}.", None, masked
             else:
                 err_text = err or (live_res.get("message") if isinstance(live_res, dict) else "Gateway rejected request")
-                logger.warning(f"Live UIDAI OTP dispatch fallback: {err_text}")
-                OTP_CACHE[cache_key] = {
-                    "identifier": clean_id,
-                    "otp": "482910",
-                    "created_at": time.time(),
-                    "attempts": 0,
-                    "is_live": False
-                }
-                return True, f"UIDAI Aadhaar OTP dispatched to linked mobile number for {masked}.", "482910", masked
+                logger.warning(f"Live UIDAI OTP dispatch failed: {err_text}")
+                return False, f"UIDAI Gateway Error: {err_text}", None, masked
 
         elif channel in ("mobile", "sms", "phone"):
             masked = f"+91 XXXXX-{clean_id[-4:]}" if len(clean_id) >= 4 else "+91 XXXXX-****"
@@ -75,7 +62,6 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
 
             # Dispatch via Carrier SMS (Fast2SMS / Twilio)
             from backend.app.config import settings
-            import random
             otp_code = str(random.randint(100000, 999999))
             
             OTP_CACHE[cache_key] = {
@@ -104,9 +90,8 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
             return True, f"SMS OTP dispatched to registered mobile {masked} (Valid for 10 mins).", None, masked
 
         elif channel == "email":
-            masked = identifier if "@" in identifier else f"candidate@joycorporate.com"
+            masked = identifier if "@" in identifier else "candidate@joycorporate.com"
             from backend.app.services.email_service import send_candidate_email_otp
-            import random
             otp_code = str(random.randint(100000, 999999))
             OTP_CACHE[cache_key] = {
                 "otp": otp_code,
@@ -131,6 +116,7 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
 def verify_otp_code(channel: str, identifier: str, otp: str, token: str) -> Tuple[bool, str]:
     """
     Validates entered OTP against Government Gateway or live Carrier cache.
+    No hardcoded demo OTPs or bypasses.
     """
     clean_token = (token or "").strip()
     clean_otp = str(otp or "").strip()
@@ -143,8 +129,6 @@ def verify_otp_code(channel: str, identifier: str, otp: str, token: str) -> Tupl
         cached = OTP_CACHE.get(f"{clean_token}_aadhaar") or OTP_CACHE.get(f"{clean_token}_mobile")
         
     if not cached:
-        if clean_otp in ["123456", "482910", "849201", "000000", "999999"]:
-            return True, "UIDAI Aadhaar OTP verified successfully via Sovereign Gateway!"
         return False, "No active OTP request found. Please click 'Send OTP' first."
         
     # Check expiry (10 minutes = 600s)

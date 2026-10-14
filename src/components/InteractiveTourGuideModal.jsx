@@ -208,7 +208,7 @@ const FEATURE_MODULES = [
     category: 'security',
     badge: 'DPDP ACT & PRIVACY',
     badgeColor: 'bg-purple-100 text-purple-900 border-purple-300',
-    description: 'Security awareness and compliance walkthrough: Explicit multi-lingual candidate consent under DPDP Act 2023, automated PII masking, 256-bit AES encryption at rest, and sovereign Indian data residency.',
+    description: 'Security awareness and compliance walkthrough: Explicit multi-lingual candidate consent under DPDP Act 2023, automated PII masking, 256-bit AES encryption at rest, and national Indian data residency.',
     videoUrl: 'https://www.youtube.com/watch?v=joy_dpdp_security_guide',
     videoTitle: 'Video Tutorial: Data Handling, PII Masking & DPDP Compliance',
     steps: [
@@ -240,17 +240,17 @@ const FEATURE_MODULES = [
         targetId: 'sec-step-3',
         whatItDoes: 'Secures candidate documents and verification results using AES-256-GCM encryption and TLS 1.3 network transport.',
         whyItMatters: 'Guarantees zero data leakage even in the event of hardware compromise or network interception.',
-        nextStep: 'Enforce sovereign Indian data residency and candidate Right to Erasure.',
+        nextStep: 'Enforce national Indian data residency and candidate Right to Erasure.',
         instruction: 'Inspect cryptographic cipher status, SSL certificate handshake, and key rotation cycle.',
         actionLabel: 'Inspect Cryptographic Cipher 🔑',
         deviceView: 'encryption_status'
       },
       {
         stepNumber: 4,
-        title: 'Step 4: Sovereign Indian Data Residency & Candidate Right to Erasure',
+        title: 'Step 4: National Indian Data Residency & Candidate Right to Erasure',
         targetId: 'sec-step-4',
         whatItDoes: 'Stores all data exclusively in MeitY-empanelled Mumbai & Hyderabad data centers with automated 30-day purge rules.',
-        whyItMatters: 'Fulfills Indian data sovereignty mandates and respects candidate Right to be Forgotten.',
+        whyItMatters: 'Fulfills Indian data residency mandates and respects candidate Right to be Forgotten.',
         nextStep: 'Security audit complete! System fully compliant.',
         instruction: 'Inspect MeitY data center locations and simulate candidate data purge request.',
         actionLabel: 'Test Candidate Data Purge (Erasure) 🧹',
@@ -1175,10 +1175,8 @@ export const InteractiveTourGuideModal = ({
                         <div className="space-y-3 text-center">
                           <label className="font-bold text-slate-900 block">Candidate 4-Digit Security PIN</label>
                           <input type="password" maxLength={4} value={pinInput} placeholder="1234" onChange={(e) => { setPinInput(e.target.value); if (e.target.value === '1234') { setPinVerified(true); soundEngine.playSuccess(); } }} className="w-32 text-center text-lg font-mono font-bold px-3 py-2 rounded-xl border border-indigo-300 mx-auto block" />
-                          {pinVerified ? (
+                          {pinVerified && (
                             <div className="text-emerald-800 bg-emerald-100 font-bold p-2 rounded-xl">✓ PIN Verified & Candidate Portal Unlocked</div>
-                          ) : (
-                            <button onClick={() => { setPinInput('1234'); setPinVerified(true); soundEngine.playSuccess(); }} className="text-[#426CF5] font-bold underline cursor-pointer">Auto-fill PIN 1234</button>
                           )}
                         </div>
                       )}
@@ -1190,7 +1188,7 @@ export const InteractiveTourGuideModal = ({
                             <button onClick={() => { setOtpSent(true); soundEngine.playScan(); }} className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold cursor-pointer">Send UIDAI OTP 📲</button>
                           ) : !otpVerified ? (
                             <div className="flex gap-2">
-                              <input type="text" placeholder="OTP 567890" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className="flex-1 px-3 py-2 rounded-xl border font-mono text-center" />
+                              <input type="text" placeholder="Enter OTP" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className="flex-1 px-3 py-2 rounded-xl border font-mono text-center" />
                               <button onClick={() => { setOtpVerified(true); soundEngine.playSuccess(); }} className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl cursor-pointer">Verify OTP</button>
                             </div>
                           ) : (
@@ -1556,7 +1554,7 @@ export const InteractiveTourGuideModal = ({
                     {activeStep.deviceView === 'data_residency' && (
                       <div className="text-center space-y-3">
                         <MapPin className="w-10 h-10 text-rose-400 mx-auto animate-bounce" />
-                        <h4 className="font-bold text-base text-white font-outfit">Sovereign Indian Data Center</h4>
+                        <h4 className="font-bold text-base text-white font-outfit">National Indian Data Center</h4>
                         <div className="p-3 bg-rose-950/80 rounded-xl border border-rose-800 text-rose-300 font-mono text-xs">
                           Mumbai & Hyderabad MeitY Tier-IV Rails
                         </div>

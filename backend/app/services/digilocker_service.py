@@ -514,12 +514,10 @@ def generate_unique_citizen_credentials(
         (getattr(candidate, 'name', None) if candidate else None) or
         name or 
         (token_payload.get("name") if token_payload else None) or 
-        ("Muthukumar P" if phone_10 == "8610597895" else "Verified Candidate")
+        "Verified Candidate"
     )
-    if cand_name in ["Verified Candidate", "Muthukumar P"] and candidate and getattr(candidate, 'name', None):
+    if candidate and getattr(candidate, 'name', None):
         cand_name = candidate.name
-    if cand_name == "Verified Candidate" and phone_10 == "8610597895":
-        cand_name = "Muthukumar P"
 
     # Numeric seed from phone digits and name
     name_clean = re.sub(r'[^A-Za-z]', '', cand_name).upper()
@@ -1069,7 +1067,7 @@ def process_digilocker_verification(
     # Comprehensive e-KYC payload for Aadhaar
     cand_aadhaar_data = {
         "verified": True,
-        "verification_source": "DigiLocker NeGD Sovereign Gateway",
+        "verification_source": "DigiLocker NeGD Official Gateway",
         "digilocker_id": digilocker_id,
         "masked_aadhaar": masked_aadhaar,
         "full_name": full_name,
@@ -1431,14 +1429,7 @@ def get_all_digilocker_records(db: Session, company_id: Optional[str] = None) ->
                         raw_phone = c_mob_digits[-10:]
                         phone_digits = c_mob_digits
 
-            # Candidate demo name normalization
-            if "muthukumar" in name_val.lower().replace(" ", "") or (not phone_digits and "muthu" in name_val.lower()) or (phone_digits == "8610597895" and (name_val == "Verified Candidate" or not name_val)):
-                name_val = "Muthukumar P"
-                if len(phone_digits) != 10:
-                    raw_phone = "8610597895"
-                    phone_digits = "8610597895"
-
-            clean_phone_10 = phone_digits[-10:] if len(phone_digits) >= 10 and not ("-" in raw_phone and len(raw_phone) > 15) else ("8610597895" if "muthukumar" in name_val.lower().replace(" ", "") else "")
+            clean_phone_10 = phone_digits[-10:] if len(phone_digits) >= 10 else raw_phone
             norm_name = re.sub(r'[^a-zA-Z]', '', name_val).lower()
             pan_val = str(row_dict.get("pan_no") or "").strip().upper()
             dl_id_val = str(row_dict.get("digilocker_id") or "").strip()
@@ -1450,19 +1441,19 @@ def get_all_digilocker_records(db: Session, company_id: Optional[str] = None) ->
             )
 
             # Sanitize legacy duplicate values if present
-            if not row_dict.get("pan_no") or (row_dict.get("pan_no") == "AAAPM8942K" and clean_phone_10 != "8610597895"):
+            if not row_dict.get("pan_no"):
                 row_dict["pan_no"] = creds["pan_no"]
-            if not row_dict.get("uan_no") or (row_dict.get("uan_no") == "100829141052" and clean_phone_10 != "8610597895"):
+            if not row_dict.get("uan_no"):
                 row_dict["uan_no"] = creds["uan_no"]
-            if not row_dict.get("dl_no") or (row_dict.get("dl_no") == "TN-45-2016-0049210" and clean_phone_10 != "8610597895"):
+            if not row_dict.get("dl_no"):
                 row_dict["dl_no"] = creds["dl_no"]
-            if not row_dict.get("aadhaar_no") or (row_dict.get("aadhaar_no") == "XXXX-XXXX-8942" and clean_phone_10 != "8610597895"):
+            if not row_dict.get("aadhaar_no"):
                 row_dict["aadhaar_no"] = creds["masked_aadhaar"]
-            if not row_dict.get("address") or ("No. 12/A, Gandhi Street" in str(row_dict.get("address")) and clean_phone_10 != "8610597895"):
+            if not row_dict.get("address"):
                 row_dict["address"] = creds["address"]
-            if not row_dict.get("email") or ("muthukumar.p@" in str(row_dict.get("email")) and clean_phone_10 != "8610597895"):
+            if not row_dict.get("email"):
                 row_dict["email"] = creds["email"]
-            if not row_dict.get("father_name") or (row_dict.get("father_name") == "Periyasamy" and clean_phone_10 != "8610597895"):
+            if not row_dict.get("father_name"):
                 row_dict["father_name"] = creds["father_name"]
 
             # Fetch associated authenticated documents for this record

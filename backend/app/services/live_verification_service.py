@@ -784,7 +784,7 @@ def verify_aadhaar_live(
     db: Session,
     token: str,
     aadhaar_no: str,
-    otp: Optional[str] = "123456"
+    otp: Optional[str] = None
 ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
     """
     Calls Neev API: /aadhaar-detail-verification-v2 or /aadhaar-verify
@@ -793,9 +793,12 @@ def verify_aadhaar_live(
     if not candidate:
         return False, "Candidate not found with provided verification token", None
         
-    resolved_otp = str(otp or "123456").strip()
+    resolved_otp = str(otp or "").strip()
+    if not resolved_otp:
+        return False, "OTP code is required for Aadhaar verification.", None
+
     is_valid, msg = verify_otp_code("aadhaar", aadhaar_no, resolved_otp, candidate.token or token)
-    if not is_valid and resolved_otp not in ["123456", "849201", "000000", "999999"]:
+    if not is_valid:
         return False, msg, None
 
     provider_info = get_active_provider_info(db)
@@ -841,30 +844,8 @@ def verify_aadhaar_live(
         }
         raw_upstream = live_res
     else:
-        f_name = _resolve_candidate_father_name(candidate)
-        c_dob = _resolve_candidate_dob(candidate)
-        addr_obj = _resolve_candidate_address(candidate)
-        extracted_data = {
-            "aadhaar_number": clean_aadhaar,
-            "masked_aadhaar": masked,
-            "full_name": candidate.name or "",
-            "gender": candidate.gender or "",
-            "dob": c_dob,
-            "care_of": f_name,
-            "father_name": f_name,
-            "address": addr_obj,
-            "mobile_hash": hashlib.sha256((candidate.mobile or "").encode()).hexdigest()[:16] if candidate.mobile else "",
-            "photo_present": False,
-            "uidai_auth_code": "",
-            "cct_trust_score": "Pending Gateway Activation"
-        }
-        raw_upstream = {
-            "success": False,
-            "message": err_msg or "Failed to query live UIDAI registry",
-            "data": extracted_data,
-            "requestId": f"REQ-NEEV-UIDAI-{uuid.uuid4().hex[:10].upper()}",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        logger.warning(f"Live UIDAI Aadhaar verification failed: {err_msg}")
+        return False, f"UIDAI Aadhaar Verification Failed: {err_msg or 'Invalid OTP or gateway rejected verification'}", None
 
     rec = save_and_enrich_candidate_verification(
         db=db,
@@ -872,25 +853,25 @@ def verify_aadhaar_live(
         verification_type="aadhaar",
         fetched_data=extracted_data,
         raw_payload=raw_upstream,
-        provider=provider_info["name"] if live_ok else f"{provider_info['name']} (Gateway Error / Sandbox)",
-        api_calls_count=2 if live_ok else 0,
-        cost_incurred=8.0 if live_ok else 0.0,
+        provider=provider_info["name"],
+        api_calls_count=2,
+        cost_incurred=8.0,
         latency_ms=latency if 'latency' in locals() else 48,
         endpoint_path="/aadhaar-detail-verification-v2",
         api_id="neev_aadhaar_v2"
     )
 
-    msg = "Aadhaar e-KYC demographic verified via Live UIDAI Gateway!" if live_ok else f"Aadhaar verification: {err_msg or 'Configure API Key in SuperAdmin'}"
+    msg = "Aadhaar e-KYC demographic verified via Live UIDAI Gateway!"
 
     return True, msg, {
         "record_id": rec.id,
         "sha256_seal": rec.sha256_seal,
         "fetched_data": extracted_data,
-        "api_calls": 2 if live_ok else 0,
-        "cost_incurred": 8.0 if live_ok else 0.0,
-        "is_live": live_ok,
-        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)" if live_ok else f"Sandbox Mode ({err_msg or 'Unset/Invalid API Key'})",
-        "upstream_error": err_msg if not live_ok else None
+        "api_calls": 2,
+        "cost_incurred": 8.0,
+        "is_live": True,
+        "gateway_route": "Server 2 (CoinCircleTrust Live Gateway ✓)",
+        "upstream_error": None
     }
 
 

@@ -573,7 +573,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
         token: candidate?.token || candidate?.id,
         candidate_id: candidate?.id,
         user_type: 'individual',
-        purpose: 'Employee joining onboarding sovereign verification',
+        purpose: 'Employee joining onboarding identity verification',
         service_name: 'JoyVerify'
       });
 
@@ -632,38 +632,13 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
           updateCandidateVerification(candidate.token, 'aadhaar', true);
           updateCandidateVerification(candidate.token, 'digilocker', true);
         }
-        showToast('🛡️ DigiLocker e-KYC Authenticated! Sovereign Aadhaar data auto-populated.');
+        showToast('🛡️ DigiLocker e-KYC Authenticated! Official Aadhaar data auto-populated.');
       } else {
         showToast(res?.message || 'DigiLocker verification failed. You may also use SMS OTP.', 'error');
       }
     } catch (err) {
       console.warn('DigiLocker verification notice:', err);
-      const cleanAadh = (formData.aadhaarNo || candidate?.aadhaar_no || '548912349876').replace(/\s+/g, '');
-      const maskedAadh = cleanAadh.length === 12 ? `XXXX-XXXX-${cleanAadh.slice(-4)}` : 'XXXX-XXXX-9876';
-
-      setFormData(prev => ({
-        ...prev,
-        aadhaarNo: maskedAadh,
-        uploadedDocuments: {
-          ...prev.uploadedDocuments,
-          docAadhaar: {
-            name: 'DigiLocker_eAadhaar_Government_Certificate.pdf',
-            type: 'application/pdf',
-            size: '420 KB',
-            file_size_kb: 420.5,
-            verified: true,
-            source: 'DigiLocker NeGD Gateway'
-          }
-        }
-      }));
-
-      setAadhaarVerified(true);
-      setIsDigilockerAadhaarVerified(true);
-      if (candidate?.token) {
-        updateCandidateVerification(candidate.token, 'aadhaar', true);
-        updateCandidateVerification(candidate.token, 'digilocker', true);
-      }
-      showToast('🛡️ DigiLocker Aadhaar e-KYC Verified!');
+      showToast(err?.message || 'DigiLocker verification failed. Please try again or use direct OTP.', 'error');
     } finally {
       clearTimeout(stageTimer1);
       clearTimeout(stageTimer2);
@@ -692,26 +667,36 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
       setAadhaarFetchStep(2);
     }, 1200);
 
-    setTimeout(() => {
-      setAadhaarFetchProgress(100);
-      setAadhaarFetchStep(3);
-
-      // Auto-populate verified official UIDAI data into form fields
-      setFormData(prev => ({
-        ...prev,
-        fullName: candidate?.name || 'Rajesh Suresh Kumar',
-        fatherName: 'Suresh Kumar',
-        dob: '1996-05-15',
-        gender: 'Male',
-        presentAddress: '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103',
-        permanentAddress: '124, Green Glen Layout, Bellandur, Bengaluru, KA - 560103'
-      }));
-
-      setAadhaarVerified(true);
-      setIsFetchingAadhaarData(false);
-      if (candidate) updateCandidateVerification(candidate.token, 'aadhaar', true);
-      showToast('🎉 UIDAI e-KYC Data Fetched! Profile fields auto-populated and verified.');
-    }, 1800);
+    (async () => {
+      try {
+        const cleanAadh = (formData.aadhaarNo || candidate?.aadhaar_no || '').replace(/\D/g, '');
+        const res = await api.verifyAadhaarLive(candidate?.token || candidate?.id || 'tok_admin', cleanAadh, aadhaarInputOtp);
+        if (res && res.success) {
+          setAadhaarFetchProgress(100);
+          setAadhaarFetchStep(3);
+          const fetched = res.data?.fetched_data || res.fetched_data || res.data || {};
+          setFormData(prev => ({
+            ...prev,
+            fullName: fetched.full_name || fetched.name || prev.fullName,
+            fatherName: fetched.care_of || fetched.father_name || prev.fatherName,
+            dob: fetched.dob ? toIsoDateString(fetched.dob) : prev.dob,
+            gender: fetched.gender || prev.gender,
+            presentAddress: fetched.address || prev.presentAddress,
+            permanentAddress: fetched.address || prev.permanentAddress,
+            pincode: fetched.pincode || prev.pincode
+          }));
+          setAadhaarVerified(true);
+          if (candidate) updateCandidateVerification(candidate.token, 'aadhaar', true);
+          showToast('🎉 UIDAI e-KYC Data Fetched & Verified Successfully!');
+        } else {
+          showToast(res?.message || 'Invalid OTP entered. Please check and try again.', 'error');
+        }
+      } catch (err) {
+        showToast(`Aadhaar verification error: ${err.message || 'Invalid OTP code'}`, 'error');
+      } finally {
+        setIsFetchingAadhaarData(false);
+      }
+    })();
   };
 
   const handleMobileOtpSubmit = (e) => {
@@ -964,7 +949,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   setShowAadhaarOtpModal(true);
                 }}
                 className="btn btn-superadmin text-[11px] py-1 px-3 flex items-center gap-1.5 cursor-pointer btn-interactive shadow-xs"
-                title="Verify Aadhaar via Sovereign DigiLocker NeGD Gateway or SMS OTP"
+                title="Verify Aadhaar via DigiLocker NeGD Gateway or SMS OTP"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
                 <span>Verify Aadhaar / DigiLocker *</span>
@@ -1492,7 +1477,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   required 
                   value={formData.permanentAddress} 
                   onChange={e => setFormData({ ...formData, permanentAddress: e.target.value })}
-                  placeholder="Permanent village / hometown address as per sovereign records"
+                  placeholder="Permanent village / hometown address as per official records"
                   className={getCandidateFieldInputClass('permanentAddress', 'form-textarea text-xs')} 
                 />
               </div>
@@ -3122,12 +3107,12 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </div>
               </div>
 
-              {/* Sub-Group A: Sovereign KYC & Personal Proofs */}
+              {/* Sub-Group A: Official KYC & Personal Proofs */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>A. Sovereign Identity, Tax & Financial Proofs</span>
+                    <span>A. Official Identity, Tax & Financial Proofs</span>
                   </h4>
                   <span className="text-[10px] text-slate-400 font-bold">Mandatory for all employees</span>
                 </div>
@@ -3415,7 +3400,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />
                       <div>
                         <strong className="text-xs block">All Universal KYC & Employment Exhibits Ready</strong>
-                        <p className="text-[10px] text-indigo-700">Digital signatures, NDA, and sovereign ID proofs will be compiled into the Profile PDF Annexure.</p>
+                        <p className="text-[10px] text-indigo-700">Digital signatures, NDA, and verified ID proofs will be compiled into the Profile PDF Annexure.</p>
                       </div>
                     </div>
                   )}
@@ -3824,7 +3809,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                   </div>
                   <div>
                     <h3 className="text-base font-extrabold text-slate-900">
-                      Sovereign Aadhaar & DigiLocker e-KYC
+                      Official Aadhaar & DigiLocker e-KYC
                     </h3>
                     <p className="text-[11px] text-slate-500 font-medium">Digital India & MeitY National Gateway Verification</p>
                   </div>
@@ -3865,7 +3850,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                 </button>
               </div>
 
-              {/* Tab 1: DigiLocker Sovereign e-KYC */}
+              {/* Tab 1: DigiLocker Official e-KYC */}
               {aadhaarModalTab === 'digilocker' && (
                 <div className="space-y-4 animate-fadeIn">
                   <div className="p-3 bg-gradient-to-r from-indigo-50/80 to-blue-50/80 rounded-xl border border-indigo-200 text-xs text-indigo-950 space-y-1.5">
@@ -3878,7 +3863,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-600 leading-relaxed">
-                      Instant sovereign extraction of verified demographic record (Full Name, Father's Name, DOB, Gender, Address) & auto-attaches a verifiable SHA-256 e-Aadhaar certificate.
+                      Instant secure extraction of verified demographic record (Full Name, Father's Name, DOB, Gender, Address) & auto-attaches a verifiable SHA-256 e-Aadhaar certificate.
                     </p>
                   </div>
 
@@ -3912,7 +3897,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       <p className="text-[10px] text-indigo-200 font-mono">
                         {digilockerAadhaarStage === 1 && 'Initiating consent token handshake...'}
                         {digilockerAadhaarStage === 2 && 'Fetching 256-bit encrypted e-Aadhaar XML...'}
-                        {digilockerAadhaarStage >= 3 && 'Validating sovereign SHA-256 digital signature...'}
+                        {digilockerAadhaarStage >= 3 && 'Validating official SHA-256 digital signature...'}
                       </p>
                     </div>
                   )}
@@ -4006,10 +3991,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                     A 6-digit OTP code was sent to registered Aadhaar mobile for <strong className="text-slate-900 font-mono">{formData.aadhaarNo || 'Registered Aadhaar'}</strong>.
                   </p>
 
-                  <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-200 text-center text-xs text-indigo-900 font-medium">
-                    <span>💡 Sovereign Test OTP Code: </span>
-                    <strong className="text-indigo-900 font-mono text-sm tracking-wider font-bold">482910</strong>
-                  </div>
+
 
                   <form onSubmit={handleAadhaarOtpSubmit} className="space-y-4">
                     <div>
@@ -4018,7 +4000,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                         type="text" 
                         maxLength="6"
                         required
-                        placeholder="e.g. 482910"
+                        placeholder="Enter 6-digit OTP"
                         value={aadhaarInputOtp}
                         onChange={(e) => setAadhaarInputOtp(e.target.value)}
                         className="form-input text-center text-lg font-mono tracking-widest font-bold"

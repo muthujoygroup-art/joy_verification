@@ -373,7 +373,7 @@ def handle_company_tariff_quota(company: Company) -> str:
 def handle_company_support() -> str:
     return (
         f"🤝 *Dedicated Enterprise Support Desk*\n"
-        f"JOY TrueProfile Sovereign Verification\n\n"
+        f"JOY TrueProfile Identity Verification Platform\n\n"
         f"• Official Email: *support@joycorporatesolutions.com*\n"
         f"• Executive WhatsApp & Phone: *+91 74483 69485*\n"
         f"• Corporate Portal: *https://trueprofile.joycorporatesolutions.com/company*\n"
@@ -457,7 +457,7 @@ def format_candidate_main_menu(cand: Any, company: Optional[Company]) -> str:
     status_str = f"{cand_status} 🟢" if cand_status == "Verified" else f"{cand_status} 🟡"
     
     return (
-        f"🛡️ *JOY TrueProfile Sovereign Verification*\n"
+        f"🛡️ *JOY TrueProfile Identity Verification*\n"
         f"Hello *{cand_name}*!\n"
         f"Employer: *{comp_name}*\n"
         f"Employee ID: *{emp_no}* | Role: *{role}*\n"
@@ -577,7 +577,7 @@ def format_guest_main_menu(phone: Optional[str] = None) -> str:
     clean_p = f"+{phone}" if phone and not str(phone).startswith("+") else (phone or "your mobile number")
     return (
         f"⚠️ *You are not a registered user of this platform.*\n\n"
-        f"🛡️ *JOY TrueProfile Sovereign Verification*\n"
+        f"🛡️ *JOY TrueProfile Identity Verification*\n"
         f"Your mobile number ({clean_p}) is not currently associated with any active Enterprise Employer, HR Recruiter, or Candidate profile in our database.\n\n"
         f"📌 *How can we help you get started?*\n"
         f"1️⃣ *Register as an Enterprise Company* (Corporate Onboarding)\n"
@@ -590,7 +590,7 @@ def format_guest_main_menu(phone: Optional[str] = None) -> str:
 def handle_guest_about() -> str:
     return (
         f"🛡️ *About JOY TrueProfile*\n"
-        f"JOY TrueProfile is an enterprise-grade sovereign verification platform by *Joy Corporate Solutions*.\n\n"
+        f"JOY TrueProfile is an enterprise-grade identity verification platform by *Joy Corporate Solutions*.\n\n"
         f"• Instant Aadhaar, PAN, UAN & Bank penny-drop authentication\n"
         f"• 100% DPDP Act 2023 compliant audit trails\n"
         f"• Biometric face match & 3-angle anti-spoof liveness check\n"

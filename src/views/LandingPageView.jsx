@@ -339,7 +339,7 @@ export const LandingPageView = () => {
       { label: 'Court Record Scope', value: 'Pan-India Databases', detail: 'Covers civil, criminal, and commercial tribunals' }
     ],
     infrastructure: [
-      { label: 'Cloud Architecture', value: 'Sovereign Indian Cloud', detail: 'High-speed distributed servers across India' },
+      { label: 'Cloud Architecture', value: 'National Cloud Infrastructure', detail: 'High-speed distributed servers across India' },
       { label: 'Official Connectors', value: 'Direct Rails Connectors', detail: 'Direct validation with official government and banking rails' },
       { label: 'Candidate Experience', value: 'Zero-App Web Link', detail: 'Runs instantly on WhatsApp, SMS, or any mobile browser' },
       { label: 'Commercial Model', value: '100% Postpaid & Metered', detail: 'Pay-per-check with official automated Razorpay GST tax invoices' },
@@ -939,7 +939,7 @@ export const LandingPageView = () => {
                   </div>
 
                   <p className="text-sm text-[#5C6878] leading-relaxed">
-                    Cryptographically signed credential vault with tamper-evident SHA-256 signatures, candidate consent logging, automated PII masking, and sovereign in-country data residency.
+                    Cryptographically signed credential vault with tamper-evident SHA-256 signatures, candidate consent logging, automated PII masking, and national in-country data residency.
                   </p>
 
                   <ul className="space-y-2 text-xs text-[#5C6878] pt-2">
@@ -1394,7 +1394,7 @@ export const LandingPageView = () => {
                     </p>
                   </div>
                   <ul className="space-y-2 text-xs text-[#182230] pt-2">
-                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#8975E8] shrink-0" /> Sovereign in-country encrypted storage</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#8975E8] shrink-0" /> National in-country encrypted storage</li>
                     <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#8975E8] shrink-0" /> Automatic Aadhaar/PAN PII redaction</li>
                     <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#8975E8] shrink-0" /> Tamper-evident SHA-256 PDF signatures</li>
                   </ul>

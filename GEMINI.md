@@ -1,7 +1,7 @@
 # Antigravity IDE Workspace Instructions: JOY TrueProfile
 
 ## Project Overview
-JOY TrueProfile is an enterprise-grade sovereign Indian identity verification, candidate onboarding, and statutory compliance platform built for the **Muthu Joy Group**.
+JOY TrueProfile is an enterprise-grade official Indian identity verification, candidate onboarding, and statutory compliance platform built for the **Muthu Joy Group**.
 
 ## Master Context & Complete Conversation History
 > **CRITICAL**: The complete architectural blueprints, conversation history, API specifications (Neev 81 APIs), database schemas, role matrices, DigiLocker flows, and runbooks are documented in:

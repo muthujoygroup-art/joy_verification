@@ -50,7 +50,7 @@ const STORY_CHAPTERS = [
   {
     chapter: '02',
     id: 'biometrics',
-    tag: 'CHAPTER II • BIOMETRIC & IDENTITY SOVEREIGNTY',
+    tag: 'CHAPTER II • BIOMETRIC & IDENTITY VERIFICATION',
     headline: 'Direct UIDAI Aadhaar e-KYC with 3D Face Anti-Spoofing',
     subheadline: 'Eliminate ghost workers and synthetic identities through direct UIDAI OTP authentication and browser-based 3D depth camera liveness matching.',
     colorGradient: 'from-emerald-400 via-teal-400 to-cyan-500',

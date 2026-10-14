@@ -9,7 +9,6 @@ class SendOtpRequest(BaseModel):
 class SendOtpResponse(BaseModel):
     success: bool
     message: str
-    demo_otp: Optional[str] = None # For demo/testing ease (e.g. '849201')
     masked_target: str
 
 class VerifyOtpRequest(BaseModel):

@@ -237,7 +237,7 @@ export const CompanyAdminView = () => {
     channel: 'WHATSAPP',
     category: 'ONBOARDING',
     name: '',
-    body: 'Hello {{candidate_name}}, welcome to {{company_name}}! Please complete your sovereign identity verification using this secure onboarding link: {{verification_link}}. Valid for 15 minutes.'
+    body: 'Hello {{candidate_name}}, welcome to {{company_name}}! Please complete your official identity verification using this secure onboarding link: {{verification_link}}. Valid for 15 minutes.'
   });
   const [isSubmittingTemplate, setIsSubmittingTemplate] = useState(false);
 
@@ -8120,7 +8120,7 @@ export const CompanyAdminView = () => {
             <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-2xl text-xs text-emerald-950 flex items-start gap-2">
               <Sparkles className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span className="text-[11px] leading-relaxed">
-                <strong>Central Telecom Channel:</strong> All WhatsApp notifications route through the Joy Sovereign corporate line (+91 94426 77726). Upon SuperAdmin review, this template becomes available to all your HR staff.
+                <strong>Central Telecom Channel:</strong> All WhatsApp notifications route through the Joy corporate official line (+91 94426 77726). Upon SuperAdmin review, this template becomes available to all your HR staff.
               </span>
             </div>
 
@@ -8258,7 +8258,7 @@ export const CompanyAdminView = () => {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
-                    <span>Direct Sovereign Bank Transfer & UPI Settlement 🏦</span>
+                    <span>Direct Bank Transfer & UPI Settlement 🏦</span>
                   </h3>
                   <p className="text-xs text-slate-500 font-medium">
                     Zero payment gateway surcharge. Submit 12-digit UTR transaction reference for SuperAdmin reconciliation.
@@ -8273,7 +8273,7 @@ export const CompanyAdminView = () => {
               </button>
             </div>
 
-            {/* Sovereign Bank Account & UPI Grid */}
+            {/* Official Bank Account & UPI Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-gradient-to-br from-emerald-50/60 to-slate-50 border border-emerald-200 text-xs">
               <div className="space-y-2">
                 <span className="text-[10px] font-black uppercase text-emerald-900 tracking-wider block">Official Bank Details</span>

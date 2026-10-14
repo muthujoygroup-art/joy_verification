@@ -465,7 +465,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
     }
   };
 
-  // ⚡ Step 1: Send Sovereign UIDAI OTP to Candidate Mobile
+  // ⚡ Step 1: Send UIDAI OTP to Candidate Mobile
   const handleSendDirectOtp = async (e) => {
     if (e) e.preventDefault();
     let cleanId = (identifierValue || '').replace(/\D/g, '');
@@ -497,17 +497,12 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
 
       if (res && res.success) {
         setIsOtpSent(true);
-        setOtpHint(res.demo_otp || '482910');
-        showToast(res.message || '✅ Sovereign UIDAI OTP sent to mobile linked with Aadhaar!', 'success');
+        showToast(res.message || '✅ UIDAI OTP sent to mobile linked with Aadhaar!', 'success');
       } else {
-        setIsOtpSent(true);
-        setOtpHint('482910');
-        showToast('✅ Sovereign OTP sent to linked mobile (Demo OTP: 482910)!', 'success');
+        showToast(res?.message || '❌ Failed to dispatch OTP. Please check the entered number.', 'error');
       }
     } catch (err) {
-      setIsOtpSent(true);
-      setOtpHint('482910');
-      showToast('✅ Sovereign OTP sent to linked mobile (Demo OTP: 482910)!', 'success');
+      showToast(`❌ OTP dispatch failed: ${err.message || 'Gateway connection error'}`, 'error');
     } finally {
       setIsSendingOtp(false);
     }
@@ -580,74 +575,12 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
           resultCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 150);
       } else {
-        // Resilient fallback record with accurate entered Aadhaar last 4
-        const aadhLast4 = cleanId.length === 12 ? cleanId.slice(-4) : '4044';
-        const fallbackRecord = {
-          success: true,
-          candidate_name: selCand?.name || 'Verified Citizen (Muthu Kumar P)',
-          masked_aadhaar: `XXXX-XXXX-${aadhLast4}`,
-          aadhaar_no: `XXXX-XXXX-${aadhLast4}`,
-          mobile: cleanId.length === 10 ? cleanId : (selCand?.mobile || '8610597895'),
-          gender: 'Male',
-          dob: '1996-05-15',
-          father_name: 'Periyasamy',
-          address: 'Plot No. 42, 3rd Cross Street, Gandhi Nagar, Near New Bus Stand, Tiruchirappalli, Tamil Nadu - 620001',
-          pincode: '620001',
-          digilocker_id: `DL${cleanId.slice(-8)}`,
-          account_status: 'ACTIVE & LINKED 🟢',
-          sha256_seal: 'SHA256:8F9E2C1A7B4D6F3E0A2C5D8B',
-          documents: [
-            {
-              id: `doc-aadhaar-${aadhLast4}`,
-              doc_type: 'aadhaar',
-              name: 'Aadhaar e-KYC XML (UIDAI)',
-              doc_no: `XXXX-XXXX-${aadhLast4}`,
-              issuer: 'Unique Identification Authority of India (UIDAI)',
-              status: 'VERIFIED ✅',
-              uri: `in.gov.uidai.aadhaar-${cleanId}`
-            },
-            {
-              id: `doc-pan-${aadhLast4}`,
-              doc_type: 'pan',
-              name: 'PAN Card / Tax Identification',
-              doc_no: `CKPM${aadhLast4}F`,
-              issuer: 'Income Tax Department (NSDL/Protean)',
-              status: 'VERIFIED ✅',
-              uri: `in.gov.incometax.pan-${aadhLast4}`
-            },
-            {
-              id: `doc-dl-${aadhLast4}`,
-              doc_type: 'driving_license',
-              name: 'Driving License (MoRTH)',
-              doc_no: `TN-45-2016-00${aadhLast4}`,
-              issuer: 'Ministry of Road Transport and Highways',
-              status: 'VERIFIED ✅',
-              uri: `in.gov.morth.dl-${aadhLast4}`
-            },
-            {
-              id: `doc-uan-${aadhLast4}`,
-              doc_type: 'epfo_uan',
-              name: 'EPFO Universal Account Number (UAN)',
-              doc_no: `108610${aadhLast4}`,
-              issuer: 'Employees Provident Fund Organisation',
-              status: 'VERIFIED ✅',
-              uri: `in.gov.epfindia.uan-${aadhLast4}`
-            }
-          ]
-        };
-        setLatestFetchResult(fallbackRecord);
-        showToast(`🎉 Aadhaar Verified & Demographics Fetched! Original government records displayed below.`, 'success');
-        setTimeout(() => {
-          resultCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 150);
+        showToast(fetchRes?.message || '❌ Aadhaar e-KYC Verification could not be completed with the entered details.', 'error');
       }
     } catch (err) {
       clearTimeout(timer1);
       clearTimeout(timer2);
-      showToast('🎉 Aadhaar Verified! Demographic records synced.', 'success');
-      setTimeout(() => {
-        resultCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 150);
+      showToast(`❌ Verification failed: ${err.message || 'Unable to connect to UIDAI Gateway.'}`, 'error');
     } finally {
       setIsVerifyingOtp(false);
       setIsFetching(false);
@@ -887,7 +820,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                   }`}
                 >
                   <Zap className="w-4 h-4 text-amber-300" />
-                  <span>Direct Sovereign OTP (Zero PIN) ⚡</span>
+                  <span>Direct UIDAI OTP (Zero PIN) ⚡</span>
                 </button>
 
                 <button
@@ -917,7 +850,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                         <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">NO 6-DIGIT PIN NEEDED</span>
                       </div>
                       <p className="text-slate-600 text-[11px] leading-relaxed">
-                        Candidate receives official Sovereign UIDAI OTP directly on their registered mobile. Instantly ingests demographics (Name, DoB, Gender, Address, Photo, XML) into candidate dossiers without forgotten PIN drop-offs.
+                        Candidate receives official UIDAI OTP directly on their registered mobile. Instantly ingests demographics (Name, DoB, Gender, Address, Photo, XML) into candidate dossiers without forgotten PIN drop-offs.
                       </p>
                     </div>
                   </div>
@@ -971,7 +904,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-bold text-slate-800">
-                        {authType === 'aadhaar' ? '12-Digit Sovereign Aadhaar Number' : 'Registered Mobile Number'}
+                        {authType === 'aadhaar' ? '12-Digit Aadhaar Number' : 'Registered Mobile Number'}
                         <span className="text-rose-500 font-bold ml-1">*</span>
                       </label>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
@@ -1070,12 +1003,12 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                       {isSendingOtp ? (
                         <>
                           <RefreshCw className="w-5 h-5 animate-spin text-white" />
-                          <span>Dispatching Sovereign UIDAI OTP...</span>
+                          <span>Dispatching UIDAI OTP...</span>
                         </>
                       ) : (
                         <>
                           <Zap className="w-5 h-5 text-amber-300" />
-                          <span>⚡ Send Sovereign UIDAI OTP to Mobile (SMS)</span>
+                          <span>⚡ Send UIDAI OTP to Mobile (SMS)</span>
                         </>
                       )}
                     </button>
@@ -1085,7 +1018,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                           <span className="text-xs font-black text-emerald-950">
-                            Sovereign OTP Dispatched to Registered Mobile!
+                            UIDAI OTP Dispatched to Registered Mobile!
                           </span>
                         </div>
                         <span className="px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-mono font-black text-[10px]">
@@ -1093,26 +1026,19 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                         </span>
                       </div>
 
-                      {/* Demo OTP Helper Tag */}
+                      {/* OTP Status Info Tag */}
                       <div className="p-2.5 rounded-xl bg-white border border-emerald-200 flex items-center justify-between">
-                        <div className="text-[11px] text-slate-600 font-medium">
-                          <span className="font-bold text-slate-800">Direct Test Hint: </span>
-                          Use Demo OTP <code className="bg-emerald-100 text-emerald-900 px-1.5 py-0.5 rounded font-mono font-black">{otpHint || '482910'}</code> or live SMS code.
+                        <div className="text-[11px] text-slate-600 font-medium flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Enter the 6-digit verification code sent by UIDAI to candidate mobile.</span>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => setAadhaarInputOtp(otpHint || '482910')}
-                          className="text-[10px] font-black text-sky-700 hover:underline cursor-pointer"
-                        >
-                          Auto-Fill OTP ⚡
-                        </button>
                       </div>
 
                       {/* OTP Input with strict 6-digit limit */}
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <label className="block text-xs font-bold text-slate-800">
-                            Enter 6-Digit Sovereign Verification OTP
+                            Enter 6-Digit UIDAI Verification OTP
                           </label>
                           <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
                             {aadhaarInputOtp.length}/6 Digits
@@ -1122,7 +1048,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                           type="text"
                           value={aadhaarInputOtp}
                           onChange={(e) => setAadhaarInputOtp(sanitizeOtp(e.target.value))}
-                          placeholder="482910"
+                          placeholder="Enter 6-digit OTP"
                           maxLength={6}
                           className="w-full text-center text-xl font-mono font-black tracking-widest py-3 px-3.5 rounded-xl border-2 border-emerald-400 bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         />
@@ -1132,7 +1058,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                       <button
                         type="button"
                         onClick={handleVerifyDirectOtpAndFetch}
-                        disabled={isVerifyingOtp || !aadhaarInputOtp || aadhaarInputOtp.length < 4}
+                        disabled={isVerifyingOtp || !aadhaarInputOtp || aadhaarInputOtp.length !== 6}
                         className="w-full py-4 px-6 rounded-2xl font-black text-sm shadow-lg flex items-center justify-center gap-2.5 cursor-pointer transition-all disabled:opacity-50 active:scale-98 text-white bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25"
                       >
                         {isVerifyingOtp ? (
@@ -1183,7 +1109,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                     <div className="space-y-0.5">
                       <span className="font-bold block text-amber-900">UIDAI Government Server Alert [#503 Error Notice]:</span>
                       <p className="text-[11px] text-amber-800 leading-relaxed">
-                        Accounts on <code className="bg-amber-100 text-amber-900 px-1 font-mono font-bold rounded">accounts.digitallocker.gov.in</code> may occasionally throw <code className="bg-rose-100 text-rose-800 px-1 font-mono font-bold rounded">Unknown error from UIDAI [#503]</code> due to UIDAI central portal downtime. For guaranteed 100% success without external redirects, please use the <strong>Direct Sovereign OTP (Zero PIN)</strong> mode above.
+                        Accounts on <code className="bg-amber-100 text-amber-900 px-1 font-mono font-bold rounded">accounts.digitallocker.gov.in</code> may occasionally throw <code className="bg-rose-100 text-rose-800 px-1 font-mono font-bold rounded">Unknown error from UIDAI [#503]</code> due to UIDAI central portal downtime. For guaranteed 100% success without external redirects, please use the <strong>Direct UIDAI OTP (Zero PIN)</strong> mode above.
                       </p>
                     </div>
                   </div>
@@ -1248,7 +1174,7 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-bold text-slate-800">
-                        {authType === 'mobile' ? '10-Digit Registered Mobile Number' : authType === 'aadhaar' ? '12-Digit Sovereign Aadhaar Number' : '10-Character Tax PAN Number'}
+                        {authType === 'mobile' ? '10-Digit Registered Mobile Number' : authType === 'aadhaar' ? '12-Digit Aadhaar Number' : '10-Character Tax PAN Number'}
                         <span className="text-rose-500 font-bold ml-1">*</span>
                       </label>
                       <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">

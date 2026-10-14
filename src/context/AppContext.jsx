@@ -599,7 +599,7 @@ export const DEFAULT_LANDING_PAGE_CONTENT = {
         category: 'security',
         badge: 'DPDP ACT & PRIVACY',
         enabled: true,
-        description: 'Security awareness and compliance walkthrough: Explicit multi-lingual candidate consent under DPDP Act 2023, automated PII masking, 256-bit AES encryption at rest, and sovereign Indian data residency.',
+        description: 'Security awareness and compliance walkthrough: Explicit multi-lingual candidate consent under DPDP Act 2023, automated PII masking, 256-bit AES encryption at rest, and national Indian data residency.',
         videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         videoTitle: 'Video Tutorial: Data Handling, PII Masking & DPDP Compliance'
       },

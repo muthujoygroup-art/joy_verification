@@ -286,7 +286,7 @@ def request_otp(payload: SendOtpRequest, db: Session = Depends(get_db)):
             else:
                 target_id = candidate.mobile or "9876543210"
 
-        success, msg, demo_otp, masked = generate_and_send_otp(
+        success, msg, _, masked = generate_and_send_otp(
             channel=payload.channel,
             identifier=target_id,
             token=candidate.token if candidate else clean_token
@@ -294,18 +294,15 @@ def request_otp(payload: SendOtpRequest, db: Session = Depends(get_db)):
         return SendOtpResponse(
             success=success,
             message=msg,
-            demo_otp=demo_otp,
             masked_target=masked
         )
     except Exception as e:
         logger.error(f"Error in request_otp endpoint: {e}", exc_info=True)
-        fallback_otp = "492018"
         clean_id = (payload.identifier or "").replace(" ", "").replace("-", "")
-        masked = f"XXXX-XXXX-{clean_id[-4:]}" if len(clean_id) >= 4 else "XXXX-XXXX-5439"
+        masked = f"XXXX-XXXX-{clean_id[-4:]}" if len(clean_id) >= 4 else "XXXX-XXXX-****"
         return SendOtpResponse(
-            success=True,
-            message="UIDAI OTP dispatched to linked mobile number!",
-            demo_otp=fallback_otp,
+            success=False,
+            message=f"OTP dispatch failed: {str(e)}",
             masked_target=masked
         )
 
@@ -418,7 +415,7 @@ def verify_otp(payload: VerifyOtpRequest, db: Session = Depends(get_db)):
         return VerifyOtpResponse(success=verified, message=msg, verified=verified)
     except Exception as e:
         logger.error(f"Error in verify_otp: {e}", exc_info=True)
-        return VerifyOtpResponse(success=True, message="OTP verified successfully via Government Gateway.", verified=True)
+        return VerifyOtpResponse(success=False, message=f"OTP verification failed: {str(e)}", verified=False)
 
 
 # -----------------------------------------------------------------------------
