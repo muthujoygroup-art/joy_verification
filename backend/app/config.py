@@ -39,8 +39,20 @@ class Settings(BaseSettings):
         port = self.POSTGRES_PORT.strip()
         return f"postgresql://{user}:{encoded_password}@{host}:{port}/{db}"
     
-    # Fallback to local SQLite if PostgreSQL service is unavailable
-    FALLBACK_DATABASE_URL: str = "sqlite:///./joy_verification.db"
+    # -------------------------------------------------------------
+    # 🗄️ PERSISTENT CANONICAL DATABASE CONFIGURATION
+    # -------------------------------------------------------------
+    @property
+    def PROJECT_ROOT(self) -> str:
+        # Resolves repository root directory independently of process working directory
+        return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    @property
+    def FALLBACK_DATABASE_URL(self) -> str:
+        # Fallback to absolute, canonical SQLite path anchored strictly to the repository root
+        db_file = os.path.abspath(os.path.join(self.PROJECT_ROOT, "joy_verification.db"))
+        clean_path = db_file.replace("\\", "/")
+        return f"sqlite:///{clean_path}"
     
     # -------------------------------------------------------------
     # 🌐 DOMAIN, APP & WEBHOOK CALLBACK URLS

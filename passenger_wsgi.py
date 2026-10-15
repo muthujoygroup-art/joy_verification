@@ -3,10 +3,14 @@ import os
 import traceback
 import asyncio
 
-# 1. Add current project directory to Python system path
+# 1. Add current project directory to Python system path and anchor working directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
+try:
+    os.chdir(current_dir)
+except Exception:
+    pass
 
 # 2. Try loading .env if python-dotenv is present
 try:

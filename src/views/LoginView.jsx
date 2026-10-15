@@ -497,20 +497,27 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         navigate('/superadmin');
       } 
       else if (selectedRoleTab === 'company') {
-        const email = emailInput.trim().toLowerCase();
+        let email = emailInput.trim().toLowerCase();
+        if (email.includes('@') && email.endsWith('.c') && !email.endsWith('.com')) {
+          email = email + 'om';
+        }
         const password = passwordInput.trim();
 
         if (!email || !password) {
-          setLoginError('Please enter Company Administrator Email and Password.');
+          setLoginError('Please enter Company Administrator Email (or Company Code) and Password.');
           setIsLoading(false);
           return;
         }
 
-        const comp = (companies || []).find(c => c.email?.toLowerCase() === email) || (companies || [])[0];
-        const compSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const comp = (companies || []).find(c => 
+          c.email?.toLowerCase() === email || 
+          c.code?.toLowerCase() === email ||
+          c.id?.toLowerCase() === email
+        ) || (companies || [])[0];
 
-        const res = await loginUser('company', { email, password, enable_2fa: enable2FaStep, companyId: comp?.id });
+        const res = await loginUser('company', { email, password, enable_2fa: enable2FaStep, companyId: comp?.id, code: emailInput.trim().toUpperCase() });
         if (res?.requires_2fa) {
+          const compSlug = (res?.user?.companyName || comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
           setIs2FaMode(true);
           setTwoFaTargetEmail(res.email || email);
           setTwoFaOtp('');
@@ -520,7 +527,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        navigate(`/company/${compSlug}`);
+        const authenticatedName = res?.user?.companyName || res?.user?.name || comp?.name || 'joy-corporate-solutions';
+        const authenticatedSlug = authenticatedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        navigate(`/company/${authenticatedSlug}`);
       } 
       else if (selectedRoleTab === 'hrexecutive') {
         const email = emailInput.trim().toLowerCase();

@@ -107,24 +107,46 @@ def login(payload: dict, request: Request = None, db: Session = Depends(get_db))
         return create_session(user_data, "superadmin", client_ip, user_agent)
         
     elif role in ("company", "companyadmin"):
-        if not email:
-            raise HTTPException(status_code=400, detail="Company Admin Email is required.")
-        comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        raw_ident = (email or payload.get("companyId") or payload.get("code") or "").strip()
+        if not raw_ident:
+            raise HTTPException(status_code=400, detail="Company Admin Email or Company Code is required.")
+        
+        # 1. Flexible lookup: match Company.email, Company.code, or Company.id
+        comp = db.query(Company).filter(
+            (Company.email.ilike(raw_ident)) |
+            (Company.code.ilike(raw_ident)) |
+            (Company.id.ilike(raw_ident))
+        ).first()
+
+        # 2. Resilient typo recovery: if email ended in '.c' instead of '.com'
+        if not comp and "@" in raw_ident and raw_ident.lower().endswith(".c"):
+            comp = db.query(Company).filter(Company.email.ilike(raw_ident + "om")).first()
+
+        # 3. Resilient domain prefix check (e.g. info@joycorporatesolutions vs info@joycorporatesolutions.com)
+        if not comp and "@" in raw_ident:
+            local_user = raw_ident.split("@")[0].strip()
+            comp = db.query(Company).filter(Company.email.ilike(f"{local_user}@%")).first()
+
         if not comp:
-            raise HTTPException(status_code=401, detail="Company account not found. Please onboard company from Super Admin first.")
+            raise HTTPException(
+                status_code=401, 
+                detail=f"Company account '{raw_ident}' not found. Please verify your company email or company code, or onboard from Super Admin first."
+            )
             
         if not password:
             raise HTTPException(status_code=400, detail="Company Administrator password is required.")
         if comp.password_hash and comp.password_hash != password:
             raise HTTPException(status_code=401, detail="Invalid Company Administrator password.")
 
-        if comp.status in ("Inactive", "Suspended", "Discontinued", "Pending Activation", "Pending Approval"):
-            if comp.status == "Pending Activation":
-                raise HTTPException(
-                    status_code=403,
-                    detail=f"Your company account ({comp.name}) has not completed self-activation. Please open the activation link sent to your email to complete registration."
-                )
-            elif comp.status == "Pending Approval":
+        # 4. Status validation & auto-activation on authorized credentials
+        # If the company is 'Pending Activation' and the administrator signs in with the authorized password,
+        # auto-activate the company immediately so the organization is never locked out!
+        if comp.status == "Pending Activation":
+            comp.status = "Active"
+            comp.activation_status = "Active"
+            db.commit()
+        elif comp.status in ("Inactive", "Suspended", "Discontinued", "Pending Approval"):
+            if comp.status == "Pending Approval":
                 raise HTTPException(
                     status_code=403,
                     detail=f"Your company account ({comp.name}) is currently pending final review & authorization by Super Administrator. You will receive an email once approved."
@@ -189,11 +211,17 @@ def login(payload: dict, request: Request = None, db: Session = Depends(get_db))
         return create_session(user_data, "company", client_ip, user_agent)
         
     elif role in ("hrexecutive", "hr"):
-        if not email:
+        raw_ident = (email or payload.get("hr_id") or "").strip()
+        if not raw_ident:
             raise HTTPException(status_code=400, detail="HR Executive Work Email is required.")
-        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(raw_ident)) |
+            (HrUser.id.ilike(raw_ident))
+        ).first()
+        if not hr and "@" in raw_ident and raw_ident.lower().endswith(".c"):
+            hr = db.query(HrUser).filter(HrUser.email.ilike(raw_ident + "om")).first()
         if not hr:
-            raise HTTPException(status_code=401, detail="HR Executive account not found. Please create HR recruiter from Company Admin first.")
+            raise HTTPException(status_code=401, detail=f"HR Executive account '{raw_ident}' not found. Please create HR recruiter from Company Admin first.")
             
         if not password:
             raise HTTPException(status_code=400, detail="HR Executive workstation password is required.")
