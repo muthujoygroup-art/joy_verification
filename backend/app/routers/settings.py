@@ -279,7 +279,8 @@ def test_email_dispatch(payload: dict, db: Session = Depends(get_db)):
         subject="✅ JOY Corporate Solutions - cPanel SMTP Gateway Verification",
         html_content=test_html,
         custom_config=smtp_cfg,
-        db=db
+        db=db,
+        async_mode=False
     )
 
     return res

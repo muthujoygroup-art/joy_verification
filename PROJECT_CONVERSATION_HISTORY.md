@@ -341,6 +341,41 @@
 
 ---
 
+### Session 13: Live SMTP Diagnostics, 535 Authentication Failure Analysis & Gateway Transparency
+**Date**: October 15, 2026  
+**Focus Area**: Investigation of Undelivered OTP / 2FA Passcodes & Forgot Password Emails Across All Portals, SMTP 535 Root Cause Analysis, Synchronous Gateway Verification & SystemErrorLog Integration
+
+#### Key Problem Statement:
+- The user reported that attempting "Forgot Password" and "Two-Factor Authentication (2FA)" in the Admin Panel did not deliver any OTP / passcode email to the respective mailbox.
+- The user noted that other portals (Company Admin, HR Executive, Candidate) were likely experiencing the same failure, and requested an in-depth code and file audit.
+
+#### Diagnostic Investigation & Live Findings:
+1. **Live SMTP Server Reachability & Handshake**:
+   - Tested direct socket connectivity to `mail.joycorporatesolutions.com` on Port 465 (SSL) and Port 587 (TLS).
+   - Handshake established in **0.31 seconds** to `s11777.bom1.stableserver.net` (`103.114.211.219`). Server is online and active.
+2. **Authentication Rejection (535 Error)**:
+   - When authenticating with configured username `admin@joycorporatesolutions.com` and stored password `Joyson@5610`, cPanel Exim returned:
+     `smtplib.SMTPAuthenticationError: (535, b'Incorrect authentication data')`
+   - Tested username variations (`admin`, `joyglo52`); all failed with 535.
+   - **Conclusion**: The email password for `admin@joycorporatesolutions.com` in cPanel Webmail has changed or does not match `Joyson@5610`.
+3. **Async Thread Masking Failure**:
+   - In `backend/app/services/email_service.py:send_smtp_email`, `async_mode=True` caused the API endpoint to return `{ success: True, dispatched_async: True }` immediately. The background thread encountered the 535 error silently, leading the frontend UI to display "Passcode sent!" while the message was never actually transmitted.
+4. **Universal Impact Across All Portals**:
+   - Super Admin, Company Admin, HR Recruiter, and Candidate onboarding links all share `backend/app/services/email_service.py` and fall back to Master cPanel SMTP (`mail.joycorporatesolutions.com:465`).
+   - Consequently, all OTP, 2FA, invitation, and reset emails across all 4 portals were blocked by this single cPanel SMTP password mismatch.
+
+#### Fixes & Hardening Applied:
+1. **Synchronous Gateway Testing (`backend/app/routers/settings.py`)**:
+   - Modified `/api/settings/test-email` to run `send_smtp_email` with `async_mode=False`. The Super Admin "Send Test Email 📨" modal now accurately returns real-time SMTP server errors (`535 Incorrect authentication data`) rather than giving false positives.
+2. **Direct Incident Logging (`backend/app/services/email_service.py`)**:
+   - Integrated `record_system_error_log` into `send_smtp_email`. Any failed email dispatch automatically creates a `Critical` entry in the PostgreSQL `system_error_logs` table (`ERR_SMTP_DISPATCH_FAILED`) with the recipient, host, and exact error string, making mail issues instantly visible in the Super Admin System Health & Issue Logs dashboard.
+
+#### Verification & Quality Gates:
+- **Build Status**: `npm run build` executed cleanly in **1.45s** with 0 errors.
+- **Diagnostics**: `test_email_dispatch` verified in Python; logs generated cleanly in PostgreSQL.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.

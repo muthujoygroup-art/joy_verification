@@ -235,6 +235,18 @@ def send_smtp_email(
                 logger.warning(f"⚠️ [SMTP NOTICE - Mode: {cfg['mode']}] Email delivery to {to_email}: {err_str}")
             except Exception:
                 pass
+            try:
+                from backend.app.services.logger_service import record_system_error_log
+                record_system_error_log(
+                    section="Email Gateway",
+                    error_code="ERR_SMTP_DISPATCH_FAILED",
+                    message=f"SMTP dispatch to '{to_email}' failed via host '{cfg.get('host')}:{cfg.get('port')}' (User: {cfg.get('user')}): {err_str}",
+                    portal="System Mail Gateway",
+                    function_name="send_smtp_email",
+                    severity="Critical"
+                )
+            except Exception:
+                pass
             return {"success": False, "error": err_str, "to": to_email, "mode": cfg["mode"]}
 
     if async_mode:
