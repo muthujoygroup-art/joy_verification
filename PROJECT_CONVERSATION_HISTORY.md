@@ -272,6 +272,35 @@
 
 ---
 
+### Session 11: Complete Purge of Demo OTPs, Auto-Fill Bypasses & Hardening of 2FA / Password Recovery
+**Date**: October 15, 2026  
+**Focus Area**: 2FA Passcode Verification, Multi-Role Password Recovery, Elimination of Universal Test OTP Bypasses (`123456`, `1234`, `dev_otp`)
+
+#### Key Problem Statement:
+- Identified that `session_service.py` had a universal testing fallback (`code_str in ("123456", "1234")`), `auth.py` permitted `"123456"` in `verify-2fa`, and API payloads were leaking `"dev_otp"` in responses.
+- `LoginView.jsx` was automatically rendering a `⚡ Quick Passcode: 123456 [Auto-Fill]` banner and auto-populating state.
+- In `AppContext.jsx` and `verification.py`, fallback OTPs defaulted to `"123456"`.
+
+#### Architectural Refactoring & Fixes Applied:
+1. **Backend Session & Authentication Security (`session_service.py` & `auth.py`)**:
+   - Completely deleted the hardcoded test fallback `if code_str in ("123456", "1234"): return True` in `session_service.py`. Only unexpired, cryptographic database registry entries and valid signed tokens are accepted.
+   - Removed `and otp not in ("123456", "1234")` in `auth.py:verify_2fa_and_login`. Invalid or test codes now strictly fail with `401 Unauthorized`.
+   - Removed `"dev_otp"` from all JSON response payloads in `/auth/forgot-password` (SuperAdmin, Company, HR) and `/auth/request-2fa`.
+2. **Frontend Login & 2FA Interface Hardening (`LoginView.jsx`)**:
+   - Removed `twoFaDevOtp` state and deleted the `⚡ Quick Passcode` auto-fill banner.
+   - Changed OTP input placeholder to `"••••••"` and clarified disclaimer to `"6-digit passcode valid for 15 minutes sent to your registered email."`.
+   - Removed candidate login bypass for PIN `'1234'`.
+3. **Document Pipeline & Sandbox Sanitization**:
+   - In `backend/app/routers/verification.py`: Removed hardcoded `"123456"` fallback when verifying Aadhaar in pipeline; now requires actual user-provided OTP.
+   - In `src/context/AppContext.jsx`: Removed `'123456'` fallback in `verifyCandidateLiveDocument`.
+   - In `src/components/UniversalDocumentSandbox.jsx`: Reset default OTP payload to empty string.
+
+#### Verification & Quality Gates:
+- **Build Status**: `npm run build` executed cleanly in **1.59s** with 0 errors (`dist/assets/index-wjsKBdeM.js`).
+- **Grep Audit**: 0 occurrences of demo OTP bypasses in authentication pipelines; 0 occurrences of "sovereign".
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
@@ -280,5 +309,6 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 4. `.cpanel.yml` will automatically copy `dist/*` and `.htaccess` to `/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/` and touch `tmp/restart.txt` to reload Passenger WSGI.
 
 ---
-*Last Updated: October 14, 2026 | Antigravity IDE Autonomous Agent Log*
+*Last Updated: October 15, 2026 | Antigravity IDE Autonomous Agent Log*
+
 

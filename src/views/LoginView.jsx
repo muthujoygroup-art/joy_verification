@@ -80,7 +80,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [is2FaMode, setIs2FaMode] = useState(false);
   const [twoFaOtp, setTwoFaOtp] = useState('');
   const [twoFaTargetEmail, setTwoFaTargetEmail] = useState('');
-  const [twoFaDevOtp, setTwoFaDevOtp] = useState('');
   const [twoFaLoading, setTwoFaLoading] = useState(false);
   const [twoFaError, setTwoFaError] = useState('');
   const [twoFaPendingAuth, setTwoFaPendingAuth] = useState(null);
@@ -372,8 +371,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const handleResend2FaOtp = async () => {
     setTwoFaError('');
     try {
-      const res = await request2FaOtp(twoFaTargetEmail, selectedRoleTab);
-      if (res?.dev_otp) setTwoFaDevOtp(res.dev_otp);
+      await request2FaOtp(twoFaTargetEmail, selectedRoleTab);
       setForgotSuccess('2FA security code resent to email!');
     } catch (err) {
       setTwoFaError('Failed to resend code: ' + err.message);
@@ -401,8 +399,8 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         }
 
         const candidateFound = (candidates || []).find(c => c.token === tokenToUse);
-        const expectedPin = candidateFound?.portalPassword || candidateFound?.portal_password || '1234';
-        if (pinToUse !== expectedPin && pinToUse !== '1234') {
+        const expectedPin = candidateFound?.portalPassword || candidateFound?.portal_password;
+        if (expectedPin && pinToUse !== expectedPin) {
           setLoginError('❌ Incorrect Security PIN. Please enter the passcode provided by HR.');
           setIsLoading(false);
           return;
@@ -429,11 +427,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
         if (enable2FaStep) {
           try {
-            const res = await request2FaOtp(email, 'superadmin');
+            await request2FaOtp(email, 'superadmin');
             setIs2FaMode(true);
             setTwoFaTargetEmail(email);
-            setTwoFaDevOtp(res?.dev_otp || '123456');
-            setTwoFaOtp(res?.dev_otp || '');
+            setTwoFaOtp('');
             setTwoFaPendingAuth({ role: 'superadmin', email, password });
             setIsLoading(false);
             return;
@@ -460,11 +457,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
         if (enable2FaStep) {
           try {
-            const res = await request2FaOtp(email, 'company');
+            await request2FaOtp(email, 'company');
             setIs2FaMode(true);
             setTwoFaTargetEmail(email);
-            setTwoFaDevOtp(res?.dev_otp || '123456');
-            setTwoFaOtp(res?.dev_otp || '');
+            setTwoFaOtp('');
             setTwoFaPendingAuth({ role: 'company', email, password, companyId: comp?.id });
             setIsLoading(false);
             return;
@@ -488,11 +484,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
         if (enable2FaStep) {
           try {
-            const res = await request2FaOtp(email, 'hrexecutive');
+            await request2FaOtp(email, 'hrexecutive');
             setIs2FaMode(true);
             setTwoFaTargetEmail(email);
-            setTwoFaDevOtp(res?.dev_otp || '123456');
-            setTwoFaOtp(res?.dev_otp || '');
+            setTwoFaOtp('');
             setTwoFaPendingAuth({ role: 'hrexecutive', email, password });
             setIsLoading(false);
             return;
@@ -662,22 +657,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                     </div>
                   </div>
 
-                  {twoFaDevOtp && (
-                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium flex items-center justify-between">
-                      <div>
-                        <span className="font-bold">⚡ Quick Passcode: </span>
-                        <span className="font-mono font-black text-indigo-700 bg-white px-2 py-0.5 rounded border border-amber-200">{twoFaDevOtp}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setTwoFaOtp(twoFaDevOtp)}
-                        className="px-2 py-1 rounded-lg bg-amber-200 text-amber-900 font-extrabold text-[10px] hover:bg-amber-300 transition-colors cursor-pointer"
-                      >
-                        Auto-Fill
-                      </button>
-                    </div>
-                  )}
-
                   <form onSubmit={handleVerify2FaSubmit} className="space-y-4 text-xs">
                     <div>
                       <label className="block text-slate-700 font-bold mb-1">
@@ -689,7 +668,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           type="text"
                           required
                           maxLength={6}
-                          placeholder="e.g. 123456"
+                          placeholder="••••••"
                           value={twoFaOtp}
                           onChange={(e) => setTwoFaOtp(e.target.value)}
                           className="input-field-styled font-mono font-black tracking-widest text-center text-lg py-3"
@@ -697,7 +676,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         />
                       </div>
                       <span className="text-[10px] text-slate-400 mt-1 block">
-                        6-digit passcode valid for 15 minutes. (Universal test code: 123456).
+                        6-digit passcode valid for 15 minutes sent to your registered email.
                       </span>
                     </div>
 

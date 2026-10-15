@@ -3059,8 +3059,8 @@ export const AppProvider = ({ children }) => {
       let resp = null;
 
       if (docType === 'aadhaar') {
-        const aadhNum = payloadData.aadhaarNo || payloadData.aadhaar_number || candObj.aadhaarNo || candObj.aadhaar_no || jfd.aadhaarNo || '548912349876';
-        const otpVal = payloadData.otp || '123456';
+        const aadhNum = payloadData.aadhaarNo || payloadData.aadhaar_number || candObj.aadhaarNo || candObj.aadhaar_no || jfd.aadhaarNo || '';
+        const otpVal = payloadData.otp || payloadData.aadhaarOtp || '';
         resp = await api.verifyAadhaarLive(candidateToken, aadhNum, otpVal);
       } else if (docType === 'pan') {
         const panNum = payloadData.panNo || payloadData.pan_number || candObj.panNo || candObj.pan_no || jfd.panNo || 'ABCDE1234F';

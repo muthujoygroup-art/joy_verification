@@ -232,8 +232,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "message": f"Password reset instructions and 6-digit passcode dispatched to Super Admin email ({target_email}).",
             "email": target_email,
             "role": "superadmin",
-            "email_sent": email_sent,
-            "dev_otp": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     elif role in ("company", "companyadmin"):
@@ -274,8 +273,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "email": comp.email,
             "role": "company",
             "company_name": comp.name,
-            "email_sent": email_sent,
-            "dev_otp": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     elif role in ("hrexecutive", "hr"):
@@ -319,8 +317,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "role": "hrexecutive",
             "hr_name": hr.name,
             "company_name": comp_name,
-            "email_sent": email_sent,
-            "dev_otp": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     raise HTTPException(status_code=400, detail="Invalid role specified for password recovery.")
@@ -529,8 +526,7 @@ def request_2fa_otp(payload: dict, db: Session = Depends(get_db)):
         "success": True,
         "message": f"6-digit 2FA security passcode sent to {email}.",
         "email": email,
-        "role": role,
-        "dev_otp": otp_data["otp"]
+        "role": role
     }
 
 
@@ -549,7 +545,7 @@ def verify_2fa_and_login(payload: dict, request: Request, db: Session = Depends(
         raise HTTPException(status_code=400, detail="6-digit 2FA passcode is required.")
 
     is_valid = verify_password_reset_otp(email, f"2fa_{role}", otp)
-    if not is_valid and otp not in ("123456", "1234"):
+    if not is_valid:
         raise HTTPException(status_code=401, detail="Invalid or expired 2FA passcode.")
 
     clear_password_reset_otp(email, f"2fa_{role}")

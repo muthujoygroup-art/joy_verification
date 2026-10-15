@@ -48,7 +48,7 @@ export const SANDBOX_MODULES = [
     color: 'from-purple-600 to-indigo-600',
     endpoints: [
       { slug: '/generate-aadhaar-otp-v2', name: 'Generate Aadhaar OTP V2', defaultPayload: { aadhaar_number: '548912349876' }, desc: 'Dispatches live UIDAI OTP to registered mobile.' },
-      { slug: '/aadhaar-detail-verification-v2', name: 'Aadhaar Detail with OTP', defaultPayload: { aadhaar_number: '548912349876', otp: '123456' }, desc: 'Complete biometric demographic & full address e-KYC extraction.' },
+      { slug: '/aadhaar-detail-verification-v2', name: 'Aadhaar Detail with OTP', defaultPayload: { aadhaar_number: '548912349876', otp: '' }, desc: 'Complete biometric demographic & full address e-KYC extraction.' },
       { slug: '/aadhaar-verify', name: 'Aadhaar Demographic Verify', defaultPayload: { aadhaar_number: '548912349876' }, desc: 'Validates state, age band, gender & masked mobile.' },
       { slug: '/aadhaar-link-check', name: 'Aadhaar Mobile Link Check', defaultPayload: { id_type: 'MOBILE', mobile: '9942817491', aadhaar_number: '548912349876' }, desc: 'Verifies if specific phone is linked to Aadhaar.' },
       { slug: '/aadhaar-to-pan', name: 'Aadhaar to PAN Mapping', defaultPayload: { aadhaar_number: '548912349876' }, desc: 'Discovers PAN number linked to this Aadhaar.' }

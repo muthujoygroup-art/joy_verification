@@ -827,10 +827,11 @@ def endpoint_verify_all_documents(
                 verified_results["epfoUan"] = data
                 verified_types.append("epfoUan")
 
-        # 5. Aadhaar UIDAI Demographic / OTP (CoinCircleTrust)
+        # 5. Aadhaar UIDAI Demographic / OTP
         clean_aadh = "".join(filter(str.isdigit, str(candidate.aadhaar_no or jfd.get("aadhaarNo") or jfd.get("aadhaar") or "")))
-        if should_verify("aadhaar") and clean_aadh:
-            ok, msg, data = verify_aadhaar_live(db, candidate.token, clean_aadh, "123456")
+        provided_otp = str(jfd.get("aadhaarOtp") or jfd.get("otp") or "").strip()
+        if should_verify("aadhaar") and clean_aadh and provided_otp:
+            ok, msg, data = verify_aadhaar_live(db, candidate.token, clean_aadh, provided_otp)
             if ok:
                 verified_results["aadhaar"] = data
                 verified_types.append("aadhaar")

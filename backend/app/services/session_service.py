@@ -243,11 +243,7 @@ def verify_password_reset_otp(email: str, role: str, code_or_token: str) -> bool
         if record["expires_at"] > now and (record["otp"] == code_str or record["token"] == code_str):
             return True
 
-    # 2. Master universal testing fallback for development/demo (e.g. 123456 or 1234)
-    if code_str in ("123456", "1234"):
-        return True
-
-    # 3. Signed JWT token verification
+    # 2. Signed JWT token verification
     jwt_data = verify_jwt_token(code_str)
     if jwt_data and jwt_data.get("action") == "password_reset":
         if jwt_data.get("email") == norm_email and jwt_data.get("role") == norm_role:
