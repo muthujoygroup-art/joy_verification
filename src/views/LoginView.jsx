@@ -637,57 +637,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           </div>
         </div>
 
-        {/* Portal Role Tabs Switcher (when accessing generic /login) or Dedicated Portal Breadcrumb */}
-        {!isLocked ? (
-          <div className="flex items-center justify-center">
-            <div className="inline-flex p-1 bg-slate-200/90 backdrop-blur-md rounded-2xl border border-slate-300 shadow-inner gap-1 max-w-full overflow-x-auto">
-              {[
-                { id: 'superadmin', label: 'Super Admin', icon: Crown, activeClass: 'bg-white text-indigo-900 shadow-sm border border-indigo-200' },
-                { id: 'company', label: 'Company Admin', icon: Building2, activeClass: 'bg-white text-sky-900 shadow-sm border border-sky-200' },
-                { id: 'hrexecutive', label: 'HR Recruiter', icon: UserCheck, activeClass: 'bg-white text-emerald-900 shadow-sm border border-emerald-200' },
-                { id: 'employee_link', label: 'Candidate Access', icon: Smartphone, activeClass: 'bg-white text-amber-900 shadow-sm border border-amber-200' }
-              ].map(tab => {
-                const TabIcon = tab.icon;
-                const isActive = selectedRoleTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedRoleTab(tab.id);
-                      setLoginError('');
-                      setIsForgotMode(false);
-                      setIs2FaMode(false);
-                    }}
-                    className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                      isActive 
-                        ? tab.activeClass 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                    }`}
-                  >
-                    <TabIcon className="w-3.5 h-3.5" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between px-1 text-xs">
-            <div className="flex items-center gap-2 text-slate-500 font-semibold">
-              <span>Dedicated Portal:</span>
-              <span className="font-bold text-slate-900">{currentDetail.title}</span>
-            </div>
-            <Link 
-              to="/login" 
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <span>Switch Portal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        )}
-
         {/* Selected Portal Split-Screen Enterprise Card */}
         <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12">
           

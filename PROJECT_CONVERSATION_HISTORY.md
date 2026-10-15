@@ -641,6 +641,30 @@
 
 ---
 
+### Session 20: Removal of Portal Switch Options Across All Login Portals
+**Date**: October 15, 2026  
+**Focus Area**: Strict isolation of individual login entry points by removing all portal role switcher tabs and "Switch Portal" links from all login views.
+
+#### User Intent & Problem Statement:
+- User feedback:  
+  *"don't give portal swirch option in all the login pages.."*
+- Intent: Prevent cross-portal persona switching on authentication views. Every portal route (`/superadmin`, `/company`, `/hr`, `/candidate`, `/login`) must remain 100% dedicated, clean, and isolated without any switcher tabs or navigation links.
+
+#### Architectural Solutions & Code Hardening Applied:
+1. **Removed Role Switcher Tabs & Links (`LoginView.jsx`)**:
+   - Completely deleted the top segmented pill switcher (`[ Super Admin | Company Admin | HR Recruiter | Candidate Access ]`) and the `"Dedicated Portal: ... Switch Portal"` link.
+   - The top navigation bar now connects directly into the split-screen authentication workstation with zero switcher distractions.
+2. **Dedicated Role Enforcement**:
+   - Each portal endpoint is strictly dedicated to its administrative or candidate persona.
+3. **Production Compilation**:
+   - Executed `npm run build` confirming clean build in **1.23s** (`dist/assets/index-DQ1NXhpH.js`).
+
+#### Verification & Quality Gates:
+- **Build Status (`npm run build`)**: Success in 1.23s with 0 errors.
+- **Git Push**: Pushed clean tree to `main` branch on GitHub repository `https://github.com/muthujoygroup-art/joytrueprofile.git`.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
@@ -650,6 +674,7 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 
 ---
 *Last Updated: October 15, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 
