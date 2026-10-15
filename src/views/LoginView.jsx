@@ -308,7 +308,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       welcomeImage: '/assets/welcome/welcome_superadmin.jpg',
       heroImage: '/assets/welcome/hero_superadmin.jpg',
       welcomeHeading: 'Welcome, Super Administrator',
-      welcomeSub: 'Master Command Console for sovereign tenant governance, 81 verification clusters & DPDP compliance.',
+      welcomeSub: 'Master Command Console for enterprise multi-tenant governance, 81 verification clusters & DPDP compliance.',
       welcomePill: 'Master Command Access',
       stats: [
         { label: 'System SLA', val: '99.99%' },
@@ -604,64 +604,99 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between py-6 sm:py-10 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between py-5 sm:py-8 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
       
       {/* Background Lighting Accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-6xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
+      <div className="max-w-6xl mx-auto w-full space-y-4 sm:space-y-5 relative z-10 my-auto">
         
         {/* Top Header Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 glass-panel p-3.5 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
           <Link to="/" className="flex items-center gap-3.5 no-underline">
             <img 
               src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
               alt="JOY TRUE PROFILE Logo" 
-              className="w-10 h-10 object-contain" 
+              className="w-9 h-9 object-contain" 
             />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-black text-base sm:text-lg text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
+                <h2 className="font-black text-sm sm:text-base text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
                 <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block font-black">PVT LTD</span>
               </div>
-              <p className="text-[11px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
+              <p className="text-[10.5px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
             </div>
           </Link>
 
-          <div className="flex items-center gap-3 text-xs flex-wrap justify-center">
-            <span className="badge badge-emerald flex items-center gap-1">
+          <div className="flex items-center gap-2.5 text-xs flex-wrap justify-center">
+            <span className="badge badge-emerald flex items-center gap-1.5 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
               Gateway Online
             </span>
-            <span className="badge badge-indigo">ISO 27001 & DPDP Act</span>
+            <span className="badge badge-indigo py-1">ISO 27001 & DPDP Act</span>
           </div>
         </div>
 
-        {/* Hero Section */}
-        <div className="text-center space-y-2 max-w-2xl mx-auto px-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-bold shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span>{currentDetail.roleTag}</span>
+        {/* Portal Role Tabs Switcher (when accessing generic /login) or Dedicated Portal Breadcrumb */}
+        {!isLocked ? (
+          <div className="flex items-center justify-center">
+            <div className="inline-flex p-1 bg-slate-200/90 backdrop-blur-md rounded-2xl border border-slate-300 shadow-inner gap-1 max-w-full overflow-x-auto">
+              {[
+                { id: 'superadmin', label: 'Super Admin', icon: Crown, activeClass: 'bg-white text-indigo-900 shadow-sm border border-indigo-200' },
+                { id: 'company', label: 'Company Admin', icon: Building2, activeClass: 'bg-white text-sky-900 shadow-sm border border-sky-200' },
+                { id: 'hrexecutive', label: 'HR Recruiter', icon: UserCheck, activeClass: 'bg-white text-emerald-900 shadow-sm border border-emerald-200' },
+                { id: 'employee_link', label: 'Candidate Access', icon: Smartphone, activeClass: 'bg-white text-amber-900 shadow-sm border border-amber-200' }
+              ].map(tab => {
+                const TabIcon = tab.icon;
+                const isActive = selectedRoleTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedRoleTab(tab.id);
+                      setLoginError('');
+                      setIsForgotMode(false);
+                      setIs2FaMode(false);
+                    }}
+                    className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                      isActive 
+                        ? tab.activeClass 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                    }`}
+                  >
+                    <TabIcon className="w-3.5 h-3.5" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-
-          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 leading-tight">
-            {currentDetail.title} Sign In
-          </h1>
-          
-          <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
-            {currentDetail.subtitle}
-          </p>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between px-1 text-xs">
+            <div className="flex items-center gap-2 text-slate-500 font-semibold">
+              <span>Dedicated Portal:</span>
+              <span className="font-bold text-slate-900">{currentDetail.title}</span>
+            </div>
+            <Link 
+              to="/login" 
+              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <span>Switch Portal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
 
         {/* Selected Portal Split-Screen Enterprise Card */}
-        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12 min-h-[640px] lg:min-h-[740px]">
+        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12">
           
           <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ background: currentDetail.headerGradient }} />
 
           {/* ========================================================================= */}
           {/* 🎨 LEFT HALF: FULL-BLEED 3D CINEMATIC VISUAL HERO PANEL (5 cols) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-5 relative flex flex-col justify-between overflow-hidden bg-slate-950 p-6 sm:p-8 lg:p-10 text-white min-h-[400px] lg:min-h-full group">
+          <div className="lg:col-span-5 relative flex flex-col justify-between overflow-hidden bg-slate-950 p-6 sm:p-8 text-white min-h-[340px] lg:min-h-full group">
             
             {/* Full-Bleed 3:4 High-Resolution 3D Artwork */}
             <img 
@@ -676,35 +711,35 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             />
 
             {/* Multi-Layered Cinematic Dark & Vignette Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-slate-950/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/25 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/30 to-slate-950/60 pointer-events-none" />
 
             {/* TOP: Floating Branding Pill & Live Gateway Status */}
             <div className="relative z-10 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-xl">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-xl">
                 <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                 <span>{currentDetail.welcomePill}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/90 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-black shadow-xl">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/90 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-black shadow-xl">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>PORTAL ACTIVE</span>
               </div>
             </div>
 
             {/* CENTER / FLOATING GLASS CARD: Real-time Trust Highlights */}
-            <div className="relative z-10 my-auto py-4 hidden sm:block">
-              <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/70 backdrop-blur-xl border border-white/15 shadow-2xl space-y-3">
+            <div className="relative z-10 my-auto py-3 hidden sm:block">
+              <div className="p-4 rounded-2xl bg-slate-950/70 backdrop-blur-xl border border-white/15 shadow-2xl space-y-2.5">
                 <div className="flex items-center gap-2 text-xs font-extrabold text-amber-300 tracking-wide uppercase">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Sovereign Security Architecture</span>
+                  <span>Enterprise Security Infrastructure</span>
                 </div>
                 <p className="text-xs text-slate-200/90 leading-relaxed font-medium">
                   {currentDetail.welcomeSub}
                 </p>
                 
                 {/* Trust Badges Bar inside floating glass card */}
-                <div className="grid grid-cols-3 gap-2 pt-2.5 border-t border-white/10 text-center">
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center">
                   {(currentDetail.stats || []).map((st, i) => (
                     <div key={i} className="p-1.5 rounded-xl bg-white/5 border border-white/10">
                       <div className="text-[9px] font-bold text-slate-300 uppercase tracking-wider">{st.label}</div>
@@ -716,9 +751,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             </div>
 
             {/* BOTTOM: Persona Heading, Value Proposition & DPDP Seal */}
-            <div className="relative z-10 space-y-2 pt-4">
+            <div className="relative z-10 space-y-1.5 pt-3">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/20 text-white">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/20 text-white">
                   {currentDetail.roleTag}
                 </span>
                 <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
@@ -726,7 +761,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                 </span>
               </div>
 
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+              <h3 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight drop-shadow-md">
                 {currentDetail.welcomeHeading}
               </h3>
 
@@ -741,29 +776,40 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           {/* ========================================================================= */}
           {/* 🔐 RIGHT HALF: PROFESSIONAL ENTERPRISE SIGN-IN WORKSTATION (7 cols) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6 bg-white">
+          <div className="lg:col-span-7 p-6 sm:p-7 lg:p-8 flex flex-col justify-between space-y-4 bg-white">
             
             {/* Header Section of the Right Column */}
-            <div className="space-y-4 border-b border-slate-100 pb-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className={`badge ${currentDetail.badgeClass}`}>{currentDetail.badge}</span>
-                    <span className="text-xs font-bold text-slate-500">• {currentDetail.roleTag}</span>
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5 flex items-center gap-2.5">
-                    <div className={`p-2 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <span>{currentDetail.title}</span>
-                  </h2>
-                  <p className="text-xs text-slate-600 font-medium mt-1">{currentDetail.subtitle}</p>
+            <div className="border-b border-slate-100 pb-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={`badge ${currentDetail.badgeClass} text-[10px] font-black uppercase tracking-wider`}>
+                    {currentDetail.badge}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-400">• {currentDetail.roleTag}</span>
                 </div>
+                <div className="hidden sm:flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-200">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Secure SSL Auth</span>
+                </div>
+              </div>
 
-                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 max-w-sm text-[11px] text-slate-600 font-medium flex items-start gap-2">
-                  <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                  <span>{currentDetail.provisionNotice}</span>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
+                  <Icon className="w-5 h-5 text-white" />
                 </div>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+                    {currentDetail.title} Sign In
+                  </h1>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {currentDetail.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 font-medium">
+                <Info className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <span>{currentDetail.provisionNotice}</span>
               </div>
             </div>
 
@@ -1120,13 +1166,13 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-3.5">
                         <div>
-                          <label className="block text-slate-700 font-bold mb-1">
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
                             {selectedRoleTab === 'employee_link' ? 'New 4-Digit Security PIN *' : 'New Password *'}
                           </label>
                           <div className="input-wrapper">
-                            <Lock className="input-icon-left" />
+                            <Lock className="input-icon-left text-slate-400" />
                             <input 
                               type={showForgotPw ? 'text' : 'password'} 
                               required
@@ -1142,6 +1188,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               type="button"
                               onClick={() => setShowForgotPw(!showForgotPw)}
                               className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              title={showForgotPw ? "Hide password" : "Show password"}
                             >
                               {showForgotPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
@@ -1149,11 +1196,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         </div>
 
                         <div>
-                          <label className="block text-slate-700 font-bold mb-1">
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
                             {selectedRoleTab === 'employee_link' ? 'Confirm 4-Digit Security PIN *' : 'Confirm New Password *'}
                           </label>
                           <div className="input-wrapper">
-                            <Lock className="input-icon-left" />
+                            <Lock className="input-icon-left text-slate-400" />
                             <input 
                               type={showForgotPw ? 'text' : 'password'} 
                               required
@@ -1206,62 +1253,60 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                     </div>
                   )}
 
-                  <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
+                  <form onSubmit={handleLoginSubmit} className="space-y-3.5 text-xs">
                     
                     {/* 👑 SUPER ADMIN SPECIFIC LOGIN FORM */}
                     {selectedRoleTab === 'superadmin' && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-slate-700 font-bold mb-1">Super Admin Email *</label>
-                            <div className="input-wrapper">
-                              <Mail className="input-icon-left" />
-                              <input 
-                                type="email" 
-                                required
-                                placeholder="admin@joycorporatesolutions.com"
-                                value={emailInput}
-                                onChange={(e) => setEmailInput(e.target.value)}
-                                className="input-field-styled"
-                              />
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="block text-slate-700 font-bold">Super Admin Password *</label>
-                              <button
-                                type="button"
-                                onClick={() => openForgotMode(emailInput || 'admin@joycorporatesolutions.com')}
-                                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
-                              >
-                                Forgot Password?
-                              </button>
-                            </div>
-                            <div className="input-wrapper">
-                              <KeyRound className="input-icon-left" />
-                              <input 
-                                type={showPassword ? 'text' : 'password'} 
-                                required
-                                placeholder="Enter master password"
-                                value={passwordInput}
-                                onChange={(e) => setPasswordInput(e.target.value)}
-                                className="input-field-styled pr-10"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                              >
-                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                              </button>
-                            </div>
+                      <div className="space-y-3.5">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            Super Admin Master Email *
+                          </label>
+                          <div className="input-wrapper">
+                            <Mail className="input-icon-left text-slate-400" />
+                            <input 
+                              type="email" 
+                              required
+                              placeholder="admin@joycorporatesolutions.com"
+                              value={emailInput}
+                              onChange={(e) => setEmailInput(e.target.value)}
+                              className="input-field-styled"
+                            />
                           </div>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-indigo-50/80 border border-indigo-200 text-indigo-900 text-[11px] font-medium flex items-center gap-2">
-                          <Crown className="w-4 h-4 text-indigo-600 shrink-0" />
-                          <span>Full access to manage companies, plans, database, and system settings.</span>
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                              Master Password *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => openForgotMode(emailInput || 'admin@joycorporatesolutions.com')}
+                              className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
+                            >
+                              Forgot Password?
+                            </button>
+                          </div>
+                          <div className="input-wrapper">
+                            <KeyRound className="input-icon-left text-slate-400" />
+                            <input 
+                              type={showPassword ? 'text' : 'password'} 
+                              required
+                              placeholder="Enter master password"
+                              value={passwordInput}
+                              onChange={(e) => setPasswordInput(e.target.value)}
+                              className="input-field-styled pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              title={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
@@ -1270,78 +1315,78 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               type="checkbox" 
                               checked={enable2FaStep} 
                               onChange={(e) => setEnable2FaStep(e.target.checked)} 
-                              className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer"
+                              className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer accent-indigo-600"
                             />
                             <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
                           </label>
-                          <span className="text-[10px] text-indigo-600 font-bold">Recommended</span>
+                          <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
+                            Recommended
+                          </span>
                         </div>
 
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50`}
                         >
                           <Lock className="w-4 h-4" />
-                          <span>{isLoading ? 'Signing In...' : 'Sign In as Super Admin'}</span>
+                          <span>{isLoading ? 'Authenticating Master Access...' : 'Sign In as Super Admin'}</span>
                         </button>
                       </div>
                     )}
 
                     {/* 🏢 COMPANY ADMIN SPECIFIC LOGIN FORM */}
                     {selectedRoleTab === 'company' && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-slate-700 font-bold mb-1">Company Admin Email *</label>
-                            <div className="input-wrapper">
-                              <Mail className="input-icon-left" />
-                              <input 
-                                type="email" 
-                                required
-                                placeholder="muthukumar@joyglobalcorp.com"
-                                value={emailInput}
-                                onChange={(e) => setEmailInput(e.target.value)}
-                                className="input-field-styled"
-                              />
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="block text-slate-700 font-bold">Company Password *</label>
-                              <button
-                                type="button"
-                                onClick={() => openForgotMode(emailInput)}
-                                className="text-[11px] font-bold text-sky-600 hover:text-sky-800 hover:underline cursor-pointer"
-                              >
-                                Forgot Password?
-                              </button>
-                            </div>
-                            <div className="input-wrapper">
-                              <KeyRound className="input-icon-left" />
-                              <input 
-                                type={showPassword ? 'text' : 'password'} 
-                                required
-                                placeholder="Enter company password"
-                                value={passwordInput}
-                                onChange={(e) => setPasswordInput(e.target.value)}
-                                className="input-field-styled pr-10"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                              >
-                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                              </button>
-                            </div>
+                      <div className="space-y-3.5">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            Company Admin Email *
+                          </label>
+                          <div className="input-wrapper">
+                            <Mail className="input-icon-left text-slate-400" />
+                            <input 
+                              type="email" 
+                              required
+                              placeholder="muthukumar@joyglobalcorp.com"
+                              value={emailInput}
+                              onChange={(e) => setEmailInput(e.target.value)}
+                              className="input-field-styled"
+                            />
                           </div>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-sky-50/80 border border-sky-200 text-sky-900 text-[11px] font-medium flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-sky-600 shrink-0" />
-                          <span>Company accounts are created by Super Admin. Need access? Contact Super Admin.</span>
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                              Company Password *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => openForgotMode(emailInput)}
+                              className="text-[11px] font-bold text-sky-600 hover:text-sky-800 hover:underline cursor-pointer"
+                            >
+                              Forgot Password?
+                            </button>
+                          </div>
+                          <div className="input-wrapper">
+                            <KeyRound className="input-icon-left text-slate-400" />
+                            <input 
+                              type={showPassword ? 'text' : 'password'} 
+                              required
+                              placeholder="Enter company password"
+                              value={passwordInput}
+                              onChange={(e) => setPasswordInput(e.target.value)}
+                              className="input-field-styled pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              title={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
@@ -1350,17 +1395,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               type="checkbox" 
                               checked={enable2FaStep} 
                               onChange={(e) => setEnable2FaStep(e.target.checked)} 
-                              className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5 cursor-pointer"
+                              className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5 cursor-pointer accent-sky-600"
                             />
                             <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
                           </label>
-                          <span className="text-[10px] text-sky-600 font-bold">Recommended</span>
+                          <span className="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">
+                            Recommended
+                          </span>
                         </div>
 
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50`}
                         >
                           <Lock className="w-4 h-4" />
                           <span>{isLoading ? 'Signing In...' : 'Sign In as Company Admin'}</span>
@@ -1370,58 +1417,56 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                     {/* 👥 HR EXECUTIVE SPECIFIC LOGIN FORM */}
                     {selectedRoleTab === 'hrexecutive' && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-slate-700 font-bold mb-1">HR Email *</label>
-                            <div className="input-wrapper">
-                              <Mail className="input-icon-left" />
-                              <input 
-                                type="email" 
-                                required
-                                placeholder="muthujoygroup@gmail.com"
-                                value={emailInput}
-                                onChange={(e) => setEmailInput(e.target.value)}
-                                className="input-field-styled"
-                              />
-                            </div>
-                          </div>
-
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="block text-slate-700 font-bold">HR Password *</label>
-                              <button
-                                type="button"
-                                onClick={() => openForgotMode(emailInput)}
-                                className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer"
-                              >
-                                Forgot Password?
-                              </button>
-                            </div>
-                            <div className="input-wrapper">
-                              <KeyRound className="input-icon-left" />
-                              <input 
-                                type={showPassword ? 'text' : 'password'} 
-                                required
-                                placeholder="Enter HR password"
-                                value={passwordInput}
-                                onChange={(e) => setPasswordInput(e.target.value)}
-                                className="input-field-styled pr-10"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
-                              >
-                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                              </button>
-                            </div>
+                      <div className="space-y-3.5">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            HR Recruiter Email *
+                          </label>
+                          <div className="input-wrapper">
+                            <Mail className="input-icon-left text-slate-400" />
+                            <input 
+                              type="email" 
+                              required
+                              placeholder="muthujoygroup@gmail.com"
+                              value={emailInput}
+                              onChange={(e) => setEmailInput(e.target.value)}
+                              className="input-field-styled"
+                            />
                           </div>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-[11px] font-medium flex items-center gap-2">
-                          <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                          <span>HR accounts are created by your Company Admin in the HR Team section.</span>
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                              HR Password *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => openForgotMode(emailInput)}
+                              className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer"
+                            >
+                              Forgot Password?
+                            </button>
+                          </div>
+                          <div className="input-wrapper">
+                            <KeyRound className="input-icon-left text-slate-400" />
+                            <input 
+                              type={showPassword ? 'text' : 'password'} 
+                              required
+                              placeholder="Enter HR password"
+                              value={passwordInput}
+                              onChange={(e) => setPasswordInput(e.target.value)}
+                              className="input-field-styled pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="input-icon-right text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                              title={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
@@ -1430,17 +1475,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               type="checkbox" 
                               checked={enable2FaStep} 
                               onChange={(e) => setEnable2FaStep(e.target.checked)} 
-                              className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer"
+                              className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer accent-emerald-600"
                             />
                             <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
                           </label>
-                          <span className="text-[10px] text-emerald-600 font-bold">Recommended</span>
+                          <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            Recommended
+                          </span>
                         </div>
 
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
+                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50`}
                         >
                           <Lock className="w-4 h-4" />
                           <span>{isLoading ? 'Signing In...' : 'Sign In as HR Executive'}</span>
@@ -1450,19 +1497,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                     {/* 📱 CANDIDATE / EMPLOYEE MAGIC LINK ACCESS */}
                     {selectedRoleTab === 'employee_link' && (
-                      <div className="space-y-4">
-                        <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-2">
-                          <div className="flex items-center gap-2 font-black text-xs">
-                            <Smartphone className="w-4 h-4 text-amber-600" />
+                      <div className="space-y-3.5">
+                        <div className="p-3 rounded-xl bg-amber-50/90 border border-amber-200 text-amber-950 space-y-1">
+                          <div className="flex items-center gap-1.5 font-black text-xs">
+                            <Smartphone className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                             <span>Direct Access with Verification Link</span>
                           </div>
-                          <p className="text-xs text-amber-900 font-medium leading-relaxed">
-                            Candidates do not need a username or password. You can open your verification page directly using the link sent to your <strong>WhatsApp</strong>, <strong>SMS</strong>, or <strong>Email</strong> by your HR team.
+                          <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
+                            Candidates do not require accounts. You can start directly using the verification link sent to your <strong>WhatsApp</strong>, <strong>SMS</strong>, or <strong>Email</strong>, or enter your token below.
                           </p>
                         </div>
 
                         <div>
-                          <label className="block text-slate-700 font-bold mb-1">
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
                             Candidate Verification Token *
                           </label>
                           <div className="input-wrapper">
@@ -1479,7 +1526,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <label className="block text-slate-700 font-bold">
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
                               4-Digit Security PIN (from HR) *
                             </label>
                             <button
@@ -1506,10 +1553,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className="btn btn-employee w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                          className="btn btn-employee w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                         >
                           <ArrowRight className="w-4 h-4" />
-                          <span>{isLoading ? 'Opening...' : 'Start Verification 🚀'}</span>
+                          <span>{isLoading ? 'Validating Token...' : 'Start Verification 🚀'}</span>
                         </button>
                       </div>
                     )}
@@ -1520,20 +1567,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
             </div>
 
-            {/* Portal Capabilities Accordion / Quick Features Chips */}
-            <div className="pt-4 border-t border-slate-100 space-y-2.5">
+            {/* Portal Capabilities / Integrated Capabilities Chips */}
+            <div className="pt-3 border-t border-slate-100 space-y-2">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Portal Capabilities</span>
-                </h4>
-                <span className="text-[10px] font-bold text-slate-400">Integrated Capabilities</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">Enterprise Edition</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-semibold text-slate-700">
                 {currentDetail.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 shadow-2xs">
-                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span className="truncate">{feat}</span>
+                  <div key={idx} className="flex items-center gap-2 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/80">
+                    <Check className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span className="truncate text-[11px]">{feat}</span>
                   </div>
                 ))}
               </div>

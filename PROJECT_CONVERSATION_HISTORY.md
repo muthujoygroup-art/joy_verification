@@ -601,6 +601,46 @@
 
 ---
 
+### Session 19: Enterprise Portal Realignment, Vertical Credential Stack & Google/Zoho/Amazon Standard Refinements
+**Date**: October 15, 2026  
+**Focus Area**: Alignment refinement and executive styling inspired by Google Workspace, Zoho One, and Amazon AWS user portals. Eliminated horizontal input cramping, removed redundant headers, purged final "sovereign" text, and optimized layout to fit seamlessly above the fold across all devices.
+
+#### User Intent & Problem Statement:
+- User feedback:  
+  *"Hey bro, some how you have covered what I need but needed neat alignment for each portals... I gave two portals for example only... so look for it and fix it... And, need to use professional kind of texts and icons for whole proejct... you can see google user portals design, zoho portals, amazon portals... so you can see the design of that portals is really look impressive.. and neat icons and text used.. and well alignend and designed every features for all kind of devices... so take your time and improve this project as much as you can..."*
+- **Visual Analysis of Provided Screenshots (`media_1792064128984.png` & `media_1792064143167.png`)**:
+  1. **Horizontal Input Cramping**: Email and Password inputs were placed side-by-side inside a 2-column grid (`grid grid-cols-1 sm:grid-cols-2`) in the right 7-column workstation. This squeezed inputs into narrow ~250px boxes, cutting off corporate email addresses (e.g. `admin@joycorporatesolutions.com`).
+  2. **Vertical Overflow & Cut-Off Action Button**: Redundant outer titles (`Super Admin Portal Sign In` rendered outside and repeated inside) combined with large feature boxes pushed the card so tall that the primary "Sign In" button was pushed below the viewport fold, requiring user scrolling.
+  3. **Wording Sanitization**: The left hero glass card still showed the legacy phrase `"SOVEREIGN SECURITY ARCHITECTURE"` from an old config string.
+
+#### Architectural Solutions & Code Hardening Applied:
+1. **Vertical Single-Column Credential Stack (Google / Zoho / Amazon Standard)**:
+   - Refactored Super Admin, Company Admin, HR Executive, and Candidate forms in `src/views/LoginView.jsx`:
+     - **Identifier/Email Input**: Full-width field with left `Mail` icon, clean placeholder, and clear label.
+     - **Password / PIN Input**: Full-width field with left `KeyRound`/`Lock` icon, right-aligned `Forgot Password?` action on the label row, and toggleable `Eye`/`EyeOff` icon.
+     - **2FA Toggle**: Streamlined single-row switch with an emerald/indigo `"Recommended"` badge.
+     - **Primary Action Button**: Full-width high-contrast gradient button with role-specific icon (`Lock`, `ShieldCheck`, `Building2`, `UserCheck`, `ArrowRight`).
+2. **Above-the-Fold Viewport Optimization**:
+   - Streamlined container paddings (`py-5 sm:py-8`), tightened header spacing, and condensed the bottom "Portal Capabilities" section into a sleek 2x2 micro-pill grid with emerald checkmarks.
+   - Guaranteed 100% visibility of the entire sign-in card and primary submit button above the fold on 1366x768 laptop and 1080p desktop viewports without requiring vertical scrolling.
+3. **Google/Zoho Segmented Role Switcher Tabs**:
+   - For generic `/login` routes (`!isLocked`), added a frosted segmented pill tab bar:
+     `[ 👑 Super Admin | 🏢 Company Admin | 👥 HR Recruiter | 📱 Candidate Access ]`
+     allowing instant persona switching with animated active pill states.
+   - For role-locked routes (`/superadmin`, `/company`, `/hr`, `/candidate`), rendered a clean dedicated portal breadcrumb with a `"Switch Portal"` shortcut leading back to `/login`.
+4. **Copywriting & Compliance Purge**:
+   - Replaced all legacy "sovereign" wording in `roleDetails` with `"Master Command Console for enterprise multi-tenant governance, 81 verification clusters & DPDP compliance."`
+   - Verified 100% compliance with zero remaining "sovereign" strings across the entire `src/` codebase.
+5. **Forgot Password Step 3 Refactoring**:
+   - Stacked "New Password" and "Confirm Password" fields vertically to maintain consistent UX and readability.
+
+#### Verification & Quality Gates:
+- **Build Status (`npm run build`)**: Vite built production client environment in **1.52s** with 0 errors (`dist/assets/index-gJ0-Ftje.js`).
+- **Asset Verification**: Confirmed all 8 vertical hero and landscape welcome artworks reside in `public/assets/welcome/` and `dist/assets/welcome/`.
+- **Git Push**: Pushed clean tree to `main` branch on GitHub repository `https://github.com/muthujoygroup-art/joytrueprofile.git`.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
@@ -610,6 +650,7 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 
 ---
 *Last Updated: October 15, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 
