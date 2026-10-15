@@ -665,6 +665,20 @@
 
 ---
 
+### Strategic Improvements Roadmap for Next Session:
+1. **Interactive Omnibar Search (`Cmd+K` / `Ctrl+K`)**:
+   - Universal spotlight search across all candidate dossiers, corporate tenants, HR recruiter accounts, invoices, and the 81 Neev API services with instant keyboard shortcuts.
+2. **AI Document OCR Auto-Fill & Data Cross-Check**:
+   - Automatic real-time optical character recognition (OCR) on candidate document uploads (Aadhaar, PAN, Cheque) to pre-fill verification forms and flag identity mismatches instantly.
+3. **Candidate Verification Timeline & Live Progress Tracker**:
+   - Modern glassmorphism verification pipeline view showing real-time milestone beacons (Consent &rarr; DigiLocker &rarr; PAN Match &rarr; Penny Drop &rarr; Court Check &rarr; Certificate).
+4. **Official Digital Credential Card with Dynamic QR Code**:
+   - Apple/Google Wallet pass style downloadable credential and tamper-proof verification badges for candidates with offline SHA-256 validation.
+5. **Enhanced Dashboard Analytics & Roll-Up Counters**:
+   - Zoho/Stripe-grade smooth counter roll-ups on metrics (Total Candidates, Verification Turnaround, Uptime SLA, Revenue).
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
@@ -674,6 +688,7 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 
 ---
 *Last Updated: October 15, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 
