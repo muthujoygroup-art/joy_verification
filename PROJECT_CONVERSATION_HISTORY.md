@@ -559,6 +559,48 @@
 
 ---
 
+### Session 18: Innovative Full-Bleed Split-Screen Enterprise Login Redesign
+**Date**: October 15, 2026  
+**Focus Area**: Implementation of a prestigious split-screen authentication architecture based on user's structural sketch (Screenshot 3), featuring full-bleed 3:4 vertical 3D cinematic hero panels on the left and dedicated executive sign-in workstations on the right.
+
+#### User Intent & Problem Statement:
+- User feedback:  
+  *"hey bro, you have place the images in the login portal, that is really looking well... but need to do innovative design for login page for all the portals... So try some innovative idea for all the login page designs... I have attached one third screenshot... so try that idea for designing the login page... take your time and the design of the all the login pages need to be professional.."*
+- **Visual Analysis of User's Handwritten Annotation**:
+  - In Screenshot 3, the user clearly partitioned the entire login view with an orange vertical divider straight down the middle.
+  - The left half was enclosed in an orange box spanning the entire vertical height from top to bottom, explicitly labeled in handwriting: `"image"`.
+  - The right half was enclosed in an orange box containing the login workstation, portal badge, notice, credentials input, 2FA, and capabilities.
+
+#### Architectural Solutions & Code Hardening Applied:
+1. **Vertical 3:4 High-Resolution 3D Artwork Generation**:
+   - Generated 4 dedicated vertical (3:4 aspect ratio) 3D illustrations saved into `public/assets/welcome/`:
+     - **Super Admin** (`hero_superadmin.jpg`): Towering sovereign cybersecurity nexus with glowing golden crown emblem radiating authority, central 3D holographic Earth globe with orbital telemetry rings, and analyst workstations.
+     - **Company Admin** (`hero_company.jpg`): Soaring glass corporate skyscraper overlooking a smart city skyline at dusk, with 3D holographic building model and verified employee badge shields.
+     - **HR Executive** (`hero_hrexecutive.jpg`): Contemporary recruitment suite with a professional HR recruiter interacting with vertical holographic candidate profile cards with green verified checkmarks and talent pipeline analytics.
+     - **Candidate Portal** (`hero_candidate.jpg`): Towering modern smartphone displaying an official 100% Verified Indian Identity shield with green checkmark, biometric facial scan icon, and instant digital clearance.
+2. **Full-Bleed Split-Screen Layout in `LoginView.jsx`**:
+   - Replaced boxed card with `grid grid-cols-1 lg:grid-cols-12 min-h-[640px] lg:min-h-[740px]`:
+     - **Left Half (`lg:col-span-5`)**:
+       - Full-bleed edge-to-edge vertical hero image (`absolute inset-0 w-full h-full object-cover`).
+       - Multi-layered dark vignette overlay ensuring high-contrast legibility.
+       - Floating top badge (`welcomePill`) and pulsing status pill (`PORTAL ACTIVE`).
+       - Center floating frosted glass card (`bg-slate-950/70 backdrop-blur-xl border border-white/15`) with real-time security specs and 3-column trust metrics.
+       - Bottom persona heading, verified pill, and DPDP Act 2023 compliance seal.
+     - **Right Half (`lg:col-span-7`)**:
+       - Executive padding (`p-6 sm:p-8 lg:p-10`).
+       - Portal header, role tag, icon, title, subtitle, and provision notice.
+       - Credential form, password visibility toggle, 2FA workflow, and password recovery.
+       - Bottom Portal Capabilities drawer in a 2-column grid with emerald checkmarks.
+3. **Container Expansion**:
+   - Expanded container to `max-w-6xl` to provide executive breathing room for both columns.
+
+#### Verification & Quality Gates:
+- **Build Status (`npm run build`)**: Vite built production client environment in **1.61s** with 0 errors (`dist/assets/index-D5HNpM6M.js`).
+- **Asset Verification**: Confirmed all vertical hero and welcome images exist in `public/assets/welcome/` and `dist/assets/welcome/`.
+- **Git Push**: Pushed clean tree to `main` branch on GitHub.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.

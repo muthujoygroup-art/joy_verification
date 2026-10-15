@@ -306,6 +306,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       roleTag: 'Platform Master Account',
       provisionNotice: 'Master admin access only. Direct registration is disabled.',
       welcomeImage: '/assets/welcome/welcome_superadmin.jpg',
+      heroImage: '/assets/welcome/hero_superadmin.jpg',
       welcomeHeading: 'Welcome, Super Administrator',
       welcomeSub: 'Master Command Console for sovereign tenant governance, 81 verification clusters & DPDP compliance.',
       welcomePill: 'Master Command Access',
@@ -336,6 +337,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       roleTag: 'Company Administrator',
       provisionNotice: 'Company accounts are set up by the Super Admin during company onboarding.',
       welcomeImage: '/assets/welcome/welcome_company.jpg',
+      heroImage: '/assets/welcome/hero_company.jpg',
       welcomeHeading: 'Welcome, Corporate Administrator',
       welcomeSub: 'Manage workforce screening, HR recruiter workstations & employee verification dossiers.',
       welcomePill: 'Enterprise Corporate Suite',
@@ -366,6 +368,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       roleTag: 'Recruiting & Onboarding Team',
       provisionNotice: 'HR accounts are created by your Company Administrator in the HR Team section.',
       welcomeImage: '/assets/welcome/welcome_hrexecutive.jpg',
+      heroImage: '/assets/welcome/hero_hrexecutive.jpg',
       welcomeHeading: 'Welcome, HR Talent Recruiter',
       welcomeSub: 'Fast-track candidate onboarding with automated WhatsApp/SMS verification invitations.',
       welcomePill: 'Talent Acquisition Workstation',
@@ -395,6 +398,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       roleTag: 'Self-Service Candidate Check',
       provisionNotice: 'Candidates do not need username/password accounts. Access is granted via the HR verification link.',
       welcomeImage: '/assets/welcome/welcome_candidate.jpg',
+      heroImage: '/assets/welcome/hero_candidate.jpg',
       welcomeHeading: 'Welcome, Candidate',
       welcomeSub: 'Instant self-service candidate identity onboarding with official government checks & biometric matching.',
       welcomePill: 'Candidate Self-Service',
@@ -605,7 +609,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       {/* Background Lighting Accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-5xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
+      <div className="max-w-6xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
         
         {/* Top Header Navigation Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
@@ -649,112 +653,122 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           </p>
         </div>
 
-        {/* Selected Portal Login Card Form (Isolated strictly to this role) */}
-        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 shadow-xl relative overflow-hidden rounded-3xl animate-tab-switch">
+        {/* Selected Portal Split-Screen Enterprise Card */}
+        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12 min-h-[640px] lg:min-h-[740px]">
           
-          <div className="absolute top-0 left-0 right-0 h-1.5" style={{ background: currentDetail.headerGradient }} />
+          <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ background: currentDetail.headerGradient }} />
 
-          {/* Header Row of the Login Card */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className={`badge ${currentDetail.badgeClass}`}>{currentDetail.badge}</span>
-                <span className="text-xs font-bold text-slate-500">• {currentDetail.roleTag}</span>
+          {/* ========================================================================= */}
+          {/* 🎨 LEFT HALF: FULL-BLEED 3D CINEMATIC VISUAL HERO PANEL (5 cols) */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-5 relative flex flex-col justify-between overflow-hidden bg-slate-950 p-6 sm:p-8 lg:p-10 text-white min-h-[400px] lg:min-h-full group">
+            
+            {/* Full-Bleed 3:4 High-Resolution 3D Artwork */}
+            <img 
+              src={currentDetail.heroImage || currentDetail.welcomeImage} 
+              alt={currentDetail.welcomeHeading}
+              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+              onError={(e) => {
+                if (e.target.src !== currentDetail.welcomeImage) {
+                  e.target.src = currentDetail.welcomeImage;
+                }
+              }}
+            />
+
+            {/* Multi-Layered Cinematic Dark & Vignette Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-slate-950/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/30 to-slate-950/60 pointer-events-none" />
+
+            {/* TOP: Floating Branding Pill & Live Gateway Status */}
+            <div className="relative z-10 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-xl">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                <span>{currentDetail.welcomePill}</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5 flex items-center gap-2.5">
-                <div className={`p-2 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                <span>{currentDetail.title}</span>
-              </h2>
-              <p className="text-xs text-slate-600 font-medium mt-1">{currentDetail.subtitle}</p>
+
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/90 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-black shadow-xl">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span>PORTAL ACTIVE</span>
+              </div>
             </div>
 
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 max-w-sm text-[11px] text-slate-600 font-medium flex items-start gap-2">
-              <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-              <span>{currentDetail.provisionNotice}</span>
+            {/* CENTER / FLOATING GLASS CARD: Real-time Trust Highlights */}
+            <div className="relative z-10 my-auto py-4 hidden sm:block">
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/70 backdrop-blur-xl border border-white/15 shadow-2xl space-y-3">
+                <div className="flex items-center gap-2 text-xs font-extrabold text-amber-300 tracking-wide uppercase">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Sovereign Security Architecture</span>
+                </div>
+                <p className="text-xs text-slate-200/90 leading-relaxed font-medium">
+                  {currentDetail.welcomeSub}
+                </p>
+                
+                {/* Trust Badges Bar inside floating glass card */}
+                <div className="grid grid-cols-3 gap-2 pt-2.5 border-t border-white/10 text-center">
+                  {(currentDetail.stats || []).map((st, i) => (
+                    <div key={i} className="p-1.5 rounded-xl bg-white/5 border border-white/10">
+                      <div className="text-[9px] font-bold text-slate-300 uppercase tracking-wider">{st.label}</div>
+                      <div className="text-xs font-black text-white mt-0.5">{st.val}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            {/* BOTTOM: Persona Heading, Value Proposition & DPDP Seal */}
+            <div className="relative z-10 space-y-2 pt-4">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/20 text-white">
+                  {currentDetail.roleTag}
+                </span>
+                <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100% Verifiable
+                </span>
+              </div>
+
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                {currentDetail.welcomeHeading}
+              </h3>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-300 pt-2 border-t border-white/10">
+                <span>🔒 256-bit Bank Grade Encryption</span>
+                <span className="font-bold text-indigo-300">DPDP Act 2023</span>
+              </div>
+            </div>
+
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+          {/* ========================================================================= */}
+          {/* 🔐 RIGHT HALF: PROFESSIONAL ENTERPRISE SIGN-IN WORKSTATION (7 cols) */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6 bg-white">
             
-            {/* Left Col: Welcome Showcase Card + Portal Capabilities */}
-            <div className="lg:col-span-5 space-y-4">
-              
-              {/* ✨ Attractive Portal Welcome Card with 3D Illustration */}
-              <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-md group bg-slate-950 transition-all hover:shadow-xl">
-                <div className="relative h-48 sm:h-56 w-full overflow-hidden">
-                  <img 
-                    src={currentDetail.welcomeImage} 
-                    alt={currentDetail.welcomeHeading}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                  {/* Subtle Cinematic Vignette Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none" />
-                  
-                  {/* Floating Pill Badge */}
-                  <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold shadow-lg">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                    <span>{currentDetail.welcomePill}</span>
+            {/* Header Section of the Right Column */}
+            <div className="space-y-4 border-b border-slate-100 pb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className={`badge ${currentDetail.badgeClass}`}>{currentDetail.badge}</span>
+                    <span className="text-xs font-bold text-slate-500">• {currentDetail.roleTag}</span>
                   </div>
-
-                  {/* Pulsing Live Gateway Indicator */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/85 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-black shadow-lg">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    <span>PORTAL READY</span>
-                  </div>
-
-                  {/* Welcoming Heading & Tagline */}
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <h3 className="text-base sm:text-lg font-black tracking-tight leading-snug drop-shadow-md">
-                      {currentDetail.welcomeHeading}
-                    </h3>
-                    <p className="text-[11px] text-slate-200/90 font-medium line-clamp-2 mt-0.5 drop-shadow leading-relaxed">
-                      {currentDetail.welcomeSub}
-                    </p>
-                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5 flex items-center gap-2.5">
+                    <div className={`p-2 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <span>{currentDetail.title}</span>
+                  </h2>
+                  <p className="text-xs text-slate-600 font-medium mt-1">{currentDetail.subtitle}</p>
                 </div>
 
-                {/* Trust Stats Row Underneath Image */}
-                <div className="grid grid-cols-3 divide-x divide-slate-100 bg-white border-t border-slate-100 text-center py-2 px-1">
-                  {(currentDetail.stats || []).map((st, i) => (
-                    <div key={i} className="px-1.5">
-                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{st.label}</div>
-                      <div className="text-xs font-black text-slate-800 mt-0.5">{st.val}</div>
-                    </div>
-                  ))}
+                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 max-w-sm text-[11px] text-slate-600 font-medium flex items-start gap-2">
+                  <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                  <span>{currentDetail.provisionNotice}</span>
                 </div>
               </div>
-
-              {/* Portal Capabilities List */}
-              <div className="space-y-3 bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200">
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Portal Capabilities</span>
-                </h4>
-
-                <div className="space-y-2 text-xs font-semibold text-slate-700">
-                  {currentDetail.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-slate-200/90 shadow-2xs hover:border-indigo-200 transition-colors">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500 font-medium flex items-center justify-between">
-                  <span>🔒 256-bit Bank Grade Security</span>
-                  <span className="text-[10px] font-bold text-indigo-600">DPDP Act Compliant</span>
-                </div>
-              </div>
-
             </div>
 
-            {/* Right Col: Credential Authentication Form OR Password Recovery Form */}
-            <div className="lg:col-span-7 space-y-4">
+            {/* Authentication Form & Workflows */}
+            <div className="space-y-4">
               
               {/* ========================================================================= */}
               {/* 🛡️ TWO-FACTOR AUTHENTICATION (2FA) WORKFLOW */}
@@ -1504,6 +1518,25 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                 </>
               )}
 
+            </div>
+
+            {/* Portal Capabilities Accordion / Quick Features Chips */}
+            <div className="pt-4 border-t border-slate-100 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Portal Capabilities</span>
+                </h4>
+                <span className="text-[10px] font-bold text-slate-400">Integrated Capabilities</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+                {currentDetail.features.map((feat, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 shadow-2xs">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span className="truncate">{feat}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
           </div>
