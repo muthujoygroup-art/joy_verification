@@ -305,6 +305,15 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       icon: Crown,
       roleTag: 'Platform Master Account',
       provisionNotice: 'Master admin access only. Direct registration is disabled.',
+      welcomeImage: '/assets/welcome/welcome_superadmin.jpg',
+      welcomeHeading: 'Welcome, Super Administrator',
+      welcomeSub: 'Master Command Console for sovereign tenant governance, 81 verification clusters & DPDP compliance.',
+      welcomePill: 'Master Command Access',
+      stats: [
+        { label: 'System SLA', val: '99.99%' },
+        { label: 'Audit Trail', val: 'SHA-256' },
+        { label: 'Security', val: 'DPDP Active' }
+      ],
       features: [
         'System health & verification gateway status',
         'Add & manage corporate company accounts',
@@ -326,6 +335,15 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       icon: Building2,
       roleTag: 'Company Administrator',
       provisionNotice: 'Company accounts are set up by the Super Admin during company onboarding.',
+      welcomeImage: '/assets/welcome/welcome_company.jpg',
+      welcomeHeading: 'Welcome, Corporate Administrator',
+      welcomeSub: 'Manage workforce screening, HR recruiter workstations & employee verification dossiers.',
+      welcomePill: 'Enterprise Corporate Suite',
+      stats: [
+        { label: 'Turnaround', val: '< 10 Sec' },
+        { label: 'Standards', val: 'ISO 27001' },
+        { label: 'Vault', val: 'AES-256' }
+      ],
       features: [
         'Add & manage HR team recruiters and staff',
         'Track verification speed, progress & monthly usage',
@@ -347,6 +365,15 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       icon: UserCheck,
       roleTag: 'Recruiting & Onboarding Team',
       provisionNotice: 'HR accounts are created by your Company Administrator in the HR Team section.',
+      welcomeImage: '/assets/welcome/welcome_hrexecutive.jpg',
+      welcomeHeading: 'Welcome, HR Talent Recruiter',
+      welcomeSub: 'Fast-track candidate onboarding with automated WhatsApp/SMS verification invitations.',
+      welcomePill: 'Talent Acquisition Workstation',
+      stats: [
+        { label: 'Govt APIs', val: '81 Active' },
+        { label: 'Speed', val: 'Instant' },
+        { label: 'Delivery', val: 'SMS + WA' }
+      ],
       features: [
         'Add new candidate & employee profiles',
         'Select required document checks (Aadhaar, PAN, Bank, etc.)',
@@ -367,6 +394,15 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       icon: Smartphone,
       roleTag: 'Self-Service Candidate Check',
       provisionNotice: 'Candidates do not need username/password accounts. Access is granted via the HR verification link.',
+      welcomeImage: '/assets/welcome/welcome_candidate.jpg',
+      welcomeHeading: 'Welcome, Candidate',
+      welcomeSub: 'Instant self-service candidate identity onboarding with official government checks & biometric matching.',
+      welcomePill: 'Candidate Self-Service',
+      stats: [
+        { label: 'Process', val: 'Paperless' },
+        { label: 'Security', val: 'UIDAI / ITD' },
+        { label: 'Privacy', val: 'Consent First' }
+      ],
       features: [
         'Direct access via HR verification link',
         'Fast Aadhaar OTP verification',
@@ -569,7 +605,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       {/* Background Lighting Accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-4xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
+      <div className="max-w-5xl mx-auto w-full space-y-6 sm:space-y-8 relative z-10 my-auto">
         
         {/* Top Header Navigation Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-panel p-4 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
@@ -640,31 +676,85 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
             
-            {/* Left Col: Portal Capabilities List */}
-            <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Portal Capabilities</span>
-              </h4>
-
-              <div className="space-y-2 text-xs font-semibold text-slate-700">
-                {currentDetail.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{feat}</span>
+            {/* Left Col: Welcome Showcase Card + Portal Capabilities */}
+            <div className="lg:col-span-5 space-y-4">
+              
+              {/* ✨ Attractive Portal Welcome Card with 3D Illustration */}
+              <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-md group bg-slate-950 transition-all hover:shadow-xl">
+                <div className="relative h-48 sm:h-56 w-full overflow-hidden">
+                  <img 
+                    src={currentDetail.welcomeImage} 
+                    alt={currentDetail.welcomeHeading}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  {/* Subtle Cinematic Vignette Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none" />
+                  
+                  {/* Floating Pill Badge */}
+                  <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold shadow-lg">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                    <span>{currentDetail.welcomePill}</span>
                   </div>
-                ))}
+
+                  {/* Pulsing Live Gateway Indicator */}
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/85 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-black shadow-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span>PORTAL READY</span>
+                  </div>
+
+                  {/* Welcoming Heading & Tagline */}
+                  <div className="absolute bottom-3 left-3 right-3 text-white">
+                    <h3 className="text-base sm:text-lg font-black tracking-tight leading-snug drop-shadow-md">
+                      {currentDetail.welcomeHeading}
+                    </h3>
+                    <p className="text-[11px] text-slate-200/90 font-medium line-clamp-2 mt-0.5 drop-shadow leading-relaxed">
+                      {currentDetail.welcomeSub}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Trust Stats Row Underneath Image */}
+                <div className="grid grid-cols-3 divide-x divide-slate-100 bg-white border-t border-slate-100 text-center py-2 px-1">
+                  {(currentDetail.stats || []).map((st, i) => (
+                    <div key={i} className="px-1.5">
+                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{st.label}</div>
+                      <div className="text-xs font-black text-slate-800 mt-0.5">{st.val}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500 font-medium">
-                🔒 Safe and secure with bank-grade 256-bit encryption.
+              {/* Portal Capabilities List */}
+              <div className="space-y-3 bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Portal Capabilities</span>
+                </h4>
+
+                <div className="space-y-2 text-xs font-semibold text-slate-700">
+                  {currentDetail.features.map((feat, idx) => (
+                    <div key={idx} className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-slate-200/90 shadow-2xs hover:border-indigo-200 transition-colors">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500 font-medium flex items-center justify-between">
+                  <span>🔒 256-bit Bank Grade Security</span>
+                  <span className="text-[10px] font-bold text-indigo-600">DPDP Act Compliant</span>
+                </div>
               </div>
+
             </div>
 
             {/* Right Col: Credential Authentication Form OR Password Recovery Form */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-7 space-y-4">
               
               {/* ========================================================================= */}
               {/* 🛡️ TWO-FACTOR AUTHENTICATION (2FA) WORKFLOW */}

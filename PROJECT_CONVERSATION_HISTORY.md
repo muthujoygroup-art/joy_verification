@@ -521,6 +521,44 @@
 
 ---
 
+### Session 17: Attractive Portal Welcome Images & 3D Visual Showcase Cards
+**Date**: October 15, 2026  
+**Focus Area**: Implementation of tailored, high-resolution 3D cinematic welcome illustrations and glassmorphic showcase cards across all four portal sign-in views (`/superadmin/`, `/company/`, `/hr/`, `/candidate/`).
+
+#### User Intent & Problem Statement:
+- User requested:  
+  *"In each login page... Needed one attractive welcome image.. based on the portal.... like welcome kind of things.. Generate images if needed..."*
+- Objective: Wow users at first glance with rich aesthetics, modern 3D artwork tailored to each portal persona, floating status indicators, key trust metrics, and responsive presentation.
+
+#### Architectural Solutions & Code Hardening Applied:
+1. **AI Generation of Tailored 3D Cinematic Portal Illustrations**:
+   - Generated 4 high-resolution 16:9 3D illustrations saved into `public/assets/welcome/`:
+     - **Super Admin Portal** (`welcome_superadmin.jpg`): Master cybersecurity command center with a glowing golden enterprise crown, holographic world network, server clusters, cyber locks, and royal purple/indigo ambient lighting.
+     - **Company Admin Portal** (`welcome_company.jpg`): Modern glass skyscraper corporate headquarters overlooking a tech city skyline with cyan/teal ambient light, holographic building model, and verified employee badge shields.
+     - **HR Executive Portal** (`welcome_hrexecutive.jpg`): Contemporary recruitment and talent acquisition workstation in emerald green, featuring approved candidate profile cards, talent pipeline charts, digital onboarding tablets, and a welcoming recruiter.
+     - **Candidate Verification Portal** (`welcome_candidate.jpg`): Warm amber/gold inviting digital identity onboarding scene with smartphone displaying 100% verified green badge, biometric facial match, and official government e-KYC clearance.
+2. **Visual Showcase Card Integration in `LoginView.jsx`**:
+   - Upgraded the login container from `max-w-4xl` to `max-w-5xl` for a more spacious, executive layout.
+   - Restructured the portal card into a 12-column grid (`lg:grid-cols-12`):
+     - **Left Showcase Column (`lg:col-span-5`)**:
+       - Hover-zoom 3D visual welcome card with cinematic gradient overlay.
+       - Floating top badge (e.g. `✨ Master Command Access`, `✨ Enterprise Corporate Suite`, `✨ Talent Hub`, `✨ Instant e-KYC`).
+       - Pulsing live gateway indicator (`🟢 PORTAL READY`).
+       - Portal-specific welcome heading & value-proposition tagline.
+       - 3-column trust metrics bar (e.g. `Platform SLA: 99.99%`, `Audit Trail: SHA-256`, `Speed: < 10 Sec`, `Security: DPDP Active`).
+       - Portal Capabilities checklist with verified checkmarks and bank-grade encryption footnotes.
+     - **Right Authentication Column (`lg:col-span-7`)**:
+       - Ample room for credential forms, 2FA workflows, and password recovery steps.
+3. **Automated Asset Sync in Production Build**:
+   - Copied assets to `dist/assets/welcome/` via Vite build process, ensuring seamless deployment via `.cpanel.yml` to cPanel document roots.
+
+#### Verification & Quality Gates:
+- **Build Status (`npm run build`)**: Vite built production client environment in **1.82s** with 0 errors (`dist/assets/index-BZVtsYN4.js`).
+- **Asset Integrity**: Verified all 4 welcome images exist in `public/assets/welcome/` and `dist/assets/welcome/`.
+- **Responsive Layout**: Validated 12-column desktop split and mobile single-column stacking with image fallbacks.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
