@@ -301,6 +301,46 @@
 
 ---
 
+### Session 12: Enterprise 2FA Handshake Protocol, Candidate PIN Recovery & Multi-Portal Authentication Hardening
+**Date**: October 15, 2026  
+**Focus Area**: Universal Two-Factor Authentication (2FA) Across All Portals, Pre-Auth Credential Validation, Candidate PIN Recovery Wizard, 15-Minute Live Countdown Timer
+
+#### Key Problem Statement & Directives:
+- Previously, clicking "Sign In" with 2FA enabled triggered `request2FaOtp` *before* validating the user's password. This allowed anyone to trigger OTP emails with incorrect passwords.
+- Company Admin and HR Executive logins in `auth.py` previously did not check `password_hash == password`.
+- Candidate / Employee Link had no self-service PIN recovery wizard if they forgot their 4-digit PIN.
+- Candidate PIN input had demo placeholder text `(e.g. 1234)`.
+- 2FA modal lacked a countdown timer indicating the 15-minute validity TTL.
+
+#### Architectural Refactoring & Fixes Applied:
+1. **Backend Credential Validation Prior to 2FA Dispatch (`backend/app/routers/auth.py`)**:
+   - `superadmin`: Validates `sa.password_hash == password`. If invalid, immediately returns `401 Unauthorized` without generating/dispatching OTP.
+   - `company`: Validates `comp.password_hash == password`. If invalid, returns `401 Unauthorized`.
+   - `hrexecutive`: Validates `hr.password_hash == password`. If invalid, returns `401 Unauthorized`.
+   - `employee_link`: Validates `candidate.portal_password == pin`. If PIN is required but missing or wrong, raises `401 Unauthorized`.
+   - If `enable_2fa: true` is passed and credentials match: generates a 6-digit cryptographic OTP in `PASSWORD_RESET_REGISTRY` (TTL: 900s / 15m), dispatches authentic email via cPanel SMTP (`mail.joycorporatesolutions.com:465` with SSL), and returns `{ requires_2fa: true, email: target_email, role: role }`.
+2. **Universal Role Support in Password Recovery & Reset (`auth.py`)**:
+   - `/auth/forgot-password`: Added `employee_link` (Candidate) role support matching by candidate token, registered email, or mobile.
+   - `/auth/verify-reset-code`: Validates 6-digit OTP for `superadmin`, `company`, `hrexecutive`, and `employee_link`.
+   - `/auth/reset-password`: Updates `Candidate.portal_password` when role is candidate, alongside `SuperAdminUser`, `Company`, and `HrUser`. Dispatches email confirmation.
+   - `/auth/verify-2fa`: Validates OTP against `PASSWORD_RESET_REGISTRY`, clears OTP, creates session, and issues JWT token. Made `request: Request = None` optional with safe client IP/User-Agent fallbacks.
+3. **Frontend 2FA & Password Recovery UX (`src/views/LoginView.jsx`)**:
+   - In `handleLoginSubmit`: Calls `loginUser(role, { email, password, enable_2fa: enable2FaStep })`. If `res?.requires_2fa`, enters 2FA mode with active 15-minute countdown (`twoFaTimer = 900`).
+   - In `handleVerify2FaSubmit`: Validates 6-digit OTP, verifies timer > 0, calls `verify2FaAndLogin`, sets session, and routes to the proper portal.
+   - Added formatted 15-minute live countdown timer badge `⏱️ MM:SS` in the 2FA UI and expiration warning alert.
+   - Added "Forgot PIN?" link above candidate PIN input.
+   - Cleaned placeholder to `"Enter 4-digit PIN provided by HR"` (purged demo text `(e.g. 1234)`).
+   - In Forgot Password Wizard Step 1: Added candidate token / email input.
+   - In Forgot Password Wizard Step 3: Added candidate 4-digit numeric PIN entry and confirmation.
+4. **Automated End-to-End Test Suite Execution (`scratch/test_auth_flows.py`)**:
+   - All 5 test suites (Super Admin, Company Admin, HR Executive, Candidate Login + Recovery, and Super Admin Recovery) passed 100% against the active PostgreSQL database (`joy_verification`).
+
+#### Verification & Quality Gates:
+- **Build Status**: `npm run build` executed cleanly in **1.21s** with 0 errors (`dist/assets/index-DfmOVGp9.js`).
+- **Grep Audit**: 0 occurrences of demo OTP bypasses (`123456`, `1234`, `dev_otp`) in authentication; 0 occurrences of "sovereign".
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.

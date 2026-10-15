@@ -27,7 +27,7 @@ def _extract_token(authorization: str = Header(None)) -> str:
     return authorization
 
 @router.post("/login")
-def login(payload: dict, request: Request, db: Session = Depends(get_db)):
+def login(payload: dict, request: Request = None, db: Session = Depends(get_db)):
     """
     Role-based authentication & JWT session creation.
     Supports Super Admin, Company Admin, HR Executive, and Candidate link.
@@ -36,23 +36,60 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
     email = payload.get("email", "").strip().lower()
     password = payload.get("password", "").strip()
     token = payload.get("token", "").strip()
-    client_ip = request.client.host if request.client else "127.0.0.1"
-    user_agent = request.headers.get("user-agent", "Web Browser")
+    pin = (payload.get("pin") or payload.get("password") or "").strip()
+    enable_2fa = bool(payload.get("enable_2fa", False))
+    client_ip = (request.client.host if (request and request.client) else "127.0.0.1")
+    user_agent = (request.headers.get("user-agent", "Web Browser") if request else "Web Browser")
     
     if role == "superadmin":
         sa = db.query(SuperAdminUser).filter(
             (SuperAdminUser.email.ilike(email)) | (SuperAdminUser.email == "admin@joycorporatesolutions.com")
         ).first()
         
-        # Verify password if specified in database
-        if sa and sa.password_hash and password:
+        # Verify master credentials
+        if not password:
+            raise HTTPException(status_code=400, detail="Master Password is required.")
+        if sa and sa.password_hash:
             if sa.password_hash != password and password != "SuperAdmin@2026":
                 raise HTTPException(status_code=401, detail="Invalid Master Password for Super Administrator.")
+
+        target_email = sa.email if sa else (email or "admin@joycorporatesolutions.com")
+
+        if enable_2fa:
+            otp_data = create_password_reset_otp(target_email.lower(), "2fa_superadmin", expiry_seconds=900)
+            try:
+                from backend.app.services.email_service import _build_email_shell, send_smtp_email
+                shell = _build_email_shell(
+                    header_title="🔐 Super Admin 2FA Passcode",
+                    badge_text="TWO-FACTOR AUTHENTICATION",
+                    content_html=f"""
+                        <h2 style="color: #0f172a; margin-top: 0;">2FA Authorization Passcode</h2>
+                        <p>A login request to <strong>JOY TrueProfile Master Console</strong> was initiated with verified master credentials.</p>
+                        <p>Your 6-digit Two-Factor Authentication (2FA) security passcode is:</p>
+                        <div style="background: #eef2ff; border: 2px dashed #6366f1; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0;">
+                            <span style="font-size: 32px; font-weight: 900; letter-spacing: 8px; color: #4338ca; font-family: monospace;">{otp_data['otp']}</span>
+                        </div>
+                        <p style="color: #64748b; font-size: 12px;">This 6-digit passcode will expire in 15 minutes. If you did not initiate this login attempt, please secure your master password immediately.</p>
+                    """,
+                    action_text="Open JOY TrueProfile Gateway",
+                    action_url=settings.APP_BASE_URL
+                )
+                send_smtp_email(to_email=target_email, subject=f"🔐 Super Admin 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, db=db)
+            except Exception as e:
+                print(f"Warning: 2FA email dispatch failed: {e}")
+
+            return {
+                "requires_2fa": True,
+                "success": True,
+                "message": f"6-digit 2FA security passcode dispatched to Super Admin email ({target_email}).",
+                "email": target_email,
+                "role": "superadmin"
+            }
 
         user_data = {
             "id": sa.id if sa else "sa-master",
             "name": sa.name if sa else "Super Administrator",
-            "email": sa.email if sa else (email or "admin@joycorporatesolutions.com"),
+            "email": target_email,
             "portal": "Master Governance Portal"
         }
         return create_session(user_data, "superadmin", client_ip, user_agent)
@@ -64,6 +101,11 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         if not comp:
             raise HTTPException(status_code=401, detail="Company account not found. Please onboard company from Super Admin first.")
             
+        if not password:
+            raise HTTPException(status_code=400, detail="Company Administrator password is required.")
+        if comp.password_hash and comp.password_hash != password:
+            raise HTTPException(status_code=401, detail="Invalid Company Administrator password.")
+
         if comp.status in ("Inactive", "Suspended", "Discontinued", "Pending Activation", "Pending Approval"):
             if comp.status == "Pending Activation":
                 raise HTTPException(
@@ -81,9 +123,40 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
                     detail=f"Your enterprise organization account ({comp.name}) is currently {comp.status.upper()}. Please contact Super Administrator."
                 )
             
+        if enable_2fa:
+            otp_data = create_password_reset_otp(comp.email.lower(), "2fa_company", expiry_seconds=900)
+            try:
+                from backend.app.services.email_service import _build_email_shell, send_smtp_email
+                shell = _build_email_shell(
+                    header_title=f"🔐 2FA Passcode — {comp.name}",
+                    badge_text="TWO-FACTOR AUTHENTICATION",
+                    content_html=f"""
+                        <h2 style="color: #0f172a; margin-top: 0;">Company Admin 2FA Passcode</h2>
+                        <p>Hello <strong>{comp.contact_person or comp.name}</strong>, a login request was initiated for your Company Administrator account.</p>
+                        <p>Your 6-digit Two-Factor Authentication (2FA) security passcode is:</p>
+                        <div style="background: #f0f9ff; border: 2px dashed #0284c7; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0;">
+                            <span style="font-size: 32px; font-weight: 900; letter-spacing: 8px; color: #0284c7; font-family: monospace;">{otp_data['otp']}</span>
+                        </div>
+                        <p style="color: #64748b; font-size: 12px;">This passcode will expire in 15 minutes. If you did not initiate this login attempt, please secure your account immediately.</p>
+                    """,
+                    action_text="Open JOY TrueProfile Gateway",
+                    action_url=settings.APP_BASE_URL
+                )
+                send_smtp_email(to_email=comp.email, subject=f"🔐 Company 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, company_id=comp.id, db=db)
+            except Exception as e:
+                print(f"Warning: 2FA email dispatch failed: {e}")
+
+            return {
+                "requires_2fa": True,
+                "success": True,
+                "message": f"6-digit 2FA passcode dispatched to {comp.name} registered email ({comp.email}).",
+                "email": comp.email,
+                "role": "company"
+            }
+
         user_data = {
             "id": comp.id,
-            "name": comp.contact_person,
+            "name": comp.contact_person or comp.name,
             "companyName": comp.name,
             "companyCode": comp.code,
             "email": comp.email,
@@ -98,6 +171,11 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         if not hr:
             raise HTTPException(status_code=401, detail="HR Executive account not found. Please create HR recruiter from Company Admin first.")
             
+        if not password:
+            raise HTTPException(status_code=400, detail="HR Executive workstation password is required.")
+        if hr.password_hash and hr.password_hash != password:
+            raise HTTPException(status_code=401, detail="Invalid HR Executive workstation password.")
+
         if hr.status in ("Inactive", "Suspended", "Deactivated"):
             raise HTTPException(
                 status_code=403,
@@ -105,13 +183,46 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
             )
             
         comp = db.query(Company).filter(Company.id == hr.company_id).first()
+        comp_name = comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+
+        if enable_2fa:
+            otp_data = create_password_reset_otp(hr.email.lower(), "2fa_hrexecutive", expiry_seconds=900)
+            try:
+                from backend.app.services.email_service import _build_email_shell, send_smtp_email
+                shell = _build_email_shell(
+                    header_title=f"🔐 HR 2FA Passcode — {hr.name}",
+                    badge_text="TWO-FACTOR AUTHENTICATION",
+                    content_html=f"""
+                        <h2 style="color: #0f172a; margin-top: 0;">HR Workstation 2FA Passcode</h2>
+                        <p>Hello <strong>{hr.name}</strong>, a login request was initiated for your HR Recruiter workstation at <strong>{comp_name}</strong>.</p>
+                        <p>Your 6-digit Two-Factor Authentication (2FA) security passcode is:</p>
+                        <div style="background: #ecfdf5; border: 2px dashed #059669; border-radius: 12px; padding: 18px; text-align: center; margin: 18px 0;">
+                            <span style="font-size: 32px; font-weight: 900; letter-spacing: 8px; color: #059669; font-family: monospace;">{otp_data['otp']}</span>
+                        </div>
+                        <p style="color: #64748b; font-size: 12px;">This passcode will expire in 15 minutes. If you did not initiate this login attempt, please secure your account immediately.</p>
+                    """,
+                    action_text="Open JOY TrueProfile Gateway",
+                    action_url=settings.APP_BASE_URL
+                )
+                send_smtp_email(to_email=hr.email, subject=f"🔐 HR 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, company_id=hr.company_id, db=db)
+            except Exception as e:
+                print(f"Warning: 2FA email dispatch failed: {e}")
+
+            return {
+                "requires_2fa": True,
+                "success": True,
+                "message": f"6-digit 2FA passcode dispatched to HR recruiter email ({hr.email}).",
+                "email": hr.email,
+                "role": "hrexecutive"
+            }
+
         user_data = {
             "id": hr.id,
             "name": hr.name,
             "email": hr.email,
             "dept": hr.dept,
             "companyId": hr.company_id,
-            "companyName": comp.name if comp else "JOY CORPORATE SOLUTIONS PRIVATE LIMITED"
+            "companyName": comp_name
         }
         return create_session(user_data, "hrexecutive", client_ip, user_agent)
         
@@ -122,6 +233,12 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         if not candidate:
             raise HTTPException(status_code=404, detail="Invalid or expired verification token.")
             
+        if candidate.portal_password:
+            if not pin:
+                raise HTTPException(status_code=400, detail="4-digit Security PIN is required.")
+            if candidate.portal_password != pin:
+                raise HTTPException(status_code=401, detail="Invalid Candidate Security PIN.")
+
         if candidate.status in ("Inactive", "Discontinued", "Withdrawn"):
             raise HTTPException(
                 status_code=403,
@@ -147,6 +264,19 @@ def login(payload: dict, request: Request, db: Session = Depends(get_db)):
         }
         return create_session(user_data, "employee_link", client_ip, user_agent)
         
+    elif role == "vendor":
+        vendor_token = token or email or payload.get("vendor_id") or ""
+        if not vendor_token:
+            raise HTTPException(status_code=400, detail="Vendor ID or Token is required.")
+        user_data = {
+            "id": vendor_token,
+            "token": vendor_token,
+            "name": payload.get("name") or "Vendor Partner",
+            "email": email or f"{vendor_token}@vendor.internal",
+            "role": "vendor"
+        }
+        return create_session(user_data, "vendor", client_ip, user_agent)
+
     raise HTTPException(status_code=400, detail="Invalid role specified.")
 
 @router.get("/session")
@@ -320,6 +450,52 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "email_sent": email_sent
         }
 
+    elif role in ("employee_link", "candidate", "employee"):
+        if not raw_email:
+            raise HTTPException(status_code=400, detail="Candidate Token, Email, or Mobile Number is required.")
+        cand = db.query(Candidate).filter(
+            (Candidate.token == raw_email) |
+            (Candidate.email.ilike(raw_email)) |
+            (Candidate.mobile == raw_email)
+        ).first()
+        if not cand:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No candidate onboarding record found matching '{raw_email}'. Please check your token or contact HR."
+            )
+
+        target_email = cand.email or raw_email
+        user_name = cand.name or "Candidate"
+        role_label = "Candidate Verification Portal"
+        otp_data = create_password_reset_otp(target_email.lower(), "employee_link", user_id=cand.id)
+        reset_link = f"{app_url}/verify?token={cand.token}&reset_token={otp_data['token']}"
+
+        email_sent = False
+        try:
+            send_res = send_password_reset_email(
+                to_email=target_email,
+                user_name=user_name,
+                role_label=role_label,
+                reset_code_or_otp=otp_data["otp"],
+                reset_url=reset_link,
+                expiry_minutes=otp_data["expiry_minutes"],
+                company_id=cand.company_id,
+                db=db
+            )
+            email_sent = send_res.get("success", False)
+        except Exception as e:
+            print(f"Warning: Failed to dispatch Candidate PIN reset email: {e}")
+
+        return {
+            "success": True,
+            "message": f"Password reset passcode dispatched to candidate email ({target_email}).",
+            "email": target_email,
+            "role": "employee_link",
+            "candidate_name": user_name,
+            "token": cand.token,
+            "email_sent": email_sent
+        }
+
     raise HTTPException(status_code=400, detail="Invalid role specified for password recovery.")
 
 
@@ -343,6 +519,8 @@ def verify_reset_code(payload: dict, db: Session = Depends(get_db)):
         effective_role = "company"
     elif role in ("hrexecutive", "hr"):
         effective_role = "hrexecutive"
+    elif role in ("employee_link", "candidate", "employee"):
+        effective_role = "employee_link"
     else:
         raise HTTPException(status_code=400, detail="Invalid role specified.")
         
@@ -390,6 +568,8 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
         effective_role = "company"
     elif role in ("hrexecutive", "hr"):
         effective_role = "hrexecutive"
+    elif role in ("employee_link", "candidate", "employee"):
+        effective_role = "employee_link"
     else:
         raise HTTPException(status_code=400, detail="Invalid role specified.")
 
@@ -478,6 +658,29 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
         except Exception as e:
             print(f"Warning: Failed to dispatch HR password changed confirmation email: {e}")
 
+    elif effective_role == "employee_link":
+        cand = db.query(Candidate).filter(
+            (Candidate.email.ilike(email)) | 
+            (Candidate.token == email) | 
+            (Candidate.mobile == email)
+        ).first()
+        if not cand:
+            raise HTTPException(status_code=404, detail="Candidate record not found.")
+        cand.portal_password = new_password
+        db.commit()
+
+        if cand.email:
+            try:
+                send_password_changed_confirmation_email(
+                    to_email=cand.email,
+                    user_name=cand.name or "Candidate",
+                    role_label="Candidate Verification Portal",
+                    company_id=cand.company_id,
+                    db=db
+                )
+            except Exception as e:
+                print(f"Warning: Failed to dispatch Candidate PIN confirmation email: {e}")
+
     # Clear OTP after successful use
     clear_password_reset_otp(email, effective_role)
 
@@ -500,7 +703,28 @@ def request_2fa_otp(payload: dict, db: Session = Depends(get_db)):
     if not email:
         raise HTTPException(status_code=400, detail="Registered email is required for 2FA verification.")
 
-    otp_data = create_password_reset_otp(email, f"2fa_{role}", expiry_seconds=900)
+    if role == "superadmin":
+        sa = db.query(SuperAdminUser).filter((SuperAdminUser.email.ilike(email)) | (SuperAdminUser.email == "admin@joycorporatesolutions.com")).first()
+        target_email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
+    elif role in ("company", "companyadmin"):
+        comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        if not comp:
+            raise HTTPException(status_code=404, detail=f"No company account found for email: {email}")
+        target_email = comp.email.lower()
+    elif role in ("hrexecutive", "hr"):
+        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        if not hr:
+            raise HTTPException(status_code=404, detail=f"No HR recruiter account found for email: {email}")
+        target_email = hr.email.lower()
+    elif role in ("employee_link", "candidate"):
+        cand = db.query(Candidate).filter((Candidate.email.ilike(email)) | (Candidate.token == email)).first()
+        if not cand:
+            raise HTTPException(status_code=404, detail=f"No candidate record found for: {email}")
+        target_email = (cand.email or email).lower()
+    else:
+        target_email = email.lower()
+
+    otp_data = create_password_reset_otp(target_email, f"2fa_{role}", expiry_seconds=900)
 
     try:
         from backend.app.services.email_service import _build_email_shell, send_smtp_email
@@ -531,13 +755,13 @@ def request_2fa_otp(payload: dict, db: Session = Depends(get_db)):
 
 
 @router.post("/verify-2fa")
-def verify_2fa_and_login(payload: dict, request: Request, db: Session = Depends(get_db)):
+def verify_2fa_and_login(payload: dict, request: Request = None, db: Session = Depends(get_db)):
     """Verifies 6-digit 2FA passcode and issues authenticated session JWT token"""
     role = (payload.get("role") or payload.get("portal_type") or "superadmin").strip().lower()
     email = (payload.get("email") or "").strip().lower()
     otp = (payload.get("otp") or payload.get("code") or payload.get("passcode") or "").strip()
-    client_ip = request.client.host if request.client else "127.0.0.1"
-    user_agent = request.headers.get("user-agent", "Web Browser")
+    client_ip = (request.client.host if (request and request.client) else "127.0.0.1")
+    user_agent = (request.headers.get("user-agent", "Web Browser") if request else "Web Browser")
 
     if not email and role == "superadmin":
         email = "admin@joycorporatesolutions.com"

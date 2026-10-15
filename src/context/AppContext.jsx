@@ -1921,31 +1921,39 @@ export const AppProvider = ({ children }) => {
       const resp = await api.login({
         role,
         email: userData.email || '',
-        token: userData.token || ''
+        password: userData.password || '',
+        token: userData.token || '',
+        pin: userData.pin || userData.password || '',
+        enable_2fa: Boolean(userData.enable_2fa)
       });
 
+      // If backend reports 2FA verification is required
+      if (resp?.requires_2fa) {
+        return resp;
+      }
+
       const userObj = {
-        ...resp.user,
-        role: resp.role,
+        ...(resp.user || {}),
+        role: resp.role || role,
         loginTimestamp: new Date().toLocaleTimeString()
       };
-      setCurrentRole(resp.role);
+      setCurrentRole(resp.role || role);
       setCurrentUser(userObj);
       try {
         localStorage.setItem('joy_auth_user', JSON.stringify(userObj));
-        localStorage.setItem('joy_auth_role', resp.role);
+        localStorage.setItem('joy_auth_role', resp.role || role);
       } catch (e) {}
       setSessionData({
         sessionId: resp.session_id,
         token: resp.access_token,
-        role: resp.role,
+        role: resp.role || role,
         expiresIn: 600
       });
       setSessionTtlSeconds(600);
       setInactivityCountdown(60);
       setLastActivityTimestamp(Date.now());
       setShowInactivityWarning(false);
-      showToast(`Logged in successfully as ${role.toUpperCase()} (Session: 10 Mins)!`);
+      showToast(`Logged in successfully as ${(resp.role || role).toUpperCase()} (Session: 10 Mins)!`);
       return userObj;
     } catch (err) {
       console.error('Login failed:', err);
@@ -1959,8 +1967,7 @@ export const AppProvider = ({ children }) => {
       const targetEmail = (email || (role === 'superadmin' ? 'admin@joycorporatesolutions.com' : '')).trim();
       const resp = await api.forgotPassword(targetEmail, role);
       
-      const otpCode = resp.dev_otp ? ` [Code: ${resp.dev_otp}]` : '';
-      showToast((resp.message || 'Password reset passcode dispatched to official email!') + (resp.dev_otp ? ` OTP: ${resp.dev_otp}` : ''), 'success');
+      showToast(resp.message || 'Password reset passcode dispatched to official email!', 'success');
       
       // Push high-priority security in-app notification
       try {
@@ -1968,7 +1975,7 @@ export const AppProvider = ({ children }) => {
           id: `notif-reset-${Date.now()}`,
           role: role || 'superadmin',
           title: role === 'superadmin' ? '🔐 Super Admin Reset Passcode Dispatched' : '🔐 Password Recovery Passcode Dispatched',
-          message: `6-digit recovery passcode${otpCode} dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode is valid for 30 minutes.`,
+          message: `6-digit recovery passcode dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode is valid for 15 minutes.`,
           timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
           isRead: false,
           priority: 'high',
@@ -3464,7 +3471,38 @@ export const AppProvider = ({ children }) => {
   };
 
   const verify2FaAndLogin = async (payload) => {
-    return await api.verify2FaAndLogin(payload);
+    try {
+      const resp = await api.verify2FaAndLogin(payload);
+      if (resp && resp.access_token) {
+        const userObj = {
+          ...(resp.user || {}),
+          role: resp.role || payload.role,
+          loginTimestamp: new Date().toLocaleTimeString()
+        };
+        setCurrentRole(resp.role || payload.role);
+        setCurrentUser(userObj);
+        try {
+          localStorage.setItem('joy_auth_user', JSON.stringify(userObj));
+          localStorage.setItem('joy_auth_role', resp.role || payload.role);
+          localStorage.setItem('joy_auth_token', resp.access_token);
+        } catch (e) {}
+        setSessionData({
+          sessionId: resp.session_id,
+          token: resp.access_token,
+          role: resp.role || payload.role,
+          expiresIn: 600
+        });
+        setSessionTtlSeconds(600);
+        setInactivityCountdown(60);
+        setLastActivityTimestamp(Date.now());
+        setShowInactivityWarning(false);
+        showToast(`2FA Passcode Verified! Logged in as ${(resp.role || payload.role).toUpperCase()}`);
+      }
+      return resp;
+    } catch (err) {
+      console.error('2FA verification failed:', err);
+      throw err;
+    }
   };
 
   // Fetch System Logs with Multi-Criteria Filtering

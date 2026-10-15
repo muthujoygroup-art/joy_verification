@@ -84,6 +84,26 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [twoFaError, setTwoFaError] = useState('');
   const [twoFaPendingAuth, setTwoFaPendingAuth] = useState(null);
   const [enable2FaStep, setEnable2FaStep] = useState(true);
+  const [twoFaTimer, setTwoFaTimer] = useState(900); // 15 minutes TTL
+
+  // 15-Minute 2FA Countdown Timer
+  useEffect(() => {
+    let interval = null;
+    if (is2FaMode && twoFaTimer > 0) {
+      interval = setInterval(() => {
+        setTwoFaTimer(prev => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [is2FaMode, twoFaTimer]);
+
+  const formatTimer = (seconds) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   // 🔑 Forgot Password / Recovery State (Step 1: Request, Step 2: Verify OTP, Step 3: Set Password)
   const [isForgotMode, setIsForgotMode] = useState(false);
@@ -114,7 +134,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const openForgotMode = (defaultEmail = '') => {
     setIsForgotMode(true);
     setForgotStep(1);
-    setForgotEmail(defaultEmail || (selectedRoleTab === 'superadmin' ? '' : emailInput));
+    if (selectedRoleTab === 'employee_link') {
+      setForgotEmail(defaultEmail || candidateTokenInput || '');
+    } else {
+      setForgotEmail(defaultEmail || (selectedRoleTab === 'superadmin' ? '' : emailInput));
+    }
     setForgotOtp('');
     setForgotNewPassword('');
     setForgotConfirmPassword('');
@@ -138,9 +162,18 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
     try {
       const isSuperAdmin = selectedRoleTab === 'superadmin';
-      const emailToUse = isSuperAdmin ? (forgotEmail || '').trim() : (forgotEmail || emailInput).trim();
+      const isCandidate = selectedRoleTab === 'employee_link';
+      let emailToUse = '';
+      if (isSuperAdmin) {
+        emailToUse = (forgotEmail || '').trim();
+      } else if (isCandidate) {
+        emailToUse = (forgotEmail || candidateTokenInput).trim();
+      } else {
+        emailToUse = (forgotEmail || emailInput).trim();
+      }
+
       if (!emailToUse && !isSuperAdmin) {
-        setForgotError('Please enter your registered account email.');
+        setForgotError(isCandidate ? 'Please enter your Candidate Verification Token or registered email.' : 'Please enter your registered account email.');
         setIsForgotLoading(false);
         return;
       }
@@ -150,7 +183,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       setForgotEmail(res.email || emailToUse || 'admin@joycorporatesolutions.com');
       setForgotStep(2);
     } catch (err) {
-      setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your email.');
+      setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your details.');
     } finally {
       setIsForgotLoading(false);
     }
@@ -191,12 +224,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setForgotError('');
     setForgotSuccess('');
 
-    if (!forgotNewPassword || forgotNewPassword.length < 4) {
-      setForgotError('New password must be at least 4 characters.');
-      return;
+    const isCandidate = selectedRoleTab === 'employee_link';
+    if (isCandidate) {
+      if (!forgotNewPassword || !/^\d{4}$/.test(forgotNewPassword)) {
+        setForgotError('New Security PIN must be exactly 4 numeric digits.');
+        return;
+      }
+    } else {
+      if (!forgotNewPassword || forgotNewPassword.length < 4) {
+        setForgotError('New password must be at least 4 characters.');
+        return;
+      }
     }
     if (forgotNewPassword !== forgotConfirmPassword) {
-      setForgotError('Passwords do not match. Please re-enter.');
+      setForgotError(isCandidate ? 'Security PINs do not match. Please re-enter.' : 'Passwords do not match. Please re-enter.');
       return;
     }
 
@@ -210,16 +251,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         new_password: forgotNewPassword.trim()
       };
       const res = await completePasswordReset(payload);
-      setForgotSuccess(res.message || 'Password successfully updated!');
-      setEmailInput(emailToUse);
-      setPasswordInput(forgotNewPassword.trim());
+      setForgotSuccess(res.message || (isCandidate ? 'Security PIN successfully updated!' : 'Password successfully updated!'));
+      if (isCandidate) {
+        setCandidatePinInput(forgotNewPassword.trim());
+      } else {
+        setEmailInput(emailToUse);
+        setPasswordInput(forgotNewPassword.trim());
+      }
       setTimeout(() => {
         setIsForgotMode(false);
         setForgotStep(1);
-        setForgotSuccess('🎉 Password reset complete! You can now log in with your new password.');
+        setForgotSuccess(isCandidate ? '🎉 Security PIN reset complete! You can now start verification.' : '🎉 Password reset complete! You can now log in with your new password.');
       }, 1200);
     } catch (err) {
-      setForgotError(err.message || 'Failed to update password. Please check passcode.');
+      setForgotError(err.message || 'Failed to update credentials. Please check passcode.');
     } finally {
       setIsForgotLoading(false);
     }
@@ -334,11 +379,15 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const currentDetail = roleDetails[selectedRoleTab] || roleDetails.superadmin;
   const Icon = currentDetail.icon;
 
-    const handleVerify2FaSubmit = async (e) => {
+  const handleVerify2FaSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setTwoFaError('');
     if (!twoFaOtp || !twoFaOtp.trim()) {
       setTwoFaError('Please enter the 6-digit passcode.');
+      return;
+    }
+    if (twoFaTimer === 0) {
+      setTwoFaError('⚠️ 2FA passcode has expired. Please click "Resend" to receive a fresh code.');
       return;
     }
     setTwoFaLoading(true);
@@ -347,19 +396,23 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       const authRes = await verify2FaAndLogin({
         role: pending.role,
         email: pending.email,
-        otp: twoFaOtp.trim()
+        otp: twoFaOtp.trim(),
+        token: pending.token
       });
-      await loginUser(pending.role, { email: pending.email, token: authRes?.access_token });
       setIs2FaMode(false);
 
       if (pending.role === 'superadmin') {
         navigate('/superadmin');
       } else if (pending.role === 'company') {
-        const comp = (companies || []).find(c => c.email?.toLowerCase() === pending.email.toLowerCase()) || (companies || [])[0];
-        const compSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const comp = (companies || []).find(c => c.email?.toLowerCase() === (pending.email || '').toLowerCase()) || (companies || [])[0];
+        const compSlug = (pending.compSlug || comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         navigate(`/company/${compSlug}`);
       } else if (pending.role === 'hrexecutive') {
-        navigate('/hr/joy-corporate-solutions');
+        const compName = authRes?.user?.companyName || authRes?.user?.company_name || 'joy-corporate-solutions';
+        const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        navigate(`/hr/${hrSlug}`);
+      } else if (pending.role === 'employee_link') {
+        navigate(`/verify?token=${pending.token}`);
       }
     } catch (err) {
       setTwoFaError(err.message || 'Invalid or expired 2FA passcode.');
@@ -371,8 +424,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const handleResend2FaOtp = async () => {
     setTwoFaError('');
     try {
-      await request2FaOtp(twoFaTargetEmail, selectedRoleTab);
-      setForgotSuccess('2FA security code resent to email!');
+      const pending = twoFaPendingAuth || { role: selectedRoleTab, email: twoFaTargetEmail };
+      await request2FaOtp(twoFaTargetEmail, pending.role);
+      setTwoFaTimer(900);
+      setForgotSuccess('Fresh 2FA security code resent to your email!');
     } catch (err) {
       setTwoFaError('Failed to resend code: ' + err.message);
     }
@@ -406,7 +461,16 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        await loginUser('employee_link', { token: tokenToUse });
+        const res = await loginUser('employee_link', { token: tokenToUse, pin: pinToUse });
+        if (res?.requires_2fa) {
+          setIs2FaMode(true);
+          setTwoFaTargetEmail(res.email || '');
+          setTwoFaOtp('');
+          setTwoFaTimer(900);
+          setTwoFaPendingAuth({ role: 'employee_link', token: tokenToUse, pin: pinToUse, email: res.email });
+          setIsLoading(false);
+          return;
+        }
         navigate(`/verify?token=${tokenToUse}`);
       } 
       else if (selectedRoleTab === 'superadmin') {
@@ -419,27 +483,17 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        if (email.toLowerCase() !== 'admin@joycorporatesolutions.com' && email.toLowerCase() !== 'superadmin@joyverification.com' && !email.includes('admin')) {
-          setLoginError('Invalid Super Admin credentials. Please check your official email.');
+        const res = await loginUser('superadmin', { email, password, enable_2fa: enable2FaStep });
+        if (res?.requires_2fa) {
+          setIs2FaMode(true);
+          setTwoFaTargetEmail(res.email || email);
+          setTwoFaOtp('');
+          setTwoFaTimer(900);
+          setTwoFaPendingAuth({ role: 'superadmin', email: res.email || email, password });
           setIsLoading(false);
           return;
         }
 
-        if (enable2FaStep) {
-          try {
-            await request2FaOtp(email, 'superadmin');
-            setIs2FaMode(true);
-            setTwoFaTargetEmail(email);
-            setTwoFaOtp('');
-            setTwoFaPendingAuth({ role: 'superadmin', email, password });
-            setIsLoading(false);
-            return;
-          } catch (err) {
-            console.warn('2FA request fallback:', err);
-          }
-        }
-
-        await loginUser('superadmin', { email, password });
         navigate('/superadmin');
       } 
       else if (selectedRoleTab === 'company') {
@@ -455,21 +509,17 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         const comp = (companies || []).find(c => c.email?.toLowerCase() === email) || (companies || [])[0];
         const compSlug = (comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-        if (enable2FaStep) {
-          try {
-            await request2FaOtp(email, 'company');
-            setIs2FaMode(true);
-            setTwoFaTargetEmail(email);
-            setTwoFaOtp('');
-            setTwoFaPendingAuth({ role: 'company', email, password, companyId: comp?.id });
-            setIsLoading(false);
-            return;
-          } catch (err) {
-            console.warn('2FA request fallback:', err);
-          }
+        const res = await loginUser('company', { email, password, enable_2fa: enable2FaStep, companyId: comp?.id });
+        if (res?.requires_2fa) {
+          setIs2FaMode(true);
+          setTwoFaTargetEmail(res.email || email);
+          setTwoFaOtp('');
+          setTwoFaTimer(900);
+          setTwoFaPendingAuth({ role: 'company', email: res.email || email, password, companyId: comp?.id, compSlug });
+          setIsLoading(false);
+          return;
         }
 
-        await loginUser('company', { email, password, companyId: comp?.id });
         navigate(`/company/${compSlug}`);
       } 
       else if (selectedRoleTab === 'hrexecutive') {
@@ -482,22 +532,18 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        if (enable2FaStep) {
-          try {
-            await request2FaOtp(email, 'hrexecutive');
-            setIs2FaMode(true);
-            setTwoFaTargetEmail(email);
-            setTwoFaOtp('');
-            setTwoFaPendingAuth({ role: 'hrexecutive', email, password });
-            setIsLoading(false);
-            return;
-          } catch (err) {
-            console.warn('2FA request fallback:', err);
-          }
+        const res = await loginUser('hrexecutive', { email, password, enable_2fa: enable2FaStep });
+        if (res?.requires_2fa) {
+          setIs2FaMode(true);
+          setTwoFaTargetEmail(res.email || email);
+          setTwoFaOtp('');
+          setTwoFaTimer(900);
+          setTwoFaPendingAuth({ role: 'hrexecutive', email: res.email || email, password });
+          setIsLoading(false);
+          return;
         }
 
-        const userObj = await loginUser('hrexecutive', { email, password });
-        const compName = userObj?.companyName || userObj?.company_name || 'joy-corporate-solutions';
+        const compName = res?.companyName || res?.company_name || 'joy-corporate-solutions';
         const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         navigate(`/hr/${hrSlug}`);
       }
@@ -652,10 +698,22 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <span>Passcode dispatched to authorized email:</span>
                     </div>
                     <div className="font-mono font-bold text-slate-900 bg-white p-2.5 rounded-xl border border-indigo-100 flex items-center justify-between">
-                      <span>{twoFaTargetEmail}</span>
-                      <span className="badge badge-emerald text-[9px]">OTP Sent ✉️</span>
+                      <span className="truncate">{twoFaTargetEmail}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`badge ${twoFaTimer < 120 ? 'badge-rose' : 'badge-indigo'} text-[10px] font-mono flex items-center gap-1`}>
+                          ⏱️ {formatTimer(twoFaTimer)}
+                        </span>
+                        <span className="badge badge-emerald text-[9px]">OTP Sent ✉️</span>
+                      </div>
                     </div>
                   </div>
+
+                  {twoFaTimer === 0 && (
+                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>Passcode expired after 15 minutes. Click "Resend" below to receive a new code.</span>
+                    </div>
+                  )}
 
                   <form onSubmit={handleVerify2FaSubmit} className="space-y-4 text-xs">
                     <div>
@@ -781,6 +839,33 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                             </span>
                           </div>
                         </div>
+                      ) : selectedRoleTab === 'employee_link' ? (
+                        <>
+                          <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] leading-relaxed space-y-1">
+                            <div className="font-extrabold text-amber-950 flex items-center gap-1.5">
+                              <Info className="w-3.5 h-3.5 text-amber-600" />
+                              <span>Candidate Security PIN Recovery:</span>
+                            </div>
+                            <p>Enter your <strong>Candidate Verification Token</strong> (or registered email/mobile). A 6-digit passcode will be dispatched to your registered email to set a new 4-digit PIN.</p>
+                          </div>
+
+                          <div>
+                            <label className="block text-slate-700 font-bold mb-1">
+                              Candidate Token or Registered Email *
+                            </label>
+                            <div className="input-wrapper">
+                              <KeyRound className="input-icon-left text-amber-600" />
+                              <input 
+                                type="text" 
+                                required
+                                placeholder="e.g. tok_dl_9241028942 or candidate@gmail.com"
+                                value={forgotEmail}
+                                onChange={(e) => setForgotEmail(e.target.value)}
+                                className="input-field-styled font-medium"
+                              />
+                            </div>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-[11px] leading-relaxed space-y-1">
@@ -912,29 +997,32 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                     </form>
                   )}
 
-                  {/* STEP 3: SET NEW PASSWORD (AFTER OTP IS VERIFIED) */}
+                  {/* STEP 3: SET NEW PASSWORD OR 4-DIGIT PIN (AFTER OTP IS VERIFIED) */}
                   {forgotStep === 3 && (
                     <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
                       <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-bold flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>
-                          Passcode verified for: <strong>{forgotEmail || (selectedRoleTab === 'superadmin' ? 'Master Super Admin Email' : 'Registered Account')}</strong>. Please enter your new password below.
+                          Passcode verified for: <strong>{forgotEmail || (selectedRoleTab === 'superadmin' ? 'Master Super Admin Email' : 'Registered Account')}</strong>. {selectedRoleTab === 'employee_link' ? 'Please set your new 4-digit security PIN below.' : 'Please enter your new password below.'}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-slate-700 font-bold mb-1">New Password *</label>
+                          <label className="block text-slate-700 font-bold mb-1">
+                            {selectedRoleTab === 'employee_link' ? 'New 4-Digit Security PIN *' : 'New Password *'}
+                          </label>
                           <div className="input-wrapper">
                             <Lock className="input-icon-left" />
                             <input 
                               type={showForgotPw ? 'text' : 'password'} 
                               required
-                              minLength={4}
-                              placeholder="Enter new password"
+                              minLength={selectedRoleTab === 'employee_link' ? 4 : 4}
+                              maxLength={selectedRoleTab === 'employee_link' ? 4 : undefined}
+                              placeholder={selectedRoleTab === 'employee_link' ? '••••' : 'Enter new password'}
                               value={forgotNewPassword}
                               onChange={(e) => setForgotNewPassword(e.target.value)}
-                              className="input-field-styled pr-10 font-medium"
+                              className={`input-field-styled pr-10 font-medium ${selectedRoleTab === 'employee_link' ? 'font-mono text-center tracking-widest' : ''}`}
                               autoFocus
                             />
                             <button
@@ -948,17 +1036,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         </div>
 
                         <div>
-                          <label className="block text-slate-700 font-bold mb-1">Confirm New Password *</label>
+                          <label className="block text-slate-700 font-bold mb-1">
+                            {selectedRoleTab === 'employee_link' ? 'Confirm 4-Digit Security PIN *' : 'Confirm New Password *'}
+                          </label>
                           <div className="input-wrapper">
                             <Lock className="input-icon-left" />
                             <input 
                               type={showForgotPw ? 'text' : 'password'} 
                               required
-                              minLength={4}
-                              placeholder="Re-enter new password"
+                              minLength={selectedRoleTab === 'employee_link' ? 4 : 4}
+                              maxLength={selectedRoleTab === 'employee_link' ? 4 : undefined}
+                              placeholder={selectedRoleTab === 'employee_link' ? '••••' : 'Re-enter new password'}
                               value={forgotConfirmPassword}
                               onChange={(e) => setForgotConfirmPassword(e.target.value)}
-                              className="input-field-styled font-medium"
+                              className={`input-field-styled font-medium ${selectedRoleTab === 'employee_link' ? 'font-mono text-center tracking-widest' : ''}`}
                             />
                           </div>
                         </div>
@@ -971,7 +1062,12 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           className={`btn ${currentDetail.btnClass} flex-1 py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer`}
                         >
                           <KeyRound className="w-4 h-4" />
-                          <span>{isForgotLoading ? 'Updating Password...' : 'Save New Password & Log In 🚀'}</span>
+                          <span>
+                            {isForgotLoading 
+                              ? (selectedRoleTab === 'employee_link' ? 'Updating PIN...' : 'Updating Password...') 
+                              : (selectedRoleTab === 'employee_link' ? 'Save New PIN & Start Verification 🚀' : 'Save New Password & Log In 🚀')
+                            }
+                          </span>
                         </button>
                         <button
                           type="button"
@@ -1269,17 +1365,27 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         </div>
 
                         <div>
-                          <label className="block text-slate-700 font-bold mb-1">
-                            4-Digit PIN (from HR) *
-                          </label>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-slate-700 font-bold">
+                              4-Digit Security PIN (from HR) *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => openForgotMode(candidateTokenInput)}
+                              className="text-[11px] font-bold text-amber-600 hover:text-amber-800 hover:underline cursor-pointer"
+                            >
+                              Forgot PIN?
+                            </button>
+                          </div>
                           <div className="input-wrapper">
                             <Lock className="input-icon-left text-amber-600" />
                             <input 
                               type="password" 
-                              placeholder="Enter 4-digit PIN set by HR (e.g. 1234)"
+                              maxLength={4}
+                              placeholder="Enter 4-digit PIN provided by HR"
                               value={candidatePinInput}
                               onChange={(e) => setCandidatePinInput(e.target.value)}
-                              className="input-field-styled font-mono font-bold"
+                              className="input-field-styled font-mono font-bold tracking-widest text-center"
                             />
                           </div>
                         </div>

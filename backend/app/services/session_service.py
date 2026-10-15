@@ -216,7 +216,8 @@ def create_password_reset_otp(email: str, role: str, user_id: Optional[str] = No
         "role": norm_role,
         "user_id": user_id,
         "created_at": now,
-        "expires_at": expires_at
+        "expires_at": expires_at,
+        "expiry_minutes": int(expiry_seconds / 60)
     }
     
     return {

@@ -317,8 +317,8 @@ def unlock_hr_activation(payload: dict, db: Session = Depends(get_db)):
     if not hr:
         raise HTTPException(status_code=404, detail="Invalid HR activation link")
 
-    expected_pw = (hr.activation_password or hr.password_hash or "1234").strip()
-    if password != expected_pw and password != "1234" and password != "Hr@Recruiter2026":
+    expected_pw = (hr.activation_password or hr.password_hash or "").strip()
+    if expected_pw and password != expected_pw:
         raise HTTPException(status_code=401, detail="Invalid 4-digit security PIN. Please check the PIN in your invitation email.")
 
     comp = db.query(Company).filter(Company.id == hr.company_id).first()
@@ -503,7 +503,7 @@ def update_company_portal_password(company_id: str, payload: dict, db: Session =
 
     old_password = (payload.get("old_password") or "").strip()
     if old_password and comp.password_hash:
-        if old_password != comp.password_hash and old_password != "1234" and old_password != "Company@Admin2026":
+        if old_password != comp.password_hash:
             raise HTTPException(status_code=401, detail="Current password does not match our records")
 
     comp.password_hash = new_password
@@ -717,8 +717,8 @@ def unlock_company_activation(payload: dict, db: Session = Depends(get_db)):
     if not comp:
         raise HTTPException(status_code=404, detail="Invalid activation link")
 
-    expected_pw = (comp.activation_password or comp.password_hash or "1234").strip()
-    if password != expected_pw and password != "1234" and password != "Company@Admin2026":
+    expected_pw = (comp.activation_password or comp.password_hash or "").strip()
+    if expected_pw and password != expected_pw:
         raise HTTPException(status_code=401, detail="Invalid security password. Please enter the password set by Super Admin.")
 
     return {
