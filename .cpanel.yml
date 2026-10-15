@@ -12,9 +12,16 @@ deployment:
     - /bin/cp -rf dist/* ../trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
     - /bin/cp -rf dist/.htaccess ../trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
     - /bin/cp -rf dist/* ../public_html/trueprofile.joycorporatesolutions.com/ 2>/dev/null || true
-    - /bin/cp -rf dist/.htaccess ../public_html/trueprofile.joycorporatesolutions.com/.htaccess 2>/dev/null || true
     - /bin/cp -rf dist/* ../public_html/trueprofile/ 2>/dev/null || true
     - /bin/cp -rf dist/.htaccess ../public_html/trueprofile/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* /home/joyglo52/public_html/test2.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/public_html/test2.joycorporatesolutions.com/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* /home/joyglo52/test2.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/test2.joycorporatesolutions.com/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* /home/joyglo52/public_html/test2/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess /home/joyglo52/public_html/test2/.htaccess 2>/dev/null || true
+    - /bin/cp -rf dist/* ../public_html/test2.joycorporatesolutions.com/ 2>/dev/null || true
+    - /bin/cp -rf dist/.htaccess ../public_html/test2.joycorporatesolutions.com/.htaccess 2>/dev/null || true
     - /bin/mkdir -p /home/joyglo52/repositories/joytrueprofile/tmp
     - /bin/touch /home/joyglo52/repositories/joytrueprofile/tmp/restart.txt
     - /bin/touch /home/joyglo52/repositories/joytrueprofile/passenger_wsgi.py

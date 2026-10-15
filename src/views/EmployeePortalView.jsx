@@ -42,6 +42,7 @@ import {
   Scan,
   Scale,
   Mail,
+  MessageSquare,
   Database,
   Loader2,
   Check,

@@ -25,6 +25,7 @@ import {
   Activity,
   Bell,
   LogOut,
+  Lock,
   Volume2,
   VolumeX,
   Plus,

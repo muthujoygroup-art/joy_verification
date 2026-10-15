@@ -43,7 +43,8 @@ import {
   Baby,
   Heart,
   Phone,
-  Mail
+  Mail,
+  Loader2
 } from 'lucide-react';
 import { Linkedin, Github, Twitter, Instagram, Facebook, Youtube } from './SocialIcons';
 import { useApp } from '../context/AppContext';
@@ -912,7 +913,7 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                             <div key={idx} className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                               <span className="text-[10px] text-slate-500 block font-medium">{cf.label}</span>
                               <div className="font-bold text-slate-900 text-xs mt-0.5 break-all">
-                                {cf.value || '<Not Provided>'}
+                                {cf.value || '(Not Provided)'}
                               </div>
                             </div>
                           ))}

@@ -101,8 +101,59 @@ export class ErrorBoundary extends React.Component {
         return this.props.fallback;
       }
 
-      // Silent error handling: do not render any intrusive blocking modal card
-      return null;
+      // Enterprise Resilient Error Fallback Card (Prevents blank white voids)
+      return (
+        <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center select-none font-sans">
+          <div className="max-w-md w-full bg-slate-950/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4 animate-fadeIn">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center shadow-inner">
+              <RefreshCw className="w-7 h-7 animate-pulse" />
+            </div>
+            
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-mono font-bold">
+                <ShieldAlert className="w-3 h-3" />
+                <span>INCIDENT: {this.state.errorId || 'ERR-RELOAD'}</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-100">Synchronizing Portal Session</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                An unexpected interface exception was safely intercepted. Incident telemetry has been dispatched to system logs.
+              </p>
+            </div>
+
+            {this.state.error && (
+              <div className="text-left bg-slate-900 border border-slate-800/80 rounded-xl p-3 text-[11px] font-mono text-slate-300 break-words max-h-24 overflow-y-auto">
+                <span className="text-rose-400 font-bold block mb-0.5">Error Details:</span>
+                {String(this.state.error?.message || this.state.error)}
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={this.handleClearAndReload}
+                className="flex-1 w-full py-3 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Reload Workspace 🔄</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    localStorage.removeItem('joy_auth_user');
+                    localStorage.removeItem('joy_auth_role');
+                    localStorage.removeItem('joy_auth_token');
+                  } catch (e) {}
+                  window.location.href = '/login';
+                }}
+                className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all border border-slate-700 cursor-pointer"
+              >
+                Sign In 🔐
+              </button>
+            </div>
+          </div>
+        </div>
+      );
     }
 
     return this.props.children;

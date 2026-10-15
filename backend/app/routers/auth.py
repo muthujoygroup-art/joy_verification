@@ -74,9 +74,21 @@ def login(payload: dict, request: Request = None, db: Session = Depends(get_db))
                     action_text="Open JOY TrueProfile Gateway",
                     action_url=settings.APP_BASE_URL
                 )
-                send_smtp_email(to_email=target_email, subject=f"🔐 Super Admin 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, db=db)
+                send_res = send_smtp_email(to_email=target_email, subject=f"🔐 Super Admin 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, db=db, async_mode=False)
+                if not send_res.get("success", False):
+                    err_msg = send_res.get("error", "SMTP Gateway Connection Failed")
+                    raise HTTPException(
+                        status_code=502,
+                        detail=f"2FA passcode generated, but email delivery to {target_email} failed ({err_msg}). Please uncheck 2FA to sign in with password, or verify your cPanel SMTP settings in Super Admin."
+                    )
+            except HTTPException:
+                raise
             except Exception as e:
                 print(f"Warning: 2FA email dispatch failed: {e}")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Unable to dispatch 2FA email: {str(e)}. Please uncheck 2FA to sign in with password."
+                )
 
             return {
                 "requires_2fa": True,
@@ -142,9 +154,21 @@ def login(payload: dict, request: Request = None, db: Session = Depends(get_db))
                     action_text="Open JOY TrueProfile Gateway",
                     action_url=settings.APP_BASE_URL
                 )
-                send_smtp_email(to_email=comp.email, subject=f"🔐 Company 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, company_id=comp.id, db=db)
+                send_res = send_smtp_email(to_email=comp.email, subject=f"🔐 Company 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, company_id=comp.id, db=db, async_mode=False)
+                if not send_res.get("success", False):
+                    err_msg = send_res.get("error", "SMTP Gateway Connection Failed")
+                    raise HTTPException(
+                        status_code=502,
+                        detail=f"2FA passcode generated, but email delivery to {comp.email} failed ({err_msg}). Please uncheck 2FA to sign in with password, or check mail server settings."
+                    )
+            except HTTPException:
+                raise
             except Exception as e:
                 print(f"Warning: 2FA email dispatch failed: {e}")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Unable to dispatch 2FA email: {str(e)}. Please uncheck 2FA to sign in with password."
+                )
 
             return {
                 "requires_2fa": True,
@@ -204,9 +228,21 @@ def login(payload: dict, request: Request = None, db: Session = Depends(get_db))
                     action_text="Open JOY TrueProfile Gateway",
                     action_url=settings.APP_BASE_URL
                 )
-                send_smtp_email(to_email=hr.email, subject=f"🔐 HR 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, company_id=hr.company_id, db=db)
+                send_res = send_smtp_email(to_email=hr.email, subject=f"🔐 HR 2FA Passcode [{otp_data['otp']}] - JOY TrueProfile", html_content=shell, company_id=hr.company_id, db=db, async_mode=False)
+                if not send_res.get("success", False):
+                    err_msg = send_res.get("error", "SMTP Gateway Connection Failed")
+                    raise HTTPException(
+                        status_code=502,
+                        detail=f"2FA passcode generated, but email delivery to {hr.email} failed ({err_msg}). Please uncheck 2FA to sign in with password, or check mail server settings."
+                    )
+            except HTTPException:
+                raise
             except Exception as e:
                 print(f"Warning: 2FA email dispatch failed: {e}")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Unable to dispatch 2FA email: {str(e)}. Please uncheck 2FA to sign in with password."
+                )
 
             return {
                 "requires_2fa": True,

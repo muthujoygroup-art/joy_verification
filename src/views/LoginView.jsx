@@ -83,7 +83,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [twoFaLoading, setTwoFaLoading] = useState(false);
   const [twoFaError, setTwoFaError] = useState('');
   const [twoFaPendingAuth, setTwoFaPendingAuth] = useState(null);
-  const [enable2FaStep, setEnable2FaStep] = useState(true);
+  const [enable2FaStep, setEnable2FaStep] = useState(false);
   const [twoFaTimer, setTwoFaTimer] = useState(900); // 15 minutes TTL
 
   // 15-Minute 2FA Countdown Timer

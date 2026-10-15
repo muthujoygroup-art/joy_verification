@@ -51,6 +51,7 @@ import {
   Link2,
   Lock,
   Mail,
+  MapPin,
   MessageSquare,
   Phone,
   Plus,
