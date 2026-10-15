@@ -26,11 +26,11 @@
 
 ## 1. EXECUTIVE SUMMARY & PRODUCT VISION
 
-**JOY TrueProfile** is a next-generation, sovereign Indian enterprise verification, onboarding, and statutory compliance platform built for the **Muthu Joy Group**. It addresses the friction, fraud risks, and regulatory hurdles in modern enterprise hiring and vendor onboarding.
+**JOY TrueProfile** is a next-generation, official government Indian enterprise verification, onboarding, and statutory compliance platform built for the **Muthu Joy Group**. It addresses the friction, fraud risks, and regulatory hurdles in modern enterprise hiring and vendor onboarding.
 
 ### Core Value Propositions:
 - **Instant 10-Minute Employee Background Verification (BGV)**: Automated verification across 81+ government and institutional data points (Aadhaar, PAN, Passport, Driving License, Voter ID, UAN/EPFO, ESIC, Ration Card, Court Records, Credit Score, Educational Degrees, MCA/ROC, GSTIN).
-- **DigiLocker Digital Vault Integration**: Direct pull of sovereign-signed digital records via DigiLocker with consent management, zero document tampering, and instant automated metadata extraction.
+- **DigiLocker Digital Vault Integration**: Direct pull of government-signed digital records via DigiLocker with consent management, zero document tampering, and instant automated metadata extraction.
 - **Government Document Redirect Hub**: Seamless fallback for candidates who lack specific original documents, giving them direct 1-click access to official government issuance portals (UIDAI, Income Tax Instant e-PAN, EPFO Member Portal, ESIC Portal, Parivahan Sarathi, ECI Voter Portal, Passport Seva, NFSA).
 - **DPDP Act 2023 & ISO 27001 Compliance**: Built-in consent trails, right to erasure, purpose limitation, tamper-evident SHA-256 digital certificate hashing, and verifiable QR codes.
 - **Multi-Tenant Role Architecture**: 5 isolated portals with dedicated interfaces for Super Admin, Company Admin, HR Executive, Candidate / Employee, and Vendor / Contractor.
@@ -48,7 +48,7 @@ Here is the exhaustive historical record of how the platform evolved across coll
 - **UI Design Language**: Premium dark/light themes with emerald, sky, and indigo accents, glassmorphism, micro-interactions, stats cards, and interactive tour spotlight.
 
 ### Phase 2: Neev 81 APIs Specification & Verification Pipeline
-- **API Cataloging**: Parsed the complete `Neev-API-Integration-Guide.pdf` (81 sovereign endpoints) into `neev_exact_specs.json` and `backend/app/services/neev_catalogue.py`.
+- **API Cataloging**: Parsed the complete `Neev-API-Integration-Guide.pdf` (81 official government endpoints) into `neev_exact_specs.json` and `backend/app/services/neev_catalogue.py`.
 - **Live Verification Service**: Created `live_verification_service.py` with intelligent endpoint routing, payload sanitization, automatic retries, and comprehensive fallback mock data generators.
 - **Dynamic Field Mapping**: Mapped statutory IDs to their respective Neev validation schemas (PAN OCR & 3-way match, Aadhaar XML/OTP, DL Sarathi query, Voter EPIC search, UAN service history, ESIC IP lookup).
 
@@ -71,7 +71,7 @@ Here is the exhaustive historical record of how the platform evolved across coll
 
 ### Phase 5: BGV Report & Verifiable Certificate Engine
 - **`ComprehensiveBgvReportModal.jsx`**: Full 10-page enterprise BGV report generation with risk scores, discrepancy highlights, and statutory clearance status.
-- **`OfficialVerificationCertificateModal.jsx`**: Sovereign-style tamper-evident verification certificate with cryptographic SHA-256 hash, dynamic QR code verification modal (`QrCodeModal.jsx`), and 1-click PDF export via `jspdf` & `html2canvas`.
+- **`OfficialVerificationCertificateModal.jsx`**: enterprise-grade tamper-evident verification certificate with cryptographic SHA-256 hash, dynamic QR code verification modal (`QrCodeModal.jsx`), and 1-click PDF export via `jspdf` & `html2canvas`.
 - **Governance & Legal Modals**: `HrGovernanceModal.jsx`, `DpdpComplianceModal.jsx`, `LegalComplianceHandbookModal.jsx`.
 
 ### Phase 6: Production Database & cPanel Deployment Configuration
@@ -119,7 +119,7 @@ flowchart TD
         MOCK_ENG[Deterministic Fallback Engine]
     end
 
-    subgraph External ["External & Sovereign Gateways"]
+    subgraph External ["External & official government Gateways"]
         NEEV[Neev 81-API Gateway]
         DIGI_OAUTH[DigiLocker API / NeGD]
         GOVT_PORTALS[UIDAI / EPFO / ESIC / IncomeTax / Parivahan]
@@ -299,7 +299,7 @@ c:\MUTHU KUMAR P\MUTHU Projects\Verification\
     │   ├── SuperAdminView.jsx               # Super Admin Multi-Tenant Control Room
     │   ├── EmployeePortalView.jsx           # Candidate Self-Onboarding Portal
     │   ├── VendorPortalView.jsx             # Vendor KYB Management Portal
-    │   └── LandingPageView.jsx              # Sovereign Marketing & Demo Landing Page
+    │   └── LandingPageView.jsx              # official government Marketing & Demo Landing Page
     │
     └── components/                          # Reusable UI & Modal Components
         ├── FullJoiningFormModal.jsx         # 15-Tab Onboarding & Verification Form
@@ -311,7 +311,7 @@ c:\MUTHU KUMAR P\MUTHU Projects\Verification\
         ├── QrCodeModal.jsx                  # Certificate Tamper-Verification Modal
         ├── DpdpComplianceModal.jsx          # DPDP Compliance & Consent Manager
         ├── HrGovernanceModal.jsx            # HR Policy & Hiring Governance Modal
-        ├── LegalComplianceHandbookModal.jsx # Sovereign Compliance Handbook
+        ├── LegalComplianceHandbookModal.jsx # official government Compliance Handbook
         ├── PortalLayout.jsx                 # Responsive Layout Shell with Navigation
         ├── PortalSidebarNav.jsx             # Collapsible Navigation Sidebar
         ├── Navbar.jsx                       # Top Header with Role Switcher & Notifications
@@ -351,14 +351,14 @@ c:\MUTHU KUMAR P\MUTHU Projects\Verification\
   - Aggregates identity, criminal court record checks, credit scores, employment history, and education checks into an executive summary.
   - Risk categorization: Green (Clean/Verified), Amber (Minor Discrepancy), Red (Severe Flag).
 - **Verification Certificate**:
-  - Sovereign-designed certificate with gold foil borders, Muthu Joy Group holographic badge, candidate photo, verified seal, and unique Certificate ID (`CERT-JOY-YYYY-XXXXXX`).
+  - official government-designed certificate with gold foil borders, Muthu Joy Group holographic badge, candidate photo, verified seal, and unique Certificate ID (`CERT-JOY-YYYY-XXXXXX`).
   - Contains verifiable SHA-256 digital signature hash and embedded QR code linking to verification validation.
 
 ---
 
 ## 7. DIGILOCKER VAULT & DOCUMENT ENGINE
 
-The DigiLocker subsystem (`src/components/DigiLockerSectionView.jsx`, `DigiLockerFetchModal.jsx`, and `backend/app/services/digilocker_service.py`) provides a direct gateway to sovereign digital documents:
+The DigiLocker subsystem (`src/components/DigiLockerSectionView.jsx`, `DigiLockerFetchModal.jsx`, and `backend/app/services/digilocker_service.py`) provides a direct gateway to official government digital documents:
 
 ### Supported Document Types:
 - **Aadhaar XML Card**: Verified Name, DOB, Gender, Masked Aadhaar, Address, Photo.
@@ -403,7 +403,7 @@ Centralized in [`src/config/officialDocumentPortals.jsx`](file:///c:/MUTHU%20KUM
 
 ## 9. NEEV 81-APIS VERIFICATION ENGINE & MOCK SANDBOX
 
-The backend verification engine (`backend/app/services/live_verification_service.py` & `neev_catalogue.py`) maps 81 sovereign verification endpoints categorized into 8 domains:
+The backend verification engine (`backend/app/services/live_verification_service.py` & `neev_catalogue.py`) maps 81 official government verification endpoints categorized into 8 domains:
 
 1. **Identity Verifications**: PAN Card, Aadhaar XML, Passport, Voter ID, Ration Card.
 2. **Employment & Statutory**: EPFO UAN Passbook, EPFO Service History, ESIC IP Status, Labour Welfare.

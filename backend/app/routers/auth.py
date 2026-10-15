@@ -378,7 +378,6 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
         otp_data = create_password_reset_otp(target_email, "superadmin", user_id=sa.id if sa else "superadmin-master")
         reset_link = f"{app_url}/superadmin?reset_token={otp_data['token']}"
         
-        email_sent = False
         try:
             send_res = send_password_reset_email(
                 to_email=target_email,
@@ -387,18 +386,30 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
                 reset_code_or_otp=otp_data["otp"],
                 reset_url=reset_link,
                 expiry_minutes=otp_data["expiry_minutes"],
-                db=db
+                db=db,
+                async_mode=False
             )
-            email_sent = send_res.get("success", False)
+            if not send_res.get("success", False):
+                err_msg = send_res.get("error", "SMTP Gateway Dispatch Failed")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Password reset passcode generated, but email delivery to {target_email} failed: {err_msg}. Please check your cPanel SMTP settings in Super Admin Console (Settings Tab 13) or verify mailbox credentials."
+                )
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"Warning: Failed to dispatch Super Admin password reset email: {e}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Failed to dispatch recovery email to {target_email}: {str(e)}. Please check mail server settings."
+            )
 
         return {
             "success": True,
             "message": f"Password reset instructions and 6-digit passcode dispatched to Super Admin email ({target_email}).",
             "email": target_email,
             "role": "superadmin",
-            "email_sent": email_sent
+            "email_sent": True
         }
 
     elif role in ("company", "companyadmin"):
@@ -417,7 +428,6 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
         otp_data = create_password_reset_otp(comp.email.lower(), "company", user_id=comp.id)
         reset_link = f"{app_url}/company?reset_token={otp_data['token']}"
         
-        email_sent = False
         try:
             send_res = send_password_reset_email(
                 to_email=comp.email,
@@ -427,11 +437,23 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
                 reset_url=reset_link,
                 expiry_minutes=otp_data["expiry_minutes"],
                 company_id=comp.id,
-                db=db
+                db=db,
+                async_mode=False
             )
-            email_sent = send_res.get("success", False)
+            if not send_res.get("success", False):
+                err_msg = send_res.get("error", "SMTP Gateway Dispatch Failed")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Password reset passcode generated, but email delivery to {comp.email} failed: {err_msg}. Please check company SMTP settings or contact Super Admin."
+                )
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"Warning: Failed to dispatch Company password reset email: {e}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Failed to dispatch recovery email to {comp.email}: {str(e)}. Please check mail server settings."
+            )
 
         return {
             "success": True,
@@ -439,7 +461,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "email": comp.email,
             "role": "company",
             "company_name": comp.name,
-            "email_sent": email_sent
+            "email_sent": True
         }
 
     elif role in ("hrexecutive", "hr"):
@@ -460,7 +482,6 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
         otp_data = create_password_reset_otp(hr.email.lower(), "hrexecutive", user_id=hr.id)
         reset_link = f"{app_url}/hr?reset_token={otp_data['token']}"
         
-        email_sent = False
         try:
             send_res = send_password_reset_email(
                 to_email=hr.email,
@@ -470,11 +491,23 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
                 reset_url=reset_link,
                 expiry_minutes=otp_data["expiry_minutes"],
                 company_id=hr.company_id,
-                db=db
+                db=db,
+                async_mode=False
             )
-            email_sent = send_res.get("success", False)
+            if not send_res.get("success", False):
+                err_msg = send_res.get("error", "SMTP Gateway Dispatch Failed")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Password reset passcode generated, but email delivery to {hr.email} failed: {err_msg}. Please contact your Company Admin."
+                )
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"Warning: Failed to dispatch HR password reset email: {e}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Failed to dispatch recovery email to {hr.email}: {str(e)}. Please check mail server settings."
+            )
 
         return {
             "success": True,
@@ -483,7 +516,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "role": "hrexecutive",
             "hr_name": hr.name,
             "company_name": comp_name,
-            "email_sent": email_sent
+            "email_sent": True
         }
 
     elif role in ("employee_link", "candidate", "employee"):
@@ -506,7 +539,6 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
         otp_data = create_password_reset_otp(target_email.lower(), "employee_link", user_id=cand.id)
         reset_link = f"{app_url}/verify?token={cand.token}&reset_token={otp_data['token']}"
 
-        email_sent = False
         try:
             send_res = send_password_reset_email(
                 to_email=target_email,
@@ -516,11 +548,23 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
                 reset_url=reset_link,
                 expiry_minutes=otp_data["expiry_minutes"],
                 company_id=cand.company_id,
-                db=db
+                db=db,
+                async_mode=False
             )
-            email_sent = send_res.get("success", False)
+            if not send_res.get("success", False):
+                err_msg = send_res.get("error", "SMTP Gateway Dispatch Failed")
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Password reset passcode generated, but email delivery to {target_email} failed: {err_msg}. Please contact your HR department."
+                )
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"Warning: Failed to dispatch Candidate PIN reset email: {e}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Failed to dispatch recovery email to {target_email}: {str(e)}. Please contact your HR department."
+            )
 
         return {
             "success": True,
@@ -529,7 +573,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "role": "employee_link",
             "candidate_name": user_name,
             "token": cand.token,
-            "email_sent": email_sent
+            "email_sent": True
         }
 
     raise HTTPException(status_code=400, detail="Invalid role specified for password recovery.")

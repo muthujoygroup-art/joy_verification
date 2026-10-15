@@ -1191,7 +1191,8 @@ def send_password_reset_email(
     reset_url: Optional[str] = None,
     expiry_minutes: int = 30,
     company_id: Optional[str] = None,
-    db = None
+    db = None,
+    async_mode: bool = False
 ) -> Dict[str, Any]:
     """
     Dispatches a secure password reset email containing a 6-digit OTP code
@@ -1261,7 +1262,7 @@ def send_password_reset_email(
     )
 
     subject = f"🔐 Password Reset Request — JOY True Profile ({role_label})"
-    return send_smtp_email(to_email, subject, html, company_id=company_id, db=db)
+    return send_smtp_email(to_email, subject, html, company_id=company_id, db=db, async_mode=async_mode)
 
 
 # =============================================================================

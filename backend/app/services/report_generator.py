@@ -278,10 +278,15 @@ def generate_official_certificate_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
     story.append(Spacer(1, 14))
     
     # 6. Signatory & Digital Verification Seal Block
+    import hashlib
+    data_payload = f"{cert_id}:{c_name}:{emp_code}:{aadhaar}:{verif_date}"
+    sha256_hash = hashlib.sha256(data_payload.encode()).hexdigest().upper()
+    sha_short = f"{sha256_hash[:8]}-{sha256_hash[8:16]}-{sha256_hash[16:24]}-{sha256_hash[24:32]}"
+
     sig_data = [
         [
             Paragraph("<b>Digitally Certified By:</b><br/>JOY CORPORATE SOLUTIONS PVT LTD<br/>Verification Authority Desk<br/>Bangalore Tech Center, Karnataka", body_style),
-            Paragraph("<font color='#4338ca'><b>[DIGITAL VERIFICATION SEAL]</b></font><br/>Secured with 2048-Bit RSA Key<br/>Checksum: 8fa9-22b1-098e-4a11", ParagraphStyle('Center', parent=body_style, alignment=1)),
+            Paragraph(f"<font color='#4338ca'><b>[DIGITAL VERIFICATION SEAL]</b></font><br/>Secured with SHA-256 Certificate Fingerprint<br/>Fingerprint: <b>{sha_short}</b>", ParagraphStyle('Center', parent=body_style, alignment=1)),
             Paragraph(f"<b>Authorized Signatory:</b><br/><i>Vikramaditya Rao</i><br/>Chief Compliance Officer (CCO)<br/>JOY Corporate Solutions Pvt Ltd", body_style)
         ]
     ]
@@ -292,6 +297,15 @@ def generate_official_certificate_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
         ('PADDING', (0, 0), (-1, -1), 6)
     ]))
     story.append(sig_table)
+    story.append(Spacer(1, 6))
+    
+    # 7. Cryptographic Tamper-Evidence Footer
+    footer_text = Paragraph(
+        f"<font size=6 color='#64748b'>Official Governance Gateway: <b>https://trueprofile.joycorporatesolutions.com/verify</b> • "
+        f"DPDP Act 2023 Compliant • Full SHA-256 Audit Digest: {sha256_hash}</font>",
+        ParagraphStyle('CertFooter', parent=body_style, alignment=1)
+    )
+    story.append(footer_text)
     
     doc.build(story)
     buffer.seek(0)
@@ -1224,7 +1238,7 @@ def generate_360_bgv_dossier_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
     # Bottom Seal
     bot_seal = Table([
         [
-            Paragraph(f"<b>Certified Gateway Partner:</b> JOY CORPORATE SOLUTIONS PVT LTD<br/><b>CIN:</b> U74999KA2026PTC098214 • ISO 27001:2022<br/><b>Timestamp:</b> {verif_date}", body_style),
+            Paragraph(f"<b>Certified Gateway Partner:</b> JOY CORPORATE SOLUTIONS PVT LTD<br/><b>CIN:</b> U74999KA2026PTC098214 • ISO 27001:2022 • DPDP Act 2023 Compliant<br/><b>Portal:</b> https://trueprofile.joycorporatesolutions.com • <b>Timestamp:</b> {verif_date}", body_style),
             Paragraph("<br/>____________________________<br/><b>Chief Compliance Officer</b><br/>JOY Corporate Solutions", ParagraphStyle('R', parent=body_style, alignment=1))
         ]
     ], colWidths=[360, 180])
