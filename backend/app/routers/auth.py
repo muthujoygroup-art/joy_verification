@@ -403,8 +403,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "message": "Password reset instructions and 6-digit passcode dispatched to authorized Super Admin master mailbox.",
             "email": target_email,
             "role": "superadmin",
-            "email_sent": email_sent,
-            "reset_code": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     elif role in ("company", "companyadmin"):
@@ -449,8 +448,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "email": comp.email,
             "role": "company",
             "company_name": comp.name,
-            "email_sent": email_sent,
-            "reset_code": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     elif role in ("hrexecutive", "hr"):
@@ -498,8 +496,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "role": "hrexecutive",
             "hr_name": hr.name,
             "company_name": comp_name,
-            "email_sent": email_sent,
-            "reset_code": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     elif role in ("employee_link", "candidate", "employee"):
@@ -549,8 +546,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             "role": "employee_link",
             "candidate_name": user_name,
             "token": cand.token,
-            "email_sent": email_sent,
-            "reset_code": otp_data["otp"]
+            "email_sent": email_sent
         }
 
     raise HTTPException(status_code=400, detail="Invalid role specified for password recovery.")

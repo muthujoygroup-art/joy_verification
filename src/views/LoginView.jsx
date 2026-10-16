@@ -133,7 +133,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [forgotError, setForgotError] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState('');
   const [isForgotLoading, setIsForgotLoading] = useState(false);
-  const [forgotGeneratedCode, setForgotGeneratedCode] = useState('');
 
   // Auto-detect reset_token in URL query parameters
   useEffect(() => {
@@ -162,7 +161,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setForgotConfirmPassword('');
     setForgotError('');
     setForgotSuccess('');
-    setForgotGeneratedCode('');
     setLoginError('');
   };
 
@@ -170,7 +168,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setIsForgotMode(false);
     setForgotStep(1);
     setForgotError('');
-    setForgotGeneratedCode('');
   };
 
   // Step 1 Submit: Request 6-digit passcode
@@ -204,9 +201,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         : (res?.message || 'Passcode dispatched! Please check your email or notifications.');
       setForgotSuccess(successMsg);
       setForgotEmail(res?.email || emailToUse || 'admin@joycorporatesolutions.com');
-      if (res?.reset_code) {
-        setForgotGeneratedCode(res.reset_code);
-      }
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your details.');
@@ -1143,22 +1137,6 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                         )}
                       </div>
 
-                      {forgotGeneratedCode && (
-                        <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] flex items-center justify-between animate-fadeIn shadow-xs">
-                          <div className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-                            <span>Active Security Passcode: <strong className="font-mono text-xs font-black tracking-wider text-amber-950">{forgotGeneratedCode}</strong></span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setForgotOtp(forgotGeneratedCode)}
-                            className="px-2.5 py-1 rounded-lg bg-amber-200/90 hover:bg-amber-300 text-amber-950 font-black text-[10px] transition-colors cursor-pointer flex items-center gap-1 shadow-xs"
-                          >
-                            <span>Auto-Fill ⚡</span>
-                          </button>
-                        </div>
-                      )}
-
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">
                           Enter 6-Digit Passcode (from Email / Notifications) *
@@ -1607,24 +1585,26 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
             </div>
 
-            {/* Portal Capabilities / Integrated Capabilities Chips */}
-            <div className="pt-2 border-t border-slate-100 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                  <span>Portal Capabilities</span>
-                </span>
-                <span className="text-[9.5px] font-bold text-slate-400">Enterprise Edition</span>
+            {/* Portal Capabilities / Integrated Capabilities Chips (Displayed on login view only to prevent vertical overflow during recovery/2FA) */}
+            {!isForgotMode && !is2FaMode && (
+              <div className="pt-2 border-t border-slate-100 space-y-1.5 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                    <span>Portal Capabilities</span>
+                  </span>
+                  <span className="text-[9.5px] font-bold text-slate-400">Enterprise Edition</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-semibold text-slate-700">
+                  {currentDetail.features.map((feat, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/80 hover:border-indigo-300 hover:translate-x-0.5 transition-all">
+                      <Check className="w-3 h-3 text-emerald-600 shrink-0" />
+                      <span className="truncate text-[10.5px]">{feat}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-semibold text-slate-700">
-                {currentDetail.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/80 hover:border-indigo-300 hover:translate-x-0.5 transition-all">
-                    <Check className="w-3 h-3 text-emerald-600 shrink-0" />
-                    <span className="truncate text-[10.5px]">{feat}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
 
           </div>
 
