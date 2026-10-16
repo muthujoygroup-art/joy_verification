@@ -1577,7 +1577,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
   const divisionMetaMap = useMemo(() => ({
     companies: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: `${companies.length} Enterprise Clients`,
       title: 'Enterprise Client Companies & Feature Matrix Flags',
       subtitle: 'Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company',
@@ -1585,7 +1585,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-purple-600 to-indigo-700'
     },
     ledger: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: `${enrichedDirectory.candidates.length} Profiles Recorded`,
       title: 'Candidate Verification Ledger & Global Employee Registry',
       subtitle: 'Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits',
@@ -1593,7 +1593,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-emerald-600 to-teal-700'
     },
     terms_hub: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: 'Statutory Contracts',
       title: 'Enterprise Terms & Conditions Contracts Hub & Agreement Ledger',
       subtitle: 'Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures',
@@ -1601,7 +1601,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-amber-600 to-orange-700'
     },
     inquiries: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: 'Lead Gen & Inquiries',
       title: 'Demo Inquiries & Inbound Enterprise Leads',
       subtitle: 'Review incoming platform demo inquiries, follow up with corporate leads, and initiate onboarding pipelines',
@@ -1609,7 +1609,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-sky-600 to-indigo-600'
     },
     reviews: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: 'User Testimonials',
       title: 'Client Reviews & Public Testimonials Moderation',
       subtitle: 'Moderate client ratings, verify feedback authenticity, and publish featured corporate testimonials',
@@ -1617,7 +1617,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-amber-500 to-orange-600'
     },
     blog_cms: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: 'Knowledge Hub CMS',
       title: 'SEO Articles & Knowledge Hub CMS',
       subtitle: 'Publish thought-leadership articles, statutory compliance advisories, and platform feature announcements',
@@ -1625,7 +1625,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-purple-600 to-indigo-800'
     },
     logins: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: 'Unified Directory',
       title: 'Unified Logins & Master Access Directory',
       subtitle: 'Inspect credentials, role assignments, and direct instant-login tokens across all platform accounts',
@@ -1633,7 +1633,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-indigo-600 to-purple-600'
     },
     omnisearch: {
-      pillarBadge: '🏛️ 1. Core Operations',
+      pillarBadge: 'Core Operations',
       badgeText: `${searchResults.totalMatches} Search Matches`,
       title: 'Universal Omnisearch & Hierarchical Profile ID Tracker',
       subtitle: 'Real-time 360° record locator across Companies (COMP001), HR Staff (COMP001HR001), and Candidates (COMP001EMP001)',
@@ -1641,7 +1641,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-indigo-600 to-purple-800'
     },
     apiconfig: {
-      pillarBadge: '⚡ 2. Upstream Gateways',
+      pillarBadge: 'Verification Gateways',
       badgeText: 'Dual Mode Gateways',
       title: 'Dual API Gateways (Sandbox vs Production Mode)',
       subtitle: 'Configure real UIDAI Aadhaar, NSDL PAN, NPCI Bank Penny-Drop, EPFO, and Driving License upstream endpoints',
@@ -1649,7 +1649,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-teal-600 to-emerald-700'
     },
     studio: {
-      pillarBadge: '⚡ 2. Upstream Gateways',
+      pillarBadge: 'Verification Gateways',
       badgeText: 'Interactive Sandbox',
       title: 'Live Verification Studio & Interactive Payload Tester',
       subtitle: 'Execute live diagnostic queries, inspect raw JSON payloads, and test failure scenarios in real time',
@@ -1657,7 +1657,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-purple-600 to-indigo-700'
     },
     consumption_margins: {
-      pillarBadge: '⚡ 2. Upstream Gateways',
+      pillarBadge: 'Verification Gateways',
       badgeText: 'Profitability Telemetry',
       title: 'API Consumption & Profit Margin Telemetry',
       subtitle: 'Analyze upstream vendor API costs against billed client tariffs to monitor real-time gross margins per verification module',
@@ -1665,7 +1665,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-indigo-600 to-blue-700'
     },
     whatsapp_sms: {
-      pillarBadge: '⚡ 2. Upstream Gateways',
+      pillarBadge: 'Verification Gateways',
       badgeText: 'Omnichannel Messaging',
       title: 'Meta WhatsApp Business & Carrier SMS Gateways',
       subtitle: 'Configure Meta Cloud API credentials, Twilio / MSG91 SMS routes, and candidate notification templates',
@@ -1673,7 +1673,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-emerald-600 to-teal-700'
     },
     billing: {
-      pillarBadge: '💳 3. Financial Billing',
+      pillarBadge: 'Financial Billing',
       badgeText: 'Invoicing & Razorpay',
       title: 'Metered Invoicing, Razorpay Gateway & Wallet Management',
       subtitle: 'Review monthly billing invoices, configure Razorpay keys, and manage company verification wallet balances',
@@ -1681,7 +1681,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-amber-600 to-orange-700'
     },
     dbms: {
-      pillarBadge: '🛡️ 4. Database & Security',
+      pillarBadge: 'Database & Security',
       badgeText: 'PostgreSQL Tables',
       title: 'PostgreSQL Live Schema & Database Management System',
       subtitle: 'Directly inspect and filter real database rows across candidates, companies, HR users, invoices, and audit logs',
@@ -1689,7 +1689,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-rose-600 to-pink-700'
     },
     audit: {
-      pillarBadge: '🛡️ 4. Database & Security',
+      pillarBadge: 'Database & Security',
       badgeText: 'Immutable DPDP Chain',
       title: 'Audit Trail & DPDP Compliance Hash Chain',
       subtitle: 'Cryptographically secured chronological activity trail recording administrative actions, logins, and verifications',
@@ -1697,7 +1697,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-emerald-600 to-teal-700'
     },
     sessions: {
-      pillarBadge: '🛡️ 4. Database & Security',
+      pillarBadge: 'Database & Security',
       badgeText: `${multiRoleSessions.length} Active Sessions`,
       title: 'Active Multi-Role Sessions Hub & Device Telemetry',
       subtitle: 'Live session monitor tracking IP addresses, device user-agents, and authentication states across all portal roles',
@@ -1705,7 +1705,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-sky-600 to-indigo-700'
     },
     issuelogs: {
-      pillarBadge: '🛡️ 4. Database & Security',
+      pillarBadge: 'Database & Security',
       badgeText: `${totalUnresolvedErrorCount} Unresolved Issues`,
       title: 'Incident Forensics & System Error Logs Command Center',
       subtitle: 'Real-time 4-pillar diagnostics (Where, When, Why, How to Solve) across HR, Candidate, Company Admin, and API services',
@@ -1713,7 +1713,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-amber-600 to-rose-600'
     },
     system_health: {
-      pillarBadge: '🛡️ 4. Database & Security',
+      pillarBadge: 'Database & Security',
       badgeText: '360° Real-Time Health',
       title: '360° Comprehensive Project Health & Telemetry Command Center',
       subtitle: 'Real-time multi-perspective monitoring across Backend API, PostgreSQL Database Latency, Error SLA Budgets & 10 Verification Gateways',
@@ -1721,7 +1721,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-emerald-600 to-teal-700'
     },
     analytics: {
-      pillarBadge: '🛡️ 4. Database & Security',
+      pillarBadge: 'Database & Security',
       badgeText: 'Master Operations',
       title: 'Platform Master Control, Analytics & Financial KPIs',
       subtitle: 'Consolidated verification volume, gross revenue, profit trends, and company-wise performance charts',
@@ -1729,7 +1729,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-indigo-600 to-purple-700'
     },
     reports: {
-      pillarBadge: '⚖️ 5. Governance & Config',
+      pillarBadge: 'Compliance & Settings',
       badgeText: 'Universal Exporter',
       title: 'Reports Center & Universal Document Exporter',
       subtitle: 'Generate date-filtered candidate verification dossiers, Excel sheets, and statutory compliance packages',
@@ -1737,7 +1737,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-purple-600 to-indigo-700'
     },
     legal_governance: {
-      pillarBadge: '⚖️ 5. Governance & Config',
+      pillarBadge: 'Compliance & Settings',
       badgeText: 'DPDP Act 2023',
       title: 'Statutory Legal & DPDP Act 2023 Compliance Framework',
       subtitle: 'Digital Personal Data Protection Act compliance, consent architecture, and statutory retention rules',
@@ -1745,7 +1745,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-indigo-600 to-purple-800'
     },
     masterdata: {
-      pillarBadge: '⚖️ 5. Governance & Config',
+      pillarBadge: 'Compliance & Settings',
       badgeText: 'Field Schemas',
       title: 'Master Data Presets & Custom Form Fields',
       subtitle: 'Customize industry presets, document requirements, and candidate onboarding form fields',
@@ -1753,7 +1753,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-teal-600 to-emerald-700'
     },
     masterfields: {
-      pillarBadge: '⚖️ 5. Governance & Config',
+      pillarBadge: 'Compliance & Settings',
       badgeText: 'Field Schemas',
       title: 'Master Data Presets & Custom Form Fields',
       subtitle: 'Customize industry presets, document requirements, and candidate onboarding form fields',
@@ -1761,7 +1761,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-teal-600 to-emerald-700'
     },
     tickets: {
-      pillarBadge: '⚖️ 5. Governance & Config',
+      pillarBadge: 'Compliance & Settings',
       badgeText: `${supportTickets.length} Support Tickets`,
       title: 'Support Helpdesk & Enterprise Feedback',
       subtitle: 'Track and respond to helpdesk tickets, feature requests, and system feedback from corporate clients',
@@ -1769,7 +1769,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       colorClass: 'from-rose-600 to-pink-700'
     },
     settings: {
-      pillarBadge: '⚖️ 5. Governance & Config',
+      pillarBadge: 'Compliance & Settings',
       badgeText: 'cPanel SMTP Mail',
       title: 'cPanel SMTP Server & Email Configuration',
       subtitle: 'Configure SMTP credentials, SSL/TLS ports, and dispatch diagnostic test emails',
@@ -1788,53 +1788,58 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       <div className="glass-panel p-6 border-indigo-200 bg-white space-y-6 relative overflow-hidden shadow-sm rounded-2xl">
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-500" />
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="badge badge-purple font-bold">Super Admin Console</span>
-              <span className="text-xs text-slate-500 font-bold">• Enterprise Governance, Profit Telemetry & DBMS</span>
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="badge badge-purple text-xs font-bold py-0.5 px-2.5">Super Admin Console</span>
+              <span className="text-xs text-slate-400 font-bold">•</span>
+              <span className="text-xs text-slate-500 font-bold">Enterprise Governance, Profit Telemetry & DBMS</span>
             </div>
-            <h2 className="text-2xl font-black text-slate-900 mt-1">Platform Master Control, Analytics & Database Operations</h2>
-            <p className="text-xs text-slate-600 mt-0.5 font-medium">Manage enterprise contracts, metered billing, multi-role session monitoring, and real-time PostgreSQL database tables.</p>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight">Platform Master Control, Analytics & Database Operations</h2>
+            <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed">Manage enterprise contracts, metered billing, multi-role session monitoring, and real-time PostgreSQL database tables.</p>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap xl:justify-end shrink-0">
             {totalUnresolvedErrorCount > 0 && (
               <button 
+                type="button"
                 onClick={() => setActiveTab('issuelogs')}
-                className="badge badge-amber text-xs px-3 py-1.5 flex items-center gap-1 font-bold animate-pulse"
+                className="h-9 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all animate-pulse"
               >
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <span>{totalUnresolvedErrorCount} Unresolved Issues</span>
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>{totalUnresolvedErrorCount} Issues</span>
               </button>
             )}
             
             <button 
+              type="button"
               onClick={() => setShowUniversalExportModal(true)}
-              className="btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+              className="h-9 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
               title="Download platform-wide cross-company reports by date range"
             >
-              <Download className="w-4 h-4 text-indigo-600" />
-              <span>Date-Filtered Reports 📥</span>
+              <Download className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span>Reports 📥</span>
             </button>
 
             <button 
+              type="button"
               onClick={() => setShowGatewaysModal(true)}
               data-tour-step="superadmin-comm-gateways-btn"
-              className="btn btn-secondary text-xs flex items-center gap-1.5 shadow-2xs font-bold text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 cursor-pointer"
+              className="h-9 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
               title="Configure Meta WhatsApp Business & Carrier SMS Gateway for candidate automated messages"
             >
-              <MessageSquare className="w-4 h-4 text-emerald-600" />
-              <span>Automated Messaging (WhatsApp & SMS) 💬</span>
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Automated Messaging 💬</span>
             </button>
 
             <button 
+              type="button"
               onClick={() => setShowAddCompanyModal(true)}
               data-tour-step="onboard-company-btn"
-              className="btn btn-superadmin text-xs flex items-center gap-1.5 shadow-md font-bold cursor-pointer"
+              className="h-9 px-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-extrabold flex items-center gap-1.5 cursor-pointer shadow-xs hover:shadow-md transition-all"
             >
-              <Plus className="w-4 h-4" />
-              <span>Onboard Company</span>
+              <Plus className="w-4 h-4 shrink-0" />
+              <span>+ Onboard Company</span>
             </button>
           </div>
         </div>
@@ -2076,45 +2081,48 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         <div className="space-y-6 animate-tab-switch">
           
           {/* 🌟 UNIVERSAL PROFILE ID & OMNISEARCH TRACKER HERO */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 text-slate-900 border-2 border-indigo-200 shadow-md space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
+          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-slate-50 text-slate-900 border border-indigo-200/90 shadow-sm space-y-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-3 py-1 rounded-md bg-emerald-600 text-white font-black text-xs uppercase tracking-wider shadow-xs">
+                  <span className="px-2.5 py-0.5 rounded-lg bg-emerald-600 text-white font-extrabold text-[11px] uppercase tracking-wider shadow-2xs">
                     ⚡ Global Profile ID & User Tracker
                   </span>
                   <span className="text-xs font-mono font-bold text-indigo-700">
                     COMP001 (Company) • COMP001HR001 (HR) • COMP001EMP001 (Employee)
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-700 font-semibold mt-1">
+                <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">
                   Enter any Unique ID, Company Name, HR Name, or Candidate Name to locate their 360° record instantly.
                 </p>
               </div>
 
-              {/* Quick Filter Presets */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-slate-700 font-bold text-xs">Quick Presets:</span>
+              {/* Quick Filter Presets - Neatly grouped in a unified pill strip */}
+              <div className="flex items-center gap-1.5 flex-wrap lg:justify-end shrink-0 bg-white/80 p-1.5 rounded-xl border border-indigo-100/90 shadow-2xs">
+                <span className="text-slate-500 font-bold text-xs px-1">Quick Presets:</span>
                 <button
                   type="button"
                   onClick={() => setGlobalSearchQuery('COMP001')}
-                  className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-purple-400"
+                  className="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-mono font-bold text-xs cursor-pointer shadow-2xs hover:shadow-xs transition-all flex items-center gap-1"
                 >
-                  🏢 COMP001
+                  <span>🏢</span>
+                  <span>COMP001</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setGlobalSearchQuery('COMP001HR001')}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-emerald-400"
+                  className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 font-mono font-bold text-xs cursor-pointer shadow-2xs hover:shadow-xs transition-all flex items-center gap-1"
                 >
-                  👔 COMP001HR001
+                  <span>👔</span>
+                  <span>COMP001HR001</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setGlobalSearchQuery('COMP001EMP001')}
-                  className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs cursor-pointer shadow-sm transition-all border border-sky-400"
+                  className="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 font-mono font-bold text-xs cursor-pointer shadow-2xs hover:shadow-xs transition-all flex items-center gap-1"
                 >
-                  👤 COMP001EMP001
+                  <span>👤</span>
+                  <span>COMP001EMP001</span>
                 </button>
               </div>
             </div>
@@ -2173,7 +2181,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h4 className="text-xs font-black uppercase text-purple-900 tracking-wider flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-purple-600" />
-                  <span>1. Companies Directory ({globalSearchQuery ? searchResults.companies.length : enrichedDirectory.companies.length})</span>
+                  <span>Companies Directory ({globalSearchQuery ? searchResults.companies.length : enrichedDirectory.companies.length})</span>
                 </h4>
                 <span className="badge badge-purple text-[9px] font-bold">Prefix: COMPxxx</span>
               </div>
@@ -2220,7 +2228,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h4 className="text-xs font-black uppercase text-emerald-900 tracking-wider flex items-center gap-2">
                   <UserCheck className="w-4 h-4 text-emerald-600" />
-                  <span>2. HR Executives Directory ({globalSearchQuery ? searchResults.hrUsers.length : enrichedDirectory.hrUsers.length})</span>
+                  <span>HR Executives Directory ({globalSearchQuery ? searchResults.hrUsers.length : enrichedDirectory.hrUsers.length})</span>
                 </h4>
                 <span className="badge badge-emerald text-[9px] font-bold">Prefix: COMPxxxHRxxx</span>
               </div>
@@ -2267,7 +2275,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               <div className="flex items-center justify-between border-b border-slate-100 pb-2 flex-wrap gap-2">
                 <h4 className="text-xs font-black uppercase text-sky-900 tracking-wider flex items-center gap-2">
                   <Users className="w-4 h-4 text-sky-600" />
-                  <span>3. Employees & Candidates Directory ({globalSearchQuery ? searchResults.candidates.length : enrichedDirectory.candidates.length})</span>
+                  <span>Employees & Candidates Directory ({globalSearchQuery ? searchResults.candidates.length : enrichedDirectory.candidates.length})</span>
                 </h4>
                 <div className="flex items-center gap-2">
                   <button

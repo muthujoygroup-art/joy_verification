@@ -787,15 +787,13 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         isCollapsed ? 'p-3 justify-center flex-col gap-2' : 'px-3.5 py-3 justify-between'
       }`}>
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="relative shrink-0">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-indigo-700 p-0.5 shadow-2xs flex items-center justify-center">
-              <img 
-                src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
-                alt="JOY TRUE PROFILE" 
-                className="w-full h-full object-contain rounded-[10px]" 
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-            </div>
+          <div className="relative shrink-0 flex items-center justify-center">
+            <img 
+              src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
+              alt="JOY TRUE PROFILE" 
+              className="w-8 h-8 object-contain transition-transform duration-200 hover:scale-105" 
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
           </div>
           {!isCollapsed && (
