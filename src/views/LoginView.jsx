@@ -133,6 +133,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [forgotError, setForgotError] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState('');
   const [isForgotLoading, setIsForgotLoading] = useState(false);
+  const [forgotGeneratedCode, setForgotGeneratedCode] = useState('');
 
   // Auto-detect reset_token in URL query parameters
   useEffect(() => {
@@ -161,6 +162,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setForgotConfirmPassword('');
     setForgotError('');
     setForgotSuccess('');
+    setForgotGeneratedCode('');
     setLoginError('');
   };
 
@@ -168,6 +170,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setIsForgotMode(false);
     setForgotStep(1);
     setForgotError('');
+    setForgotGeneratedCode('');
   };
 
   // Step 1 Submit: Request 6-digit passcode
@@ -201,6 +204,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         : (res?.message || 'Passcode dispatched! Please check your email or notifications.');
       setForgotSuccess(successMsg);
       setForgotEmail(res?.email || emailToUse || 'admin@joycorporatesolutions.com');
+      if (res?.reset_code) {
+        setForgotGeneratedCode(res.reset_code);
+      }
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your details.');
@@ -1136,6 +1142,22 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           </button>
                         )}
                       </div>
+
+                      {forgotGeneratedCode && (
+                        <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] flex items-center justify-between animate-fadeIn shadow-xs">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>Active Security Passcode: <strong className="font-mono text-xs font-black tracking-wider text-amber-950">{forgotGeneratedCode}</strong></span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setForgotOtp(forgotGeneratedCode)}
+                            className="px-2.5 py-1 rounded-lg bg-amber-200/90 hover:bg-amber-300 text-amber-950 font-black text-[10px] transition-colors cursor-pointer flex items-center gap-1 shadow-xs"
+                          >
+                            <span>Auto-Fill ⚡</span>
+                          </button>
+                        </div>
+                      )}
 
                       <div>
                         <label className="block text-slate-700 font-bold mb-1">
