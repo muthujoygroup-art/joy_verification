@@ -677,6 +677,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
             {/* Multi-Layered Cinematic Dark & Vignette Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-transparent pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/30 to-slate-950/60 pointer-events-none" />
 
             {/* TOP: Floating Branding Pill (NO 'PORTAL ACTIVE' & NO 'Master Command Access' Clutter) */}
