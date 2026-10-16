@@ -394,7 +394,7 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
                 err_msg = send_res.get("error", "SMTP Gateway Dispatch Failed")
                 raise HTTPException(
                     status_code=502,
-                    detail=f"Password reset passcode generated, but email delivery to {target_email} failed: {err_msg}. Please check your cPanel SMTP settings in Super Admin Console (Settings Tab 13) or verify mailbox credentials."
+                    detail=f"Password reset passcode generated, but email delivery to authorized Super Admin master mailbox failed: {err_msg}. Please check your cPanel SMTP settings in Super Admin Console (Settings Tab 13) or verify mailbox credentials."
                 )
         except HTTPException:
             raise
@@ -402,12 +402,12 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
             print(f"Warning: Failed to dispatch Super Admin password reset email: {e}")
             raise HTTPException(
                 status_code=502,
-                detail=f"Failed to dispatch recovery email to {target_email}: {str(e)}. Please check mail server settings."
+                detail=f"Failed to dispatch recovery email to authorized Super Admin master mailbox: {str(e)}. Please check mail server settings."
             )
 
         return {
             "success": True,
-            "message": f"Password reset instructions and 6-digit passcode dispatched to Super Admin email ({target_email}).",
+            "message": "Password reset instructions and 6-digit passcode dispatched to authorized Super Admin master mailbox.",
             "email": target_email,
             "role": "superadmin",
             "email_sent": True

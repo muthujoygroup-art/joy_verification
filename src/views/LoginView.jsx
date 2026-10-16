@@ -196,8 +196,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       }
 
       const res = await requestForgotPassword(emailToUse, selectedRoleTab);
-      setForgotSuccess(res.message || 'Passcode dispatched! Please check your email or notifications.');
-      setForgotEmail(res.email || emailToUse || 'admin@joycorporatesolutions.com');
+      const successMsg = isSuperAdmin
+        ? 'Passcode dispatched! 6-digit recovery code sent to the authorized Master Mailbox.'
+        : (res?.message || 'Passcode dispatched! Please check your email or notifications.');
+      setForgotSuccess(successMsg);
+      setForgotEmail(res?.email || emailToUse || 'admin@joycorporatesolutions.com');
       setForgotStep(2);
     } catch (err) {
       setForgotError(err.message || 'Failed to dispatch recovery email. Please verify your details.');
@@ -857,7 +860,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <span>Passcode dispatched to authorized email:</span>
                     </div>
                     <div className="font-mono font-bold text-slate-900 bg-white p-2.5 rounded-xl border border-indigo-100 flex items-center justify-between">
-                      <span className="truncate">{twoFaTargetEmail}</span>
+                      <span className="truncate">
+                        {selectedRoleTab === 'superadmin' 
+                          ? 'Authorized Master Mailbox (a•••••n@•••••••••••.com)' 
+                          : twoFaTargetEmail}
+                      </span>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className={`badge ${twoFaTimer < 120 ? 'badge-rose' : 'badge-indigo'} text-[10px] font-mono flex items-center gap-1`}>
                           ⏱️ {formatTimer(twoFaTimer)}
@@ -974,27 +981,37 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                   {forgotStep === 1 && (
                     <form onSubmit={handleForgotRequestSubmit} className="space-y-4 text-xs">
                       {selectedRoleTab === 'superadmin' ? (
-                        <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-purple-50/40 to-slate-50 border border-indigo-200/90 shadow-sm space-y-3">
+                        <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200/90 shadow-sm space-y-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shrink-0">
-                              <ShieldCheck className="w-5 h-5" />
+                            <div 
+                              className="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 shrink-0"
+                              style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)' }}
+                            >
+                              <ShieldCheck className="w-6 h-6 text-white stroke-[2.2]" />
                             </div>
-                            <div>
-                              <div className="text-[10px] font-black uppercase tracking-wider text-indigo-700">
-                                Protected Master Account
-                              </div>
-                              <div className="text-xs sm:text-sm font-black text-slate-900 font-mono flex items-center gap-2">
-                                <span>{emailInput || 'Master Super Admin Mailbox'}</span>
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                  Verified Master
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 mb-0.5">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700">
+                                  Protected Master Account
                                 </span>
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">
+                                  Confidential 🛡️
+                                </span>
+                              </div>
+                              <div className="text-xs sm:text-sm font-black text-slate-900 flex items-center gap-2">
+                                <span>Authorized Super Admin Mailbox</span>
+                              </div>
+                              <div className="text-[11px] font-mono text-slate-500 mt-0.5 flex items-center gap-1.5">
+                                <Mail className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                                <span>Dispatched to: <strong className="text-slate-800 font-mono">a•••••n@•••••••••••.com</strong></span>
+                                <span className="text-[10px] text-slate-400 font-sans">(Security Masked)</span>
                               </div>
                             </div>
                           </div>
-                          <div className="p-2.5 rounded-xl bg-white/90 border border-indigo-100 text-[11px] text-slate-600 leading-relaxed flex items-start gap-2">
+                          <div className="p-2.5 rounded-xl bg-white/90 border border-indigo-100/90 text-[11px] text-slate-600 leading-relaxed flex items-start gap-2 shadow-xs">
                             <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                             <span>
-                              For platform security governance, the 6-digit recovery passcode will be dispatched exclusively to the registered Super Admin master mailbox. Direct manual email entry is disabled.
+                              For platform security governance, the 6-digit recovery passcode will be dispatched exclusively to the registered Super Admin master mailbox. Direct manual email entry is restricted.
                             </span>
                           </div>
                         </div>
@@ -1074,7 +1091,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                             {isForgotLoading 
                               ? 'Dispatching Passcode...' 
                               : selectedRoleTab === 'superadmin' 
-                              ? 'Send 6-Digit Passcode to Master Email 🚀' 
+                              ? 'Dispatch 6-Digit Passcode to Master Mailbox 🚀' 
                               : 'Send 6-Digit Passcode 🚀'
                             }
                           </span>
@@ -1094,10 +1111,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                   {forgotStep === 2 && (
                     <form onSubmit={handleVerifyOtpSubmit} className="space-y-4 text-xs">
                       <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-[11px] font-medium flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <div className="flex items-center gap-2.5">
+                          <div 
+                            className="w-6 h-6 rounded-lg flex items-center justify-center text-white shrink-0"
+                            style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)' }}
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                          </div>
                           <span>
-                            Passcode sent to: <strong>{forgotEmail || (selectedRoleTab === 'superadmin' ? 'Master Super Admin Email' : 'Registered Email')}</strong>
+                            Passcode dispatched to: <strong>
+                              {selectedRoleTab === 'superadmin' 
+                                ? 'Authorized Master Mailbox (a•••••n@•••••••••••.com)' 
+                                : (forgotEmail || 'Registered Email')}
+                            </strong>
                           </span>
                         </div>
                         {selectedRoleTab !== 'superadmin' && (
@@ -1162,7 +1188,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-bold flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>
-                          Passcode verified for: <strong>{forgotEmail || (selectedRoleTab === 'superadmin' ? 'Master Super Admin Email' : 'Registered Account')}</strong>. {selectedRoleTab === 'employee_link' ? 'Please set your new 4-digit security PIN below.' : 'Please enter your new password below.'}
+                          Passcode verified for: <strong>
+                            {selectedRoleTab === 'superadmin' 
+                              ? 'Authorized Master Super Admin Account' 
+                              : (forgotEmail || 'Registered Account')}
+                          </strong>. {selectedRoleTab === 'employee_link' ? 'Please set your new 4-digit security PIN below.' : 'Please enter your new password below.'}
                         </span>
                       </div>
 

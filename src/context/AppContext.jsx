@@ -1975,7 +1975,9 @@ export const AppProvider = ({ children }) => {
           id: `notif-reset-${Date.now()}`,
           role: role || 'superadmin',
           title: role === 'superadmin' ? '🔐 Super Admin Reset Passcode Dispatched' : '🔐 Password Recovery Passcode Dispatched',
-          message: `6-digit recovery passcode dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode is valid for 15 minutes.`,
+          message: role === 'superadmin' 
+            ? '6-digit recovery passcode dispatched to authorized Super Admin master mailbox. Passcode is valid for 15 minutes.'
+            : `6-digit recovery passcode dispatched to ${resp.email || targetEmail || 'official mailbox'}. Passcode is valid for 15 minutes.`,
           timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
           isRead: false,
           priority: 'high',
