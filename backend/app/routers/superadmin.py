@@ -17,7 +17,7 @@ from backend.app.config import settings
 
 from pydantic import BaseModel
 from backend.app.database import get_db
-from backend.app.models import Company, HrUser, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate
+from backend.app.models import Company, HrUser, ApiConfiguration, FeatureItem, SystemErrorLog, Candidate, SystemSetting
 from backend.app.services.live_verification_service import test_generic_neev_endpoint
 from backend.app.services.neev_catalogue import NEEV_81_ENDPOINTS
 from backend.app.schemas import (

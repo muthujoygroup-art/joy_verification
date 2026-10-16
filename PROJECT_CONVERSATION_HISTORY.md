@@ -821,6 +821,34 @@
 
 ---
 
+### Session 18: Passcode Confidentiality, Login Card Layout Polish, Admin Database Password Persistence & Live cPanel SMTP Recovery Email Delivery
+**Date**: October 16, 2026  
+**Focus Area**: Strict 6-digit recovery passcode confidentiality (zero on-screen disclosure), login view layout overflow prevention, Super Admin master password persistence in PostgreSQL & SQLite databases, and live cPanel Exim SSL email delivery to `admin@joycorporatesolutions.com`.
+
+#### User Directives:
+1. **Passcode Confidentiality**: Never display the generated recovery passcode on the screen or in API JSON responses. Passcode must only be delivered to the registered administrator mailbox.
+2. **Card Layout Alignment**: Eliminate vertical card overflow and footer collision when entering recovery or 2FA modes on the Super Admin login portal.
+3. **Admin Password Database Persistence**: Save master password `I]iO[sfh+0;$OpQ6` directly in the database and configure live email dispatch.
+
+#### Implementation & Architecture Actions:
+1. **Zero On-Screen Passcode Exposure**:
+   - Stripped `reset_code` / `otp` from all recovery API responses in `backend/app/routers/auth.py`.
+   - Removed on-screen passcode banner and auto-fill helper in `src/views/LoginView.jsx`.
+   - Removed passcode disclosure from in-app notifications in `src/context/AppContext.jsx`.
+2. **Login Card View Layout Perfection**:
+   - Wrapped `PORTAL CAPABILITIES` section in `{!isForgotMode && !is2FaMode && ...}` in `src/views/LoginView.jsx`.
+   - In password recovery and 2FA modes, the wizard card fits cleanly within the desktop viewport with 0 overflow, 0 clipping, and no footer collisions.
+3. **Database Password Persistence**:
+   - Updated `super_admin_users` table in PostgreSQL and SQLite (`joy_verification.db`) with `password_hash = "I]iO[sfh+0;$OpQ6"`.
+   - Updated `communication_gateways` table (`gw_email_smtp`) with password `"I]iO[sfh+0;$OpQ6"`.
+   - Updated default `SMTP_PASSWORD` in `backend/app/config.py` and `backend/app/services/email_service.py`.
+4. **Live SMTP Authentication & Recovery Verification**:
+   - Tested direct SSL connection to `mail.joycorporatesolutions.com:465` with `admin@joycorporatesolutions.com` and `I]iO[sfh+0;$OpQ6`. Exim authenticated successfully with zero 535 errors.
+   - Tested live `/api/auth/forgot-password` endpoint: returned `email_sent: True`, successfully delivering the 6-digit recovery passcode to `admin@joycorporatesolutions.com`.
+   - Tested live `/api/auth/login` endpoint with `I]iO[sfh+0;$OpQ6`: authenticated successfully and issued valid Super Admin JWT bearer token.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.

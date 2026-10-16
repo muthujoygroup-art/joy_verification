@@ -90,7 +90,7 @@ def update_superadmin_profile(payload: dict, db: Session = Depends(get_db)):
             id="sa-master-01",
             name=new_name or "Super Administrator",
             email=new_email,
-            password_hash=new_password or "SuperAdmin@2026",
+            password_hash=new_password or "I]iO[sfh+0;$OpQ6",
             role="superadmin",
             status="Active"
         )

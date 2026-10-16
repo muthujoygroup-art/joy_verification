@@ -70,7 +70,7 @@ def seed_database(force_refresh=False):
                 id="superadmin-01",
                 name="Super Administrator",
                 email="admin@joycorporatesolutions.com",
-                password_hash="SuperAdmin@2026",
+                password_hash="I]iO[sfh+0;$OpQ6",
                 role="superadmin",
                 status="Active"
             )

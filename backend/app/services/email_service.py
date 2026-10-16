@@ -25,7 +25,7 @@ def get_master_smtp_config(db=None) -> Dict[str, Any]:
         "host": settings.SMTP_HOST or "mail.joycorporatesolutions.com",
         "port": int(settings.SMTP_PORT or 465),
         "user": settings.SMTP_USER or "admin@joycorporatesolutions.com",
-        "password": settings.SMTP_PASSWORD or "Joyson@5610",
+        "password": settings.SMTP_PASSWORD or "I]iO[sfh+0;$OpQ6",
         "use_ssl": True if int(settings.SMTP_PORT or 465) == 465 else False,
         "use_tls": True if int(settings.SMTP_PORT or 465) == 587 else False,
         "from_email": settings.EMAILS_FROM_EMAIL or "admin@joycorporatesolutions.com",

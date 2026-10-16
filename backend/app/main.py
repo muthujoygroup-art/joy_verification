@@ -404,13 +404,13 @@ def reset_database_direct():
                 id="sa-master",
                 name="Super Administrator",
                 email="admin@joycorporatesolutions.com",
-                password_hash="SuperAdmin@2026",
+                password_hash="I]iO[sfh+0;$OpQ6",
                 role="superadmin",
                 status="Active"
             )
             db.add(admin)
         else:
-            admin.password_hash = "SuperAdmin@2026"
+            admin.password_hash = "I]iO[sfh+0;$OpQ6"
             admin.status = "Active"
 
         db.commit()
