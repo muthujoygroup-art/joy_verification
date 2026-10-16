@@ -956,6 +956,42 @@
 
 ---
 
+### Session 22: Airtel DLT TRAI-Compliant SMS Content Templates Specification & Variable Pre-Tagging
+**Date**: October 16, 2026  
+**Focus Area**: Full planning and specification of TRAI-compliant SMS Content Templates for Airtel Commercial Communications portal registration (`https://www.airtel.in/business/commercial-communication/`), strictly adhering to TRAI Direction F.No. D-27/1/(2)/2024-QoS (E-13563) dated November 18, 2025 on variable pre-tagging (Annexure-I).
+
+#### User Directives:
+- Plan SMS templates across 9 business categories:
+  1. Welcome SMS for all users with basic platform overview.
+  2. Onboarding Link dispatch with details and welcome.
+  3. SMS after account creation completed.
+  4. OTP for verification process.
+  5. Two-factor authentication (2FA) OTP.
+  6. Reminder SMS for pending processes (candidate submission & company invoice payment).
+  7. Feedback SMS with process details.
+  8. Unique ID dispatch after account creation (`COMP001`, `COMP001HR001`, `COMP001EMP001`).
+  9. Payment confirmation and transaction status SMS for companies.
+- Strictly read and follow TRAI Direction PDF: `docs/manuals/TRAI_direction_dt_18_11_2025_on_variable_tagging (1).pdf`.
+
+#### Regulatory & Technical Standards Enforced (TRAI Nov 18, 2025 Directive):
+1. **Mandatory Variable Pre-Tagging (Annexure-I)**:
+   - `#number#` / `#numeric#`: Strictly numeric digits only (`0-9`) for OTPs, amounts, days, and minutes.
+   - `#alphanumeric#`: Alphanumeric values for User Name, Company Name, Unique Profile ID (Max 40 chars).
+   - `#url#`: Whitelisted URL/Short link CTA matching registered domain.
+   - `#cbn#`: Whitelisted call-back phone number.
+   - `#email#`: Valid RFC email regex for support mailboxes.
+2. **Anti-Contiguity Rule**:
+   - Variables are non-contiguous and separated by fixed static text.
+3. **Mandatory Entity Signature**:
+   - All templates end with the registered brand signature: `- JOY TRUE PROFILE`.
+4. **Service Implicit Classification**:
+   - OTP, Onboarding, Unique ID, Account, and Invoicing alerts categorized as Service Implicit for 24/7 delivery without DND scrubbing rejection. Feedback categorized as Service Explicit.
+
+#### Artifacts & Documentation Generated:
+- **Master Specification**: Created `docs/manuals/airtel_dlt_sms_templates_trai_compliant.md` and artifact [`airtel_dlt_sms_templates_trai_compliant.md`](file:///C:/Users/HP/.gemini/antigravity-ide/brain/0f80b031-b5c9-4e7b-965c-4eddc2cb47b0/airtel_dlt_sms_templates_trai_compliant.md).
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
