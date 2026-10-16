@@ -83,8 +83,25 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [twoFaLoading, setTwoFaLoading] = useState(false);
   const [twoFaError, setTwoFaError] = useState('');
   const [twoFaPendingAuth, setTwoFaPendingAuth] = useState(null);
-  const [enable2FaStep, setEnable2FaStep] = useState(false);
+  const [enable2FaStep] = useState(true); // Mandatory 2FA for all login portals
+  const [authScanStep, setAuthScanStep] = useState(0);
   const [twoFaTimer, setTwoFaTimer] = useState(900); // 15 minutes TTL
+
+  // Multi-Stage Security Scanner Engagement Animation during login
+  useEffect(() => {
+    let t1, t2;
+    if (isLoading) {
+      setAuthScanStep(1);
+      t1 = setTimeout(() => setAuthScanStep(2), 450);
+      t2 = setTimeout(() => setAuthScanStep(3), 1000);
+    } else {
+      setAuthScanStep(0);
+    }
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [isLoading]);
 
   // 15-Minute 2FA Countdown Timer
   useEffect(() => {
@@ -343,7 +360,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       welcomePill: 'Enterprise Corporate Suite',
       stats: [
         { label: 'Turnaround', val: '< 10 Sec' },
-        { label: 'Standards', val: 'ISO 27001' },
+        { label: 'Compliance', val: 'DPDP 2023' },
         { label: 'Vault', val: 'AES-256' }
       ],
       features: [
@@ -604,48 +621,46 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between py-5 sm:py-8 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-hidden select-none">
+    <div className="h-screen max-h-screen bg-slate-50 flex flex-col justify-between py-2 sm:py-3.5 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-x-hidden overflow-y-auto lg:overflow-y-hidden select-none">
       
       {/* Background Lighting Accents */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-6xl mx-auto w-full space-y-4 sm:space-y-5 relative z-10 my-auto">
+      <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col justify-between min-h-0 my-auto py-1 relative z-10">
         
-        {/* Top Header Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 glass-panel p-3.5 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
-          <Link to="/" className="flex items-center gap-3.5 no-underline">
+        {/* Top Header Navigation Bar (Compact, No Gateway Online, No ISO) */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 glass-panel p-2.5 sm:p-3 bg-white/95 border-slate-200 rounded-2xl shadow-xs">
+          <Link to="/" className="flex items-center gap-3 no-underline">
             <img 
               src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
               alt="JOY TRUE PROFILE Logo" 
-              className="w-9 h-9 object-contain" 
+              className="w-8 h-8 object-contain shrink-0" 
             />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-black text-sm sm:text-base text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
-                <span className="badge badge-purple text-[9px] py-0.5 px-2 hidden sm:inline-block font-black">PVT LTD</span>
+                <h2 className="font-black text-xs sm:text-sm text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
+                <span className="badge badge-purple text-[8.5px] py-0.5 px-1.5 hidden sm:inline-block font-black">PVT LTD</span>
               </div>
-              <p className="text-[10.5px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
+              <p className="text-[9.5px] sm:text-[10px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2.5 text-xs flex-wrap justify-center">
-            <span className="badge badge-emerald flex items-center gap-1.5 py-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
-              Gateway Online
+          <div className="flex items-center gap-2 text-xs flex-wrap justify-center">
+            <span className="badge badge-indigo text-[10.5px] py-1 px-3 font-bold shadow-2xs">
+              DPDP Act 2023 Statutory Compliance
             </span>
-            <span className="badge badge-indigo py-1">ISO 27001 & DPDP Act</span>
           </div>
         </div>
 
-        {/* Selected Portal Split-Screen Enterprise Card */}
-        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12">
+        {/* Selected Portal Split-Screen Enterprise Card (Auto-Fit & Zero Scroll) */}
+        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-2xl sm:rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0 max-h-[660px] lg:max-h-[700px] my-auto">
           
           <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ background: currentDetail.headerGradient }} />
 
           {/* ========================================================================= */}
           {/* 🎨 LEFT HALF: FULL-BLEED 3D CINEMATIC VISUAL HERO PANEL (5 cols) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-5 relative flex flex-col justify-between overflow-hidden bg-slate-950 p-6 sm:p-8 text-white min-h-[340px] lg:min-h-full group">
+          <div className="lg:col-span-5 relative flex flex-col justify-between overflow-hidden bg-slate-950 p-4 sm:p-5 lg:p-6 text-white min-h-[280px] lg:min-h-full group">
             
             {/* Full-Bleed 3:4 High-Resolution 3D Artwork */}
             <img 
@@ -663,36 +678,33 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/25 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/30 to-slate-950/60 pointer-events-none" />
 
-            {/* TOP: Floating Branding Pill & Live Gateway Status */}
-            <div className="relative z-10 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-xl">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                <span>{currentDetail.welcomePill}</span>
-              </div>
-
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/90 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-black shadow-xl">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>PORTAL ACTIVE</span>
-              </div>
+            {/* TOP: Floating Branding Pill (NO 'PORTAL ACTIVE' & NO 'Master Command Access' Clutter) */}
+            <div className="relative z-10 flex items-center justify-between gap-2 min-h-6">
+              {selectedRoleTab !== 'superadmin' ? (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold shadow-xl">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                  <span>{currentDetail.welcomePill}</span>
+                </div>
+              ) : <div />}
             </div>
 
             {/* CENTER / FLOATING GLASS CARD: Real-time Trust Highlights */}
-            <div className="relative z-10 my-auto py-3 hidden sm:block">
-              <div className="p-4 rounded-2xl bg-slate-950/70 backdrop-blur-xl border border-white/15 shadow-2xl space-y-2.5">
-                <div className="flex items-center gap-2 text-xs font-extrabold text-amber-300 tracking-wide uppercase">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="relative z-10 my-auto py-2 hidden sm:block">
+              <div className="p-3.5 rounded-2xl bg-slate-950/70 backdrop-blur-xl border border-white/15 shadow-2xl space-y-2">
+                <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-amber-300 tracking-wide uppercase">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Enterprise Security Infrastructure</span>
                 </div>
-                <p className="text-xs text-slate-200/90 leading-relaxed font-medium">
+                <p className="text-[11px] text-slate-200/90 leading-relaxed font-medium">
                   {currentDetail.welcomeSub}
                 </p>
                 
                 {/* Trust Badges Bar inside floating glass card */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center">
+                <div className="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-white/10 text-center">
                   {(currentDetail.stats || []).map((st, i) => (
-                    <div key={i} className="p-1.5 rounded-xl bg-white/5 border border-white/10">
-                      <div className="text-[9px] font-bold text-slate-300 uppercase tracking-wider">{st.label}</div>
-                      <div className="text-xs font-black text-white mt-0.5">{st.val}</div>
+                    <div key={i} className="p-1 rounded-lg bg-white/5 border border-white/10">
+                      <div className="text-[8.5px] font-bold text-slate-300 uppercase tracking-wider">{st.label}</div>
+                      <div className="text-[11px] font-black text-white mt-0.5">{st.val}</div>
                     </div>
                   ))}
                 </div>
@@ -700,21 +712,21 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             </div>
 
             {/* BOTTOM: Persona Heading, Value Proposition & DPDP Seal */}
-            <div className="relative z-10 space-y-1.5 pt-3">
+            <div className="relative z-10 space-y-1 pt-2">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/20 text-white">
+                <span className="px-2 py-0.5 rounded-md text-[9.5px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/20 text-white">
                   {currentDetail.roleTag}
                 </span>
-                <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100% Verifiable
+                <span className="text-[10.5px] font-bold text-emerald-300 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" /> 100% Verifiable
                 </span>
               </div>
 
-              <h3 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+              <h3 className="text-base sm:text-lg font-black text-white tracking-tight leading-tight drop-shadow-md">
                 {currentDetail.welcomeHeading}
               </h3>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-300 pt-2 border-t border-white/10">
+              <div className="flex items-center justify-between text-[10.5px] text-slate-300 pt-1.5 border-t border-white/10">
                 <span>🔒 256-bit Bank Grade Encryption</span>
                 <span className="font-bold text-indigo-300">DPDP Act 2023</span>
               </div>
@@ -725,42 +737,79 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           {/* ========================================================================= */}
           {/* 🔐 RIGHT HALF: PROFESSIONAL ENTERPRISE SIGN-IN WORKSTATION (7 cols) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-7 p-6 sm:p-7 lg:p-8 flex flex-col justify-between space-y-4 bg-white">
+          <div className="lg:col-span-7 p-4 sm:p-5 lg:p-6 flex flex-col justify-between overflow-hidden bg-white h-full space-y-2.5 relative">
             
             {/* Header Section of the Right Column */}
-            <div className="border-b border-slate-100 pb-3 space-y-2">
+            <div className="border-b border-slate-100 pb-2 space-y-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className={`badge ${currentDetail.badgeClass} text-[10px] font-black uppercase tracking-wider`}>
+                  <span className={`badge ${currentDetail.badgeClass} text-[9.5px] font-black uppercase tracking-wider`}>
                     {currentDetail.badge}
                   </span>
-                  <span className="text-xs font-semibold text-slate-400">• {currentDetail.roleTag}</span>
+                  <span className="text-[11px] font-semibold text-slate-400">• {currentDetail.roleTag}</span>
                 </div>
-                <div className="hidden sm:flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-200">
+                <div className="hidden sm:flex items-center gap-1 text-[10.5px] font-bold text-slate-500 bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-200">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Secure SSL Auth</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
-                  <Icon className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-2.5">
+                <div className={`p-1.5 rounded-xl ${currentDetail.iconBgClass} flex items-center justify-center shrink-0`}>
+                  <Icon className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+                  <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-tight">
                     {currentDetail.title} Sign In
                   </h1>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-[11px] text-slate-500 font-medium">
                     {currentDetail.subtitle}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 font-medium">
-                <Info className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>{currentDetail.provisionNotice}</span>
-              </div>
+              {/* Only show provisionNotice if not SuperAdmin */}
+              {selectedRoleTab !== 'superadmin' && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[10.5px] text-slate-600 font-medium">
+                  <Info className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span>{currentDetail.provisionNotice}</span>
+                </div>
+              )}
             </div>
+
+            {/* INNOVATIVE HIGH-TECH ENGAGEMENT ANIMATION OVERLAY DURING AUTHENTICATION */}
+            {isLoading && (
+              <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-40 flex flex-col items-center justify-center p-6 text-center animate-fadeIn rounded-2xl">
+                {/* Concentric Cryptographic Radar Rings */}
+                <div className="relative w-20 h-20 mb-4 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border-2 border-indigo-500/20 animate-ping" />
+                  <div className="absolute inset-1 rounded-full border-2 border-t-indigo-600 border-r-purple-600 border-b-transparent border-l-transparent animate-spin" />
+                  <div className="absolute inset-3 rounded-full border-2 border-t-transparent border-r-transparent border-b-indigo-400 border-l-cyan-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
+                  <div className="absolute inset-5 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-300">
+                    <ShieldCheck className="w-5 h-5 text-white animate-pulse" />
+                  </div>
+                </div>
+
+                <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                  {authScanStep === 1 
+                    ? '⚡ Initializing Sovereign Handshake...' 
+                    : authScanStep === 2 
+                    ? '🔐 Verifying Master Cryptographic Hash...' 
+                    : '🛡️ Dispatching Mandatory 2FA Passcode...'}
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-1 max-w-xs font-medium">
+                  High-assurance zero-trust gateway authenticating authorized Master Admin session.
+                </p>
+
+                {/* Animated Dynamic Progress Bar */}
+                <div className="w-56 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-3.5 border border-slate-200">
+                  <div 
+                    className="h-full bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 rounded-full transition-all duration-500 ease-out" 
+                    style={{ width: authScanStep === 1 ? '35%' : authScanStep === 2 ? '70%' : '95%' }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Authentication Form & Workflows */}
             <div className="space-y-4">
@@ -1206,9 +1255,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                     
                     {/* 👑 SUPER ADMIN SPECIFIC LOGIN FORM */}
                     {selectedRoleTab === 'superadmin' && (
-                      <div className="space-y-3.5">
+                      <div className="space-y-2.5">
                         <div>
-                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                          <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-0.5">
                             Super Admin Master Email *
                           </label>
                           <div className="input-wrapper">
@@ -1219,20 +1268,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               placeholder="admin@joycorporatesolutions.com"
                               value={emailInput}
                               onChange={(e) => setEmailInput(e.target.value)}
-                              className="input-field-styled"
+                              className="input-field-styled py-2 text-xs sm:text-sm font-medium"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700">
                               Master Password *
                             </label>
                             <button
                               type="button"
                               onClick={() => openForgotMode(emailInput || 'admin@joycorporatesolutions.com')}
-                              className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
+                              className="text-[10.5px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
                             >
                               Forgot Password?
                             </button>
@@ -1245,7 +1294,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               placeholder="Enter master password"
                               value={passwordInput}
                               onChange={(e) => setPasswordInput(e.target.value)}
-                              className="input-field-styled pr-10"
+                              className="input-field-styled py-2 pr-10 text-xs sm:text-sm font-medium"
                             />
                             <button
                               type="button"
@@ -1258,27 +1307,23 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                          <label className="flex items-center gap-2 text-[11px] text-slate-700 font-bold cursor-pointer select-none">
-                            <input 
-                              type="checkbox" 
-                              checked={enable2FaStep} 
-                              onChange={(e) => setEnable2FaStep(e.target.checked)} 
-                              className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer accent-indigo-600"
-                            />
-                            <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
-                          </label>
-                          <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
-                            Recommended
+                        {/* Mandatory 2FA Indicator Badge (No Checkbox Toggle) */}
+                        <div className="flex items-center justify-between p-2 rounded-xl bg-indigo-50/90 border border-indigo-200/90 text-xs shadow-2xs">
+                          <div className="flex items-center gap-2 text-indigo-950 font-bold">
+                            <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                            <span className="text-[11px] font-bold">Two-Factor Authentication (2FA) Mandatory</span>
+                          </div>
+                          <span className="badge badge-indigo text-[9px] font-black uppercase tracking-wider">
+                            Enforced 🛡️
                           </span>
                         </div>
 
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50`}
+                          className={`btn ${currentDetail.btnClass} w-full py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01] active:scale-[0.99]`}
                         >
-                          <Lock className="w-4 h-4" />
+                          <Lock className="w-3.5 h-3.5" />
                           <span>{isLoading ? 'Authenticating Master Access...' : 'Sign In as Super Admin'}</span>
                         </button>
                       </div>
@@ -1286,9 +1331,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                     {/* 🏢 COMPANY ADMIN SPECIFIC LOGIN FORM */}
                     {selectedRoleTab === 'company' && (
-                      <div className="space-y-3.5">
+                      <div className="space-y-2.5">
                         <div>
-                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                          <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-0.5">
                             Company Admin Email *
                           </label>
                           <div className="input-wrapper">
@@ -1299,20 +1344,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               placeholder="muthukumar@joyglobalcorp.com"
                               value={emailInput}
                               onChange={(e) => setEmailInput(e.target.value)}
-                              className="input-field-styled"
+                              className="input-field-styled py-2 text-xs sm:text-sm font-medium"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700">
                               Company Password *
                             </label>
                             <button
                               type="button"
                               onClick={() => openForgotMode(emailInput)}
-                              className="text-[11px] font-bold text-sky-600 hover:text-sky-800 hover:underline cursor-pointer"
+                              className="text-[10.5px] font-bold text-sky-600 hover:text-sky-800 hover:underline cursor-pointer"
                             >
                               Forgot Password?
                             </button>
@@ -1325,7 +1370,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               placeholder="Enter company password"
                               value={passwordInput}
                               onChange={(e) => setPasswordInput(e.target.value)}
-                              className="input-field-styled pr-10"
+                              className="input-field-styled py-2 pr-10 text-xs sm:text-sm font-medium"
                             />
                             <button
                               type="button"
@@ -1338,27 +1383,23 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                          <label className="flex items-center gap-2 text-[11px] text-slate-700 font-bold cursor-pointer select-none">
-                            <input 
-                              type="checkbox" 
-                              checked={enable2FaStep} 
-                              onChange={(e) => setEnable2FaStep(e.target.checked)} 
-                              className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5 cursor-pointer accent-sky-600"
-                            />
-                            <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
-                          </label>
-                          <span className="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">
-                            Recommended
+                        {/* Mandatory 2FA Indicator Badge (No Checkbox Toggle) */}
+                        <div className="flex items-center justify-between p-2 rounded-xl bg-sky-50/90 border border-sky-200/90 text-xs shadow-2xs">
+                          <div className="flex items-center gap-2 text-sky-950 font-bold">
+                            <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0" />
+                            <span className="text-[11px] font-bold">Two-Factor Authentication (2FA) Mandatory</span>
+                          </div>
+                          <span className="badge badge-cyan text-[9px] font-black uppercase tracking-wider">
+                            Enforced 🛡️
                           </span>
                         </div>
 
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50`}
+                          className={`btn ${currentDetail.btnClass} w-full py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01] active:scale-[0.99]`}
                         >
-                          <Lock className="w-4 h-4" />
+                          <Lock className="w-3.5 h-3.5" />
                           <span>{isLoading ? 'Signing In...' : 'Sign In as Company Admin'}</span>
                         </button>
                       </div>
@@ -1366,9 +1407,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                     {/* 👥 HR EXECUTIVE SPECIFIC LOGIN FORM */}
                     {selectedRoleTab === 'hrexecutive' && (
-                      <div className="space-y-3.5">
+                      <div className="space-y-2.5">
                         <div>
-                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                          <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-0.5">
                             HR Recruiter Email *
                           </label>
                           <div className="input-wrapper">
@@ -1379,20 +1420,20 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               placeholder="muthujoygroup@gmail.com"
                               value={emailInput}
                               onChange={(e) => setEmailInput(e.target.value)}
-                              className="input-field-styled"
+                              className="input-field-styled py-2 text-xs sm:text-sm font-medium"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700">
                               HR Password *
                             </label>
                             <button
                               type="button"
                               onClick={() => openForgotMode(emailInput)}
-                              className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer"
+                              className="text-[10.5px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer"
                             >
                               Forgot Password?
                             </button>
@@ -1405,7 +1446,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                               placeholder="Enter HR password"
                               value={passwordInput}
                               onChange={(e) => setPasswordInput(e.target.value)}
-                              className="input-field-styled pr-10"
+                              className="input-field-styled py-2 pr-10 text-xs sm:text-sm font-medium"
                             />
                             <button
                               type="button"
@@ -1418,27 +1459,23 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                          <label className="flex items-center gap-2 text-[11px] text-slate-700 font-bold cursor-pointer select-none">
-                            <input 
-                              type="checkbox" 
-                              checked={enable2FaStep} 
-                              onChange={(e) => setEnable2FaStep(e.target.checked)} 
-                              className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer accent-emerald-600"
-                            />
-                            <span>Require Two-Factor Authentication (2FA Passcode) 🛡️</span>
-                          </label>
-                          <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                            Recommended
+                        {/* Mandatory 2FA Indicator Badge (No Checkbox Toggle) */}
+                        <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50/90 border border-emerald-200/90 text-xs shadow-2xs">
+                          <div className="flex items-center gap-2 text-emerald-950 font-bold">
+                            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span className="text-[11px] font-bold">Two-Factor Authentication (2FA) Mandatory</span>
+                          </div>
+                          <span className="badge badge-emerald text-[9px] font-black uppercase tracking-wider">
+                            Enforced 🛡️
                           </span>
                         </div>
 
                         <button
                           type="submit"
                           disabled={isLoading}
-                          className={`btn ${currentDetail.btnClass} w-full py-3 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50`}
+                          className={`btn ${currentDetail.btnClass} w-full py-2.5 text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-all hover:scale-[1.01] active:scale-[0.99]`}
                         >
-                          <Lock className="w-4 h-4" />
+                          <Lock className="w-3.5 h-3.5" />
                           <span>{isLoading ? 'Signing In...' : 'Sign In as HR Executive'}</span>
                         </button>
                       </div>
@@ -1517,19 +1554,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             </div>
 
             {/* Portal Capabilities / Integrated Capabilities Chips */}
-            <div className="pt-3 border-t border-slate-100 space-y-2">
+            <div className="pt-2 border-t border-slate-100 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
                   <span>Portal Capabilities</span>
                 </span>
-                <span className="text-[10px] font-bold text-slate-400">Enterprise Edition</span>
+                <span className="text-[9.5px] font-bold text-slate-400">Enterprise Edition</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-semibold text-slate-700">
                 {currentDetail.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-center gap-2 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/80">
+                  <div key={idx} className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/80 hover:border-indigo-300 hover:translate-x-0.5 transition-all">
                     <Check className="w-3 h-3 text-emerald-600 shrink-0" />
-                    <span className="truncate text-[11px]">{feat}</span>
+                    <span className="truncate text-[10.5px]">{feat}</span>
                   </div>
                 ))}
               </div>
@@ -1540,7 +1577,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         </div>
 
         {/* Bottom Footer Note */}
-        <div className="text-center text-xs text-slate-500 font-medium">
+        <div className="text-center text-[10.5px] text-slate-400 font-medium py-0.5">
           <p>© 2026 JOY CORPORATE SOLUTIONS PRIVATE LIMITED • Employee Verification Platform</p>
         </div>
 
