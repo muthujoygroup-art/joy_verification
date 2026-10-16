@@ -29,7 +29,6 @@ import {
   Volume2,
   VolumeX,
   Plus,
-  Minus,
   X,
   Sparkles,
   Crown,
@@ -60,7 +59,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     showToast
   } = useApp();
 
-  // 1. Top Segmented Switcher: 'company' (Enterprise Operations) vs 'personal' (My Workspace)
+  // 1. Top Segmented Switcher: 'company' (Operations) vs 'personal' (My Workspace)
   const [workspaceMode, setWorkspaceMode] = useState('company');
 
   // 2. Real-Time Quick Search Input State
@@ -176,10 +175,8 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     if (typeof window !== 'undefined') {
       const p = window.location.pathname;
       if (p.includes('/hr/')) {
-        // Path is like /joy-man-power-service/hr/agilan/candidates
         pathCompSlug = normStr(p.split('/hr/')[0].replace(/^\//, '').split('/')[0]);
       } else if (p.includes('/company/')) {
-        // Path could be /company/COMP002/... or /joy-man-power-service/company/...
         const parts = p.split('/company/');
         pathCompSlug = normStr(parts[0].replace(/^\//, '').split('/')[0] || parts[1]?.split('/')[0]);
       }
@@ -216,7 +213,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       if (isJoyTarget && (joyAliases.has(candCompNorm) || candCompNorm.includes('comp') || candCompNorm.includes('joy') || candCompNorm.includes('manpower'))) {
         return true;
       }
-      return true; // Default fallback to preserve candidate visibility
+      return true;
     });
 
     // Apply strict deduplication to prevent counting duplicate candidates
@@ -278,28 +275,28 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       badgeClass: 'badge-purple',
       icon: Crown,
       codePrefix: 'SUPERADMIN',
-      badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
+      badgeColor: 'bg-indigo-50 text-indigo-900 border-indigo-200'
     },
     company: {
       label: 'Company Admin',
       badgeClass: 'badge-cyan',
       icon: Building2,
       codePrefix: 'COMP001',
-      badgeColor: 'bg-sky-100 text-sky-900 border-sky-300'
+      badgeColor: 'bg-sky-50 text-sky-900 border-sky-200'
     },
     hrexecutive: {
       label: 'HR Executive',
       badgeClass: 'badge-emerald',
       icon: UserCheck,
       codePrefix: 'COMP001HR001',
-      badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
+      badgeColor: 'bg-emerald-50 text-emerald-900 border-emerald-200'
     },
     employee_link: {
       label: 'Candidate Portal',
       badgeClass: 'badge-amber',
       icon: Smartphone,
       codePrefix: 'COMP001EMP001',
-      badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
+      badgeColor: 'bg-amber-50 text-amber-900 border-amber-200'
     }
   };
 
@@ -389,14 +386,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   };
 
   // =========================================================================
-  // 🏛️ 5 PILLARS NAVIGATION: Exactly Matching User Screenshot 2
+  // 🏛️ SOFT-CARD FLOATING PILLARS: Modern Notion & Apple Style (No plain numbers)
   // =========================================================================
   const pillarsConfig = useMemo(() => {
     if (workspaceMode === 'personal' && effectiveRole !== 'employee_link') {
       return [
         {
           id: 'my_workspace',
-          title: '1. My Profile & Credentials',
+          title: 'Profile & Credentials',
           subtitle: 'Identity & Authentication',
           badgeText: '3 Tools',
           icon: User,
@@ -410,7 +407,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'my_sessions',
-          title: '2. Session & Activity Audit',
+          title: 'Session & Audit Trail',
           subtitle: 'Real-Time Device Telemetry',
           badgeText: '2 Tools',
           icon: Activity,
@@ -423,7 +420,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'my_alerts',
-          title: '3. Alerts & Incident Tickets',
+          title: 'Alerts & Helpdesk',
           subtitle: 'Helpdesk & Communications',
           badgeText: unreadCount > 0 ? `${unreadCount} NEW` : '2 Tools',
           icon: Bell,
@@ -436,14 +433,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'my_reports',
-          title: '4. Downloads & Legal Docs',
+          title: 'Exports & Legal Docs',
           subtitle: 'Exports & DPDP Framework',
           badgeText: '2 Tools',
           icon: Download,
           colorClass: 'from-sky-600 to-indigo-600',
           defaultTab: 'exports',
           divisions: [
-            { id: 'export_hub', label: 'Date-Filtered Universal Reports', modal: 'universal_export', icon: Download },
+            { id: 'export_hub', label: 'Universal Reports Hub', modal: 'universal_export', icon: Download },
             { id: 'legal_docs', label: 'Statutory DPDP Handbook', modal: 'legal_handbook', icon: Scale }
           ]
         }
@@ -451,21 +448,21 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
 
     // =========================================================================
-    // 👑 1. SUPER ADMIN: MODULAR CATEGORIES
+    // 👑 1. SUPER ADMIN: MODULAR CATEGORIES (Clean Semantic SaaS Names)
     // =========================================================================
     if (effectiveRole === 'superadmin') {
       return [
         {
           id: 'core_ops',
-          title: '1. Companies & Accounts',
+          title: 'Companies & Tenants',
           subtitle: 'Tenants & Candidates',
-          badgeText: '4 MODULES',
+          badgeText: '4 Modules',
           icon: Building2,
           colorClass: 'from-indigo-600 to-purple-600',
           defaultTab: 'companies',
           divisions: [
             { id: 'companies', label: 'All Companies List', tab: 'companies', icon: Building2 },
-            { id: 'onboard_company', label: '+ Add New Company', modal: 'add_company', icon: Plus },
+            { id: 'onboard_company', label: 'Onboard New Company', modal: 'add_company', icon: Plus },
             { id: 'ledger', label: 'Candidate Records', tab: 'ledger', icon: Users },
             { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck },
             { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search }
@@ -473,9 +470,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'landing_public_cms',
-          title: '2. Landing Page & Website CMS',
-          subtitle: 'Homepage, Leads & Legal',
-          badgeText: '4 MODULES',
+          title: 'Landing Page & CMS',
+          subtitle: 'Homepage, Leads & Reviews',
+          badgeText: '4 Modules',
           icon: Globe,
           colorClass: 'from-blue-600 to-cyan-600',
           defaultTab: 'landing_cms',
@@ -488,9 +485,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'gateways_engine',
-          title: '3. Verification Gateways',
-          subtitle: 'APIs & Live Studio',
-          badgeText: '5 MODULES',
+          title: 'Verification Gateways',
+          subtitle: '81 APIs & Live Studio',
+          badgeText: '5 Gateways',
           icon: Zap,
           colorClass: 'from-teal-600 to-emerald-600',
           defaultTab: 'apiconfig',
@@ -504,23 +501,23 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'billing_finance',
-          title: '4. Invoices & Billing',
-          subtitle: 'Postpaid Bills & Invoices',
-          badgeText: '3 MODULES',
+          title: 'Invoices & Billing',
+          subtitle: 'Postpaid Bills & Gateway',
+          badgeText: '3 Modules',
           icon: CreditCard,
           colorClass: 'from-amber-600 to-orange-600',
           defaultTab: 'billing',
           divisions: [
-            { id: 'billing', label: 'Company Invoices & Billing', tab: 'billing', icon: CreditCard },
+            { id: 'billing', label: 'Company Billing Ledger', tab: 'billing', icon: CreditCard },
             { id: 'api_margins_fin', label: 'API Margins & Costs', tab: 'consumption_margins', icon: TrendingUp },
             { id: 'razorpay_modal', label: 'Razorpay Payment Gateway', modal: 'razorpay_admin', icon: Zap }
           ]
         },
         {
           id: 'db_security',
-          title: '5. Database & Logs',
-          subtitle: 'Database & System Activity',
-          badgeText: '5 MODULES',
+          title: 'Database & System Logs',
+          subtitle: 'PostgreSQL & Forensics',
+          badgeText: '5 Modules',
           icon: Database,
           colorClass: 'from-rose-600 to-pink-700',
           defaultTab: 'dbms',
@@ -528,24 +525,24 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'dbms', label: 'PostgreSQL Database Explorer', tab: 'dbms', icon: Database },
             { id: 'audit', label: 'Audit Trail & Activity Log', tab: 'audit', icon: FileText },
             { id: 'sessions', label: 'Active User Sessions', tab: 'sessions', icon: ShieldCheck },
-            { id: 'issuelogs', label: 'System Incident Logs & Forensics', tab: 'issuelogs', icon: Activity },
-            { id: 'system_health', label: '360° Platform Health & Telemetry', tab: 'system_health', icon: ShieldCheck }
+            { id: 'issuelogs', label: 'System Incident Logs', tab: 'issuelogs', icon: Activity },
+            { id: 'system_health', label: 'Platform Health & Telemetry', tab: 'system_health', icon: ShieldCheck }
           ]
         },
         {
           id: 'gov_reports',
-          title: '6. Compliance & Settings',
-          subtitle: 'Reports, Rules & Settings',
-          badgeText: '5 MODULES',
+          title: 'Compliance & Settings',
+          subtitle: 'Reports, Privacy & Setup',
+          badgeText: '5 Modules',
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-800',
           defaultTab: 'reports',
           divisions: [
-            { id: 'reports', label: '1. Reports Center', tab: 'reports', icon: Download },
-            { id: 'guidelines', label: '2. Legal & Privacy Rules', tab: 'legal_governance', icon: Scale },
-            { id: 'masterfields', label: '3. System Field Presets', tab: 'masterdata', icon: Sliders },
-            { id: 'tickets', label: '4. Support Helpdesk', tab: 'tickets', icon: LifeBuoy },
-            { id: 'settings', label: '5. Platform Settings', tab: 'settings', icon: Settings },
+            { id: 'reports', label: 'Reports Center', tab: 'reports', icon: Download },
+            { id: 'guidelines', label: 'Legal & Privacy Rules', tab: 'legal_governance', icon: Scale },
+            { id: 'masterfields', label: 'System Field Presets', tab: 'masterdata', icon: Sliders },
+            { id: 'tickets', label: 'Support Helpdesk', tab: 'tickets', icon: LifeBuoy },
+            { id: 'settings', label: 'Platform Settings', tab: 'settings', icon: Settings },
             { id: 'omnisearch_gov', label: 'Quick Search', tab: 'omnisearch', icon: Search }
           ]
         }
@@ -553,77 +550,77 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
 
     // =========================================================================
-    // 2. COMPANY ADMIN: 5 PILLARS & RESPECTIVE DIVISIONS
+    // 2. COMPANY ADMIN: 5 PILLARS (Clean Semantic SaaS Names)
     // =========================================================================
     if (effectiveRole === 'company') {
       return [
         {
           id: 'telemetry_candidates',
-          title: '1. Dashboard & Candidates',
+          title: 'Dashboard & Candidates',
           subtitle: 'Verification Records & Stats',
-          badgeText: `${(scopedCandidates || []).length} PROFILES`,
+          badgeText: `${(scopedCandidates || []).length} Profiles`,
           icon: ShieldCheck,
           colorClass: 'from-sky-600 to-teal-600',
           defaultTab: 'registry',
           divisions: [
-            { id: 'registry', label: `Candidate List (${(scopedCandidates || []).length})`, tab: 'registry', icon: Users },
-            { id: 'telemetry', label: 'Verification Stats & Speeds', tab: 'telemetry', icon: TrendingUp }
+            { id: 'registry', label: `Candidate Directory (${(scopedCandidates || []).length})`, tab: 'registry', icon: Users },
+            { id: 'telemetry', label: 'Verification Telemetry', tab: 'telemetry', icon: TrendingUp }
           ]
         },
         {
           id: 'hr_governance',
-          title: '2. HR Team & Recruiters',
-          subtitle: 'Staff & Permissions',
-          badgeText: `${(hrUsers || []).length} STAFF`,
+          title: 'HR Team & Recruiters',
+          subtitle: 'Staff & Access Control',
+          badgeText: `${(hrUsers || []).length} Staff`,
           icon: Users,
           colorClass: 'from-indigo-600 to-purple-700',
           defaultTab: 'hrteam',
           divisions: [
             { id: 'hrteam', label: `HR Team Directory (${(hrUsers || []).length})`, tab: 'hrteam', icon: UserCheck },
-            { id: 'add_hr_modal', label: '+ Add New HR Recruiter', modal: 'add_hr', icon: Plus },
+            { id: 'add_hr_modal', label: 'Add New HR Recruiter', modal: 'add_hr', icon: Plus },
             { id: 'hr_permissions', label: 'HR Access & Permissions', tab: 'hr_permissions', icon: Sliders }
           ]
         },
         {
           id: 'vendor_verification',
-          title: '3. Vendor Verification',
+          title: 'Vendor Verification',
           subtitle: 'Corporate Due Diligence',
-          badgeText: `${(vendors || []).length} VENDORS`,
+          badgeText: `${(vendors || []).length} Vendors`,
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-700',
           defaultTab: 'vendor_verification',
           divisions: [
-            { id: 'vendor_directory', label: '1. Vendor Directory & Status Matrix', tab: 'vendor_verification', subDivision: 'directory', icon: BarChart3 },
-            { id: 'vendor_register', label: '2. Register & Onboard New Vendor', tab: 'vendor_verification', subDivision: 'register', icon: Plus },
-            { id: 'vendor_links', label: '3. Magic Link Dispatch & Tracker', tab: 'vendor_verification', subDivision: 'links', icon: Share2 },
-            { id: 'vendor_studio', label: '4. Statutory API Studio (11 Gateways)', tab: 'vendor_verification', subDivision: 'studio', icon: Sparkles },
-            { id: 'vendor_pdf', label: '5. Official Vendor Due Diligence PDF', tab: 'vendor_verification', subDivision: 'pdf', icon: Download }
+            { id: 'vendor_directory', label: 'Vendor Directory & Matrix', tab: 'vendor_verification', subDivision: 'directory', icon: BarChart3 },
+            { id: 'vendor_register', label: 'Onboard New Vendor', tab: 'vendor_verification', subDivision: 'register', icon: Plus },
+            { id: 'vendor_links', label: 'Magic Link Dispatch', tab: 'vendor_verification', subDivision: 'links', icon: Share2 },
+            { id: 'vendor_studio', label: 'Statutory API Studio (11 Gateways)', tab: 'vendor_verification', subDivision: 'studio', icon: Sparkles },
+            { id: 'vendor_pdf', label: 'Official Due Diligence PDF', tab: 'vendor_verification', subDivision: 'pdf', icon: Download }
           ]
         },
         {
           id: 'corporate_dms',
-          title: '4. Company Profile & Vault',
-          subtitle: 'Company Details & Documents',
-          badgeText: 'VAULT',
+          title: 'Company Profile & Vault',
+          subtitle: 'Statutory Data & Documents',
+          badgeText: 'Vault',
           icon: Building2,
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'profile_details',
           divisions: [
-            { id: 'profile_details', label: 'Company Profile & Details', tab: 'profile_details', icon: Building2 },
-            { id: 'statutory_creds', label: 'Tax & Registration (CIN/GSTIN/PAN)', tab: 'profile_details', icon: ShieldCheck },
-            { id: 'dochub', label: 'Company Document Vault', tab: 'dochub', icon: Layers }
+            { id: 'profile_details', label: 'Company Profile Details', tab: 'profile_details', icon: Building2 },
+            { id: 'statutory_creds', label: 'Tax & Registration (CIN/GST/PAN)', tab: 'profile_details', icon: ShieldCheck },
+            { id: 'dochub', label: 'Corporate Document Vault', tab: 'dochub', icon: Layers }
           ]
         },
         {
           id: 'billing_gateways',
-          title: '5. Plans, Invoices & Settings',
-          subtitle: 'Postpaid Bills & Email Setup',
-          badgeText: 'BILLS',
+          title: 'Plans, Invoices & Settings',
+          subtitle: 'Postpaid Bills & Gateway',
+          badgeText: 'Billing',
           icon: CreditCard,
           colorClass: 'from-amber-600 to-orange-700',
           defaultTab: 'billing_wallet',
           divisions: [
-            { id: 'billing_wallet', label: 'Postpaid Plans & Monthly Invoices', tab: 'billing_wallet', icon: CreditCard },
+            { id: 'billing_wallet', label: 'Postpaid Plans & Invoices', tab: 'billing_wallet', icon: CreditCard },
             { id: 'recharge_wallet', label: 'Settle Bill (Razorpay)', modal: 'razorpay', icon: Zap },
             { id: 'smtp_settings', label: 'Email Server Settings', tab: 'smtp_settings', icon: MessageSquare },
             { id: 'support', label: 'Helpdesk & Support', tab: 'support', icon: LifeBuoy }
@@ -633,15 +630,15 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
 
     // =========================================================================
-    // 3. HR EXECUTIVE: 3 PILLARS & RESPECTIVE DIVISIONS
+    // 3. HR EXECUTIVE: 4 PILLARS (Clean Semantic SaaS Names)
     // =========================================================================
     if (effectiveRole === 'hrexecutive') {
       return [
         {
           id: 'pipeline_dossiers',
-          title: '1. Candidate List',
+          title: 'Candidate Pipeline',
           subtitle: 'Manage Employee Candidates',
-          badgeText: `${(scopedCandidates || []).length} CANDIDATES`,
+          badgeText: `${(scopedCandidates || []).length} Candidates`,
           icon: Smartphone,
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'pipeline',
@@ -653,9 +650,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'profiler_dispatch',
-          title: '2. Add Candidate',
-          subtitle: 'New Candidate & Verification Link',
-          badgeText: 'ADD CANDIDATE',
+          title: 'Add Candidate',
+          subtitle: 'New Candidate & Magic Link',
+          badgeText: 'New Link',
           icon: Sliders,
           colorClass: 'from-teal-600 to-emerald-700',
           defaultTab: 'profiler',
@@ -666,9 +663,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'statutory_settings',
-          title: '3. Reports & Settings',
-          subtitle: 'Analytics & HR Settings',
-          badgeText: 'SETTINGS',
+          title: 'Reports & Settings',
+          subtitle: 'Analytics & HR Config',
+          badgeText: 'Config',
           icon: Settings,
           colorClass: 'from-indigo-600 to-purple-700',
           defaultTab: 'analytics',
@@ -680,9 +677,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
         },
         {
           id: 'digilocker_vault',
-          title: '4. DigiLocker Vault',
+          title: 'DigiLocker Vault',
           subtitle: 'Govt e-KYC & Certificates',
-          badgeText: 'DIGILOCKER',
+          badgeText: 'DigiLocker',
           icon: Building2,
           colorClass: 'from-sky-600 to-indigo-800',
           defaultTab: 'digilocker_vault',
@@ -696,14 +693,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
     }
 
     // =========================================================================
-    // 📱 4. CANDIDATE PORTAL (EMPLOYEE LINK)
+    // 📱 4. CANDIDATE PORTAL (Clean Steps)
     // =========================================================================
     return [
       {
         id: 'cand_identity',
-        title: '1. Identity Checks',
+        title: 'Identity Checks',
         subtitle: 'Aadhaar, Mobile & Photo',
-        badgeText: 'STEP 1',
+        badgeText: 'Step 1',
         icon: ShieldCheck,
         colorClass: 'from-amber-600 to-orange-600',
         defaultTab: 'aadhaar_step',
@@ -715,9 +712,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       },
       {
         id: 'cand_financial',
-        title: '2. Bank & Tax Info',
+        title: 'Bank & Tax Info',
         subtitle: 'PAN Card & Bank Account',
-        badgeText: 'STEP 2',
+        badgeText: 'Step 2',
         icon: CreditCard,
         colorClass: 'from-sky-600 to-indigo-600',
         defaultTab: 'pan_step',
@@ -729,9 +726,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       },
       {
         id: 'cand_joining',
-        title: '3. Joining Form & Signature',
-        subtitle: 'Personal Details & Signature',
-        badgeText: 'STEP 3',
+        title: 'Joining Form & Signature',
+        subtitle: 'Personal Details & Sign',
+        badgeText: 'Step 3',
         icon: FileText,
         colorClass: 'from-emerald-600 to-teal-700',
         defaultTab: 'joining_form',
@@ -742,9 +739,9 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       },
       {
         id: 'cand_certs',
-        title: '4. Download Documents',
+        title: 'Download Documents',
         subtitle: 'Certificates & Privacy',
-        badgeText: 'FINAL',
+        badgeText: 'Final',
         icon: Download,
         colorClass: 'from-purple-600 to-indigo-700',
         defaultTab: 'cert_download',
@@ -781,33 +778,34 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   }, [pillarsConfig, searchQuery]);
 
   return (
-    <div className="h-full flex flex-col justify-between bg-white text-slate-800 font-sans select-none overflow-hidden relative">
+    <div className="h-full flex flex-col justify-between bg-[#F8FAFC] text-slate-800 font-sans select-none overflow-hidden relative border-r border-slate-200/80">
       
       {/* ========================================================================= */}
-      {/* 1. TOP BRAND HEADER                                                       */}
+      {/* 1. TOP BRAND HEADER: Clean Apple/Notion Soft-Card Style                   */}
       {/* ========================================================================= */}
-      <div className={`border-b border-slate-100 flex items-center shrink-0 bg-white transition-all ${
-        isCollapsed ? 'p-3 justify-center flex-col gap-2' : 'p-4 justify-between'
+      <div className={`border-b border-slate-200/70 flex items-center shrink-0 bg-white/80 backdrop-blur-md transition-all ${
+        isCollapsed ? 'p-3 justify-center flex-col gap-2' : 'px-3.5 py-3 justify-between'
       }`}>
-        <div 
-          className="flex items-center gap-2.5"
-        >
+        <div className="flex items-center gap-2.5 min-w-0">
           <div className="relative shrink-0">
-            <img 
-              src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
-              alt="JOY TRUE PROFILE" 
-              className="w-8 h-8 object-contain group-hover:scale-105 transition-transform duration-200" 
-            />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-indigo-700 p-0.5 shadow-2xs flex items-center justify-center">
+              <img 
+                src={platformLogoEmblem || "/assets/logos/joy_true_profile_shield_emblem.png"} 
+                alt="JOY TRUE PROFILE" 
+                className="w-full h-full object-contain rounded-[10px]" 
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
           </div>
           {!isCollapsed && (
-            <div className="animate-fadeIn">
-              <h1 className="font-black text-sm tracking-tight text-slate-900 leading-none">
+            <div className="animate-fadeIn min-w-0">
+              <h1 className="font-extrabold text-[13px] tracking-tight text-slate-900 leading-tight">
                 JOY <span className="text-amber-500">TRUE PROFILE</span>
               </h1>
-              <p className="text-[9.5px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                {currentTheme.label}
+              <p className="text-[9.5px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1 truncate">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                <span className="truncate">{currentTheme.label}</span>
               </p>
             </div>
           )}
@@ -819,7 +817,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             type="button"
             onClick={onToggleCollapse}
             className="p-1.5 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-500 hover:text-indigo-700 transition-all cursor-pointer border border-slate-200/80 shadow-2xs hover:scale-105"
-            title={isCollapsed ? "Expand Sidebar (Wider)" : "Collapse Sidebar (Compact Rail)"}
+            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar (Compact Rail)"}
           >
             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? '' : 'rotate-180'}`} />
           </button>
@@ -837,30 +835,30 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. TOP SEGMENTED SWITCHER: Dynamic Role-Based Modes                       */}
+      {/* 2. TOP SEGMENTED SWITCHER: Modern Apple-Style Sliding Capsule              */}
       {/* ========================================================================= */}
       {!isCollapsed && (() => {
         const segmentedTabLabels = {
-          superadmin: { mode1: 'PLATFORM OPERATIONS', mode2: 'ADMIN WORKSPACE' },
-          company: { mode1: 'ENTERPRISE MODULES', mode2: 'MY WORKSPACE' },
-          hrexecutive: { mode1: 'HR WORKSTATION', mode2: 'MY WORKSPACE' },
-          employee_link: { mode1: 'VERIFICATION FORM', mode2: 'MY DOCUMENTS' }
+          superadmin: { mode1: 'Platform Ops', mode2: 'My Workspace' },
+          company: { mode1: 'Company Ops', mode2: 'My Workspace' },
+          hrexecutive: { mode1: 'Recruiter Hub', mode2: 'My Workspace' },
+          employee_link: { mode1: 'Verification', mode2: 'My Documents' }
         };
-        const currentModeLabels = segmentedTabLabels[effectiveRole] || { mode1: 'OPERATIONS', mode2: 'MY WORKSPACE' };
+        const currentModeLabels = segmentedTabLabels[effectiveRole] || { mode1: 'Operations', mode2: 'My Workspace' };
 
         return (
-          <div className="px-3 pt-3 pb-1 shrink-0 bg-white animate-fadeIn">
-            <div className="bg-slate-100/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-200/80 shadow-2xs">
+          <div className="px-3 pt-2.5 pb-1 shrink-0 animate-fadeIn">
+            <div className="bg-slate-200/60 p-1 rounded-xl flex items-center gap-1 border border-slate-200/60 shadow-2xs">
               <button
                 type="button"
                 onClick={() => {
                   soundEngine.playClick?.();
                   setWorkspaceMode('company');
                 }}
-                className={`flex-1 py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black tracking-wider transition-all duration-200 cursor-pointer truncate ${
+                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold tracking-tight transition-all duration-200 cursor-pointer text-center truncate ${
                   workspaceMode === 'company'
-                    ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-extrabold'
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
                 }`}
                 title={currentModeLabels.mode1}
               >
@@ -873,10 +871,10 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                   soundEngine.playClick?.();
                   setWorkspaceMode('personal');
                 }}
-                className={`flex-1 py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black tracking-wider transition-all duration-200 cursor-pointer truncate ${
+                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold tracking-tight transition-all duration-200 cursor-pointer text-center truncate ${
                   workspaceMode === 'personal'
-                    ? 'bg-white text-indigo-950 shadow-xs border border-slate-200/60 scale-[1.01]'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-extrabold'
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'
                 }`}
                 title={currentModeLabels.mode2}
               >
@@ -888,37 +886,41 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       })()}
 
       {/* ========================================================================= */}
-      {/* 3. REAL-TIME QUICK SEARCH INPUT: 🔍 Quick search...                       */}
+      {/* 3. REAL-TIME QUICK SEARCH INPUT: Notion-Grade Omni-Search                 */}
       {/* ========================================================================= */}
       {!isCollapsed && (
-        <div className="px-3 py-2 shrink-0 bg-white animate-fadeIn">
-          <div className="relative flex items-center">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
+        <div className="px-3 py-1.5 shrink-0 animate-fadeIn">
+          <div className="relative flex items-center group">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none group-focus-within:text-indigo-600 transition-colors" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Quick search modules & divisions..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium transition-all shadow-inner"
+              placeholder="Search modules & tools..."
+              className="w-full bg-white/90 border border-slate-200/80 rounded-xl pl-9 pr-14 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-400 font-medium transition-all shadow-2xs"
             />
             {searchQuery ? (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 p-0.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors"
+                className="absolute right-2.5 p-0.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer"
                 title="Clear Search"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3 h-3" />
               </button>
-            ) : null}
+            ) : (
+              <kbd className="absolute right-2.5 px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-slate-100 rounded border border-slate-200/80 pointer-events-none">
+                ⌘K
+              </kbd>
+            )}
           </div>
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* 4. INNOVATIVE 5 PILLARS & RESPECTIVE DIVISIONS ACCORDION LIST             */}
+      {/* 4. SOFT-CARD FLOATING PILLARS & DIVISIONS (Notion & Apple Style)          */}
       {/* ========================================================================= */}
       <div className={`flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-200 ${
-        isCollapsed ? 'px-2 py-3' : 'px-3 py-2'
+        isCollapsed ? 'px-2 py-3' : 'px-3 py-1.5'
       }`}>
         {filteredPillars.length === 0 ? (
           <div className="p-6 text-center text-slate-400 space-y-2">
@@ -926,7 +928,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             <p className="text-xs font-medium">No pillars or divisions matching &quot;{searchQuery}&quot;</p>
             <button
               onClick={() => setSearchQuery('')}
-              className="text-xs font-bold text-emerald-600 hover:underline"
+              className="text-xs font-bold text-indigo-600 hover:underline cursor-pointer"
             >
               Clear Search
             </button>
@@ -947,17 +949,18 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                   <button
                     type="button"
                     onClick={() => handleNavigate(pillar)}
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black transition-all cursor-pointer shadow-xs ${
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold transition-all cursor-pointer shadow-2xs ${
                       isPillarActive
-                        ? `bg-gradient-to-br ${pillar.colorClass} text-white ring-2 ring-indigo-400 ring-offset-2 scale-105`
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                        ? `bg-gradient-to-br ${pillar.colorClass} text-white ring-2 ring-indigo-400 ring-offset-2 scale-105 shadow-sm`
+                        : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/70'
                     }`}
+                    title={pillar.title}
                   >
                     <Icon className="w-5 h-5" />
                   </button>
 
                   {/* 🚀 Hover Floating Flyout Menu */}
-                  <div className="hidden group-hover:flex absolute left-full top-0 ml-3 w-64 bg-white border border-slate-200/90 shadow-2xl rounded-2xl p-3 z-50 flex-col gap-2 animate-fadeIn font-sans text-left">
+                  <div className="hidden group-hover:flex absolute left-full top-0 ml-3 w-64 bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl rounded-2xl p-3 z-50 flex-col gap-2 animate-fadeIn font-sans text-left">
                     <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                       <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-white bg-gradient-to-br ${pillar.colorClass} shrink-0`}>
                         <Icon className="w-3.5 h-3.5" />
@@ -979,11 +982,11 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                             onClick={() => handleNavigate(pillar, div)}
                             className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs transition-all text-left cursor-pointer ${
                               isDivActive
-                                ? 'bg-emerald-50 text-emerald-950 font-black border border-emerald-300'
+                                ? 'bg-indigo-50 text-indigo-950 font-bold border border-indigo-200/90'
                                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium'
                             }`}
                           >
-                            <DivIcon className={`w-3.5 h-3.5 shrink-0 ${isDivActive ? 'text-emerald-600' : 'text-slate-400'}`} />
+                            <DivIcon className={`w-3.5 h-3.5 shrink-0 ${isDivActive ? 'text-indigo-600' : 'text-slate-400'}`} />
                             <span className="truncate">{div.label}</span>
                           </button>
                         );
@@ -995,70 +998,68 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             }
 
             // =========================================================================
-            // 📖 FULL EXPANDED SIDEBAR ACCORDION ITEM
+            // 📖 SOFT-CARD FLOATING PILLAR ITEM (Apple & Notion Tint Style)
             // =========================================================================
             return (
               <div 
                 key={pillar.id} 
-                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                className={`rounded-2xl transition-all duration-200 overflow-hidden ${
                   isPillarActive 
-                    ? 'border-indigo-400/80 bg-slate-50/80 shadow-xs' 
-                    : 'border-slate-200/90 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                    ? 'bg-white shadow-xs border border-slate-200/90 ring-1 ring-slate-900/5' 
+                    : 'bg-white/50 hover:bg-white/90 border border-slate-200/40 hover:border-slate-200/80'
                 }`}
               >
                 
-                {/* 🌟 PILLAR HEADER CARD (Matches Screenshot 2 Pillars) */}
+                {/* 🌟 PILLAR HEADER CARD */}
                 <div
-                  className="p-2.5 sm:p-3 flex items-center justify-between cursor-pointer group select-none transition-all duration-150"
+                  className="p-2.5 flex items-center justify-between cursor-pointer group select-none transition-colors"
                   onClick={() => {
                     togglePillarAccordion(pillar.id);
                     handleNavigate(pillar);
                   }}
                 >
-                  <div className="flex items-center gap-2 min-w-0 pr-1.5 flex-1 overflow-hidden">
-                    {/* Floating Squircle Icon */}
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black transition-transform duration-200 group-hover:scale-110 shrink-0 ${
+                  <div className="flex items-center gap-2.5 min-w-0 pr-1 flex-1 overflow-hidden">
+                    {/* Floating Soft Icon Squircle */}
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold transition-transform duration-200 group-hover:scale-105 shrink-0 ${
                       isPillarActive
-                        ? `bg-gradient-to-br ${pillar.colorClass} text-white shadow-sm`
-                        : 'bg-slate-100 text-slate-700 border border-slate-200'
+                        ? `bg-gradient-to-br ${pillar.colorClass} text-white shadow-2xs`
+                        : 'bg-slate-100 text-slate-600'
                     }`}>
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-3.5 h-3.5" />
                     </div>
 
                     {/* Title + Subtitle */}
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-extrabold text-xs text-slate-900 tracking-tight truncate leading-tight group-hover:text-indigo-600 transition-colors">
+                      <h4 className={`font-bold text-xs tracking-tight truncate leading-tight transition-colors ${
+                        isPillarActive ? 'text-slate-900 font-extrabold' : 'text-slate-700 group-hover:text-slate-900'
+                      }`}>
                         {pillar.title}
                       </h4>
-                      <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
                         {pillar.subtitle}
                       </p>
                     </div>
                   </div>
 
-                  {/* Right: Module Count Badge + Accordion + / - */}
-                  <div className="flex items-center gap-1 shrink-0 ml-auto">
-                    <span className={`text-[8px] sm:text-[8.5px] font-black uppercase tracking-tight px-1.5 py-0.5 rounded-md whitespace-nowrap ${
+                  {/* Right: Module Count Badge + Accordion Chevron */}
+                  <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+                    <span className={`text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md whitespace-nowrap ${
                       isPillarActive
-                        ? 'bg-indigo-100 text-indigo-900 font-bold border border-indigo-200'
+                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-100 font-extrabold'
                         : 'bg-slate-100 text-slate-500'
                     }`}>
                       {pillar.badgeText}
                     </span>
 
-                    <span className="w-5 h-5 flex items-center justify-center rounded-lg text-slate-400 group-hover:text-slate-800 transition-transform duration-200 shrink-0">
-                      {isExpanded ? (
-                        <Minus className="w-3.5 h-3.5 text-indigo-600" />
-                      ) : (
-                        <Plus className="w-3.5 h-3.5" />
-                      )}
+                    <span className="w-4 h-4 flex items-center justify-center text-slate-400 group-hover:text-slate-700 transition-transform duration-200 shrink-0">
+                      <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-90 text-indigo-600' : ''}`} />
                     </span>
                   </div>
                 </div>
 
-                {/* 📂 RESPECTIVE DIVISIONS LIST WITH TREE-GUIDELINE CONNECTORS */}
+                {/* 📂 NEAT DIVISIONS LIST WITH SOFT-TINT ACTIVE PILLS */}
                 {isExpanded && divisions.length > 0 && (
-                  <div className="ml-3 pl-2.5 border-l-2 border-slate-200/80 my-1 space-y-1 bg-white/70 animate-in slide-in-from-top-1 duration-150 pr-2 pb-1.5">
+                  <div className="pt-0.5 pb-2 px-2 space-y-0.5 border-t border-slate-100 animate-fadeIn">
                     {divisions.map((div) => {
                       const isDivActive = activeDivisionId === div.id || (div.id === div.tab && activeDivisionId === div.tab && !divisions.some(d => d.id !== div.id && d.tab === div.tab));
                       const DivIcon = div.icon || ChevronRight;
@@ -1089,17 +1090,17 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                             }
                             handleNavigate(pillar, div);
                           }}
-                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all duration-150 text-left group/div ${
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all duration-150 text-left group/div cursor-pointer ${
                             isDivDisabled
                               ? 'bg-slate-100/70 text-slate-400 opacity-60 cursor-not-allowed select-none'
                               : isDivActive
-                              ? 'bg-emerald-50 text-emerald-950 font-black border-l-2 border-emerald-500 shadow-2xs translate-x-0.5 cursor-pointer'
-                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium hover:translate-x-0.5 cursor-pointer'
+                              ? 'bg-indigo-50/90 text-indigo-950 font-extrabold shadow-2xs border-l-[3px] border-indigo-600 rounded-l-xs translate-x-0.5'
+                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 font-medium hover:translate-x-0.5'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-1">
-                            <DivIcon className={`w-3.5 h-3.5 shrink-0 transition-transform ${
-                              isDivDisabled ? 'text-slate-300' : isDivActive ? 'text-emerald-600 group-hover/div:scale-110' : 'text-slate-400 group-hover/div:text-slate-700 group-hover/div:scale-110'
+                            <DivIcon className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                              isDivDisabled ? 'text-slate-300' : isDivActive ? 'text-indigo-600' : 'text-slate-400 group-hover/div:text-slate-700'
                             }`} />
                             <span className={`truncate ${isDivDisabled ? 'line-through decoration-slate-300' : ''}`}>{div.label}</span>
                           </div>
@@ -1109,7 +1110,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                               <Lock className="w-3 h-3 text-slate-400 shrink-0" />
                             </span>
                           ) : isDivActive ? (
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse ml-1" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 animate-pulse ml-1" />
                           ) : null}
                         </button>
                       );
@@ -1124,15 +1125,32 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
       </div>
 
       {/* ========================================================================= */}
-      {/* 5. BOTTOM PROFILE, ACTIVE SESSION & DOCK SECTION                          */}
+      {/* 5. LIVE TELEMETRY MICRO-STRIP: Real-Time Operational Assurance            */}
       {/* ========================================================================= */}
-      <div className={`border-t border-slate-100 bg-slate-50/80 space-y-2 shrink-0 ${
-        isCollapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-3'
+      {!isCollapsed && (
+        <div className="px-3 py-1 shrink-0 animate-fadeIn">
+          <div className="flex items-center justify-between px-2.5 py-1 rounded-xl bg-slate-100/80 text-[10px] text-slate-500 font-semibold border border-slate-200/60 shadow-2xs">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{effectiveRole === 'superadmin' ? 'PostgreSQL 16 · Live' : (effectiveRole === 'employee_link' ? 'DPDP Consent Active' : 'Verification Engine Active')}</span>
+            </span>
+            <span className="font-mono text-slate-400 font-bold">
+              {effectiveRole === 'superadmin' ? '81 APIs' : (effectiveRole === 'employee_link' ? '256-Bit SSL' : 'Live Sync')}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 6. BOTTOM EXECUTIVE SECURITY DOCK: Notion & Apple Floating Card           */}
+      {/* ========================================================================= */}
+      <div className={`border-t border-slate-200/70 bg-white/90 backdrop-blur-md shrink-0 ${
+        isCollapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-3 space-y-2'
       }`}>
         
         {isCollapsed ? (
           <div className="flex flex-col items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-xs shadow-xs" title={currentUser?.name || 'User'}>
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs" title={currentUser?.name || 'User'}>
               <User className="w-4 h-4" />
             </div>
             <button
@@ -1148,29 +1166,31 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           </div>
         ) : (
           <>
-            {/* Profile Card Pill with Unique Profile Code */}
-            <div className="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+            {/* Floating User Profile Card Pill */}
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-200/70 shadow-2xs">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs font-black text-xs">
+                <div className="relative w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-2xs font-bold text-xs">
                   <User className="w-3.5 h-3.5" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border-2 border-white" />
                 </div>
                 <div className="min-w-0">
-                  <div className="font-black text-xs text-slate-900 truncate leading-tight">
+                  <div className="font-bold text-xs text-slate-900 truncate leading-tight">
                     {effectiveRole === 'employee_link' 
                       ? (currentCandidate?.name || 'Candidate User') 
-                      : (currentUser?.name || currentUser?.email || 'User')}
+                      : (currentUser?.name || currentUser?.email || 'Administrator')}
                   </div>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-900 font-mono font-black text-[9px] border border-indigo-200 truncate">
+                    <span className="px-1.5 py-0.2 rounded bg-indigo-100/70 text-indigo-900 font-mono font-bold text-[9px] border border-indigo-200/60 truncate">
                       {effectiveRole === 'superadmin' ? 'SUPERADMIN' : (effectiveRole === 'employee_link' ? (currentCandidate?.employeeCode || currentCandidate?.empId || currentCandidate?.id || currentTheme.codePrefix) : (currentUser?.uniqueProfileId || currentUser?.employeeCode || currentUser?.hrCode || currentTheme.codePrefix))}
                     </span>
                   </div>
                 </div>
               </div>
 
+              {/* Sound FX Toggle Button */}
               <button
                 onClick={toggleSound}
-                className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                   isMuted 
                     ? 'bg-slate-100 text-slate-400 border-slate-200 hover:text-slate-700' 
                     : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
@@ -1182,7 +1202,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             </div>
 
             {/* Session Countdown & Logout Button */}
-            <div className="flex items-center justify-between gap-1.5 text-xs">
+            <div className="flex items-center justify-between gap-2 text-xs pt-0.5">
               <div className="shrink-0">
                 <ActiveSessionBadge placement="top" />
               </div>
@@ -1192,7 +1212,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
                   soundEngine.playClick?.();
                   logoutUser();
                 }}
-                className="px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 font-bold transition-all cursor-pointer text-xs shadow-2xs hover:shadow-xs shrink-0"
+                className="px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-rose-700 hover:text-rose-800 bg-rose-50/80 hover:bg-rose-100 border border-rose-200 font-bold transition-all cursor-pointer text-xs shadow-2xs hover:shadow-xs shrink-0"
                 title="Sign Out / End Session"
               >
                 <LogOut className="w-3 h-3" />

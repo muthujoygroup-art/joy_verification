@@ -152,7 +152,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
       {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (FIXED ON >= lg SCREENS)           */}
       {/* ========================================================================= */}
       {!isCandidateRoute && (
-        <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 h-screen bg-white border-r border-slate-200/90 z-30 select-none shadow-xs transition-all duration-300 ${
+        <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 h-screen bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs transition-all duration-300 ${
           sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
         }`}>
           <PortalSidebarNav 
@@ -173,7 +173,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
             onClick={() => setMobileDrawerOpen(false)} 
           />
           {/* Off-Canvas Sidebar Drawer */}
-          <div className="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-slideRight">
+          <div className="relative w-80 max-w-[85vw] bg-[#F8FAFC] h-full shadow-2xl flex flex-col z-10 animate-slideRight">
             <PortalSidebarNav 
               isMobile 
               onCloseMobile={() => setMobileDrawerOpen(false)} 
