@@ -1920,6 +1920,7 @@ export const AppProvider = ({ children }) => {
     try {
       const resp = await api.login({
         role,
+        ...userData,
         email: userData.email || '',
         password: userData.password || '',
         token: userData.token || '',

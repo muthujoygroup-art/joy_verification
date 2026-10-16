@@ -849,6 +849,48 @@
 
 ---
 
+### Session 19: Company Portal & HR Executive Portal 2FA & Password Recovery Synchronization, Multi-Identifier Resolution & Email Masking
+**Date**: October 16, 2026  
+**Focus Area**: Full alignment and hardening of Two-Factor Authentication (2FA) and 3-step Password Recovery across the **Company Admin Portal** and **HR Executive Portal**, multi-identifier lookup (Company Code `COMP001`, HR ID `HR001`), privacy email masking, and live SMTP test automation.
+
+#### User Directives:
+- Now two-factor authentication and forgot password are confirmed working on Super Admin.
+- Ensure 2FA and forgot password options work flawlessly and correctly on the **Company Portal** and **HR Portal**.
+- Perform all necessary code and database adjustments to guarantee production reliability.
+
+#### Implementation & Architecture Actions:
+1. **Multi-Identifier Lookup & Typo Resilience (`backend/app/routers/auth.py`)**:
+   - Updated `forgot_password`, `verify_reset_code`, `reset_password`, `request_2fa_otp`, and `verify_2fa_and_login`.
+   - Supports seamless authentication and recovery using **Company Code** (e.g. `COMP001`), **Company ID**, or **Registered Email** for company users.
+   - Supports seamless authentication and recovery using **Recruiter ID** (e.g. `HR001`) or **Work Email** for HR users.
+   - Automatically normalizes `.c` domain endings to `.com`.
+   - Canonicalizes lookup so OTP verification registry keys match the organization's registered address regardless of login identifier used.
+2. **Context Parameter Forwarding (`src/context/AppContext.jsx`)**:
+   - Updated `loginUser` to spread all `userData` attributes (`code`, `companyId`, etc.) directly into `api.login`.
+3. **Frontend UI, Privacy Email Masking & Zero-Sovereign Compliance (`src/views/LoginView.jsx`)**:
+   - Implemented `maskEmail(email)` helper that masks email usernames and domains across all portals (e.g. `a•••••n@•••••••••••.com`, `m•••••r@••••••••.com`).
+   - Cleaned obsolete `"Sovereign"` text in engagement preloader &rarr; `"⚡ Initializing Enterprise Security Handshake..."`.
+   - Dynamic engagement scan subtitle tailored to Company Administrator and HR Recruiter personas.
+   - Dynamic form input labels and placeholders supporting Company Code and Recruiter ID.
+   - Kept layout overflow guard active (`PORTAL CAPABILITIES` hidden in 2FA and recovery wizards) ensuring zero scroll and no footer collision.
+4. **Database Synchronization (PostgreSQL & SQLite `joy_verification.db`)**:
+   - Linked `COMP001` (`Joy Corporate Solutions Private Limited`) to verified mailbox `admin@joycorporatesolutions.com` with active status.
+   - Verified `COMP002` (`Joy Man Power Service`) and HR lead `agilan@joycorporatesolutions.com`.
+   - Synchronized all records to both PostgreSQL and canonical SQLite database.
+5. **Comprehensive Test Suite & Quality Gates**:
+   - Automated in-process test suite verified 8 full scenarios:
+     - Company forgot password with `COMP001` &rarr; 200 OK (`email_sent: True`).
+     - Company passcode verification &rarr; 200 OK (`valid: True`).
+     - Company password reset &rarr; 200 OK.
+     - Company 2FA login with new password &rarr; 200 OK (`requires_2fa: True`).
+     - HR recruiter forgot password &rarr; 200 OK (`email_sent: True`).
+     - HR passcode verification &rarr; 200 OK (`valid: True`).
+     - HR password reset &rarr; 200 OK.
+     - HR 2FA login Step 1 & Step 2 &rarr; 200 OK (issued valid JWT access token).
+   - `npm run build`: built production client bundle in **1.28s** with 0 errors.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.

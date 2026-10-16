@@ -122,6 +122,23 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     return `${m}:${s}`;
   };
 
+  // 🛡️ Security Email Masking Helper (Protects email confidentiality across all portals)
+  const maskEmail = (email) => {
+    if (!email || typeof email !== 'string' || !email.includes('@')) return email || 'Registered Mailbox';
+    const [user, domain] = email.split('@');
+    if (!domain) return email;
+    const domainParts = domain.split('.');
+    const domainName = domainParts[0] || '';
+    const domainExt = domainParts.slice(1).join('.');
+    const maskedUser = user.length <= 2 
+      ? user[0] + '•••' 
+      : user[0] + '•••••' + user[user.length - 1];
+    const maskedDomain = domainName.length <= 2 
+      ? domainName[0] + '•••' 
+      : domainName[0] + '•••••' + domainName[domainName.length - 1];
+    return `${maskedUser}@${maskedDomain}${domainExt ? '.' + domainExt : ''}`;
+  };
+
   // 🔑 Forgot Password / Recovery State (Step 1: Request, Step 2: Verify OTP, Step 3: Set Password)
   const [isForgotMode, setIsForgotMode] = useState(false);
   const [forgotStep, setForgotStep] = useState(1); // 1 = request, 2 = verify OTP, 3 = set new password
@@ -797,13 +814,17 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                 <h3 className="text-sm font-black text-slate-900 tracking-tight">
                   {authScanStep === 1 
-                    ? '⚡ Initializing Sovereign Handshake...' 
+                    ? '⚡ Initializing Enterprise Security Handshake...' 
                     : authScanStep === 2 
                     ? '🔐 Verifying Master Cryptographic Hash...' 
                     : '🛡️ Dispatching Mandatory 2FA Passcode...'}
                 </h3>
                 <p className="text-[11px] text-slate-500 mt-1 max-w-xs font-medium">
-                  High-assurance zero-trust gateway authenticating authorized Master Admin session.
+                  {selectedRoleTab === 'company' 
+                    ? 'High-assurance zero-trust gateway authenticating Company Administrator session.'
+                    : selectedRoleTab === 'hrexecutive'
+                    ? 'High-assurance zero-trust gateway authenticating HR Recruiter session.'
+                    : 'High-assurance zero-trust gateway authenticating authorized Master Admin session.'}
                 </p>
 
                 {/* Animated Dynamic Progress Bar */}
@@ -863,7 +884,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <span className="truncate">
                         {selectedRoleTab === 'superadmin' 
                           ? 'Authorized Master Mailbox (a•••••n@•••••••••••.com)' 
-                          : twoFaTargetEmail}
+                          : selectedRoleTab === 'company'
+                          ? `Authorized Corporate Mailbox (${maskEmail(twoFaTargetEmail)})`
+                          : selectedRoleTab === 'hrexecutive'
+                          ? `Authorized HR Work Mailbox (${maskEmail(twoFaTargetEmail)})`
+                          : maskEmail(twoFaTargetEmail)}
                       </span>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className={`badge ${twoFaTimer < 120 ? 'badge-rose' : 'badge-indigo'} text-[10px] font-mono flex items-center gap-1`}>
@@ -1059,17 +1084,17 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
                           <div>
                             <label className="block text-slate-700 font-bold mb-1">
-                              {selectedRoleTab === 'company' ? 'Company Admin Registered Email *' : 'HR Work Email *'}
+                              {selectedRoleTab === 'company' ? 'Company Admin Registered Email or Company Code *' : 'HR Work Email or Recruiter ID *'}
                             </label>
                             <div className="input-wrapper">
                               <Mail className="input-icon-left" />
                               <input 
-                                type="email" 
+                                type="text" 
                                 required
                                 placeholder={
                                   selectedRoleTab === 'company' 
-                                    ? 'e.g. contact@enterprise.com' 
-                                    : 'e.g. hr@enterprise.com'
+                                    ? 'e.g. COMP001 or admin@joycorporatesolutions.com' 
+                                    : 'e.g. agilan@joycorporatesolutions.com or HR001'
                                 }
                                 value={forgotEmail}
                                 onChange={(e) => setForgotEmail(e.target.value)}
@@ -1122,7 +1147,11 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                             Passcode dispatched to: <strong>
                               {selectedRoleTab === 'superadmin' 
                                 ? 'Authorized Master Mailbox (a•••••n@•••••••••••.com)' 
-                                : (forgotEmail || 'Registered Email')}
+                                : selectedRoleTab === 'company'
+                                ? `Authorized Corporate Mailbox (${maskEmail(forgotEmail)})`
+                                : selectedRoleTab === 'hrexecutive'
+                                ? `Authorized HR Work Mailbox (${maskEmail(forgotEmail)})`
+                                : (maskEmail(forgotEmail) || 'Registered Email')}
                             </strong>
                           </span>
                         </div>
@@ -1366,14 +1395,14 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <div className="space-y-2.5">
                         <div>
                           <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-0.5">
-                            Company Admin Email *
+                            Company Admin Email or Company Code *
                           </label>
                           <div className="input-wrapper">
                             <Mail className="input-icon-left text-slate-400" />
                             <input 
-                              type="email" 
+                              type="text" 
                               required
-                              placeholder="muthukumar@joyglobalcorp.com"
+                              placeholder="e.g. COMP001 or admin@joycorporatesolutions.com"
                               value={emailInput}
                               onChange={(e) => setEmailInput(e.target.value)}
                               className="input-field-styled py-2 text-xs sm:text-sm font-medium"
@@ -1442,14 +1471,14 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
                       <div className="space-y-2.5">
                         <div>
                           <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-0.5">
-                            HR Recruiter Email *
+                            HR Recruiter Email or Recruiter ID *
                           </label>
                           <div className="input-wrapper">
                             <Mail className="input-icon-left text-slate-400" />
                             <input 
-                              type="email" 
+                              type="text" 
                               required
-                              placeholder="muthujoygroup@gmail.com"
+                              placeholder="e.g. agilan@joycorporatesolutions.com or HR001"
                               value={emailInput}
                               onChange={(e) => setEmailInput(e.target.value)}
                               className="input-field-styled py-2 text-xs sm:text-sm font-medium"

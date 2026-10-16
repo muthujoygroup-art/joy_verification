@@ -408,13 +408,26 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
 
     elif role in ("company", "companyadmin"):
         if not raw_email:
-            raise HTTPException(status_code=400, detail="Company Admin Email is required.")
+            raise HTTPException(status_code=400, detail="Company Admin Email or Company Code is required.")
             
-        comp = db.query(Company).filter(Company.email.ilike(raw_email)).first()
+        clean_ident = raw_email.strip()
+        if clean_ident.lower().endswith(".c"):
+            clean_ident = clean_ident + "om"
+            
+        comp = db.query(Company).filter(
+            (Company.email.ilike(clean_ident)) |
+            (Company.code.ilike(clean_ident)) |
+            (Company.id.ilike(clean_ident))
+        ).first()
+        if not comp and not "@" in clean_ident:
+            comp = db.query(Company).filter(
+                (Company.code.ilike(f"%{clean_ident}%")) |
+                (Company.name.ilike(f"%{clean_ident}%"))
+            ).first()
         if not comp:
             raise HTTPException(
                 status_code=404, 
-                detail=f"No registered enterprise company account found for email: {raw_email}. Please check spelling or contact Super Admin."
+                detail=f"No registered enterprise company account found for '{raw_email}'. Please verify your company email or company code, or contact Super Admin."
             )
             
         user_name = comp.contact_person or comp.name
@@ -453,13 +466,20 @@ def forgot_password(payload: dict, db: Session = Depends(get_db)):
 
     elif role in ("hrexecutive", "hr"):
         if not raw_email:
-            raise HTTPException(status_code=400, detail="HR Executive Work Email is required.")
+            raise HTTPException(status_code=400, detail="HR Executive Work Email or Recruiter ID is required.")
             
-        hr = db.query(HrUser).filter(HrUser.email.ilike(raw_email)).first()
+        clean_ident = raw_email.strip()
+        if clean_ident.lower().endswith(".c"):
+            clean_ident = clean_ident + "om"
+            
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(clean_ident)) |
+            (HrUser.id.ilike(clean_ident))
+        ).first()
         if not hr:
             raise HTTPException(
                 status_code=404, 
-                detail=f"No registered HR recruiter workstation found for email: {raw_email}. Please check spelling or contact your Company Admin."
+                detail=f"No registered HR recruiter workstation found for '{raw_email}'. Please check spelling or contact your Company Admin."
             )
             
         comp = db.query(Company).filter(Company.id == hr.company_id).first()
@@ -570,8 +590,21 @@ def verify_reset_code(payload: dict, db: Session = Depends(get_db)):
             email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
     elif role in ("company", "companyadmin"):
         effective_role = "company"
+        comp = db.query(Company).filter(
+            (Company.email.ilike(email)) |
+            (Company.code.ilike(email)) |
+            (Company.id.ilike(email))
+        ).first()
+        if comp:
+            email = comp.email.lower()
     elif role in ("hrexecutive", "hr"):
         effective_role = "hrexecutive"
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(email)) |
+            (HrUser.id.ilike(email))
+        ).first()
+        if hr:
+            email = hr.email.lower()
     elif role in ("employee_link", "candidate", "employee"):
         effective_role = "employee_link"
     else:
@@ -619,8 +652,21 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
             email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
     elif role in ("company", "companyadmin"):
         effective_role = "company"
+        comp = db.query(Company).filter(
+            (Company.email.ilike(email)) |
+            (Company.code.ilike(email)) |
+            (Company.id.ilike(email))
+        ).first()
+        if comp:
+            email = comp.email.lower()
     elif role in ("hrexecutive", "hr"):
         effective_role = "hrexecutive"
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(email)) |
+            (HrUser.id.ilike(email))
+        ).first()
+        if hr:
+            email = hr.email.lower()
     elif role in ("employee_link", "candidate", "employee"):
         effective_role = "employee_link"
     else:
@@ -673,7 +719,11 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
             print(f"Warning: Failed to dispatch SuperAdmin password changed confirmation email: {e}")
 
     elif effective_role == "company":
-        comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        comp = db.query(Company).filter(
+            (Company.email.ilike(email)) |
+            (Company.code.ilike(email)) |
+            (Company.id.ilike(email))
+        ).first()
         if not comp:
             raise HTTPException(status_code=404, detail="Company account not found.")
         comp.password_hash = new_password
@@ -691,7 +741,10 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
             print(f"Warning: Failed to dispatch Company password changed confirmation email: {e}")
 
     elif effective_role == "hrexecutive":
-        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(email)) |
+            (HrUser.id.ilike(email))
+        ).first()
         if not hr:
             raise HTTPException(status_code=404, detail="HR recruiter workstation not found.")
         hr.password_hash = new_password
@@ -760,14 +813,21 @@ def request_2fa_otp(payload: dict, db: Session = Depends(get_db)):
         sa = db.query(SuperAdminUser).filter((SuperAdminUser.email.ilike(email)) | (SuperAdminUser.email == "admin@joycorporatesolutions.com")).first()
         target_email = sa.email.lower() if sa else "admin@joycorporatesolutions.com"
     elif role in ("company", "companyadmin"):
-        comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        comp = db.query(Company).filter(
+            (Company.email.ilike(email)) |
+            (Company.code.ilike(email)) |
+            (Company.id.ilike(email))
+        ).first()
         if not comp:
-            raise HTTPException(status_code=404, detail=f"No company account found for email: {email}")
+            raise HTTPException(status_code=404, detail=f"No company account found for: {email}")
         target_email = comp.email.lower()
     elif role in ("hrexecutive", "hr"):
-        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(email)) |
+            (HrUser.id.ilike(email))
+        ).first()
         if not hr:
-            raise HTTPException(status_code=404, detail=f"No HR recruiter account found for email: {email}")
+            raise HTTPException(status_code=404, detail=f"No HR recruiter account found for: {email}")
         target_email = hr.email.lower()
     elif role in ("employee_link", "candidate"):
         cand = db.query(Candidate).filter((Candidate.email.ilike(email)) | (Candidate.token == email)).first()
@@ -837,7 +897,11 @@ def verify_2fa_and_login(payload: dict, request: Request = None, db: Session = D
         }
         return create_session(user_data, "superadmin", client_ip, user_agent)
     elif role in ("company", "companyadmin"):
-        comp = db.query(Company).filter(Company.email.ilike(email)).first()
+        comp = db.query(Company).filter(
+            (Company.email.ilike(email)) |
+            (Company.code.ilike(email)) |
+            (Company.id.ilike(email))
+        ).first()
         if not comp:
             raise HTTPException(status_code=404, detail="Company not found")
         user_data = {
@@ -850,7 +914,10 @@ def verify_2fa_and_login(payload: dict, request: Request = None, db: Session = D
         }
         return create_session(user_data, "company", client_ip, user_agent)
     elif role in ("hrexecutive", "hr"):
-        hr = db.query(HrUser).filter(HrUser.email.ilike(email)).first()
+        hr = db.query(HrUser).filter(
+            (HrUser.email.ilike(email)) |
+            (HrUser.id.ilike(email))
+        ).first()
         if not hr:
             raise HTTPException(status_code=404, detail="HR user not found")
         comp = db.query(Company).filter(Company.id == hr.company_id).first()
