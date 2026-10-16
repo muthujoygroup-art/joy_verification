@@ -679,6 +679,32 @@
 
 ---
 
+### Session 21: Universal Spotlight Omnibar (Cmd+K / Ctrl+K) Navigation & Search
+**Date**: October 16, 2026  
+**Focus Area**: Universal instant spotlight search and command palette (`UniversalSpotlightOmnibar.jsx`) accessible from any portal screen via `Cmd+K` (Mac), `Ctrl+K` (Windows/Linux), slash (`/`), or header search triggers.
+
+#### Key Capabilities & Architecture Delivered:
+1. **Universal Spotlight Omnibar (`src/components/UniversalSpotlightOmnibar.jsx`)**:
+   - **Keyboard First Experience**: Instant global toggle via `Cmd+K` / `Ctrl+K`, quick slash `/`, and `Escape` to dismiss. Arrow up/down (`↑`/`↓`) highlight navigation and `Enter` (`↵`) to trigger immediate action.
+   - **Multi-Domain Fuzzy Search**:
+     - **Candidates**: Searches by candidate name, token (`tok_...`), employee code (`COMP...`), mobile number, email, Aadhaar, and current verification status. Clicking directly loads the candidate dossier modal.
+     - **Quick Actions**: 1-Click candidate verification link dispatch, Universal date-filtered export (PDF/Excel/Word/ZIP), DPDP Statutory Handbook, Guided Feature Tour, Real-Time Notifications, Support Ticket, Postpaid Billing Ledger, System Health Telemetry, and Audio Sound Effects toggle.
+     - **81 Neev Verification APIs**: Instant search across Aadhaar V2, PAN Basic, PAN OCR, Bank Penny Drop (IMPS), UPI VPA, UAN EPFO, Driving License, RC Vehicle, Passport, Court Records, GSTIN, MCA DIN, Face Match, and CIBIL score. Selecting navigates directly to `NeevApiLiveTesterConsole`.
+     - **Corporate Tenants / Companies**: Real-time lookup by corporate name, tenant code, corporate domain, and postpaid plan tier.
+     - **HR Recruiters**: Filter by recruiter full name, email, and company assignment.
+   - **Category Filter Pills**: Quick category tabs (`All`, `Candidates`, `Quick Actions`, `81 Govt APIs`, `Companies`).
+   - **Direct Candidate Dossier Integration**: Embedded `<EmployeeProfileDossierModal>` preview for instant examination without losing place in current workspace.
+2. **Global Integration (`src/components/PortalLayout.jsx`)**:
+   - Mounted `UniversalSpotlightOmnibar` into the main application layout.
+   - Added clean, accessible `Search or jump to... ⌘K` trigger buttons in both desktop and mobile header navigation toolbars.
+   - Connected `window.addEventListener('open_omnibar')` and `window.addEventListener('keydown')` handlers.
+
+#### Verification & Quality Gates:
+- **Build Status (`npm run build`)**: Clean production build in 1.76s with 0 errors.
+- **Git Push**: Pushed clean tree to `main` branch on GitHub repository `https://github.com/muthujoygroup-art/joytrueprofile.git`.
+
+---
+
 ## 🚀 CONTINUOUS DEPLOYMENT WORKFLOW (cPanel)
 To deploy new commits to the live environment `https://trueprofile.joycorporatesolutions.com`:
 1. Push commit to GitHub `main` branch: `git push origin main`.
@@ -687,7 +713,8 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 4. `.cpanel.yml` will automatically copy `dist/*` and `.htaccess` to `/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/` and touch `tmp/restart.txt` to reload Passenger WSGI.
 
 ---
-*Last Updated: October 15, 2026 | Antigravity IDE Autonomous Agent Log*
+*Last Updated: October 16, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

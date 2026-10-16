@@ -11,6 +11,7 @@ import { TermsAndPrivacyPolicyModal } from './TermsAndPrivacyPolicyModal';
 import { LegalComplianceHandbookModal } from './LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from './UniversalDocumentExportModal';
 import { InteractiveTourGuideModal } from './InteractiveTourGuideModal';
+import { UniversalSpotlightOmnibar } from './UniversalSpotlightOmnibar';
 import { soundEngine } from '../utils/uiSoundEffects';
 import {
   Building2,
@@ -29,7 +30,8 @@ import {
   Zap,
   ShieldCheck,
   Sliders,
-  ChevronRight
+  ChevronRight,
+  Search
 } from 'lucide-react';
 
 export const PortalLayout = ({ children, isCandidatePortal = false }) => {
@@ -53,6 +55,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showUniversalExportModal, setShowUniversalExportModal] = useState(false);
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
+  const [showOmnibar, setShowOmnibar] = useState(false);
 
   const locationPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const isCandidateRoute = Boolean(
@@ -108,10 +111,25 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
       if (modal === 'legal_handbook') setShowLegalHandbook(true);
       if (modal === 'tour') setShowTourGuideModal(true);
       if (modal === 'terms') setShowTermsModal(true);
+      if (modal === 'omnibar' || modal === 'search') setShowOmnibar(true);
+    };
+
+    const handleOpenOmnibar = () => setShowOmnibar(true);
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setShowOmnibar(prev => !prev);
+      }
     };
 
     window.addEventListener('portal_nav_navigate', handleNavEvent);
-    return () => window.removeEventListener('portal_nav_navigate', handleNavEvent);
+    window.addEventListener('open_omnibar', handleOpenOmnibar);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('portal_nav_navigate', handleNavEvent);
+      window.removeEventListener('open_omnibar', handleOpenOmnibar);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -202,6 +220,19 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
               </div>
 
               <div className="flex items-center gap-2 shrink-0 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEngine.playClick?.();
+                    setShowOmnibar(true);
+                  }}
+                  className="flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-slate-700 bg-slate-100 hover:bg-slate-200 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer text-xs"
+                  title="Search Portal (Ctrl+K or ⌘K)"
+                >
+                  <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <span className="hidden sm:inline">Search</span>
+                  <kbd className="hidden sm:inline-flex px-1 text-[9px] font-mono text-slate-400 bg-white border border-slate-300 rounded">⌘K</kbd>
+                </button>
                 <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[11px] shadow-2xs">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   <span>256-Bit SSL Encrypted</span>
@@ -280,6 +311,23 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
               
 
+
+              {/* Universal Spotlight Omnibar Trigger Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playClick?.();
+                  setShowOmnibar(true);
+                }}
+                className="flex h-8 px-2.5 sm:px-3 rounded-xl items-center gap-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 font-bold border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all cursor-pointer text-xs group"
+                title="Universal Spotlight Search (Press Ctrl+K or ⌘K)"
+              >
+                <Search className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-600 transition-colors shrink-0" />
+                <span className="hidden md:inline font-semibold text-slate-600">Search or jump to...</span>
+                <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500 bg-white border border-slate-300 rounded shadow-2xs">
+                  ⌘K
+                </kbd>
+              </button>
 
               {/* Guided Tour Modal Trigger */}
               <button
@@ -541,6 +589,12 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
         isOpen={showUniversalExportModal}
         onClose={() => setShowUniversalExportModal(false)}
         initialRole={currentRole}
+      />
+
+      {/* Universal Spotlight Omnibar (Ctrl+K / Cmd+K) */}
+      <UniversalSpotlightOmnibar
+        isOpen={showOmnibar}
+        onClose={() => setShowOmnibar(false)}
       />
 
     </div>
