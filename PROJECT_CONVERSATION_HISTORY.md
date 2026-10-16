@@ -733,8 +733,12 @@
      - `Stage 3: 🛡️ Dispatching Mandatory 2FA Passcode...`
    - Shimmering gradient progress bar, spinning concentric rings, and smooth micro-interactions. First-load and page refresh animations remained 100% untouched.
 
+6. **Platform Brand Alignment to "JOY TRUE PROFILE"**:
+   - Replaced `"JOY CORPORATE SOLUTIONS PVT LTD"` in the login portal top navigation header with the primary brand emblem title: `JOY TRUE PROFILE`.
+   - Updated the bottom verification copyright note to `© 2026 JOY TRUE PROFILE • Enterprise Verification Platform`.
+
 #### Verification & Quality Gates:
-- **Build Status (`npm run build`)**: Clean production build in 1.29s (`dist/assets/index-C4jwrOSk.js`) with 0 errors.
+- **Build Status (`npm run build`)**: Clean production build in 1.43s (`dist/assets/index-CfZ8VmsQ.js`) with 0 errors.
 - **Git Push**: Pushed clean tree to `main` branch on GitHub repository `https://github.com/muthujoygroup-art/joytrueprofile.git`.
 
 ---

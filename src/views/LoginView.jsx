@@ -638,8 +638,9 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
             />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-black text-xs sm:text-sm text-slate-900 tracking-tight leading-tight">JOY CORPORATE SOLUTIONS</h2>
-                <span className="badge badge-purple text-[8.5px] py-0.5 px-1.5 hidden sm:inline-block font-black">PVT LTD</span>
+                <h2 className="font-black text-sm sm:text-base text-slate-900 tracking-tight leading-tight">
+                  JOY <span className="text-amber-500">TRUE PROFILE</span>
+                </h2>
               </div>
               <p className="text-[9.5px] sm:text-[10px] text-indigo-700 font-extrabold uppercase tracking-wider">Enterprise Identity & 360° Verification Platform</p>
             </div>
@@ -1578,7 +1579,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
 
         {/* Bottom Footer Note */}
         <div className="text-center text-[10.5px] text-slate-400 font-medium py-0.5">
-          <p>© 2026 JOY CORPORATE SOLUTIONS PRIVATE LIMITED • Employee Verification Platform</p>
+          <p>© 2026 JOY TRUE PROFILE • Enterprise Verification Platform</p>
         </div>
 
       </div>
