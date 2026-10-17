@@ -564,65 +564,65 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'registry',
           divisions: [
             { id: 'registry', label: `Candidate Directory (${(scopedCandidates || []).length})`, tab: 'registry', icon: Users },
-            { id: 'telemetry', label: 'Verification Telemetry', tab: 'telemetry', icon: TrendingUp }
+            { id: 'telemetry', label: 'Verification Analytics', tab: 'telemetry', icon: TrendingUp }
           ]
         },
         {
           id: 'hr_governance',
-          title: 'HR Team & Recruiters',
-          subtitle: 'Staff & Access Control',
+          title: 'HR Team & Permissions',
+          subtitle: 'Staff & Access Management',
           badgeText: `${(hrUsers || []).length} Staff`,
           icon: Users,
           colorClass: 'from-indigo-600 to-purple-700',
           defaultTab: 'hrteam',
           divisions: [
             { id: 'hrteam', label: `HR Team Directory (${(hrUsers || []).length})`, tab: 'hrteam', icon: UserCheck },
-            { id: 'add_hr_modal', label: 'Add New HR Recruiter', modal: 'add_hr', icon: Plus },
-            { id: 'hr_permissions', label: 'HR Access & Permissions', tab: 'hr_permissions', icon: Sliders }
+            { id: 'add_hr_modal', label: 'Add HR Recruiter', modal: 'add_hr', icon: Plus },
+            { id: 'hr_permissions', label: 'HR Permissions & Access', tab: 'hr_permissions', icon: Sliders }
           ]
         },
         {
           id: 'vendor_verification',
           title: 'Vendor Verification',
-          subtitle: 'Corporate Due Diligence',
+          subtitle: 'Vendor Screening & Checks',
           badgeText: `${(vendors || []).length} Vendors`,
           icon: ShieldCheck,
           colorClass: 'from-purple-600 to-indigo-700',
           defaultTab: 'vendor_verification',
           divisions: [
-            { id: 'vendor_directory', label: 'Vendor Directory & Matrix', tab: 'vendor_verification', subDivision: 'directory', icon: BarChart3 },
-            { id: 'vendor_register', label: 'Onboard New Vendor', tab: 'vendor_verification', subDivision: 'register', icon: Plus },
-            { id: 'vendor_links', label: 'Magic Link Dispatch', tab: 'vendor_verification', subDivision: 'links', icon: Share2 },
-            { id: 'vendor_studio', label: 'Statutory API Studio (11 Gateways)', tab: 'vendor_verification', subDivision: 'studio', icon: Sparkles },
-            { id: 'vendor_pdf', label: 'Official Due Diligence PDF', tab: 'vendor_verification', subDivision: 'pdf', icon: Download }
+            { id: 'vendor_directory', label: 'Vendor Directory', tab: 'vendor_verification', subDivision: 'directory', icon: BarChart3 },
+            { id: 'vendor_register', label: 'Add New Vendor', tab: 'vendor_verification', subDivision: 'register', icon: Plus },
+            { id: 'vendor_links', label: 'Send Vendor Link', tab: 'vendor_verification', subDivision: 'links', icon: Share2 },
+            { id: 'vendor_studio', label: 'Vendor Background Checks', tab: 'vendor_verification', subDivision: 'studio', icon: Sparkles },
+            { id: 'vendor_pdf', label: 'Download Verification Report', tab: 'vendor_verification', subDivision: 'pdf', icon: Download }
           ]
         },
         {
           id: 'corporate_dms',
-          title: 'Company Profile & Vault',
-          subtitle: 'Statutory Data & Documents',
+          title: 'Company Profile & Files',
+          subtitle: 'Company Information & Documents',
           badgeText: 'Vault',
           icon: Building2,
           colorClass: 'from-emerald-600 to-teal-700',
           defaultTab: 'profile_details',
           divisions: [
-            { id: 'profile_details', label: 'Company Profile Details', tab: 'profile_details', icon: Building2 },
-            { id: 'statutory_creds', label: 'Tax & Registration (CIN/GST/PAN)', tab: 'profile_details', icon: ShieldCheck },
-            { id: 'dochub', label: 'Corporate Document Vault', tab: 'dochub', icon: Layers }
+            { id: 'profile_details', label: 'Company Information', tab: 'profile_details', icon: Building2 },
+            { id: 'statutory_creds', label: 'Tax & Business Registration', tab: 'profile_details', icon: ShieldCheck },
+            { id: 'dochub', label: 'Document Storage', tab: 'dochub', icon: Layers }
           ]
         },
         {
           id: 'billing_gateways',
-          title: 'Plans, Invoices & Settings',
-          subtitle: 'Postpaid Bills & Gateway',
+          title: 'Plans & Billing',
+          subtitle: 'Monthly Invoices & Payments',
           badgeText: 'Billing',
           icon: CreditCard,
           colorClass: 'from-amber-600 to-orange-700',
           defaultTab: 'billing_wallet',
           divisions: [
-            { id: 'billing_wallet', label: 'Postpaid Plans & Invoices', tab: 'billing_wallet', icon: CreditCard },
-            { id: 'recharge_wallet', label: 'Settle Bill (Razorpay)', modal: 'razorpay', icon: Zap },
-            { id: 'smtp_settings', label: 'Email Server Settings', tab: 'smtp_settings', icon: MessageSquare },
+            { id: 'billing_wallet', label: 'Plans & Invoices', tab: 'billing_wallet', icon: CreditCard },
+            { id: 'recharge_wallet', label: 'Pay Bill Online', modal: 'razorpay', icon: Zap },
+            { id: 'smtp_settings', label: 'Email Notifications Setup', tab: 'smtp_settings', icon: MessageSquare },
             { id: 'support', label: 'Helpdesk & Support', tab: 'support', icon: LifeBuoy }
           ]
         }

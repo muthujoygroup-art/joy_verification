@@ -989,6 +989,73 @@
 
 #### Artifacts & Documentation Generated:
 - **Master Specification**: Created `docs/manuals/airtel_dlt_sms_templates_trai_compliant.md` and artifact [`airtel_dlt_sms_templates_trai_compliant.md`](file:///C:/Users/HP/.gemini/antigravity-ide/brain/0f80b031-b5c9-4e7b-965c-4eddc2cb47b0/airtel_dlt_sms_templates_trai_compliant.md).
+- **DLT 3-Variable Constraint Optimization**: Updated `JTP_PASSWORD_RESET_PASSCODE` to exactly 3 variables (`{#var#}`), optimizing for both DLT single-SMS-unit credit (<= 160 chars) and strict carrier variable count limits.
+- **Universal Portal User Unique ID Dispatch**: Added `JTP_PORTAL_USER_UNIQUE_ID` (Header: `JYCORP`, Type: `Transactional`) tailored with Company/HR dynamic variable and polite "Kindly save this ID for your future reference" reminder (exactly 3 variables, 1 SMS unit credit <= 160 chars).
+- **Onboarding Verification Link Dispatch (4 Roles)**: Registered and documented `JTP_EMPLOYEE_ONBOARD_LINK`, `JTP_COMPANY_ONBOARD_LINK`, `JTP_VENDOR_ONBOARD_LINK`, and `JTP_HR_ONBOARD_LINK` (Header: `JYCORP`, Type: `Transactional`) with strictly $\le 3$ variables and whitelisted URLs.
+
+---
+
+### Session: Admin Portals Modernization & Clean Business Vocabulary Overhaul (October 17, 2026)
+#### Context & User Requirement:
+User requested comprehensive UI/UX improvements across both admin portals (**Company Admin Portal** and **Super Admin Portal**), replacing developer-centric and academic jargon ("Telemetry", "Dossier", "Statutory API Studio", "Corporate DMS", "Point-in-time", "Omnisearch", "10 Flags") with clean, generic, intuitive, and professional business terminology.
+
+#### Modernizations Implemented:
+1. **Super Admin Portal (`SuperAdminView.jsx` & `PortalSidebarNav.jsx`)**:
+   - Modernized `divisionMetaMap` with business-friendly titles and subtitles across all 24 divisions:
+     - `companies`: "Client Companies & Verification Features"
+     - `ledger`: "Candidate Verification List"
+     - `terms_hub`: "Company Terms & Service Agreements"
+     - `inquiries`: "Demo Requests & Sales Inquiries"
+     - `reviews`: "Customer Reviews & Testimonials"
+     - `blog_cms`: "Articles & Website Content"
+     - `logins`: "Portal User Accounts & Logins"
+     - `omnisearch`: "Global Search & ID Lookup"
+     - `apiconfig`: "Verification API Gateways"
+     - `studio`: "Verification Testing Studio"
+     - `consumption_margins`: "API Usage & Profit Margins"
+     - `whatsapp_sms`: "WhatsApp & SMS Gateway Settings"
+     - `billing`: "Invoices, Billing & Payments"
+     - `dbms`: "Database Records & Data Explorer"
+     - `audit`: "System Audit Logs & Compliance"
+     - `sessions`: "Active User Sessions & Devices"
+     - `issuelogs`: "System Error Logs & Diagnostics"
+     - `system_health`: "Platform System Health & Monitoring"
+     - `analytics`: "Platform Analytics & Performance"
+     - `reports`: "Reports & Data Export Center"
+     - `legal_governance`: "Legal Policies & DPDP Privacy Framework"
+     - `masterdata` / `masterfields`: "Custom Form Fields & Presets"
+     - `tickets`: "Support Helpdesk & Tickets"
+     - `settings`: "Email & System Settings"
+   - Modernized Top Console Banner & Action Toolbar: `Global Search 🔍`, `Reports 📥`, `Messaging Gateways 💬`, `+ Onboard Company`.
+   - Client Companies Table:
+     - Column Headers: `Company`, `Contact Details`, `Plan & Pricing`, `Verification Features`, `Status`, `Actions`.
+     - Action Buttons: `Verify Profile`, `Password`, `Details`, `Features`, `Pricing 💰`, `+ Wallet ⚡`.
+     - Status Badges: `🟢 VERIFIED ✓`, `⚠️ ACTION REQUIRED`, `📋 PENDING`.
+   - Candidate Verification Table: `Candidate Verification List`, `Company`, `Export Candidate List`, `BGV Report`.
+
+2. **Company Admin Portal (`CompanyAdminView.jsx` & `PortalSidebarNav.jsx`)**:
+   - Top Header & Workstation Banner: Badge `Company Admin Portal • Company Management`, quick actions: `Verify Vendors`, `Pay Bill Online`, `Export Reports`, `Required Form Fields`, `Subscription Plan`.
+   - Candidate Verification Registry:
+     - Header: `Candidate Verification List`, `Search candidates, review verification status, and download certificates`.
+     - Notice Banner: `Official Verification Notice: Candidate checks are verified directly against official government databases at the time of submission.`
+     - Action Buttons: `BGV Report`, `View Profile`, `Download Docs`.
+   - HR Team Directory (`activeTab === 'hrteam'`):
+     - Title: `HR Team Directory` (`Team Members`).
+     - Subtitle: `Invite HR team members, manage login access, and review candidate onboarding permissions.`
+     - Action: `+ Add HR Member`, `✅ Approve HR`, `Details ⚙️`, `Password 🔑`.
+   - Company Profile & Legal Documents (`activeTab === 'profile_details'`):
+     - Banner: `Company Legal Profile & Verification`.
+     - Status: `🟢 VERIFIED COMPANY ✓`, `⚠️ ACTION REQUIRED`, `⏳ UNDER REVIEW`.
+     - Action: `Request Verification Review 🚀`.
+   - Vendor Checks (`activeTab === 'vendor_verification'`):
+     - Table Buttons: `BGV Report 📑` (instead of "Dossier"), `Certificate 📄` (instead of "Cert / Point-in-time").
+     - Reports Banner: `Vendor Background Verification Reports & Certificates`, `DPDP ACT 2023 COMPLIANT`.
+   - HR Permissions Matrix (`activeTab === 'hr_permissions'`):
+     - Replaced technical jargon with clean corporate labels: `Candidate Verification BGV Report Export 📄`, `Email Verification Link Dispatch 📧`.
+
+3. **Build & Quality Validation**:
+   - Resolved syntax balance around lines 1850-2020 in `CompanyAdminView.jsx`.
+   - Validated clean Vite production build: `npm run build` executed with 0 errors in 3.26s.
 
 ---
 
@@ -1000,7 +1067,8 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 4. `.cpanel.yml` will automatically copy `dist/*` and `.htaccess` to `/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/` and touch `tmp/restart.txt` to reload Passenger WSGI.
 
 ---
-*Last Updated: October 16, 2026 | Antigravity IDE Autonomous Agent Log*
+*Last Updated: October 17, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

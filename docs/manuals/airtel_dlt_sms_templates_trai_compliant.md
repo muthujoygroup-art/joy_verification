@@ -86,45 +86,103 @@ Under the TRAI Direction dated **November 18, 2025**, every variable field in SM
 
 ---
 
-### Category 2: Onboarding Link SMS (With Details & Welcome)
+### Category 2: Onboarding Verification Link SMS (Company, Vendor, HR, Employee)
 
-#### Template 2A: Candidate Digital Verification Magic Link Dispatch
-- **DLT Template Name**: `JTP_CANDIDATE_ONBOARD_LINK`
-- **DLT Category / Message Type**: Service Implicit
-- **Target Audience**: Candidates receiving verification magic link from HR
-- **TRAI Pre-Tagged Template**:
+#### Template 2A: Employee / Candidate Onboarding Verification Link
+- **DLT Template Name**: `JTP_EMPLOYEE_ONBOARD_LINK`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **Target Audience**: Candidates & New Joiner Employees completing KYC verification
+- **DLT Tagged Format (Airtel / Jio / TRAI Portal)**:
   ```text
-  Dear #alphanumeric#, #alphanumeric# has initiated your employee verification on JOY TrueProfile. Please complete your Aadhaar, PAN and KYC at #url#. - JOY TRUE PROFILE
+  Dear {#alphanumeric#}, {#alphanumeric#} has initiated your employee verification on JOY TrueProfile. Please complete your KYC details at {#url#}. - JOY TRUE PROFILE
   ```
 - **Airtel Standard Format**:
   ```text
-  Dear {#var#}, {#var#} has initiated your employee verification on JOY TrueProfile. Please complete your Aadhaar, PAN and KYC at {#var#}. - JOY TRUE PROFILE
+  Dear {#var#}, {#var#} has initiated your employee verification on JOY TrueProfile. Please complete your KYC details at {#var#}. - JOY TRUE PROFILE
   ```
-  - `{#var#}` 1 = Alphanumeric (Candidate Name, e.g. `Rahul Sharma`)
-  - `{#var#}` 2 = Alphanumeric (Employer Name, e.g. `Joy Manpower Service`)
-  - `{#var#}` 3 = URL (Whitelisted token link e.g. `https://trueprofile.joycorporatesolutions.com/verify?t=tok_rahul`)
+  - `{#alphanumeric#}` 1 = Candidate / Employee Name (e.g. `Rahul Sharma`)
+  - `{#alphanumeric#}` 2 = Employer / Company Name (e.g. `Joy Manpower Service`)
+  - `{#url#}` 3 = Verification URL (e.g. `https://trueprofile.joycorporatesolutions.com/verify?t=tok_rahul`)
 - **Sample Message**:
-  > Dear Rahul Sharma, Joy Manpower Service has initiated your employee verification on JOY TrueProfile. Please complete your Aadhaar, PAN and KYC at https://trueprofile.joycorporatesolutions.com/verify?t=tok_rahul. - JOY TRUE PROFILE
-- **Character Count**: 175 chars (~2 SMS units)
-
-#### Template 2B: Company Client Onboarding Invitation Link
-- **DLT Template Name**: `JTP_COMPANY_ONBOARD_INVITE`
-- **DLT Category / Message Type**: Service Implicit
-- **Target Audience**: Newly provisioned corporate enterprise client
-- **TRAI Pre-Tagged Template**:
+  > Dear Rahul Sharma, Joy Manpower Service has initiated your employee verification on JOY TrueProfile. Please complete your KYC details at https://trueprofile.joycorporatesolutions.com/verify?t=tok_rahul. - JOY TRUE PROFILE
+- **Character Count**: ~173 chars (~2 SMS units)
+- **1-Credit Alternative (<= 160 Chars)**:
   ```text
-  Dear #alphanumeric#, your enterprise account for #alphanumeric# is provisioned on JOY TrueProfile. Complete corporate setup and activate services at #url#. - JOY TRUE PROFILE
+  Dear {#alphanumeric#}, complete your employee verification for {#alphanumeric#} on JOY TrueProfile at {#url#}. - JOY TRUE PROFILE
+  ```
+
+#### Template 2B: Company Client Onboarding & Enterprise Setup Link
+- **DLT Template Name**: `JTP_COMPANY_ONBOARD_LINK`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **Target Audience**: Corporate Enterprise Clients & Company Administrators
+- **DLT Tagged Format (Airtel / Jio / TRAI Portal)**:
+  ```text
+  Dear {#alphanumeric#}, your enterprise account for {#alphanumeric#} is ready on JOY TrueProfile. Complete your company verification at {#url#}. - JOY TRUE PROFILE
   ```
 - **Airtel Standard Format**:
   ```text
-  Dear {#var#}, your enterprise account for {#var#} is provisioned on JOY TrueProfile. Complete corporate setup and activate services at {#var#}. - JOY TRUE PROFILE
+  Dear {#var#}, your enterprise account for {#var#} is ready on JOY TrueProfile. Complete your company verification at {#var#}. - JOY TRUE PROFILE
   ```
-  - `{#var#}` 1 = Alphanumeric (Admin Name, e.g. `Muthu Kumar`)
-  - `{#var#}` 2 = Alphanumeric (Company Name, e.g. `Apex Logistics`)
-  - `{#var#}` 3 = URL (Activation URL)
+  - `{#alphanumeric#}` 1 = Company Admin Name (e.g. `Muthu Kumar`)
+  - `{#alphanumeric#}` 2 = Company Name (e.g. `Apex Logistics`)
+  - `{#url#}` 3 = Corporate Setup URL (e.g. `https://trueprofile.joycorporatesolutions.com/company`)
 - **Sample Message**:
-  > Dear Muthu Kumar, your enterprise account for Apex Logistics is provisioned on JOY TrueProfile. Complete corporate setup and activate services at https://trueprofile.joycorporatesolutions.com/company. - JOY TRUE PROFILE
-- **Character Count**: 172 chars (~2 SMS units)
+  > Dear Muthu Kumar, your enterprise account for Apex Logistics is ready on JOY TrueProfile. Complete your company verification at https://trueprofile.joycorporatesolutions.com/company. - JOY TRUE PROFILE
+- **Character Count**: ~176 chars (~2 SMS units)
+- **1-Credit Alternative (<= 160 Chars)**:
+  ```text
+  Dear {#alphanumeric#}, complete corporate verification for {#alphanumeric#} on JOY TrueProfile at {#url#}. - JOY TRUE PROFILE
+  ```
+
+#### Template 2C: Vendor Partner Onboarding Verification Link
+- **DLT Template Name**: `JTP_VENDOR_ONBOARD_LINK`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **Target Audience**: Third-Party Staffing Vendors, BGV Agencies & Contractors
+- **DLT Tagged Format (Airtel / Jio / TRAI Portal)**:
+  ```text
+  Dear {#alphanumeric#}, vendor onboarding for {#alphanumeric#} has been initiated on JOY TrueProfile. Complete your verification profile at {#url#}. - JOY TRUE PROFILE
+  ```
+- **Airtel Standard Format**:
+  ```text
+  Dear {#var#}, vendor onboarding for {#var#} has been initiated on JOY TrueProfile. Complete your verification profile at {#var#}. - JOY TRUE PROFILE
+  ```
+  - `{#alphanumeric#}` 1 = Vendor Contact / Agency Name (e.g. `Rajesh Kumar`)
+  - `{#alphanumeric#}` 2 = Corporate Partner Name (e.g. `Joy Corporate Solutions`)
+  - `{#url#}` 3 = Vendor Verification URL (e.g. `https://trueprofile.joycorporatesolutions.com/vendor`)
+- **Sample Message**:
+  > Dear Rajesh Kumar, vendor onboarding for Joy Corporate Solutions has been initiated on JOY TrueProfile. Complete your verification profile at https://trueprofile.joycorporatesolutions.com/vendor. - JOY TRUE PROFILE
+- **Character Count**: ~185 chars (~2 SMS units)
+- **1-Credit Alternative (<= 160 Chars)**:
+  ```text
+  Dear {#alphanumeric#}, complete vendor verification for {#alphanumeric#} on JOY TrueProfile at {#url#}. - JOY TRUE PROFILE
+  ```
+
+#### Template 2D: HR Recruiter Onboarding & Console Activation Link
+- **DLT Template Name**: `JTP_HR_ONBOARD_LINK`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **Target Audience**: Newly provisioned HR Managers & Talent Acquisition Recruiters
+- **DLT Tagged Format (Airtel / Jio / TRAI Portal)**:
+  ```text
+  Dear {#alphanumeric#}, you are invited as HR Recruiter for {#alphanumeric#} on JOY TrueProfile. Complete your account activation at {#url#}. - JOY TRUE PROFILE
+  ```
+- **Airtel Standard Format**:
+  ```text
+  Dear {#var#}, you are invited as HR Recruiter for {#var#} on JOY TrueProfile. Complete your account activation at {#var#}. - JOY TRUE PROFILE
+  ```
+  - `{#alphanumeric#}` 1 = Recruiter Name (e.g. `Hari Priya`)
+  - `{#alphanumeric#}` 2 = Company Name (e.g. `Joy Corporate Solutions`)
+  - `{#url#}` 3 = HR Console URL (e.g. `https://trueprofile.joycorporatesolutions.com/hr`)
+- **Sample Message**:
+  > Dear Hari Priya, you are invited as HR Recruiter for Joy Corporate Solutions on JOY TrueProfile. Complete your account activation at https://trueprofile.joycorporatesolutions.com/hr. - JOY TRUE PROFILE
+- **Character Count**: ~172 chars (~2 SMS units)
+- **1-Credit Alternative (<= 160 Chars)**:
+  ```text
+  Dear {#alphanumeric#}, activate your HR account for {#alphanumeric#} on JOY TrueProfile at {#url#}. - JOY TRUE PROFILE
+  ```
 
 ---
 
@@ -231,25 +289,38 @@ Under the TRAI Direction dated **November 18, 2025**, every variable field in SM
   > 518492 is your Two-Factor Authentication (2FA) security passcode for Super Admin login on JOY TrueProfile. Valid for 5 mins. Keep confidential. - JOY TRUE PROFILE
 - **Character Count**: 159 chars (**1 SMS unit** - Guaranteed Fast Transit)
 
-#### Template 5B: Password Recovery & Reset 6-Digit Passcode
+#### Template 5B: Password Recovery & Reset 6-Digit Passcode (3-Variable DLT Compliant)
 - **DLT Template Name**: `JTP_PASSWORD_RESET_PASSCODE`
 - **DLT Category / Message Type**: Service Implicit
 - **Target Audience**: Administrators & Users requesting password recovery
+
+##### Option 1 (Recommended - 1 SMS Credit / <= 160 Characters):
 - **TRAI Pre-Tagged Template**:
   ```text
-  #number# is your password reset passcode for your JOY TrueProfile #alphanumeric# account. Valid for #number# minutes. If not requested, contact #email#. - JOY TRUE PROFILE
+  #number# is your password reset passcode for your JOY TrueProfile account. Valid for #number# minutes. If not requested, contact #email#. - JOY TRUE PROFILE
   ```
-- **Airtel Standard Format**:
+- **Airtel Standard Format (3 Variables)**:
   ```text
-  {#var#} is your password reset passcode for your JOY TrueProfile {#var#} account. Valid for {#var#} minutes. If not requested, contact {#var#}. - JOY TRUE PROFILE
+  {#var#} is your password reset passcode for your JOY TrueProfile account. Valid for {#var#} minutes. If not requested, contact {#var#}. - JOY TRUE PROFILE
   ```
   - `{#var#}` 1 = Numeric (6-digit OTP, e.g. `390214`)
-  - `{#var#}` 2 = Alphanumeric (Role Name, e.g. `Company Admin`)
-  - `{#var#}` 3 = Numeric (Minutes, e.g. `10`)
-  - `{#var#}` 4 = Email (Support Email: `admin@joycorporatesolutions.com`)
+  - `{#var#}` 2 = Numeric (Validity in Minutes, e.g. `10`)
+  - `{#var#}` 3 = Email / Phone (Support Contact, e.g. `admin@joycorporatesolutions.com`)
 - **Sample Message**:
-  > 390214 is your password reset passcode for your JOY TrueProfile Company Admin account. Valid for 10 minutes. If not requested, contact admin@joycorporatesolutions.com. - JOY TRUE PROFILE
-- **Character Count**: 186 chars (~2 SMS units)
+  > 390214 is your password reset passcode for your JOY TrueProfile account. Valid for 10 minutes. If not requested, contact admin@joycorporatesolutions.com. - JOY TRUE PROFILE
+- **Character Count**: ~154 chars (**1 SMS unit** - Saves 50% SMS cost & passes 3-variable portal limit)
+
+##### Option 2 (Role Variable with Static Support Contact):
+- **Airtel Standard Format (3 Variables)**:
+  ```text
+  {#var#} is your password reset passcode for your JOY TrueProfile {#var#} account. Valid for {#var#} minutes. If not requested, contact admin@joycorporatesolutions.com. - JOY TRUE PROFILE
+  ```
+  - `{#var#}` 1 = Numeric (6-digit OTP, e.g. `390214`)
+  - `{#var#}` 2 = Alphanumeric (Role / Account Name, e.g. `Admin`)
+  - `{#var#}` 3 = Numeric (Validity in Minutes, e.g. `10`)
+- **Sample Message**:
+  > 390214 is your password reset passcode for your JOY TrueProfile Admin account. Valid for 10 minutes. If not requested, contact admin@joycorporatesolutions.com. - JOY TRUE PROFILE
+- **Character Count**: ~175 chars (~2 SMS units)
 
 ---
 
@@ -341,44 +412,74 @@ Under the TRAI Direction dated **November 18, 2025**, every variable field in SM
 
 ### Category 8: Unique Profile ID Allocation SMS
 
-#### Template 8A: Candidate Unique Employee ID & Token Allocation
-- **DLT Template Name**: `JTP_CANDIDATE_UNIQUE_ID_DISPATCH`
-- **DLT Category / Message Type**: Service Implicit
-- **Target Audience**: Candidates receiving their permanent verifiable Profile ID
-- **TRAI Pre-Tagged Template**:
-  ```text
-  Dear #alphanumeric#, your unique profile ID #alphanumeric# has been generated for #alphanumeric#. Use this ID to track your verified records at #url#. - JOY TRUE PROFILE
-  ```
-- **Airtel Standard Format**:
-  ```text
-  Dear {#var#}, your unique profile ID {#var#} has been generated for {#var#}. Use this ID to track your verified records at {#var#}. - JOY TRUE PROFILE
-  ```
-  - `{#var#}` 1 = Alphanumeric (Candidate Name, e.g. `Dharun Kumar`)
-  - `{#var#}` 2 = Alphanumeric (Unique Profile ID, e.g. `COMP001EMP004`)
-  - `{#var#}` 3 = Alphanumeric (Company Name, e.g. `Joy Corporate Solutions`)
-  - `{#var#}` 4 = URL (Dossier Tracking URL)
-- **Sample Message**:
-  > Dear Dharun Kumar, your unique profile ID COMP001EMP004 has been generated for Joy Corporate Solutions. Use this ID to track your verified records at https://trueprofile.joycorporatesolutions.com/verify. - JOY TRUE PROFILE
-- **Character Count**: 204 chars (~2 SMS units)
+#### Template 8A: Universal Portal User Unique ID Dispatch (Company/HR Tag + Keep Safe Reminder)
+- **DLT Template Name**: `JTP_PORTAL_USER_UNIQUE_ID`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **Target Audience**: Candidates, Employees, and Portal Users receiving their ID
 
-#### Template 8B: Company & HR Recruiter Official Code Allocation
-- **DLT Template Name**: `JTP_OFFICIAL_PROFILE_CODE_DISPATCH`
-- **DLT Category / Message Type**: Service Implicit
-- **Target Audience**: Corporate accounts & HR recruiter leads
-- **TRAI Pre-Tagged Template**:
+##### Primary Format (Recommended - 1 SMS Unit / <= 160 Characters):
+- **DLT Tagged Format (Airtel / Jio / TRAI Portal)**:
   ```text
-  Welcome #alphanumeric#. Your official ID on JOY TrueProfile is #alphanumeric#. Login to manage your team and verifications at #url#. - JOY TRUE PROFILE
+  Dear {#alphanumeric#}, your unique ID for {#alphanumeric#} on JOY TrueProfile is {#alphanumeric#}. Kindly save this ID for your future reference. - JOY TRUE PROFILE
   ```
 - **Airtel Standard Format**:
   ```text
-  Welcome {#var#}. Your official ID on JOY TrueProfile is {#var#}. Login to manage your team and verifications at {#var#}. - JOY TRUE PROFILE
+  Dear {#var#}, your unique ID for {#var#} on JOY TrueProfile is {#var#}. Kindly save this ID for your future reference. - JOY TRUE PROFILE
   ```
-  - `{#var#}` 1 = Alphanumeric (Name, e.g. `Agilan M`)
-  - `{#var#}` 2 = Alphanumeric (ID Code, e.g. `COMP001HR001`)
-  - `{#var#}` 3 = URL (Login portal URL)
+  - `{#alphanumeric#}` 1 = User Full Name (e.g. `Muthu Kumar`)
+  - `{#alphanumeric#}` 2 = Company Name or HR Name (e.g. `Joy Corporate Solutions` or `HR Team`)
+  - `{#alphanumeric#}` 3 = Unique Profile ID (e.g. `COMP001EMP004`)
+- **Sample Message (with Company)**:
+  > Dear Muthu Kumar, your unique ID for Joy Corporate Solutions on JOY TrueProfile is COMP001EMP004. Kindly save this ID for your future reference. - JOY TRUE PROFILE
+- **Sample Message (with HR)**:
+  > Dear Muthu Kumar, your unique ID for HR Team on JOY TrueProfile is COMP001EMP004. Kindly save this ID for your future reference. - JOY TRUE PROFILE
+- **Character Count**: ~152 chars (**1 SMS unit** - Single credit cost)
+
+##### Alternative Format ("Issued by Company/HR" + "Keep this ID safe"):
+- **DLT Tagged Format**:
+  ```text
+  Dear {#alphanumeric#}, your unique ID on JOY TrueProfile is {#alphanumeric#}, issued by {#alphanumeric#}. Please keep this ID safe for all records. - JOY TRUE PROFILE
+  ```
+- **Character Count**: ~150 chars (**1 SMS unit**)
+
+#### Template 8B: Portal User Unique ID with Role Tag (3 Variables)
+- **DLT Template Name**: `JTP_USER_ROLE_UNIQUE_ID`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **DLT Tagged Format**:
+  ```text
+  Dear {#alphanumeric#}, your {#alphanumeric#} unique ID on JOY TrueProfile is {#alphanumeric#}. Login at {#url#}. - JOY TRUE PROFILE
+  ```
+- **Airtel Standard Format**:
+  ```text
+  Dear {#var#}, your {#var#} unique ID on JOY TrueProfile is {#var#}. Login at {#var#}. - JOY TRUE PROFILE
+  ```
+  - `{#var#}` 1 (`{#alphanumeric#}`) = User Full Name (e.g. `Agilan M`)
+  - `{#var#}` 2 (`{#alphanumeric#}`) = Portal Role (e.g. `HR Recruiter` or `Employee`)
+  - `{#var#}` 3 (`{#alphanumeric#}`) = Unique ID (e.g. `COMP001HR001`)
+  - `{#var#}` 4 (`{#url#}`) = Login Portal Link
 - **Sample Message**:
-  > Welcome Agilan M. Your official ID on JOY TrueProfile is COMP001HR001. Login to manage your team and verifications at https://trueprofile.joycorporatesolutions.com/hr. - JOY TRUE PROFILE
-- **Character Count**: 166 chars (~2 SMS units)
+  > Dear Agilan M, your HR Recruiter unique ID on JOY TrueProfile is COMP001HR001. Login at https://trueprofile.joycorporatesolutions.com. - JOY TRUE PROFILE
+
+#### Template 8C: Welcome & Official ID Allocation (3 Variables)
+- **DLT Template Name**: `JTP_OFFICIAL_PROFILE_CODE_DISPATCH`
+- **DLT Category / Message Type**: Service Implicit / Transactional
+- **Header**: `JYCORP`
+- **DLT Tagged Format**:
+  ```text
+  Welcome {#alphanumeric#}. Your unique ID on JOY TrueProfile is {#alphanumeric#}. Access your portal account at {#url#}. - JOY TRUE PROFILE
+  ```
+- **Airtel Standard Format**:
+  ```text
+  Welcome {#var#}. Your unique ID on JOY TrueProfile is {#var#}. Access your portal account at {#var#}. - JOY TRUE PROFILE
+  ```
+  - `{#var#}` 1 (`{#alphanumeric#}`) = Name (e.g. `Agilan M`)
+  - `{#var#}` 2 (`{#alphanumeric#}`) = Official ID Code (e.g. `COMP001HR001`)
+  - `{#var#}` 3 (`{#url#}`) = Portal URL (`https://trueprofile.joycorporatesolutions.com`)
+- **Sample Message**:
+  > Welcome Agilan M. Your unique ID on JOY TrueProfile is COMP001HR001. Access your portal account at https://trueprofile.joycorporatesolutions.com. - JOY TRUE PROFILE
+- **Character Count**: ~157 chars (**1 SMS unit**)
 
 ---
 

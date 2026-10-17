@@ -1310,90 +1310,90 @@ export const CompanyAdminView = () => {
 
   const companyDivisionMetaMap = {
     registry: {
-      pillarBadge: '🏛️ 1. Analytics & Candidates',
+      pillarBadge: '🏛️ 1. Dashboard & Candidates',
       badgeText: `${(candidates || []).length} Candidates Enrolled`,
-      title: 'Candidate Verification Directory & Onboarding Records',
-      subtitle: 'Comprehensive registry of company candidate profiles, real-time verification progress, and point-in-time dossiers',
+      title: 'Candidate Verification List & Records',
+      subtitle: 'View all candidates, track real-time verification progress, and review completed reports',
       icon: Users,
       colorClass: 'from-sky-600 to-teal-600'
     },
     telemetry: {
-      pillarBadge: '🏛️ 1. Analytics & Candidates',
-      badgeText: 'TAT & Completion Rates',
-      title: 'Verification Telemetry, Turnaround Time & Operational Throughput',
-      subtitle: 'Live telemetry analyzing mean turnaround times, module completion percentages, and recruiter throughput',
+      pillarBadge: '🏛️ 1. Dashboard & Candidates',
+      badgeText: 'Speed & Completion Rates',
+      title: 'Verification Analytics, Processing Time & Performance',
+      subtitle: 'Real-time overview of average verification speed, completion rates, and HR team performance',
       icon: BarChart3,
       colorClass: 'from-teal-600 to-emerald-700'
     },
     hrteam: {
-      pillarBadge: '👥 2. HR Team & Access',
+      pillarBadge: '👥 2. HR Team & Permissions',
       badgeText: `${(companyHrUsers || []).length} Active Recruiters`,
-      title: 'Recruiter Team Directory & Department Management',
-      subtitle: 'Manage recruiter accounts, department roles, active candidate link allotments, and credentials',
+      title: 'HR Team Directory & Department Management',
+      subtitle: 'Manage HR team accounts, department assignments, and login credentials',
       icon: Users,
       colorClass: 'from-indigo-600 to-purple-700'
     },
     hr_permissions: {
-      pillarBadge: '👥 2. HR Team & Access',
-      badgeText: 'Granular Access Matrix',
-      title: 'Recruiter Field & Feature Check Flags Matrix',
-      subtitle: 'Granular permissions controlling candidate profile creation, bulk Excel imports, and mandatory check fields',
+      pillarBadge: '👥 2. HR Team & Permissions',
+      badgeText: 'Feature Access Matrix',
+      title: 'HR Permissions & Verification Access',
+      subtitle: 'Control which features, verification checks, and candidate tools each HR recruiter can access',
       icon: Sliders,
       colorClass: 'from-purple-600 to-indigo-700'
     },
     vendor_verification: {
       pillarBadge: '🤝 3. Vendor Verification',
       badgeText: `${(vendors || []).length} Corporate Vendors`,
-      title: 'Corporate Vendor Directory & Statutory Document Verification',
-      subtitle: 'Point-in-time GSTIN, PAN, and Bank Account Penny-Drop verification with downloadable statutory certificates',
+      title: 'Vendor Verification & Document Checks',
+      subtitle: 'Verify vendor GST, PAN, and Bank details, and download verified business certificates',
       icon: ShieldCheck,
       colorClass: 'from-purple-600 to-indigo-700'
     },
     profile_details: {
-      pillarBadge: '🏢 4. Profile & Document Vault',
+      pillarBadge: '🏢 4. Company Profile & Files',
       badgeText: 'Verified Master Profile',
-      title: 'Company Master Profile, Branding & Statutory Credentials',
-      subtitle: 'Corporate identity, CIN, GSTIN, PAN, corporate logo, and verified legal address',
+      title: 'Company Profile, Brand Logo & Business Details',
+      subtitle: 'Company legal name, registration numbers (CIN, GST, PAN), brand logo, and registered address',
       icon: Building2,
       colorClass: 'from-emerald-600 to-teal-700'
     },
     dochub: {
-      pillarBadge: '🏢 4. Profile & Document Vault',
-      badgeText: 'Cloud DMS Vault',
-      title: 'Cloud Document Hub & Statutory Verification Vault',
-      subtitle: 'Centralized repository of verified candidate identity proofs, education certificates, and company statutory files',
+      pillarBadge: '🏢 4. Company Profile & Files',
+      badgeText: 'Document Storage',
+      title: 'Company Document Storage & Verification Files',
+      subtitle: 'Centralized storage for verified identity proofs, certificates, and company compliance documents',
       icon: FolderDown,
       colorClass: 'from-teal-600 to-sky-700'
     },
     billing_wallet: {
-      pillarBadge: '💳 5. Postpaid Billing',
+      pillarBadge: '💳 5. Plans & Billing',
       badgeText: `${currentPlan?.shortName || 'Postpaid'} • ₹${(postpaidBill?.totalAmountDue || 0).toLocaleString('en-IN')} Due`,
-      title: 'Postpaid Plan Tier, Monthly Accruals & GST Invoices',
-      subtitle: 'Real-time metered unbilled usage, non-blocking overage handling, 1:1 vendor parity, and official month-end GST tax invoices',
+      title: 'Subscription Plan, Monthly Usage & Invoices',
+      subtitle: 'Review monthly candidate verifications, plan details, and download official GST tax invoices',
       icon: CreditCard,
       colorClass: 'from-amber-600 to-orange-700'
     },
     settings: {
-      pillarBadge: '💳 5. Billing & Gateways',
-      badgeText: 'SMTP Mail Server',
-      title: 'Outgoing Mail SMTP Server & Notification Routing',
-      subtitle: 'Configure dedicated company outgoing email server credentials, TLS/SSL ports, and candidate email templates',
+      pillarBadge: '💳 5. Plans & Billing',
+      badgeText: 'Email Server Setup',
+      title: 'Email Notifications & Server Setup',
+      subtitle: 'Configure company email settings to send onboarding invitations and candidate notifications',
       icon: Mail,
       colorClass: 'from-indigo-600 to-blue-700'
     },
     smtp_settings: {
-      pillarBadge: '💳 5. Billing & Gateways',
-      badgeText: 'SMTP Mail Server',
-      title: 'Outgoing Mail SMTP Server & Notification Routing',
-      subtitle: 'Configure dedicated company outgoing email server credentials, TLS/SSL ports, and candidate email templates',
+      pillarBadge: '💳 5. Plans & Billing',
+      badgeText: 'Email Server Setup',
+      title: 'Email Notifications & Server Setup',
+      subtitle: 'Configure company email settings to send onboarding invitations and candidate notifications',
       icon: Mail,
       colorClass: 'from-indigo-600 to-blue-700'
     },
     support: {
-      pillarBadge: '💳 5. Billing & Gateways',
-      badgeText: 'Dedicated Support Desk',
-      title: 'Support Helpdesk & Priority Escalation Tickets',
-      subtitle: 'Direct enterprise support channel for questions, priority escalation, and platform feature requests',
+      pillarBadge: '💳 5. Plans & Billing',
+      badgeText: 'Customer Support Desk',
+      title: 'Customer Support & Helpdesk Tickets',
+      subtitle: 'Get direct help from our team or submit questions, feedback, and feature requests',
       icon: LifeBuoy,
       colorClass: 'from-rose-600 to-pink-700'
     }
@@ -1427,8 +1427,8 @@ export const CompanyAdminView = () => {
             )}
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="badge badge-cyan">Company Admin Workstation</span>
-                <span className="text-xs text-slate-500 font-bold">• Executive Operations</span>
+                <span className="badge badge-cyan">Company Admin Portal</span>
+                <span className="text-xs text-slate-500 font-bold">• Company Management</span>
                 {(company.location || company.registered_address) && (
                   <span className="text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200 flex items-center gap-1">
                     <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
@@ -1437,12 +1437,12 @@ export const CompanyAdminView = () => {
                 )}
               </div>
               <h2 className="text-2xl font-black text-slate-900 mt-1">{company.name}</h2>
-              <p className="text-xs text-slate-600 mt-0.5 font-medium">HR Staff Activity, Turnaround Time Metrics, Employee Directory & Document Hub.</p>
+              <p className="text-xs text-slate-600 mt-0.5 font-medium">Manage HR recruiters, review candidate verification status, and export official reports.</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Enterprise Vendor Verification & Point-in-Time PDF Quick-Access */}
+            {/* Enterprise Vendor Verification Quick-Access */}
             <button
               type="button"
               onClick={() => {
@@ -1454,10 +1454,10 @@ export const CompanyAdminView = () => {
                   ? 'bg-purple-600 text-white shadow-sm'
                   : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'
               }`}
-              title="Verify Vendors (GST, PAN, Bank, MSME) & Download Official Point-in-Time PDF Certificates"
+              title="Verify vendor GST, PAN, Bank details, and download verified business certificates"
             >
               <ShieldCheck className={`w-3.5 h-3.5 ${activeTab === 'vendor_verification' ? 'text-white' : 'text-indigo-600'}`} />
-              <span>Verify Vendors & PDF</span>
+              <span>Verify Vendors</span>
             </button>
 
             {/* Company Employee Plan & Headcount Quota Badge */}
@@ -1482,12 +1482,12 @@ export const CompanyAdminView = () => {
               title="Pay Monthly Verification Bill Online"
             >
               <Receipt className="w-3.5 h-3.5" />
-              <span>Pay Online & Settle Bill</span>
+              <span>Pay Bill Online</span>
             </button>
           </div>
         </div>
 
-        {/* 🌟 FOCUSED DIVISION WORKSPACE HEADER */}
+        {/* 🌟 FOCUSED WORKSPACE HEADER */}
         <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold bg-sky-50 border border-sky-200 text-sky-700 shadow-2xs shrink-0 transition-all duration-200">
@@ -1517,20 +1517,20 @@ export const CompanyAdminView = () => {
               type="button"
               onClick={() => setShowUniversalExportModal(true)}
               className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs cursor-pointer transition-all"
-              title="Download date-filtered candidate reports in PDF, Excel CSV, or ZIP"
+              title="Download date-filtered candidate reports in PDF, Excel, or ZIP"
             >
               <Download className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Date-Filtered Reports 📥</span>
+              <span>Export Reports 📥</span>
             </button>
 
             <button
               type="button"
               onClick={() => setShowFieldRulesModal(true)}
               className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-slate-800 bg-white border-slate-300 hover:bg-slate-50 shadow-2xs cursor-pointer transition-all"
-              title="Set mandatory vs optional fields for candidate onboarding"
+              title="Configure mandatory vs optional fields for candidate onboarding"
             >
               <Sliders className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Form Rules (Mandatory / Optional) 📋</span>
+              <span>Required Form Fields 📋</span>
             </button>
 
             <button
@@ -1543,7 +1543,7 @@ export const CompanyAdminView = () => {
               title="View or upgrade company employee headcount plan"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Manage Plan 📋</span>
+              <span>Subscription Plan 📋</span>
             </button>
           </div>
         </div>
@@ -1732,9 +1732,9 @@ export const CompanyAdminView = () => {
             <div>
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                <span>Employee Verification Master Registry</span>
+                <span>Candidate Verification List</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Search, inspect, and download audit documents for all candidate records</p>
+              <p className="text-xs text-slate-500 font-medium">Search candidates, review verification status, and download certificates</p>
             </div>
             <div className="relative w-full sm:w-64">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -1748,17 +1748,17 @@ export const CompanyAdminView = () => {
             </div>
           </div>
 
-          {/* 💡 Point-in-Time Data Verification Notice Banner */}
+          {/* 💡 Data Verification Notice Banner */}
           <div className="p-3 bg-amber-50/80 border border-amber-300/80 rounded-xl text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center gap-2 text-amber-950 font-medium">
               <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-              <span><strong>Point-in-Time Truth Notice:</strong> Candidate KYC verifications reflect the authentic state in Government Repositories at the recorded timestamp.</span>
+              <span><strong>Official Verification Notice:</strong> Candidate checks are verified directly against official government databases at the time of submission.</span>
             </div>
             <button 
               onClick={() => setShowTermsModal(true)} 
               className="text-amber-900 font-bold hover:underline shrink-0 text-[11px] flex items-center gap-1 self-start sm:self-auto cursor-pointer"
             >
-              <span>Legal Disclosures & Terms 📄</span>
+              <span>Terms & Privacy Policy 📄</span>
             </button>
           </div>
 
@@ -1854,7 +1854,7 @@ export const CompanyAdminView = () => {
                       </div>
                       <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div 
-                          style={{ width: `${lc.progressPercent}%` }} 
+                          style={{ width: `${lc.progressPercent}%` }}
                           className={`h-full rounded-full ${lc.isExpired || lc.status === 'critical' ? 'bg-rose-500' : lc.isExpiringSoon ? 'bg-amber-500' : 'bg-emerald-500'}`}
                         />
                       </div>
@@ -1865,23 +1865,26 @@ export const CompanyAdminView = () => {
                     <button 
                       onClick={() => setViewingBgvReportCandidate(cand)}
                       className="p-2 rounded-xl bg-purple-50 text-purple-950 border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-1 cursor-pointer btn-interactive text-center"
+                      title="View Complete Background Verification Report"
                     >
                       <ShieldCheck className="w-3.5 h-3.5 text-purple-700 shrink-0" />
-                      <span className="truncate">360° Dossier</span>
+                      <span className="truncate">BGV Report</span>
                     </button>
                     <button 
                       onClick={() => setInspectCandidate(cand)}
                       className="p-2 rounded-xl bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 flex items-center justify-center gap-1 cursor-pointer btn-interactive text-center"
+                      title="View Candidate Profile & Details"
                     >
                       <Eye className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-                      <span className="truncate">Inspect</span>
+                      <span className="truncate">View Profile</span>
                     </button>
                     <button 
                       onClick={() => setDownloadingCandidate(cand)}
                       className="p-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 flex items-center justify-center gap-1 cursor-pointer btn-interactive text-center shadow-xs"
+                      title="Download Candidate Documents & Certificates"
                     >
                       <Download className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">Docs</span>
+                      <span className="truncate">Download</span>
                     </button>
                   </div>
                 </div>
@@ -1901,7 +1904,7 @@ export const CompanyAdminView = () => {
                   <th className="py-3 px-4">Face Liveness</th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4 text-center">Certificate Validity (60-Day)</th>
-                  <th className="py-3 px-4 text-right">Document & Audit Actions</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -1950,7 +1953,7 @@ export const CompanyAdminView = () => {
                       </td>
                       <td className="py-4 px-4">
                         {cand.verificationsCompleted.mobile ? (
-                          <span className="badge badge-emerald text-[10px]">OTP Verified ✅</span>
+                          <span className="badge badge-emerald text-[10px]">Verified ✅</span>
                         ) : (
                           <span className="badge badge-amber text-[10px]">Pending ⏳</span>
                         )}
@@ -1995,21 +1998,23 @@ export const CompanyAdminView = () => {
                           <button 
                             onClick={() => setViewingBgvReportCandidate(cand)}
                             className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold text-purple-900 bg-purple-50 border-purple-200 hover:bg-purple-100 btn-interactive"
-                            title="View 10+ Multi-API Background Verification Dossier"
+                            title="View Complete Background Verification Report"
                           >
                             <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
-                            <span>360° BGV Dossier</span>
+                            <span>BGV Report</span>
                           </button>
                           <button 
                             onClick={() => setInspectCandidate(cand)}
                             className="btn btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold btn-interactive"
+                            title="View Candidate Profile & Details"
                           >
                             <Eye className="w-3.5 h-3.5 text-sky-600" />
-                            <span>Inspect</span>
+                            <span>View Profile</span>
                           </button>
                           <button 
                             onClick={() => setDownloadingCandidate(cand)}
                             className="btn btn-company text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold btn-interactive"
+                            title="Download Candidate Documents & Certificates"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Download Docs</span>
@@ -2113,13 +2118,13 @@ export const CompanyAdminView = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-lg font-black text-slate-900">HR Recruiter Directory & Governance Hub</h3>
+                <h3 className="text-lg font-black text-slate-900">HR Team Directory</h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  {(allCompanyHrUsers || []).length} Appointed Staff
+                  {(allCompanyHrUsers || []).length} Team Members
                 </span>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Onboard recruiters with automated self-activation links, 4-digit PIN security, and audit submitted statutory dossiers.
+                Invite HR team members, manage login access, and review candidate onboarding permissions.
               </p>
             </div>
             
@@ -2129,7 +2134,7 @@ export const CompanyAdminView = () => {
               className="btn btn-company text-xs flex items-center gap-1.5 py-2 px-4 shadow-md font-bold cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
-              <span>+ Onboard HR Recruiter 🚀</span>
+              <span>+ Add HR Member</span>
             </button>
           </div>
 
@@ -2138,7 +2143,7 @@ export const CompanyAdminView = () => {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-black text-[10px] tracking-wider">
-                  <th className="py-3 px-4">Recruiter Profile</th>
+                  <th className="py-3 px-4">HR Member</th>
                   <th className="py-3 px-4">Contact Info</th>
                   <th className="py-3 px-4">Department & Role</th>
                   <th className="py-3 px-4 text-center">Status</th>
@@ -2149,7 +2154,7 @@ export const CompanyAdminView = () => {
                 {(allCompanyHrUsers || []).length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-slate-400 font-semibold">
-                      No HR recruiters onboarded yet. Click "+ Onboard HR Recruiter" to invite your first team member!
+                      No HR team members added yet. Click "+ Add HR Member" to invite your first recruiter!
                     </td>
                   </tr>
                 ) : (
@@ -2169,7 +2174,7 @@ export const CompanyAdminView = () => {
                               <div 
                                 onClick={() => setGovernanceHr(hr)}
                                 className="font-black text-slate-900 text-sm hover:text-indigo-600 transition-colors cursor-pointer underline decoration-dotted decoration-indigo-300"
-                                title="Click to view full HR profile & documents"
+                                title="Click to view full HR profile & details"
                               >
                                 {hr.name}
                               </div>
@@ -2219,7 +2224,7 @@ export const CompanyAdminView = () => {
                                 className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm cursor-pointer transition-all active:scale-95"
                                 title="Approve & Grant Workstation Login"
                               >
-                                ✅ Approve Recruiter
+                                ✅ Approve HR
                               </button>
                             )}
                           </div>
@@ -2245,10 +2250,10 @@ export const CompanyAdminView = () => {
                               type="button"
                               onClick={() => setGovernanceHr(hr)}
                               className="btn btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 shadow-2xs cursor-pointer"
-                              title="View & Edit HR Profile, Reset Password, Check Educational Records"
+                              title="View & Edit HR Profile, Reset Password"
                             >
                               <User className="w-3.5 h-3.5 text-indigo-600" />
-                              <span>Manage Profile ⚙️</span>
+                              <span>Details ⚙️</span>
                             </button>
 
                             {isPendingAct && (
@@ -2325,7 +2330,7 @@ export const CompanyAdminView = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-sm sm:text-base font-black tracking-tight">Corporate Statutory Profile Verification</h3>
+                    <h3 className="text-sm sm:text-base font-black tracking-tight">Company Legal Profile & Verification</h3>
                     <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${
                       company.verification_status === 'Verified'
                         ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
@@ -2335,14 +2340,14 @@ export const CompanyAdminView = () => {
                         ? 'bg-sky-100 text-sky-900 border-sky-300'
                         : 'bg-indigo-100 text-indigo-900 border-indigo-200'
                     }`}>
-                      {company.verification_status === 'Verified' ? '🟢 STATUTORY VERIFIED ✓' : 
+                      {company.verification_status === 'Verified' ? '🟢 VERIFIED COMPANY ✓' : 
                        company.verification_status === 'Action Required' ? '⚠️ ACTION REQUIRED' :
-                       company.verification_status === 'Under Review' ? '⏳ UNDER SUPERADMIN AUDIT' :
-                       '📋 PENDING VERIFICATION'}
+                       company.verification_status === 'Under Review' ? '⏳ UNDER REVIEW' :
+                       '📋 PENDING REVIEW'}
                     </span>
                   </div>
                   <p className="text-[11px] opacity-80 mt-0.5">
-                    Real-time verification sync between Company Operations and SuperAdmin Compliance Registry
+                    Verified against official government records and platform administration
                   </p>
                 </div>
               </div>
@@ -2353,10 +2358,10 @@ export const CompanyAdminView = () => {
                   onClick={handleRequestReview}
                   disabled={isRequestingReview || company.verification_status === 'Under Review'}
                   className="btn text-xs py-2 px-3.5 font-bold flex items-center gap-1.5 rounded-xl cursor-pointer shadow-2xs bg-white text-slate-800 hover:bg-slate-100 border border-slate-300 disabled:opacity-50"
-                  title="Request SuperAdmin compliance team to review statutory credentials"
+                  title="Request compliance team to review company verification documents"
                 >
                   <Send className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>{company.verification_status === 'Under Review' ? 'Audit in Progress ⏳' : 'Request SuperAdmin Review 🚀'}</span>
+                  <span>{company.verification_status === 'Under Review' ? 'Review in Progress ⏳' : 'Request Verification Review 🚀'}</span>
                 </button>
               </div>
             </div>
@@ -3291,15 +3296,15 @@ export const CompanyAdminView = () => {
                                     <span>Single 🔍</span>
                                   </button>
 
-                                  {/* Dossier Modal Trigger */}
+                                  {/* BGV Report Modal Trigger */}
                                   <button
                                     type="button"
                                     onClick={() => setSelectedDossierVendor(vendor)}
                                     className="btn text-[11px] py-1.5 px-2 flex items-center gap-1 font-black bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 rounded-xl cursor-pointer"
-                                    title="View Comprehensive 11-in-1 B2B Due Diligence Dossier"
+                                    title="View Complete Vendor Background Verification Report"
                                   >
                                     <FileText className="w-3 h-3 text-purple-700" />
-                                    <span>Dossier 📑</span>
+                                    <span>BGV Report 📑</span>
                                   </button>
 
                                   {/* Certificate Modal Trigger */}
@@ -3307,10 +3312,10 @@ export const CompanyAdminView = () => {
                                     type="button"
                                     onClick={() => setSelectedCertVendor(vendor)}
                                     className="btn text-[11px] py-1.5 px-2 flex items-center gap-1 font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-2xs cursor-pointer"
-                                    title="Download Official Point-in-Time Verification Certificate PDF"
+                                    title="Download Official Verification Certificate PDF"
                                   >
                                     <Award className="w-3 h-3" />
-                                    <span>Cert 📄</span>
+                                    <span>Certificate 📄</span>
                                   </button>
 
                                   {/* Delete Vendor */}
@@ -4254,12 +4259,12 @@ export const CompanyAdminView = () => {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg font-black text-slate-900 tracking-tight">Official Vendor Due Diligence PDF Suite & Point-in-Time Certificates</h3>
-                        <span className="badge badge-purple text-[10px] font-black">IT ACT 2000 & DPDP ACT 2023 ADMISSIBLE</span>
+                        <h3 className="text-lg font-black text-slate-900 tracking-tight">Vendor Background Verification Reports & Certificates</h3>
+                        <span className="badge badge-purple text-[10px] font-black">DPDP ACT 2023 COMPLIANT</span>
                         <span className="badge badge-emerald text-[10px] font-black">QR-CODE VERIFIABLE</span>
                       </div>
                       <p className="text-xs text-slate-500 font-medium mt-0.5">
-                        Instant Point-in-Time PDF Audit Certificates, Ministry of Corporate Affairs (MCA) / GSTN verification slips, 11-statutory rail dossiers, and batch PDF exports for all corporate vendors.
+                        Download verified vendor certificates, MCA & GSTN validation reports, and complete background verification files.
                       </p>
                     </div>
                   </div>
@@ -4335,7 +4340,7 @@ export const CompanyAdminView = () => {
 
                   <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 flex flex-col justify-between">
                     <div className="flex items-center justify-between text-amber-950 font-black text-xs">
-                      <span>Point-in-Time Certificates</span>
+                      <span>Verification Certificates</span>
                       <Award className="w-4 h-4 text-amber-600" />
                     </div>
                     <div className="mt-2 flex items-baseline gap-1.5">
@@ -6033,7 +6038,7 @@ export const CompanyAdminView = () => {
 
               <div className="space-y-2.5">
                 {[
-                  { id: 'allowEmailDispatch', title: 'Enterprise Email Magic Link Dispatch 📧', desc: 'Allow HR to send automated invitation emails & verification links via cPanel SMTP' },
+                  { id: 'allowEmailDispatch', title: 'Email Verification Link Dispatch 📧', desc: 'Allow HR to send automated invitation emails & verification links via SMTP' },
                   { id: 'allowDirectLinkAccess', title: 'Direct Onboarding Link & QR Generation 🔗', desc: 'Allow HR to generate instant scannable QR codes and copy direct verification links' }
                 ].map(item => {
                   const isChecked = company.hrPermissions?.[item.id] ?? true;
@@ -6095,7 +6100,7 @@ export const CompanyAdminView = () => {
 
               <div className="space-y-2.5">
                 {[
-                  { id: 'allow360DossierExport', title: '360° Multi-API PDF Dossier Export 📄', desc: 'Allow HR to generate & export full candidate 360° dossiers' },
+                  { id: 'allow360DossierExport', title: 'Candidate Verification BGV Report Export 📄', desc: 'Allow HR to generate & export complete candidate verification reports' },
                   { id: 'allowCertificateGeneration', title: 'ISO 27001 Official Certificate Generation 🎖️', desc: 'Allow HR to issue official digital verification certificates' }
                 ].map(item => {
                   const isChecked = company.hrPermissions?.[item.id] ?? true;

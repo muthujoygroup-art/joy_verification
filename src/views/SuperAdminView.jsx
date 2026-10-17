@@ -1578,201 +1578,201 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   const divisionMetaMap = useMemo(() => ({
     companies: {
       pillarBadge: 'Core Operations',
-      badgeText: `${companies.length} Enterprise Clients`,
-      title: 'Enterprise Client Companies & Feature Matrix Flags',
-      subtitle: 'Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company',
+      badgeText: `${companies.length} Client Companies`,
+      title: 'Client Companies & Verification Features',
+      subtitle: 'Manage company subscriptions, pricing per check, and enabled verification modules',
       icon: Building2,
       colorClass: 'from-purple-600 to-indigo-700'
     },
     ledger: {
       pillarBadge: 'Core Operations',
       badgeText: `${enrichedDirectory.candidates.length} Profiles Recorded`,
-      title: 'Candidate Verification Ledger & Global Employee Registry',
-      subtitle: 'Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits',
+      title: 'Candidate Verification List',
+      subtitle: 'Universal list of candidate verification requests, reference IDs, and verification statuses',
       icon: Users,
       colorClass: 'from-emerald-600 to-teal-700'
     },
     terms_hub: {
       pillarBadge: 'Core Operations',
-      badgeText: 'Statutory Contracts',
-      title: 'Enterprise Terms & Conditions Contracts Hub & Agreement Ledger',
-      subtitle: 'Create customized T&C contracts per company, customize data retention (60d vs 90d), SLA tiers, and track digital signatures',
+      badgeText: 'Company Agreements',
+      title: 'Company Terms & Service Agreements',
+      subtitle: 'Manage client terms, data retention policies, service level agreements, and signed agreements',
       icon: Scale,
       colorClass: 'from-amber-600 to-orange-700'
     },
     inquiries: {
       pillarBadge: 'Core Operations',
-      badgeText: 'Lead Gen & Inquiries',
-      title: 'Demo Inquiries & Inbound Enterprise Leads',
-      subtitle: 'Review incoming platform demo inquiries, follow up with corporate leads, and initiate onboarding pipelines',
+      badgeText: 'Leads & Inquiries',
+      title: 'Demo Requests & Sales Inquiries',
+      subtitle: 'Review incoming platform demo requests, follow up with corporate leads, and initiate onboarding',
       icon: Mail,
       colorClass: 'from-sky-600 to-indigo-600'
     },
     reviews: {
       pillarBadge: 'Core Operations',
-      badgeText: 'User Testimonials',
-      title: 'Client Reviews & Public Testimonials Moderation',
-      subtitle: 'Moderate client ratings, verify feedback authenticity, and publish featured corporate testimonials',
+      badgeText: 'Customer Feedback',
+      title: 'Customer Reviews & Testimonials',
+      subtitle: 'Review client feedback, verify ratings, and publish featured customer reviews',
       icon: Star,
       colorClass: 'from-amber-500 to-orange-600'
     },
     blog_cms: {
       pillarBadge: 'Core Operations',
-      badgeText: 'Knowledge Hub CMS',
-      title: 'SEO Articles & Knowledge Hub CMS',
-      subtitle: 'Publish thought-leadership articles, statutory compliance advisories, and platform feature announcements',
+      badgeText: 'Articles & Content',
+      title: 'Articles & Website Content',
+      subtitle: 'Publish compliance guides, platform updates, and knowledge articles for users',
       icon: FileText,
       colorClass: 'from-purple-600 to-indigo-800'
     },
     logins: {
       pillarBadge: 'Core Operations',
-      badgeText: 'Unified Directory',
-      title: 'Unified Logins & Master Access Directory',
-      subtitle: 'Inspect credentials, role assignments, and direct instant-login tokens across all platform accounts',
+      badgeText: 'User Accounts',
+      title: 'Portal User Accounts & Logins',
+      subtitle: 'View user credentials, assigned roles, and direct login access across accounts',
       icon: UserCheck,
       colorClass: 'from-indigo-600 to-purple-600'
     },
     omnisearch: {
       pillarBadge: 'Core Operations',
       badgeText: `${searchResults.totalMatches} Search Matches`,
-      title: 'Universal Omnisearch & Hierarchical Profile ID Tracker',
-      subtitle: 'Real-time 360° record locator across Companies (COMP001), HR Staff (COMP001HR001), and Candidates (COMP001EMP001)',
+      title: 'Global Search & ID Lookup',
+      subtitle: 'Instant search across Companies, HR Staff, and Candidate verification records',
       icon: Search,
       colorClass: 'from-indigo-600 to-purple-800'
     },
     apiconfig: {
       pillarBadge: 'Verification Gateways',
-      badgeText: 'Dual Mode Gateways',
-      title: 'Dual API Gateways (Sandbox vs Production Mode)',
-      subtitle: 'Configure real UIDAI Aadhaar, NSDL PAN, NPCI Bank Penny-Drop, EPFO, and Driving License upstream endpoints',
+      badgeText: 'Live & Sandbox',
+      title: 'Verification API Gateways',
+      subtitle: 'Configure government verification endpoints for Aadhaar, PAN, Bank, EPFO, and Driving License',
       icon: Zap,
       colorClass: 'from-teal-600 to-emerald-700'
     },
     studio: {
       pillarBadge: 'Verification Gateways',
-      badgeText: 'Interactive Sandbox',
-      title: 'Live Verification Studio & Interactive Payload Tester',
-      subtitle: 'Execute live diagnostic queries, inspect raw JSON payloads, and test failure scenarios in real time',
+      badgeText: 'Testing Studio',
+      title: 'Verification Testing Studio',
+      subtitle: 'Run diagnostic checks, test document formats, and verify response formats in real time',
       icon: Cpu,
       colorClass: 'from-purple-600 to-indigo-700'
     },
     consumption_margins: {
       pillarBadge: 'Verification Gateways',
-      badgeText: 'Profitability Telemetry',
-      title: 'API Consumption & Profit Margin Telemetry',
-      subtitle: 'Analyze upstream vendor API costs against billed client tariffs to monitor real-time gross margins per verification module',
+      badgeText: 'API Usage & Profit',
+      title: 'API Usage & Profit Margins',
+      subtitle: 'Compare vendor API check costs against client billing rates to monitor profit margins',
       icon: TrendingUp,
       colorClass: 'from-indigo-600 to-blue-700'
     },
     whatsapp_sms: {
       pillarBadge: 'Verification Gateways',
-      badgeText: 'Omnichannel Messaging',
-      title: 'Meta WhatsApp Business & Carrier SMS Gateways',
-      subtitle: 'Configure Meta Cloud API credentials, Twilio / MSG91 SMS routes, and candidate notification templates',
+      badgeText: 'SMS & WhatsApp',
+      title: 'WhatsApp & SMS Gateway Settings',
+      subtitle: 'Configure Airtel DLT, Twilio / MSG91 SMS, Meta WhatsApp Business, and message templates',
       icon: MessageSquare,
       colorClass: 'from-emerald-600 to-teal-700'
     },
     billing: {
       pillarBadge: 'Financial Billing',
-      badgeText: 'Invoicing & Razorpay',
-      title: 'Metered Invoicing, Razorpay Gateway & Wallet Management',
-      subtitle: 'Review monthly billing invoices, configure Razorpay keys, and manage company verification wallet balances',
+      badgeText: 'Invoices & Payments',
+      title: 'Invoices, Billing & Payments',
+      subtitle: 'Review monthly billing invoices, Razorpay payment gateway, and client wallet balances',
       icon: CreditCard,
       colorClass: 'from-amber-600 to-orange-700'
     },
     dbms: {
       pillarBadge: 'Database & Security',
-      badgeText: 'PostgreSQL Tables',
-      title: 'PostgreSQL Live Schema & Database Management System',
-      subtitle: 'Directly inspect and filter real database rows across candidates, companies, HR users, invoices, and audit logs',
+      badgeText: 'Database Tables',
+      title: 'Database Records & Data Explorer',
+      subtitle: 'Inspect database records across candidates, companies, HR users, invoices, and audit logs',
       icon: Database,
       colorClass: 'from-rose-600 to-pink-700'
     },
     audit: {
       pillarBadge: 'Database & Security',
-      badgeText: 'Immutable DPDP Chain',
-      title: 'Audit Trail & DPDP Compliance Hash Chain',
-      subtitle: 'Cryptographically secured chronological activity trail recording administrative actions, logins, and verifications',
+      badgeText: 'Audit Trail',
+      title: 'System Audit Logs & Compliance',
+      subtitle: 'Detailed chronological activity log of all user logins, verification actions, and changes',
       icon: FileText,
       colorClass: 'from-emerald-600 to-teal-700'
     },
     sessions: {
       pillarBadge: 'Database & Security',
       badgeText: `${multiRoleSessions.length} Active Sessions`,
-      title: 'Active Multi-Role Sessions Hub & Device Telemetry',
-      subtitle: 'Live session monitor tracking IP addresses, device user-agents, and authentication states across all portal roles',
+      title: 'Active User Sessions & Devices',
+      subtitle: 'Live monitor showing active user sessions, login timestamps, IP addresses, and devices',
       icon: ShieldCheck,
       colorClass: 'from-sky-600 to-indigo-700'
     },
     issuelogs: {
       pillarBadge: 'Database & Security',
-      badgeText: `${totalUnresolvedErrorCount} Unresolved Issues`,
-      title: 'Incident Forensics & System Error Logs Command Center',
-      subtitle: 'Real-time 4-pillar diagnostics (Where, When, Why, How to Solve) across HR, Candidate, Company Admin, and API services',
+      badgeText: `${totalUnresolvedErrorCount} Issues`,
+      title: 'System Error Logs & Diagnostics',
+      subtitle: 'Real-time diagnostic logs across HR, Candidate, Company Admin, and API services',
       icon: AlertTriangle,
       colorClass: 'from-amber-600 to-rose-600'
     },
     system_health: {
       pillarBadge: 'Database & Security',
-      badgeText: '360° Real-Time Health',
-      title: '360° Comprehensive Project Health & Telemetry Command Center',
-      subtitle: 'Real-time multi-perspective monitoring across Backend API, PostgreSQL Database Latency, Error SLA Budgets & 10 Verification Gateways',
+      badgeText: 'System Health',
+      title: 'Platform System Health & Monitoring',
+      subtitle: 'Live uptime, database response times, error rates, and verification gateway connectivity',
       icon: Activity,
       colorClass: 'from-emerald-600 to-teal-700'
     },
     analytics: {
       pillarBadge: 'Database & Security',
-      badgeText: 'Master Operations',
-      title: 'Platform Master Control, Analytics & Financial KPIs',
-      subtitle: 'Consolidated verification volume, gross revenue, profit trends, and company-wise performance charts',
+      badgeText: 'Analytics',
+      title: 'Platform Analytics & Performance',
+      subtitle: 'Consolidated verification volume, monthly trends, and company performance charts',
       icon: BarChart3,
       colorClass: 'from-indigo-600 to-purple-700'
     },
     reports: {
       pillarBadge: 'Compliance & Settings',
-      badgeText: 'Universal Exporter',
-      title: 'Reports Center & Universal Document Exporter',
-      subtitle: 'Generate date-filtered candidate verification dossiers, Excel sheets, and statutory compliance packages',
+      badgeText: 'Reports & Export',
+      title: 'Reports & Data Export Center',
+      subtitle: 'Generate and download candidate verification records, summary reports, and Excel sheets',
       icon: Download,
       colorClass: 'from-purple-600 to-indigo-700'
     },
     legal_governance: {
       pillarBadge: 'Compliance & Settings',
-      badgeText: 'DPDP Act 2023',
-      title: 'Statutory Legal & DPDP Act 2023 Compliance Framework',
-      subtitle: 'Digital Personal Data Protection Act compliance, consent architecture, and statutory retention rules',
+      badgeText: 'Privacy & Terms',
+      title: 'Legal Policies & DPDP Privacy Framework',
+      subtitle: 'Digital Personal Data Protection Act compliance guidelines, user consent, and data retention',
       icon: Scale,
       colorClass: 'from-indigo-600 to-purple-800'
     },
     masterdata: {
       pillarBadge: 'Compliance & Settings',
-      badgeText: 'Field Schemas',
-      title: 'Master Data Presets & Custom Form Fields',
-      subtitle: 'Customize industry presets, document requirements, and candidate onboarding form fields',
+      badgeText: 'Form Fields',
+      title: 'Custom Form Fields & Presets',
+      subtitle: 'Customize onboarding document requirements, field presets, and candidate form fields',
       icon: Sliders,
       colorClass: 'from-teal-600 to-emerald-700'
     },
     masterfields: {
       pillarBadge: 'Compliance & Settings',
-      badgeText: 'Field Schemas',
-      title: 'Master Data Presets & Custom Form Fields',
-      subtitle: 'Customize industry presets, document requirements, and candidate onboarding form fields',
+      badgeText: 'Form Fields',
+      title: 'Custom Form Fields & Presets',
+      subtitle: 'Customize onboarding document requirements, field presets, and candidate form fields',
       icon: Sliders,
       colorClass: 'from-teal-600 to-emerald-700'
     },
     tickets: {
       pillarBadge: 'Compliance & Settings',
       badgeText: `${supportTickets.length} Support Tickets`,
-      title: 'Support Helpdesk & Enterprise Feedback',
-      subtitle: 'Track and respond to helpdesk tickets, feature requests, and system feedback from corporate clients',
+      title: 'Support Helpdesk & Tickets',
+      subtitle: 'Manage client helpdesk tickets, questions, and feature requests',
       icon: LifeBuoy,
       colorClass: 'from-rose-600 to-pink-700'
     },
     settings: {
       pillarBadge: 'Compliance & Settings',
-      badgeText: 'cPanel SMTP Mail',
-      title: 'cPanel SMTP Server & Email Configuration',
-      subtitle: 'Configure SMTP credentials, SSL/TLS ports, and dispatch diagnostic test emails',
+      badgeText: 'Email Settings',
+      title: 'Email & System Settings',
+      subtitle: 'Configure SMTP credentials, outgoing notification email, and test emails',
       icon: Mail,
       colorClass: 'from-indigo-600 to-purple-700'
     }
@@ -1793,10 +1793,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             <div className="flex items-center gap-2 flex-wrap">
               <span className="badge badge-purple text-xs font-bold py-0.5 px-2.5">Super Admin Console</span>
               <span className="text-xs text-slate-400 font-bold">•</span>
-              <span className="text-xs text-slate-500 font-bold">Enterprise Governance, Profit Telemetry & DBMS</span>
+              <span className="text-xs text-slate-500 font-bold">Platform Administration & Operations</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight">Platform Master Control, Analytics & Database Operations</h2>
-            <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed">Manage enterprise contracts, metered billing, multi-role session monitoring, and real-time PostgreSQL database tables.</p>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight">Platform Administration & System Controls</h2>
+            <p className="text-xs text-slate-600 mt-0.5 font-medium leading-relaxed">Manage client companies, verification gateways, system logs, and corporate billing.</p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap xl:justify-end shrink-0">
@@ -1829,7 +1829,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               title="Configure Meta WhatsApp Business & Carrier SMS Gateway for candidate automated messages"
             >
               <MessageSquare className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Automated Messaging 💬</span>
+              <span>Messaging Gateways 💬</span>
             </button>
 
             <button 
@@ -1878,7 +1878,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 title="Search by Unique Profile ID, Company, HR, or Candidate"
               >
                 <Search className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Search Omnisearch 🔍</span>
+                <span>Global Search 🔍</span>
               </button>
             )}
           </div>
@@ -1896,9 +1896,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-emerald-600" />
-                <span>Enterprise Candidate Verification Ledger ({enrichedDirectory.candidates.length})</span>
+                <span>Candidate Verification List ({enrichedDirectory.candidates.length})</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Cross-company immutable ledger of candidate onboarding applications, unique verification tokens, and completed audits</p>
+              <p className="text-xs text-slate-500 font-medium">Comprehensive list of candidate verification requests and background checks across all client companies</p>
             </div>
             
             <div className="flex items-center gap-2 flex-wrap">
@@ -1907,7 +1907,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100"
               >
                 <Download className="w-4 h-4 text-indigo-600" />
-                <span>Export Candidate Ledger</span>
+                <span>Export Candidate List</span>
               </button>
             </div>
           </div>
@@ -1917,7 +1917,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
                   <th className="py-3 px-4">Candidate Profile</th>
-                  <th className="py-3 px-4">Enterprise Company</th>
+                  <th className="py-3 px-4">Company</th>
                   <th className="py-3 px-4">Contact Info</th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4">Verification Date</th>
@@ -1957,7 +1957,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           onClick={() => setViewingDossierCandidate(c)}
                           className="btn btn-secondary text-xs py-1.5 px-3 font-bold text-emerald-900 bg-emerald-50 border-emerald-300 hover:bg-emerald-100"
                         >
-                          View Dossier
+                          BGV Report
                         </button>
                       </td>
                     </tr>
@@ -2577,9 +2577,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             <div>
               <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-purple-600" />
-                <span>Enterprise Client Companies & Feature Matrix Flags</span>
+                <span>Client Companies & Verification Features</span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Configure subscription tiers, price per verification, and toggle 10 individual verification modules per company</p>
+              <p className="text-xs text-slate-500 font-medium">Manage company subscriptions, pricing per check, and enabled verification modules</p>
             </div>
             
             <button 
@@ -2598,10 +2598,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-indigo-600" />
                   <h4 className="font-black text-sm text-slate-900">
-                    Inbound Enterprise & Plan Upgrade Requests ({companyRequests.filter(r => r.status === 'Pending').length} Action Required)
+                    Inbound Registration & Plan Upgrade Requests ({companyRequests.filter(r => r.status === 'Pending').length} Action Required)
                   </h4>
                 </div>
-                <span className="badge badge-indigo text-[10px] font-bold">Actionable Queue</span>
+                <span className="badge badge-indigo text-[10px] font-bold">Action Required</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -2657,12 +2657,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase font-extrabold text-[11px] tracking-wider">
-                  <th className="py-3.5 px-4 min-w-[260px]">Company Logo & Profile</th>
+                  <th className="py-3.5 px-4 min-w-[260px]">Company</th>
                   <th className="py-3.5 px-4 min-w-[200px]">Contact Details</th>
-                  <th className="py-3.5 px-4 min-w-[170px]">Tariff & Quota</th>
-                  <th className="py-3.5 px-4 text-center min-w-[150px]">10 Feature Flags</th>
-                  <th className="py-3.5 px-4 text-center min-w-[170px]">Governance Status</th>
-                  <th className="py-3.5 px-4 text-right min-w-[340px]">Management Actions</th>
+                  <th className="py-3.5 px-4 min-w-[170px]">Plan & Pricing</th>
+                  <th className="py-3.5 px-4 text-center min-w-[150px]">Verification Features</th>
+                  <th className="py-3.5 px-4 text-center min-w-[170px]">Status</th>
+                  <th className="py-3.5 px-4 text-right min-w-[340px]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -2794,7 +2794,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             </span>
                           ) : comp.verification_status === 'Verified' ? (
                             <span className="badge badge-emerald text-[9px] font-black py-0.5 px-2.5 border border-emerald-300">
-                              🏛️ STATUTORY VERIFIED ✓
+                              🟢 VERIFIED ✓
                             </span>
                           ) : comp.verification_status === 'Action Required' ? (
                             <span className="badge badge-amber text-[9px] font-black py-0.5 px-2.5 border border-amber-300">
@@ -2802,7 +2802,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             </span>
                           ) : (
                             <span className="badge badge-purple text-[9px] font-bold py-0.5 px-2.5 border border-purple-200">
-                              📋 AUDIT PENDING
+                              📋 PENDING
                             </span>
                           )}
 
@@ -2872,10 +2872,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             type="button"
                             onClick={() => setAuditingCompany(comp)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-900 shadow-2xs cursor-pointer"
-                            title="Audit Statutory Profile Details (GST, PAN, CIN, Bank, Documents)"
+                            title="Verify Profile Details (GST, PAN, CIN, Bank, Documents)"
                           >
                             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Audit Profile</span>
+                            <span>Verify Profile</span>
                           </button>
                           <button
                             type="button"
@@ -2886,7 +2886,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                               setSendCompanyPasswordEmail(true);
                             }}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-900 shadow-2xs cursor-pointer"
-                            title="Directly Change / Reset Company Login Password"
+                            title="Change or reset company login password"
                           >
                             <KeyRound className="w-3.5 h-3.5 text-amber-600" />
                             <span>Password</span>
@@ -2895,18 +2895,18 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                             type="button"
                             onClick={() => setGovernanceCompany(comp)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-800 shadow-2xs cursor-pointer"
-                            title="View & Edit Company Profile, Reset Password, Check Documents & DPDP Legal Status"
+                            title="View and edit company details"
                           >
                             <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-                            <span>Manage</span>
+                            <span>Details</span>
                           </button>
                           <button
                             onClick={() => setEditingFeaturesCompany(comp)}
                             className="btn btn-superadmin text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold shadow-2xs"
-                            title="Configure 10 Verification Modules"
+                            title="Configure Verification Modules"
                           >
                             <Sliders className="w-3.5 h-3.5" />
-                            <span>10 Flags</span>
+                            <span>Features</span>
                           </button>
                           <button
                             onClick={() => {
@@ -2914,16 +2914,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                               setCustomTariffValues(comp.custom_tariffs || {});
                             }}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-slate-50 hover:bg-indigo-50 border-slate-200 text-slate-700"
-                            title="Custom Price Tariffs per Check"
+                            title="Set custom pricing per check"
                           >
-                            <span>Tariffs 💰</span>
+                            <span>Pricing 💰</span>
                           </button>
                           <button
                             onClick={() => setTopupModalCompany(comp)}
                             className="btn btn-secondary text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-800"
-                            title="Top Up Verification Credits"
+                            title="Top Up Verification Balance"
                           >
-                            <span>+ Credits ⚡</span>
+                            <span>+ Wallet ⚡</span>
                           </button>
                         </div>
                       </td>
