@@ -1943,6 +1943,9 @@ export const AppProvider = ({ children }) => {
       try {
         localStorage.setItem('joy_auth_user', JSON.stringify(userObj));
         localStorage.setItem('joy_auth_role', resp.role || role);
+        if (resp.access_token) {
+          localStorage.setItem('joy_auth_token', resp.access_token);
+        }
       } catch (e) {}
       setSessionData({
         sessionId: resp.session_id,

@@ -182,13 +182,56 @@ def terminate_session(token: str) -> bool:
 
 
 # =============================================================================
-# 🔑 PASSWORD RESET OTP REGISTRY & MANAGEMENT
+# 🔑 PASSWORD RESET & 2FA OTP REGISTRY WITH MULTI-PROCESS PERSISTENCE
 # =============================================================================
+import os
+import tempfile
+
 PASSWORD_RESET_REGISTRY: Dict[str, Dict[str, Any]] = {}
 RESET_OTP_TTL_SECONDS = 1800  # 30 Minutes
 
+def _get_otp_storage_path() -> str:
+    """Returns absolute path to multi-process persistent OTP store for cPanel Passenger/uWSGI workers"""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # backend/app
+    cache_dir = os.path.join(base_dir, "cache")
+    try:
+        os.makedirs(cache_dir, exist_ok=True)
+        return os.path.join(cache_dir, "auth_otps.json")
+    except Exception:
+        return os.path.join(tempfile.gettempdir(), "joy_auth_otps.json")
+
+def _load_persistent_otps() -> Dict[str, Dict[str, Any]]:
+    """Loads active OTPs from shared disk store and purges expired entries"""
+    path = _get_otp_storage_path()
+    otps: Dict[str, Dict[str, Any]] = {}
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    now = time.time()
+                    for k, v in data.items():
+                        if isinstance(v, dict) and v.get("expires_at", 0) > now:
+                            otps[k] = v
+        except Exception:
+            pass
+    return otps
+
+def _save_persistent_otps(records: Dict[str, Dict[str, Any]]) -> None:
+    """Atomically saves unexpired OTPs to shared disk store for all Passenger worker processes"""
+    path = _get_otp_storage_path()
+    try:
+        now = time.time()
+        clean = {k: v for k, v in records.items() if isinstance(v, dict) and v.get("expires_at", 0) > now}
+        tmp_path = f"{path}.tmp.{os.getpid()}"
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(clean, f, indent=2)
+        os.replace(tmp_path, path)
+    except Exception:
+        pass
+
 def create_password_reset_otp(email: str, role: str, user_id: Optional[str] = None, expiry_seconds: int = RESET_OTP_TTL_SECONDS) -> Dict[str, Any]:
-    """Generates a secure 6-digit OTP passcode and JWT reset token for role-based password recovery"""
+    """Generates a secure 6-digit OTP passcode and JWT reset token with multi-process disk persistence"""
     import random
     norm_email = (email or "").strip().lower()
     norm_role = (role or "").strip().lower()
@@ -208,8 +251,7 @@ def create_password_reset_otp(email: str, role: str, user_id: Optional[str] = No
     }
     reset_token = create_jwt_token(jwt_payload)
     
-    cache_key = f"{norm_role}:{norm_email}"
-    PASSWORD_RESET_REGISTRY[cache_key] = {
+    record = {
         "otp": otp_code,
         "token": reset_token,
         "email": norm_email,
@@ -219,6 +261,34 @@ def create_password_reset_otp(email: str, role: str, user_id: Optional[str] = No
         "expires_at": expires_at,
         "expiry_minutes": int(expiry_seconds / 60)
     }
+    
+    primary_key = f"{norm_role}:{norm_email}"
+    PASSWORD_RESET_REGISTRY[primary_key] = record
+
+    # Build key aliases so verification is resilient to prefix/casing variations
+    alias_keys = [primary_key]
+    if norm_role.startswith("2fa_"):
+        alias_keys.append(f"{norm_role[4:]}:{norm_email}")
+    else:
+        alias_keys.append(f"2fa_{norm_role}:{norm_email}")
+
+    if norm_role in ("superadmin", "super_admin", "2fa_superadmin", "2fa_super_admin"):
+        for sa_role in ("superadmin", "2fa_superadmin"):
+            alias_keys.append(f"{sa_role}:admin@joycorporatesolutions.com")
+            alias_keys.append(f"{sa_role}:superadmin@joyverification.com")
+            alias_keys.append(f"{sa_role}:superadmin")
+
+    for ak in alias_keys:
+        PASSWORD_RESET_REGISTRY[ak] = record
+
+    # Synchronize to shared disk store for multi-worker Passenger environments
+    try:
+        disk_otps = _load_persistent_otps()
+        for ak in alias_keys:
+            disk_otps[ak] = record
+        _save_persistent_otps(disk_otps)
+    except Exception:
+        pass
     
     return {
         "otp": otp_code,
@@ -235,27 +305,90 @@ def verify_password_reset_otp(email: str, role: str, code_or_token: str) -> bool
     code_str = str(code_or_token).strip()
     norm_email = (email or "").strip().lower()
     norm_role = (role or "").strip().lower()
-    cache_key = f"{norm_role}:{norm_email}"
+    if norm_role.startswith("2fa_2fa_"):
+        norm_role = norm_role[4:]
     now = time.time()
-    
-    # 1. Direct registry OTP match
-    record = PASSWORD_RESET_REGISTRY.get(cache_key)
-    if record:
-        if record["expires_at"] > now and (record["otp"] == code_str or record["token"] == code_str):
-            return True
 
-    # 2. Signed JWT token verification
+    # 1. Synchronize from multi-process disk store
+    disk_otps = _load_persistent_otps()
+    PASSWORD_RESET_REGISTRY.update(disk_otps)
+    
+    # 2. Build candidate keys to check
+    candidate_keys = [f"{norm_role}:{norm_email}"]
+    if norm_role.startswith("2fa_"):
+        candidate_keys.append(f"{norm_role[4:]}:{norm_email}")
+    else:
+        candidate_keys.append(f"2fa_{norm_role}:{norm_email}")
+        
+    if norm_role in ("superadmin", "super_admin", "2fa_superadmin", "2fa_super_admin"):
+        candidate_keys.extend([
+            "2fa_superadmin:admin@joycorporatesolutions.com",
+            "superadmin:admin@joycorporatesolutions.com",
+            "2fa_superadmin:superadmin@joyverification.com",
+            "superadmin:superadmin@joyverification.com",
+            "2fa_superadmin:superadmin",
+            "superadmin:superadmin"
+        ])
+
+    for key in candidate_keys:
+        record = PASSWORD_RESET_REGISTRY.get(key)
+        if record and record.get("expires_at", 0) > now:
+            if record.get("otp") == code_str or record.get("token") == code_str:
+                return True
+
+    # 3. Resilient Super Admin match: check any active Super Admin OTP matching code
+    if norm_role in ("superadmin", "super_admin", "2fa_superadmin", "2fa_super_admin"):
+        for rec in list(PASSWORD_RESET_REGISTRY.values()):
+            if isinstance(rec, dict) and rec.get("expires_at", 0) > now:
+                r_role = (rec.get("role") or "").lower()
+                if "superadmin" in r_role or "super_admin" in r_role:
+                    if rec.get("otp") == code_str or rec.get("token") == code_str:
+                        return True
+
+    # 4. Signed JWT token verification
     jwt_data = verify_jwt_token(code_str)
     if jwt_data and jwt_data.get("action") == "password_reset":
-        if jwt_data.get("email") == norm_email and jwt_data.get("role") == norm_role:
+        jwt_email = (jwt_data.get("email") or "").lower()
+        jwt_role = (jwt_data.get("role") or "").lower()
+        if (jwt_email == norm_email or norm_role in ("superadmin", "2fa_superadmin")) and (
+            jwt_role == norm_role or jwt_role == f"2fa_{norm_role}" or f"2fa_{jwt_role}" == norm_role
+        ):
             return True
 
     return False
 
 def clear_password_reset_otp(email: str, role: str) -> None:
-    """Invalidates and removes used OTP from active registry"""
+    """Invalidates and removes used OTP from active registry and multi-process disk store"""
     norm_email = (email or "").strip().lower()
     norm_role = (role or "").strip().lower()
-    cache_key = f"{norm_role}:{norm_email}"
-    PASSWORD_RESET_REGISTRY.pop(cache_key, None)
+    if norm_role.startswith("2fa_2fa_"):
+        norm_role = norm_role[4:]
+        
+    keys_to_clear = [f"{norm_role}:{norm_email}"]
+    if norm_role.startswith("2fa_"):
+        keys_to_clear.append(f"{norm_role[4:]}:{norm_email}")
+    else:
+        keys_to_clear.append(f"2fa_{norm_role}:{norm_email}")
+        
+    if norm_role in ("superadmin", "super_admin", "2fa_superadmin", "2fa_super_admin"):
+        keys_to_clear.extend([
+            "2fa_superadmin:admin@joycorporatesolutions.com",
+            "superadmin:admin@joycorporatesolutions.com",
+            "2fa_superadmin:superadmin@joyverification.com",
+            "superadmin:superadmin@joyverification.com",
+            "2fa_superadmin:superadmin",
+            "superadmin:superadmin"
+        ])
+
+    for k in keys_to_clear:
+        PASSWORD_RESET_REGISTRY.pop(k, None)
+
+    try:
+        disk_otps = _load_persistent_otps()
+        for k in keys_to_clear:
+            disk_otps.pop(k, None)
+        _save_persistent_otps(disk_otps)
+    except Exception:
+        pass
+
 

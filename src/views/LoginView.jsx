@@ -479,17 +479,17 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
       setIs2FaMode(false);
 
       if (pending.role === 'superadmin') {
-        navigate('/superadmin');
+        window.location.href = '/superadmin';
       } else if (pending.role === 'company') {
         const comp = (companies || []).find(c => c.email?.toLowerCase() === (pending.email || '').toLowerCase()) || (companies || [])[0];
         const compSlug = (pending.compSlug || comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        navigate(`/company/${compSlug}`);
+        window.location.href = `/company/${compSlug}`;
       } else if (pending.role === 'hrexecutive') {
         const compName = authRes?.user?.companyName || authRes?.user?.company_name || 'joy-corporate-solutions';
         const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        navigate(`/hr/${hrSlug}`);
+        window.location.href = `/hr/${hrSlug}`;
       } else if (pending.role === 'employee_link') {
-        navigate(`/verify?token=${pending.token}`);
+        window.location.href = `/verify?token=${pending.token}`;
       }
     } catch (err) {
       setTwoFaError(err.message || 'Invalid or expired 2FA passcode.');
@@ -571,7 +571,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        navigate('/superadmin');
+        window.location.href = '/superadmin';
       } 
       else if (selectedRoleTab === 'company') {
         let email = emailInput.trim().toLowerCase();

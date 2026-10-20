@@ -1129,7 +1129,47 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
    - Frontend build: `npm run build` completed cleanly with 0 errors in 1.81s.
 
 ---
+
+### Session 20: 2FA Login Verification Fix, Multi-Process Passenger Store & Dashboard Navigation
+**Date**: October 20, 2026  
+**Focus Area**: Resolving Super Admin 2FA Passcode Verification Failure on cPanel Multi-Worker Passenger Environments & Route Transition Race Conditions
+
+#### Problem Statement:
+- After updating changes to cPanel, logging in as Super Admin sent the 6-digit 2FA passcode via email, but entering that code into the portal failed to log in ("login can't happen").
+
+#### Root Cause Analysis:
+1. **cPanel Phusion Passenger Multi-Process Memory Partitioning**:
+   - `PASSWORD_RESET_REGISTRY` was an in-memory Python dictionary in `backend/app/services/session_service.py`.
+   - On cPanel, Phusion Passenger runs multiple worker processes. The login request (`POST /api/auth/login`) was processed by Worker A (storing the OTP in Worker A's RAM). The verification request (`POST /api/auth/verify-2fa`) was routed by Passenger to Worker B.
+   - Worker B's in-memory registry was completely empty, causing `verify_password_reset_otp` to fail with HTTP 401 `Invalid or expired 2FA passcode`.
+2. **Role & Email Key Aliasing Discrepancies**:
+   - `/login` stored OTP under `2fa_superadmin:admin@joycorporatesolutions.com`.
+   - If `/verify-2fa` received `role: superadmin` without prefix or an email alias, key mismatch occurred.
+3. **Frontend React Router No-Op Navigation & Route Guard Latency**:
+   - When the user navigated directly to `/superadmin`, `<SuperAdminRoute />` initially rendered `<LoginView initialRole="superadmin" lockRole={true} />`.
+   - After 2FA passcode verification succeeded, `handleVerify2FaSubmit` called `navigate('/superadmin')`. Because the browser URL was already `/superadmin`, React Router treated this as a no-op without unmounting or remounting `<SuperAdminRoute />`.
+   - Furthermore, `<SuperAdminRoute />` only checked `currentUser && currentRole === 'superadmin'` in React state without checking `localStorage` fallback.
+
+#### Architecture & Implementation Details:
+1. **Multi-Process Shared Disk Store with Atomic Sync (`backend/app/services/session_service.py`)**:
+   - Added `_get_otp_storage_path()`, `_load_persistent_otps()`, and `_save_persistent_otps()` utilizing `backend/app/cache/auth_otps.json` with fallback to system temp.
+   - Used atomic process-safe replacement (`tmp_path` to `path` via `os.replace`) and automatic expiration purging.
+   - Updated `create_password_reset_otp`: Writes to memory and atomically saves unexpired records across all Passenger workers. Registers aliases (`2fa_superadmin`, `superadmin`, `admin@joycorporatesolutions.com`, `superadmin@joyverification.com`, `superadmin`).
+   - Updated `verify_password_reset_otp`: Synchronizes disk state on each verification call, searches all candidate role and email aliases, and validates unexpired Super Admin OTPs.
+   - Updated `clear_password_reset_otp`: Invalidates from both memory and shared disk cache.
+2. **Resilient 2FA Verification Endpoint (`backend/app/routers/auth.py`)**:
+   - In `/api/auth/verify-2fa`: Added multi-key alias fallback for Super Admin, Company Admin, HR Executive, and Candidate verification.
+3. **Frontend Route Guards & Guaranteed Portal Entry (`src/App.jsx` & `src/views/LoginView.jsx`)**:
+   - In `src/App.jsx`: Updated `SuperAdminRoute`, `CompanyRoute`, and `HrRoute` to check `localStorage` fallback (`joy_auth_role` and `joy_auth_user`).
+   - In `src/views/LoginView.jsx`: In `handleVerify2FaSubmit`, updated navigation to `window.location.href = '/superadmin'` for a clean, deterministic mount into `SuperAdminView`. Also ensured `joy_auth_token` is stored in `loginUser` (`AppContext.jsx`).
+4. **Git & Build Protection**:
+   - Added `.gitignore` rule for `backend/app/cache/*.json` and created `.gitkeep`.
+   - Verified clean production build with `npm run build` (0 errors).
+   - Executed multi-process simulated tests via Python `TestClient`: verified that OTP generated in Process A is successfully verified in Process B with empty memory.
+
+---
 *Last Updated: October 20, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

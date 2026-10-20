@@ -110,7 +110,10 @@ const GlobalPageReloadPreloader = () => {
 // Wrapper for Super Admin Route (/superadmin)
 const SuperAdminRoute = () => {
   const { currentRole, currentUser } = useApp();
-  if (currentUser && currentRole === 'superadmin') {
+  const storedRole = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_role') : null;
+  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_user') : null;
+
+  if ((currentUser && currentRole === 'superadmin') || (storedRole === 'superadmin' && storedUser)) {
     return (
       <PortalLayout>
         <SuperAdminView />
@@ -123,7 +126,10 @@ const SuperAdminRoute = () => {
 // Wrapper for Company Admin Route (/company)
 const CompanyRoute = () => {
   const { currentRole, currentUser } = useApp();
-  if (currentUser && currentRole === 'company') {
+  const storedRole = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_role') : null;
+  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_user') : null;
+
+  if ((currentUser && currentRole === 'company') || (storedRole === 'company' && storedUser)) {
     return (
       <PortalLayout>
         <CompanyAdminView />
@@ -136,7 +142,10 @@ const CompanyRoute = () => {
 // Wrapper for HR Executive Route (/hr)
 const HrRoute = () => {
   const { currentRole, currentUser } = useApp();
-  if (currentUser && currentRole === 'hrexecutive') {
+  const storedRole = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_role') : null;
+  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_user') : null;
+
+  if ((currentUser && currentRole === 'hrexecutive') || (storedRole === 'hrexecutive' && storedUser)) {
     return (
       <PortalLayout>
         <HrExecutiveView />

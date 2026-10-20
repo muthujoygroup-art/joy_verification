@@ -37,4 +37,9 @@ scratch/
 scratch_*
 *.db
 /assets/
+backend/app/cache/*.json
+backend/app/cache/*.tmp*
+!backend/app/cache/.gitkeep
+backend/uploads/
+
 
