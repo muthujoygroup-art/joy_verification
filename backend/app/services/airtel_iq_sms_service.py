@@ -173,13 +173,31 @@ def get_sms_gateway_config(db: Optional[Session] = None) -> Dict[str, Any]:
     Prefers CommunicationGateway DB entry, falling back to environment settings.
     """
     db_config: Dict[str, Any] = {}
+    close_db = False
+    if db is None:
+        try:
+            from backend.app.database import SessionLocal
+            db = SessionLocal()
+            close_db = True
+        except Exception:
+            db = None
+
     if db:
-        gw = db.query(CommunicationGateway).filter(
-            CommunicationGateway.gateway_type.in_(["sms", "airtel_iq"]),
-            CommunicationGateway.company_id == None
-        ).first()
-        if gw and gw.settings_data:
-            db_config = gw.settings_data
+        try:
+            gw = db.query(CommunicationGateway).filter(
+                CommunicationGateway.gateway_type.in_(["sms", "airtel_iq"]),
+                CommunicationGateway.company_id == None
+            ).first()
+            if gw and gw.settings_data:
+                db_config = gw.settings_data
+        except Exception as e:
+            logger.warning(f"Error querying CommunicationGateway config: {e}")
+        finally:
+            if close_db:
+                try:
+                    db.close()
+                except Exception:
+                    pass
 
     customer_id = db_config.get("customer_id") or settings.AIRTEL_IQ_CUSTOMER_ID
     username = db_config.get("username") or settings.AIRTEL_IQ_USERNAME
@@ -256,23 +274,28 @@ def normalize_india_phone(phone_str: str) -> str:
 
 def format_dlt_message(template_content: str, variables: Any) -> str:
     """
-    Substitutes {#alphanumeric#}, {#numeric#}, {#url#}, or named parameters in DLT template.
-    Accepts list, tuple, or dict of variable values.
+    Substitutes any DLT variable pattern (e.g. {#var#}, {#var1#}, {#alphanumeric#}, {#numeric#}, {#url#},
+    {#cbn#}, or {named_key}) with real candidate or OTP data.
+    Accepts scalar string/int, list, tuple, or dict of variable values.
     """
     if not template_content:
         return ""
 
     msg = template_content
-    # Find all DLT placeholders like {#alphanumeric#}, {#numeric#}, {#url#}
-    pattern = re.compile(r"\{#(alphanumeric|numeric|url|var|name|otp)#\}", re.IGNORECASE)
-    matches = list(pattern.finditer(msg))
+
+    # Normalize scalar variables to list
+    if isinstance(variables, (str, int, float)):
+        variables = [str(variables)]
+
+    # Matches ANY DLT token in the format {#something#} (e.g. {#var#}, {#numeric#}, {#url#}, {#var1#})
+    pattern = re.compile(r"\{#[^#]+#\}", re.IGNORECASE)
 
     if isinstance(variables, dict):
-        # Convert dictionary values in sorted order or named replacement
-        # First check if explicit keys match
+        # 1. Named direct replacement {key} and {#{key}#}
         for k, v in variables.items():
             msg = msg.replace(f"{{{k}}}", str(v))
-        # If DLT tokens remain, replace sequentially from dict values
+            msg = msg.replace(f"{{#{k}#}}", str(v))
+        # 2. Sequential replacement for remaining DLT tokens
         if pattern.search(msg):
             values = list(variables.values())
             for val in values:
@@ -339,27 +362,73 @@ def send_airtel_iq_sms(
         }
 
     # 2. Look up template if template_name_or_id provided
-    tpl_record: Optional[DltSmsTemplate] = None
-    if template_name_or_id and db:
-        tpl_record = db.query(DltSmsTemplate).filter(
-            (DltSmsTemplate.template_name == template_name_or_id) |
-            (DltSmsTemplate.id == template_name_or_id)
-        ).first()
+    tpl_record: Optional[Any] = None
+    if template_name_or_id:
+        close_temp_db = False
+        active_db = db
+        if active_db is None:
+            try:
+                from backend.app.database import SessionLocal
+                active_db = SessionLocal()
+                close_temp_db = True
+            except Exception:
+                active_db = None
 
-    final_dlt_id = dlt_template_id or (tpl_record.dlt_template_id if tpl_record else "")
-    final_header = source_address or (tpl_record.header if tpl_record else "") or cfg.get("source_address", "JYCORP")
-    final_msg_type = message_type or (tpl_record.message_type if tpl_record else "") or "SERVICE_IMPLICIT"
+        if active_db:
+            try:
+                tpl_record = active_db.query(DltSmsTemplate).filter(
+                    (DltSmsTemplate.template_name.ilike(template_name_or_id)) |
+                    (DltSmsTemplate.id == template_name_or_id)
+                ).first()
+
+                # Resilient fallback: search by keywords if template was renamed or modified
+                if not tpl_record:
+                    clean_search = template_name_or_id.replace('-', '_')
+                    keywords = [w for w in clean_search.split('_') if len(w) > 2 and w.upper() not in ('JTP', 'TPL', 'SMS')]
+                    for kw in keywords:
+                        tpl_record = active_db.query(DltSmsTemplate).filter(DltSmsTemplate.template_name.ilike(f"%{kw}%")).first()
+                        if tpl_record:
+                            break
+            except Exception as q_err:
+                logger.warning(f"Database error querying DltSmsTemplate: {q_err}")
+            finally:
+                if close_temp_db and active_db:
+                    try:
+                        active_db.close()
+                    except Exception:
+                        pass
+
+        # Fallback to pre-approved memory templates if DB record not found
+        if not tpl_record:
+            for def_tpl in DEFAULT_DLT_TEMPLATES:
+                if def_tpl["template_name"].lower() == template_name_or_id.lower() or def_tpl["id"] == template_name_or_id:
+                    tpl_record = type("TempTpl", (), def_tpl)()
+                    break
+            if not tpl_record:
+                clean_search = template_name_or_id.replace('-', '_')
+                keywords = [w for w in clean_search.split('_') if len(w) > 2 and w.upper() not in ('JTP', 'TPL', 'SMS')]
+                for def_tpl in DEFAULT_DLT_TEMPLATES:
+                    for kw in keywords:
+                        if kw.lower() in def_tpl["template_name"].lower():
+                            tpl_record = type("TempTpl", (), def_tpl)()
+                            break
+                    if tpl_record:
+                        break
+
+    final_dlt_id = dlt_template_id or (getattr(tpl_record, "dlt_template_id", "") if tpl_record else "")
+    final_header = source_address or (getattr(tpl_record, "header", "") if tpl_record else "") or cfg.get("source_address", "JYCORP")
+    final_msg_type = message_type or (getattr(tpl_record, "message_type", "") if tpl_record else "") or "SERVICE_IMPLICIT"
     final_entity_id = entity_id or cfg.get("entity_id", "")
     final_customer_id = cfg.get("customer_id", "")
 
     # Build the final message text
     final_message = message_text or ""
     if tpl_record and not final_message:
-        if variables:
+        if variables is not None:
             final_message = format_dlt_message(tpl_record.template_content, variables)
         else:
             final_message = tpl_record.template_content
-    elif variables and final_message:
+    elif variables is not None and final_message:
         final_message = format_dlt_message(final_message, variables)
 
     if not final_message:

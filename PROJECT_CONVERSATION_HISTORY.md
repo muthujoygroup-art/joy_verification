@@ -1173,7 +1173,49 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
    - Verified clean production build with `npm run build` in 1.48s.
 
 ---
+
+### Session 28: Comprehensive Backend SMS Pipeline Audit, Universal DLT Variable Parsing & Template Upsert Hardening
+**Date**: October 20, 2026  
+**Focus Area**: End-to-end audit and hardening of the Airtel IQ Prepaid SMS Gateway & TRAI DLT template registry across the entire backend architecture prior to user entering their custom modified DLT template IDs in the Super Admin console.
+
+#### User Intent & Problem Statement:
+- User requested:
+  *"Wait I didn't add templates ID's in the superadmin and I Modified your given templates... so I will add that tempaltes id and tempaltes in the superadmin... before doing the above process... check for all the things backend which are related to this sms process..."*
+- Objective: Audit all backend routers, database schemas, gateway models, variable replacement logic, and candidate/OTP dispatch triggers. Ensure modified templates (e.g. customized names, modified DLT variables, custom parameters, or renamed identifiers) work smoothly without failing or throwing errors.
+
+#### Audit Findings & Architectural Enhancements Applied:
+1. **Candidate Mobile Attribute Resolution (`backend/app/routers/hr.py` & `backend/app/models/candidate.py`)**:
+   - *Audit Finding*: Candidate model defines `mobile = Column(...)`, but legacy routes referenced `new_candidate.phone`. This caused onboarding SMS dispatch to silently evaluate to `None`.
+   - *Fix Applied*: Added virtual `@property def phone(self)` getter and setter to `Candidate` mapping directly to `self.mobile`. Updated `hr.py` (lines 760 and 1024) to `(getattr(candidate, "mobile", None) or getattr(candidate, "phone", None))` for candidate creation and invitation resend.
+2. **Universal DLT Variable Pattern Parsing (`backend/app/services/airtel_iq_sms_service.py`)**:
+   - *Audit Finding*: The regex in `format_dlt_message` previously only matched specific keywords (`{#alphanumeric#}`, `{#numeric#}`, `{#url#}`). If user modified templates with numbered variables (e.g. `{#var1#}`, `{#var2#}`), `{#cbn#}`, `{#otp#}`, or custom names, substitution would fail.
+   - *Fix Applied*: Upgraded to universal regex pattern `re.compile(r"\{#[^#]+#\}", re.IGNORECASE)` with support for dictionaries (named replacements), sequential lists/tuples, and scalar values.
+3. **Resilient Template Keyword / Fuzzy Lookup (`backend/app/services/airtel_iq_sms_service.py`)**:
+   - *Audit Finding*: If the user changed template names in the Airtel portal (e.g. `JTP_2FA_OTP` instead of `JTP_MANDATORY_2FA_LOGIN_OTP`), strict case-sensitive queries failed.
+   - *Fix Applied*: Implemented multi-step template matching: exact match &rarr; clean keyword matching &rarr; memory fallback to default templates.
+4. **Auto DB Session Management & Connection Pooling**:
+   - *Audit Finding*: Calls to `send_airtel_iq_sms` without passing an active DB session (like from background workers or `otp_service.py`) could not query registered DLT IDs.
+   - *Fix Applied*: Implemented scoped session acquisition using `SessionLocal()` with guaranteed `finally: db.close()`, releasing database connections immediately before initiating outbound HTTP calls.
+5. **Database Table DDL Migration (`backend/app/database.py`)**:
+   - Added explicit `CREATE TABLE IF NOT EXISTS dlt_sms_templates (...)` to runtime migrations ensuring clean schema initialization on both PostgreSQL and SQLite.
+6. **Template Upsert & Renaming API (`backend/app/routers/settings.py`)**:
+   - Updated `POST /api/settings/sms-templates` to upsert existing records if the template name already exists rather than throwing HTTP 400.
+   - Updated `PUT /api/settings/sms-templates/{template_id}` to support renaming `template_name`.
+7. **Frontend Super Admin Console (`src/components/AirtelIqSmsGatewayConsole.jsx`)**:
+   - Enabled editing `template_name` directly in the Configure modal.
+   - Dynamically generated variable fields for live test dispatches.
+
+#### Verification & Quality Gates:
+- **Comprehensive SMS Pipeline Test Suite**:
+  - Phone normalization (`9876543210` &rarr; `919876543210`): **PASSED**.
+  - Universal token substitution (`{#var1#}`, `{#numeric#}`, `{name}`): **PASSED**.
+  - Candidate model `phone` alias: **PASSED**.
+  - Offline simulation fallback: **PASSED**.
+- **Production Build (`npm run build`)**: Vite built production bundle in **1.95s** with 0 errors.
+
+---
 *Last Updated: October 20, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

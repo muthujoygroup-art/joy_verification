@@ -200,6 +200,7 @@ export const AirtelIqSmsGatewayConsole = () => {
     if (!editingTemplate) return;
     try {
       await api.updateSmsTemplate(editingTemplate.id, {
+        template_name: editingTemplate.template_name,
         dlt_template_id: editingTemplate.dlt_template_id,
         header: editingTemplate.header,
         message_type: editingTemplate.message_type,
@@ -232,15 +233,39 @@ export const AirtelIqSmsGatewayConsole = () => {
 
   // Open Test Modal prefilled with template
   const handleOpenTestModal = (tpl) => {
+    const varsObj = {};
+    if (Array.isArray(tpl.variables) && tpl.variables.length > 0) {
+      tpl.variables.forEach(v => {
+        const vKey = String(v).trim();
+        const vLower = vKey.toLowerCase();
+        if (vLower.includes('otp') || vLower.includes('passcode') || vLower.includes('code')) {
+          varsObj[vKey] = '492015';
+        } else if (vLower.includes('url') || vLower.includes('link')) {
+          varsObj[vKey] = tpl.cta_url || 'https://trueprofile.joycorporatesolutions.com/verify?token=demo123';
+        } else if (vLower.includes('comp')) {
+          varsObj[vKey] = 'Joy Group';
+        } else if (vLower.includes('id')) {
+          varsObj[vKey] = 'JOY-2026-99';
+        } else {
+          varsObj[vKey] = 'Muthu';
+        }
+      });
+    } else if (tpl.category === 'Onboarding Link') {
+      varsObj.candidate_name = 'Muthu';
+      varsObj.company_name = 'Joy Group';
+      varsObj.verify_url = tpl.cta_url || 'https://trueprofile.joycorporatesolutions.com/verify?token=demo123';
+    } else {
+      varsObj.name = 'Muthu';
+      varsObj.otp = '492015';
+    }
+
     setTestPayload({
       phone: '9876543210',
       template_name: tpl.template_name,
       dlt_template_id: tpl.dlt_template_id || '',
       header: tpl.header || 'JYCORP',
       message_type: tpl.message_type || 'SERVICE_IMPLICIT',
-      variables: tpl.category === 'Onboarding Link'
-        ? { candidate_name: 'Muthu', company_name: 'Joy Group', verify_url: 'https://trueprofile.joycorporatesolutions.com/verify?token=demo123' }
-        : { name: 'Muthu', otp: '492015' },
+      variables: varsObj,
       custom_message: tpl.template_content
     });
     setTestResult(null);
@@ -263,7 +288,8 @@ export const AirtelIqSmsGatewayConsole = () => {
         dlt_template_id: testPayload.dlt_template_id,
         header: testPayload.header,
         message_type: testPayload.message_type,
-        variables: Object.values(testPayload.variables)
+        message: testPayload.custom_message,
+        variables: testPayload.variables
       });
       setTestResult(res);
       if (res.success) {
@@ -908,9 +934,9 @@ export const AirtelIqSmsGatewayConsole = () => {
                 <label className="block text-slate-700 font-bold text-xs mb-1">Template Name</label>
                 <input
                   type="text"
-                  readOnly
                   value={editingTemplate.template_name}
-                  className="form-input text-xs font-mono bg-slate-50 text-slate-700"
+                  onChange={(e) => setEditingTemplate({ ...editingTemplate, template_name: e.target.value.toUpperCase().replace(/\s+/g, '_') })}
+                  className="form-input text-xs font-mono font-bold text-slate-800"
                 />
               </div>
 

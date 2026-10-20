@@ -123,6 +123,14 @@ class Candidate(Base):
     documents = relationship("CandidateDocument", back_populates="candidate", cascade="all, delete-orphan")
     verification_records = relationship("VerificationRecord", back_populates="candidate", cascade="all, delete-orphan")
 
+    @property
+    def phone(self):
+        return self.mobile
+
+    @phone.setter
+    def phone(self, val):
+        self.mobile = val
+
 
 class CandidateDocument(Base):
     __tablename__ = "candidate_documents"

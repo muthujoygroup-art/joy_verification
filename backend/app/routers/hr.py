@@ -756,12 +756,13 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
                 async_mode=True
             )
 
-            # Also dispatch Airtel IQ DLT SMS if phone exists
-            if new_candidate.phone:
+            # Also dispatch Airtel IQ DLT SMS if mobile phone exists
+            cand_phone = (getattr(new_candidate, "mobile", None) or getattr(new_candidate, "phone", None))
+            if cand_phone:
                 try:
                     verify_link = f"https://trueprofile.joycorporatesolutions.com/verify?token={new_candidate.token}"
                     send_candidate_onboarding_sms(
-                        phone=new_candidate.phone,
+                        phone=cand_phone,
                         candidate_name=new_candidate.name,
                         company_name=comp_name,
                         verify_url=verify_link,
@@ -1020,7 +1021,7 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
 
     # 5. Dispatch onboarding SMS via Airtel IQ if requested or phone available
     sms_res = None
-    target_phone = getattr(candidate, "phone", None) if candidate else None
+    target_phone = (getattr(candidate, "mobile", None) or getattr(candidate, "phone", None)) if candidate else None
     if target_phone and (channel in ("sms", "all", "both") or not email_sent):
         try:
             sms_res = send_candidate_onboarding_sms(

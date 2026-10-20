@@ -818,7 +818,43 @@ def create_sms_template(payload: Dict[str, Any], db: Session = Depends(get_db)):
 
     existing = db.query(DltSmsTemplate).filter(DltSmsTemplate.template_name == tpl_name).first()
     if existing:
-        raise HTTPException(status_code=400, detail=f"A template named '{tpl_name}' already exists.")
+        # Seamlessly update existing template with modified content and DLT ID
+        if "dlt_template_id" in payload:
+            existing.dlt_template_id = (payload.get("dlt_template_id") or "").strip()
+        if "header" in payload:
+            existing.header = (payload.get("header") or "JYCORP").strip().upper()
+        if tpl_content:
+            existing.template_content = tpl_content
+        if "message_type" in payload:
+            existing.message_type = payload["message_type"]
+        if "category" in payload:
+            existing.category = payload["category"]
+        if "variables" in payload:
+            existing.variables = payload["variables"]
+        if "cta_url" in payload:
+            existing.cta_url = payload["cta_url"]
+        if "cta_id" in payload:
+            existing.cta_id = payload["cta_id"]
+        existing.updated_at = datetime.utcnow()
+        db.commit()
+        db.refresh(existing)
+        return {
+            "success": True,
+            "message": f"DLT template '{tpl_name}' updated successfully.",
+            "template": {
+                "id": existing.id,
+                "template_name": existing.template_name,
+                "dlt_template_id": existing.dlt_template_id,
+                "header": existing.header,
+                "message_type": existing.message_type,
+                "category": existing.category,
+                "template_content": existing.template_content,
+                "variables": existing.variables,
+                "cta_url": existing.cta_url,
+                "cta_id": existing.cta_id,
+                "is_active": existing.is_active
+            }
+        }
 
     import uuid
     tpl_id = f"tpl-{uuid.uuid4().hex[:8]}"
@@ -860,13 +896,15 @@ def create_sms_template(payload: Dict[str, Any], db: Session = Depends(get_db)):
 
 @router.put("/sms-templates/{template_id}")
 def update_sms_template(template_id: str, payload: Dict[str, Any], db: Session = Depends(get_db)):
-    """Update DLT registration ID, content, header, or status of a template"""
+    """Update DLT registration ID, content, header, name, or status of a template"""
     tpl = db.query(DltSmsTemplate).filter(
         (DltSmsTemplate.id == template_id) | (DltSmsTemplate.template_name == template_id)
     ).first()
     if not tpl:
         raise HTTPException(status_code=404, detail="DLT Template not found.")
 
+    if "template_name" in payload and payload.get("template_name"):
+        tpl.template_name = payload["template_name"].strip().upper()
     if "dlt_template_id" in payload:
         tpl.dlt_template_id = (payload.get("dlt_template_id") or "").strip()
     if "header" in payload:
