@@ -10,6 +10,7 @@ from backend.app.services.storage_service import get_candidate_folder
 from backend.app.database import get_db
 from backend.app.models import Candidate, Company, HrUser, CandidateDocument
 from backend.app.services.email_service import send_candidate_onboarding_email
+from backend.app.services.airtel_iq_sms_service import send_candidate_onboarding_sms
 from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpdate
 
 logger = logging.getLogger("hr_router")
@@ -754,8 +755,22 @@ def create_candidate(payload: CandidateCreate, db: Session = Depends(get_db)):
                 db=db,
                 async_mode=True
             )
+
+            # Also dispatch Airtel IQ DLT SMS if phone exists
+            if new_candidate.phone:
+                try:
+                    verify_link = f"https://trueprofile.joycorporatesolutions.com/verify?token={new_candidate.token}"
+                    send_candidate_onboarding_sms(
+                        phone=new_candidate.phone,
+                        candidate_name=new_candidate.name,
+                        company_name=comp_name,
+                        verify_url=verify_link,
+                        db=db
+                    )
+                except Exception as sms_e:
+                    logger.warning(f"Failed to dispatch candidate onboarding SMS: {sms_e}")
     except Exception as e:
-        print(f"Warning: Failed to dispatch candidate onboarding email: {e}")
+        print(f"Warning: Failed to dispatch candidate onboarding communications: {e}")
 
     return serialize_candidate(new_candidate)
 
@@ -1003,6 +1018,23 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
     email_sent = bool(email_res and (email_res.get("success") or email_res.get("dispatched_async")))
     email_error = email_res.get("error") if (email_res and not email_sent) else None
 
+    # 5. Dispatch onboarding SMS via Airtel IQ if requested or phone available
+    sms_res = None
+    target_phone = getattr(candidate, "phone", None) if candidate else None
+    if target_phone and (channel in ("sms", "all", "both") or not email_sent):
+        try:
+            sms_res = send_candidate_onboarding_sms(
+                phone=target_phone,
+                candidate_name=cand_name,
+                company_name=comp_name,
+                verify_url=verify_url,
+                db=db
+            )
+        except Exception as sms_err:
+            sms_res = {"success": False, "error": str(sms_err)}
+
+    sms_sent = bool(sms_res and sms_res.get("success"))
+
     return {
         "success": True,
         "channel": channel,
@@ -1012,7 +1044,9 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
         "security_pin": cand_pin,
         "email_sent": email_sent,
         "email_error": email_error,
-        "message": f"Onboarding invitation email dispatched to {target_email} (PIN: {cand_pin})." if email_sent else f"Verification link generated for {target_email}. Note: {email_error or 'Email queued'}",
+        "sms_sent": sms_sent,
+        "sms_result": sms_res,
+        "message": f"Onboarding link sent to {target_email}" + (f" and SMS to {target_phone}" if sms_sent else "") + f" (PIN: {cand_pin}).",
         "email_result": email_res
     }
 

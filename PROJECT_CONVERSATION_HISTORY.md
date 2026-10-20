@@ -1067,7 +1067,69 @@ To deploy new commits to the live environment `https://trueprofile.joycorporates
 4. `.cpanel.yml` will automatically copy `dist/*` and `.htaccess` to `/home/joyglo52/public_html/trueprofile.joycorporatesolutions.com/` and touch `tmp/restart.txt` to reload Passenger WSGI.
 
 ---
-*Last Updated: October 17, 2026 | Antigravity IDE Autonomous Agent Log*
+
+## 📅 Session 16: Official Airtel IQ Prepaid SMS Gateway & TRAI DLT Template Registry (October 20, 2026)
+
+### Objective
+Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, implement a dynamic **TRAI DLT Content Template Registry** in the **Super Admin Portal**, and wire live/simulated dispatches for candidate onboarding links, mandatory 2FA login OTPs, password resets, unique IDs, and mobile verifications.
+
+### Implementation Architecture
+1. **Official Airtel IQ API Specification**:
+   - Endpoint: `https://iqsms.airtel.in/api/v1/send-prepaid-sms`
+   - Authentication: HTTP Basic Auth (`Authorization: Basic <base64(username:password)>`)
+   - Payload:
+     ```json
+     {
+       "customerId": "string",
+       "destinationAddress": ["919876543210"],
+       "dltTemplateId": "string",
+       "entityId": "string",
+       "message": "string",
+       "messageType": "SERVICE_IMPLICIT" | "TRANSACTIONAL",
+       "sourceAddress": "JYCORP"
+     }
+     ```
+   - Destination address normalization to India country code `91` (`91XXXXXXXXXX`).
+
+2. **Database Schema & Models**:
+   - Added `DltSmsTemplate` table in `backend/app/models/system.py` with columns: `id`, `template_name`, `dlt_template_id`, `header` (`JYCORP`), `message_type`, `category`, `template_content`, `variables`, `cta_url`, `cta_id`, `is_active`, `created_at`, `updated_at`.
+   - Exported in `backend/app/models/__init__.py`.
+   - Pre-seeded 9 official TRAI-compliant templates (5 Approved OTP/Auth templates + 4 Onboarding Link templates with registered CTAs).
+
+3. **Backend Service (`backend/app/services/airtel_iq_sms_service.py`)**:
+   - `get_sms_gateway_config()` & `save_sms_gateway_config()`: reads/persists credentials in PostgreSQL `CommunicationGateway` table with environment variable fallback.
+   - `send_airtel_iq_sms()`: handles payload formatting, variable substitution (`{#alphanumeric#}`, `{#numeric#}`, `{#url#}`), Basic Auth encoding, live HTTP dispatch, and robust simulation fallback when credentials are test/unconfigured.
+   - Helper trigger methods: `send_2fa_login_otp_sms()`, `send_mobile_verification_otp_sms()`, `send_password_reset_sms()`, `send_esign_consent_otp_sms()`, `send_unique_id_sms()`, `send_candidate_onboarding_sms()`.
+   - Updated `backend/app/services/otp_service.py` to route carrier SMS OTP dispatches through Airtel IQ.
+   - Updated `backend/app/routers/hr.py` to automatically dispatch transactional onboarding SMS to candidate mobile phone upon candidate creation and link resend.
+
+4. **REST API Endpoints (`backend/app/routers/settings.py`)**:
+   - `GET /api/settings/sms-gateway`: Fetch current Airtel IQ credentials (masked password) and active status.
+   - `PUT /api/settings/sms-gateway`: Save updated Airtel IQ credentials to database.
+   - `GET /api/settings/sms-templates`: List all registered DLT templates (auto-seeds defaults if empty).
+   - `POST /api/settings/sms-templates`: Add new DLT template dynamically.
+   - `PUT /api/settings/sms-templates/{template_id}`: Update DLT ID (e.g. paste 19-digit number from Airtel), header, or content.
+   - `DELETE /api/settings/sms-templates/{template_id}`: Remove template.
+   - `POST /api/settings/sms-test-dispatch`: Send live or simulated test SMS and return raw gateway response.
+
+5. **Frontend Enterprise Console (`AirtelIqSmsGatewayConsole.jsx` & `SuperAdminView.jsx`)**:
+   - Created `src/components/AirtelIqSmsGatewayConsole.jsx`:
+     - Top Hero Banner with connection status badge.
+     - Airtel IQ Gateway Authentication credentials card (Customer ID, Username, Password with show/hide, Entity ID, Header `JYCORP`, Base URL).
+     - Registered TRAI DLT Call-to-Action (CTA) URLs reference cards with one-click copy.
+     - DLT Content Template Registry table with search, filter tabs (All, OTPs & Security, Onboarding Links, Unique ID), variable pill highlights, active/paused badges.
+     - Quick "Set Airtel DLT ID" button for templates pending their 19-digit number.
+     - Live Test SMS Dispatch modal with dynamic variable inputs and raw JSON response viewer.
+     - Add New DLT Template modal allowing Super Admin to add future templates on the fly without touching code.
+   - Integrated into `src/views/SuperAdminView.jsx` Messaging Tab and updated `CommunicationGatewaysModal.jsx`.
+   - Added corresponding client API methods in `src/services/api.js`.
+
+6. **Validation & Quality Gate**:
+   - Backend unit tests via FastAPI `TestClient`: all 6 routes (`GET`, `PUT`, `POST`, `DELETE`, `test-dispatch`) returned HTTP 200 OK.
+   - Frontend build: `npm run build` completed cleanly with 0 errors in 1.81s.
+
+---
+*Last Updated: October 20, 2026 | Antigravity IDE Autonomous Agent Log*
 
 
 

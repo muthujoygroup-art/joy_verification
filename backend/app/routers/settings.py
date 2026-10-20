@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 from backend.app.database import get_db
-from backend.app.models import SystemSetting, PlatformGuideline, CommunicationGateway
+from backend.app.models import SystemSetting, PlatformGuideline, CommunicationGateway, DltSmsTemplate
 from backend.app.schemas import RoleSettingsUpdate, PlatformGuidelineUpdate
 from backend.app.services.email_service import send_smtp_email, get_smtp_config
 
@@ -737,3 +737,214 @@ async def simulate_whatsapp_bot(payload: dict, db: Session = Depends(get_db)):
         "bot_reply": reply,
         "live_dispatch": dispatch_res
     }
+
+
+# =====================================================================
+# 📱 AIRTEL IQ PREPAID SMS GATEWAY & TRAI DLT TEMPLATE REGISTRY
+# =====================================================================
+
+@router.get("/sms-gateway")
+def get_sms_gateway_settings(db: Session = Depends(get_db)):
+    """Fetch active Airtel IQ SMS Gateway credentials, status, and sender header"""
+    from backend.app.services.airtel_iq_sms_service import get_sms_gateway_config
+    cfg = get_sms_gateway_config(db)
+    masked_pw = "********" if cfg.get("password") else ""
+    return {
+        "provider": "airtel_iq",
+        "customer_id": cfg.get("customer_id", ""),
+        "username": cfg.get("username", ""),
+        "password": masked_pw,
+        "has_password": bool(cfg.get("password")),
+        "entity_id": cfg.get("entity_id", ""),
+        "source_address": cfg.get("source_address", "JYCORP"),
+        "base_url": cfg.get("base_url", "https://iqsms.airtel.in/api/v1/send-prepaid-sms"),
+        "auth_header": cfg.get("auth_header", ""),
+        "is_active": cfg.get("is_active", True),
+        "is_configured": cfg.get("is_configured", False)
+    }
+
+
+@router.put("/sms-gateway")
+def update_sms_gateway_settings(payload: Dict[str, Any], db: Session = Depends(get_db)):
+    """Save updated Airtel IQ SMS Gateway credentials in CommunicationGateway database"""
+    from backend.app.services.airtel_iq_sms_service import save_sms_gateway_config, get_sms_gateway_config
+    save_sms_gateway_config(payload, db)
+    updated = get_sms_gateway_config(db)
+    return {
+        "success": True,
+        "message": "Airtel IQ SMS Gateway credentials updated successfully.",
+        "customer_id": updated.get("customer_id", ""),
+        "entity_id": updated.get("entity_id", ""),
+        "source_address": updated.get("source_address", "JYCORP"),
+        "is_configured": updated.get("is_configured", False)
+    }
+
+
+@router.get("/sms-templates")
+def list_sms_templates(db: Session = Depends(get_db)):
+    """Fetch all registered TRAI DLT SMS templates (auto-seeds defaults if empty)"""
+    from backend.app.services.airtel_iq_sms_service import seed_default_dlt_templates
+    templates = db.query(DltSmsTemplate).order_by(DltSmsTemplate.created_at.asc()).all()
+    if not templates:
+        seed_default_dlt_templates(db)
+        templates = db.query(DltSmsTemplate).order_by(DltSmsTemplate.created_at.asc()).all()
+    return [
+        {
+            "id": t.id,
+            "template_name": t.template_name,
+            "dlt_template_id": t.dlt_template_id or "",
+            "header": t.header or "JYCORP",
+            "message_type": t.message_type or "SERVICE_IMPLICIT",
+            "category": t.category or "General",
+            "template_content": t.template_content,
+            "variables": t.variables or [],
+            "cta_url": t.cta_url,
+            "cta_id": t.cta_id,
+            "is_active": t.is_active,
+            "created_at": t.created_at.isoformat() if t.created_at else None,
+            "updated_at": t.updated_at.isoformat() if t.updated_at else None
+        }
+        for t in templates
+    ]
+
+
+@router.post("/sms-templates")
+def create_sms_template(payload: Dict[str, Any], db: Session = Depends(get_db)):
+    """Add a new TRAI DLT SMS template to the registry"""
+    tpl_name = (payload.get("template_name") or "").strip().upper()
+    tpl_content = (payload.get("template_content") or "").strip()
+    if not tpl_name or not tpl_content:
+        raise HTTPException(status_code=400, detail="Template Name and Template Content are required.")
+
+    existing = db.query(DltSmsTemplate).filter(DltSmsTemplate.template_name == tpl_name).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"A template named '{tpl_name}' already exists.")
+
+    import uuid
+    tpl_id = f"tpl-{uuid.uuid4().hex[:8]}"
+
+    new_tpl = DltSmsTemplate(
+        id=tpl_id,
+        template_name=tpl_name,
+        dlt_template_id=(payload.get("dlt_template_id") or "").strip(),
+        header=(payload.get("header") or "JYCORP").strip().upper(),
+        message_type=payload.get("message_type") or "SERVICE_IMPLICIT",
+        category=payload.get("category") or "General",
+        template_content=tpl_content,
+        variables=payload.get("variables") or [],
+        cta_url=payload.get("cta_url"),
+        cta_id=payload.get("cta_id"),
+        is_active=payload.get("is_active", True)
+    )
+    db.add(new_tpl)
+    db.commit()
+    db.refresh(new_tpl)
+    return {
+        "success": True,
+        "message": f"DLT template '{tpl_name}' added successfully.",
+        "template": {
+            "id": new_tpl.id,
+            "template_name": new_tpl.template_name,
+            "dlt_template_id": new_tpl.dlt_template_id,
+            "header": new_tpl.header,
+            "message_type": new_tpl.message_type,
+            "category": new_tpl.category,
+            "template_content": new_tpl.template_content,
+            "variables": new_tpl.variables,
+            "cta_url": new_tpl.cta_url,
+            "cta_id": new_tpl.cta_id,
+            "is_active": new_tpl.is_active
+        }
+    }
+
+
+@router.put("/sms-templates/{template_id}")
+def update_sms_template(template_id: str, payload: Dict[str, Any], db: Session = Depends(get_db)):
+    """Update DLT registration ID, content, header, or status of a template"""
+    tpl = db.query(DltSmsTemplate).filter(
+        (DltSmsTemplate.id == template_id) | (DltSmsTemplate.template_name == template_id)
+    ).first()
+    if not tpl:
+        raise HTTPException(status_code=404, detail="DLT Template not found.")
+
+    if "dlt_template_id" in payload:
+        tpl.dlt_template_id = (payload.get("dlt_template_id") or "").strip()
+    if "header" in payload:
+        tpl.header = (payload.get("header") or "JYCORP").strip().upper()
+    if "template_content" in payload and payload.get("template_content"):
+        tpl.template_content = payload["template_content"].strip()
+    if "message_type" in payload:
+        tpl.message_type = payload["message_type"]
+    if "category" in payload:
+        tpl.category = payload["category"]
+    if "variables" in payload:
+        tpl.variables = payload["variables"]
+    if "cta_url" in payload:
+        tpl.cta_url = payload["cta_url"]
+    if "cta_id" in payload:
+        tpl.cta_id = payload["cta_id"]
+    if "is_active" in payload:
+        tpl.is_active = bool(payload["is_active"])
+    tpl.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(tpl)
+    return {
+        "success": True,
+        "message": f"Template '{tpl.template_name}' updated successfully.",
+        "template": {
+            "id": tpl.id,
+            "template_name": tpl.template_name,
+            "dlt_template_id": tpl.dlt_template_id,
+            "header": tpl.header,
+            "message_type": tpl.message_type,
+            "category": tpl.category,
+            "template_content": tpl.template_content,
+            "variables": tpl.variables,
+            "cta_url": tpl.cta_url,
+            "cta_id": tpl.cta_id,
+            "is_active": tpl.is_active
+        }
+    }
+
+
+@router.delete("/sms-templates/{template_id}")
+def delete_sms_template(template_id: str, db: Session = Depends(get_db)):
+    """Remove a template from the DLT SMS registry"""
+    tpl = db.query(DltSmsTemplate).filter(
+        (DltSmsTemplate.id == template_id) | (DltSmsTemplate.template_name == template_id)
+    ).first()
+    if not tpl:
+        raise HTTPException(status_code=404, detail="DLT Template not found.")
+
+    db.delete(tpl)
+    db.commit()
+    return {"success": True, "message": f"Template '{tpl.template_name}' deleted successfully."}
+
+
+@router.post("/sms-test-dispatch")
+def test_dispatch_sms(payload: Dict[str, Any], db: Session = Depends(get_db)):
+    """Executes a test SMS dispatch via Airtel IQ Prepaid SMS API and returns raw gateway response"""
+    from backend.app.services.airtel_iq_sms_service import send_airtel_iq_sms
+    phone = payload.get("phone") or payload.get("destination_address") or payload.get("destinationAddress")
+    if not phone:
+        raise HTTPException(status_code=400, detail="A valid recipient mobile number is required.")
+
+    tpl_name_or_id = payload.get("template_name") or payload.get("template_id")
+    message_text = payload.get("message")
+    variables = payload.get("variables")
+    dlt_id = payload.get("dlt_template_id")
+    header = payload.get("header") or payload.get("source_address") or "JYCORP"
+    msg_type = payload.get("message_type") or "SERVICE_IMPLICIT"
+
+    result = send_airtel_iq_sms(
+        destination_address=phone,
+        template_name_or_id=tpl_name_or_id,
+        message_text=message_text,
+        variables=variables,
+        dlt_template_id=dlt_id,
+        source_address=header,
+        message_type=msg_type,
+        db=db
+    )
+    return result

@@ -66,3 +66,22 @@ class MessageTemplateRequest(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     reviewed_at = Column(DateTime, nullable=True)
 
+
+class DltSmsTemplate(Base):
+    __tablename__ = "dlt_sms_templates"
+
+    id = Column(String(100), primary_key=True, index=True)
+    template_name = Column(String(100), unique=True, nullable=False, index=True)
+    dlt_template_id = Column(String(50), nullable=True) # e.g. 19 digit number from Airtel DLT
+    header = Column(String(20), default="JYCORP")
+    message_type = Column(String(50), default="SERVICE_IMPLICIT") # SERVICE_IMPLICIT | TRANSACTIONAL | PROMOTIONAL
+    category = Column(String(50), default="OTP") # OTP | Authentication | Unique ID | Onboarding Link | General
+    template_content = Column(Text, nullable=False)
+    variables = Column(JSON, default=list) # ["otp", "validity_mins"]
+    cta_url = Column(String(300), nullable=True) # e.g. https://trueprofile.joycorporatesolutions.com/verify?
+    cta_id = Column(String(100), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+

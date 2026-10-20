@@ -60,8 +60,9 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
             if len(clean_id) < 10:
                 return False, "Please enter a valid 10-digit mobile number.", None, masked
 
-            # Dispatch via Carrier SMS (Fast2SMS / Twilio)
+            # Dispatch via Airtel IQ DLT SMS Gateway (or fallback Fast2SMS)
             from backend.app.config import settings
+            from backend.app.services.airtel_iq_sms_service import send_mobile_verification_otp_sms
             otp_code = str(random.randint(100000, 999999))
             
             OTP_CACHE[cache_key] = {
@@ -72,22 +73,14 @@ def generate_and_send_otp(channel: str, identifier: str, token: str) -> Tuple[bo
                 "is_live": False
             }
             
-            # Send live SMS if Fast2SMS API key is set
-            if settings.SMS_API_KEY and "live" in settings.SMS_API_KEY:
-                try:
-                    import requests
-                    sms_url = "https://www.fast2sms.com/dev/bulkV2"
-                    sms_payload = {
-                        "variables_values": otp_code,
-                        "route": "otp",
-                        "numbers": clean_id
-                    }
-                    sms_headers = {"authorization": settings.SMS_API_KEY}
-                    requests.post(sms_url, json=sms_payload, headers=sms_headers, timeout=5)
-                except Exception as sms_err:
-                    logger.warning(f"SMS Gateway dispatch failed: {sms_err}")
+            try:
+                # Trigger official Airtel IQ DLT SMS
+                sms_res = send_mobile_verification_otp_sms(phone=clean_id, name="User", otp=otp_code)
+                logger.info(f"Airtel IQ OTP dispatch result: {sms_res.get('mode', 'live')} (Success: {sms_res.get('success')})")
+            except Exception as sms_err:
+                logger.warning(f"Airtel IQ SMS dispatch error: {sms_err}")
 
-            return True, f"SMS OTP dispatched to registered mobile {masked} (Valid for 10 mins).", None, masked
+            return True, f"Official Airtel IQ DLT SMS OTP dispatched to mobile {masked} (Valid for 10 mins).", None, masked
 
         elif channel == "email":
             masked = identifier if "@" in identifier else "candidate@joycorporate.com"

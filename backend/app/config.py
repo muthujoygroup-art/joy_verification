@@ -109,11 +109,20 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: str = os.getenv("EMAILS_FROM_NAME", "JOY Corporate Solutions BGV")
     
     # -------------------------------------------------------------
-    # 📱 CARRIER SMS GATEWAY (Fast2SMS / Twilio)
+    # 📱 CARRIER SMS GATEWAY & AIRTEL IQ CPaaS (TRAI DLT)
     # -------------------------------------------------------------
-    SMS_GATEWAY_PROVIDER: str = os.getenv("SMS_GATEWAY_PROVIDER", "fast2sms") # 'fast2sms' | 'twilio'
+    SMS_GATEWAY_PROVIDER: str = os.getenv("SMS_GATEWAY_PROVIDER", "airtel_iq") # 'airtel_iq' | 'fast2sms' | 'twilio'
     SMS_API_KEY: str = os.getenv("SMS_API_KEY", "")
-    SMS_SENDER_ID: str = os.getenv("SMS_SENDER_ID", "JOYVER")
+    SMS_SENDER_ID: str = os.getenv("SMS_SENDER_ID", "JYCORP")
+    
+    # 📶 AIRTEL IQ SMS API CREDENTIALS
+    AIRTEL_IQ_BASE_URL: str = os.getenv("AIRTEL_IQ_BASE_URL", "https://iqsms.airtel.in/api/v1/send-prepaid-sms")
+    AIRTEL_IQ_CUSTOMER_ID: str = os.getenv("AIRTEL_IQ_CUSTOMER_ID", "")
+    AIRTEL_IQ_USERNAME: str = os.getenv("AIRTEL_IQ_USERNAME", "")
+    AIRTEL_IQ_PASSWORD: str = os.getenv("AIRTEL_IQ_PASSWORD", "")
+    AIRTEL_IQ_ENTITY_ID: str = os.getenv("AIRTEL_IQ_ENTITY_ID", "")
+    AIRTEL_IQ_SOURCE_ADDRESS: str = os.getenv("AIRTEL_IQ_SOURCE_ADDRESS", "JYCORP")
+    AIRTEL_IQ_AUTH_HEADER: str = os.getenv("AIRTEL_IQ_AUTH_HEADER", "")
     
     # -------------------------------------------------------------
     # 💳 RAZORPAY B2B WALLET & RECHARGE GATEWAY

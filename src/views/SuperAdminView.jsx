@@ -25,6 +25,7 @@ import { ApiConsumptionMarginConsole } from '../components/ApiConsumptionMarginC
 import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
+import { AirtelIqSmsGatewayConsole } from '../components/AirtelIqSmsGatewayConsole';
 import UniversalDocumentSandbox from '../components/UniversalDocumentSandbox';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import { analyzeIncidentForensics } from '../utils/diagnosticPlaybooks';
@@ -7809,132 +7810,46 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
             </div>
 
-            {/* 2. TELECOM CARRIER SMS GATEWAY & DLT */}
+            {/* 2. AIRTEL IQ PREPAID SMS GATEWAY (INDIA TRAI DLT) */}
             <div className="glass-panel p-6 border-slate-200 bg-white rounded-3xl shadow-sm space-y-5">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-black">
-                    <Smartphone className="w-5 h-5" />
+                  <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-black">
+                    <Radio className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-black text-slate-900 text-sm sm:text-base">Carrier SMS Gateway (DLT India)</h4>
-                      <span className="badge badge-teal text-[9px] font-black">TRAI COMPLIANT</span>
+                      <h4 className="font-black text-slate-900 text-sm sm:text-base">Airtel IQ Carrier SMS (DLT India)</h4>
+                      <span className="badge badge-sky text-[9px] font-black">TRAI COMPLIANT</span>
                     </div>
                     <span className="text-[11px] text-slate-500 font-medium">Telecom direct SMS routing with entity registration</span>
                   </div>
                 </div>
 
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={smsConfigState.enabled}
-                    onChange={(e) => setSmsConfigState({ ...smsConfigState, enabled: e.target.checked })}
-                    className="sr-only"
-                  />
-                  <div className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 ${smsConfigState.enabled ? 'bg-teal-600 justify-end' : 'bg-slate-300 justify-start'}`}>
-                    <div className="w-4 h-4 rounded-full bg-white shadow-md" />
-                  </div>
-                  <span className="text-xs font-bold text-slate-700">{smsConfigState.enabled ? 'Active' : 'Paused'}</span>
-                </label>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-emerald text-[10px] font-bold">
+                    Header: JYCORP 🟢
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-4 text-xs">
-                {/* Provider Selector */}
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">
-                    SMS Gateway Provider *
-                  </label>
-                  <select
-                    value={smsConfigState.provider}
-                    onChange={(e) => setSmsConfigState({ ...smsConfigState, provider: e.target.value })}
-                    className="form-select font-bold text-xs"
-                  >
-                    <option value="Twilio">Twilio Global Telecom SMS</option>
-                    <option value="AWS SNS">AWS SNS (Amazon Simple Notification Service)</option>
-                    <option value="Karix DLT">Karix Mobile DLT Gateway (India)</option>
-                    <option value="ValueFirst">ValueFirst Enterprise SMS</option>
-                    <option value="Airtel IQ">Airtel IQ Enterprise CPaaS</option>
-                  </select>
-                </div>
-
-                {/* Account SID / Key */}
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">
-                    Account SID / API Key *
-                  </label>
-                  <input
-                    type="text"
-                    value={smsConfigState.accountSid}
-                    onChange={(e) => setSmsConfigState({ ...smsConfigState, accountSid: e.target.value })}
-                    placeholder="e.g. AC99823412091_TWILIO_LIVE"
-                    className="form-input font-mono font-bold"
-                  />
-                </div>
-
-                {/* Auth Token / Secret */}
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">
-                    Auth Token / API Secret *
-                  </label>
-                  <input
-                    type="password"
-                    value={smsConfigState.authToken}
-                    onChange={(e) => setSmsConfigState({ ...smsConfigState, authToken: e.target.value })}
-                    placeholder="AUTH_TOKEN_99823412091_JOY..."
-                    className="form-input font-mono"
-                  />
-                </div>
-
-                {/* Sender ID Header & DLT Entity ID */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">
-                      Sender ID / Header (6 Alpha) *
-                    </label>
-                    <input
-                      type="text"
-                      maxLength={6}
-                      value={smsConfigState.senderId}
-                      onChange={(e) => setSmsConfigState({ ...smsConfigState, senderId: e.target.value.toUpperCase() })}
-                      placeholder="JOYVER"
-                      className="form-input font-mono font-bold uppercase"
-                    />
-                    <span className="text-[10px] text-slate-400 mt-0.5 block">Approved TRAI header</span>
+                <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sky-950 text-xs">Airtel IQ CPaaS Prepaid API</span>
+                    <span className="font-mono text-[10px] text-sky-700 font-bold">Basic Auth</span>
                   </div>
-
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">
-                      DLT Principal Entity ID (19 Digits)
-                    </label>
-                    <input
-                      type="text"
-                      value={smsConfigState.dltEntityId}
-                      onChange={(e) => setSmsConfigState({ ...smsConfigState, dltEntityId: e.target.value })}
-                      placeholder="1101234567890123456"
-                      className="form-input font-mono"
-                    />
-                    <span className="text-[10px] text-slate-400 mt-0.5 block">India DLT compliance code</span>
+                  <p className="text-[11px] text-sky-900 leading-relaxed">
+                    Direct telecom routing for candidate onboarding links, mandatory 2FA login OTPs, password reset codes, and e-signing consent codes.
+                  </p>
+                  <div className="pt-1 flex items-center justify-between text-[11px] text-slate-600 font-mono">
+                    <span>Sender Header: <strong className="text-slate-900">JYCORP</strong></span>
+                    <span>Format: <strong className="text-slate-900">91XXXXXXXXXX</strong></span>
                   </div>
-                </div>
-
-                {/* DLT Template ID */}
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">
-                    DLT Content Template ID (TRAI Registered)
-                  </label>
-                  <input
-                    type="text"
-                    value={smsConfigState.dltTemplateId}
-                    onChange={(e) => setSmsConfigState({ ...smsConfigState, dltTemplateId: e.target.value })}
-                    placeholder="DLT_1107161829304859"
-                    className="form-input font-mono"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Registered template identifier for transactional verification SMS</span>
                 </div>
 
                 {/* Carrier SMS Automated Triggers */}
-                <div className="pt-3 border-t border-slate-100 space-y-2">
+                <div className="pt-2 border-t border-slate-100 space-y-2">
                   <span className="font-black text-slate-800 uppercase text-[10px] tracking-wider block">
                     Automated SMS Notification Triggers
                   </span>
@@ -7945,11 +7860,11 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         type="checkbox"
                         checked={smsConfigState.autoSendOnboardingSms}
                         onChange={(e) => setSmsConfigState({ ...smsConfigState, autoSendOnboardingSms: e.target.checked })}
-                        className="accent-teal-600 w-4 h-4 rounded"
+                        className="accent-sky-600 w-4 h-4 rounded"
                       />
                       <div>
                         <span className="font-bold text-slate-800 text-xs block">Candidate Onboarding SMS Link</span>
-                        <span className="text-[10px] text-slate-500">Dispatches SMS with clickable login token URL</span>
+                        <span className="text-[10px] text-slate-500">Dispatches transactional SMS with CTA URL & PIN</span>
                       </div>
                     </label>
 
@@ -7958,7 +7873,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         type="checkbox"
                         checked={smsConfigState.autoSendOtpSms}
                         onChange={(e) => setSmsConfigState({ ...smsConfigState, autoSendOtpSms: e.target.checked })}
-                        className="accent-teal-600 w-4 h-4 rounded"
+                        className="accent-sky-600 w-4 h-4 rounded"
                       />
                       <div>
                         <span className="font-bold text-slate-800 text-xs block">Fallback Carrier SMS OTP Delivery</span>
@@ -7971,7 +7886,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         type="checkbox"
                         checked={smsConfigState.autoSendReportSms}
                         onChange={(e) => setSmsConfigState({ ...smsConfigState, autoSendReportSms: e.target.checked })}
-                        className="accent-teal-600 w-4 h-4 rounded"
+                        className="accent-sky-600 w-4 h-4 rounded"
                       />
                       <div>
                         <span className="font-bold text-slate-800 text-xs block">Verification Completion SMS Alert</span>
@@ -7981,14 +7896,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   </div>
                 </div>
 
-                {/* SMS Test Dispatch */}
-                <div className="p-3.5 rounded-2xl bg-teal-50/70 border border-teal-200 space-y-2">
+                {/* Quick Test & DLT Jump */}
+                <div className="p-3.5 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-teal-950 flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-teal-600" />
+                    <span className="text-xs font-black text-sky-950 flex items-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-sky-600" />
                       <span>Live Carrier SMS Test Dispatch</span>
                     </span>
-                    <span className="badge badge-teal text-[9px]">{smsConfigState.provider}</span>
+                    <span className="badge badge-sky text-[9px]">Airtel IQ</span>
                   </div>
                   <div className="flex gap-2">
                     <input
@@ -8001,7 +7916,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     <button
                       type="button"
                       onClick={() => handleTestDispatchMessaging('sms')}
-                      className="btn bg-teal-700 hover:bg-teal-800 text-white text-xs px-3 font-black shrink-0 cursor-pointer shadow-sm"
+                      className="btn bg-sky-700 hover:bg-sky-800 text-white text-xs px-3 font-black shrink-0 cursor-pointer shadow-sm flex items-center gap-1"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>Send SMS</span>
@@ -8013,6 +7928,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
 
           </div>
+
+          {/* 📱 DEDICATED AIRTEL IQ PREPAID SMS GATEWAY & TRAI DLT CONTENT TEMPLATE REGISTRY */}
+          <AirtelIqSmsGatewayConsole />
 
           {/* AUTOMATED NOTIFICATION WORKFLOWS MATRIX */}
           <div className="glass-panel p-6 border-slate-200 bg-white rounded-3xl shadow-sm space-y-4">

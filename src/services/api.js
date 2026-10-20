@@ -1334,7 +1334,30 @@ export const api = {
   }),
 
   // ⏳ 60-Day Retention & Verification Expiry Alerts
-  getExpiryAlerts: (companyId = null) => request(`/hr/candidates/expiry-alerts${companyId ? `?company_id=${companyId}` : ''}`, {}, false)
+  getExpiryAlerts: (companyId = null) => request(`/hr/candidates/expiry-alerts${companyId ? `?company_id=${companyId}` : ''}`, {}, false),
+
+  // 📱 Airtel IQ Prepaid SMS Gateway & TRAI DLT Templates
+  getSmsGatewayConfig: () => request('/settings/sms-gateway', {}, false),
+  updateSmsGatewayConfig: (payload) => request('/settings/sms-gateway', {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+  getSmsTemplates: () => request('/settings/sms-templates', {}, false),
+  createSmsTemplate: (payload) => request('/settings/sms-templates', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  updateSmsTemplate: (templateId, payload) => request(`/settings/sms-templates/${templateId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
+  deleteSmsTemplate: (templateId) => request(`/settings/sms-templates/${templateId}`, {
+    method: 'DELETE'
+  }),
+  testDispatchSms: (payload) => request('/settings/sms-test-dispatch', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  })
 };
 
 export default api;

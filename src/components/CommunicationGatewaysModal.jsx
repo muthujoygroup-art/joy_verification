@@ -36,14 +36,17 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
     ...(whatsappConfig || {})
   }));
 
-  // Carrier SMS Local Form State
+  // Carrier SMS Local Form State (Airtel IQ CPaaS DLT)
   const [smsState, setSmsState] = useState(() => ({
     enabled: true,
-    provider: 'Twilio',
+    provider: 'Airtel IQ',
+    customerId: smsConfig?.customerId || smsConfig?.customer_id || '',
+    username: smsConfig?.username || '',
+    password: smsConfig?.password || '',
     accountSid: smsConfig?.accountSid || '',
     authToken: smsConfig?.authToken || '',
-    senderId: smsConfig?.senderId || 'JOYVER',
-    dltEntityId: smsConfig?.dltEntityId || '',
+    senderId: smsConfig?.senderId || smsConfig?.source_address || 'JYCORP',
+    dltEntityId: smsConfig?.dltEntityId || smsConfig?.entity_id || '',
     dltTemplateId: smsConfig?.dltTemplateId || '',
     autoSendOnboardingSms: true,
     autoSendOtpSms: true,
@@ -274,18 +277,19 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
         )}
 
         {/* CHANNEL 2: CARRIER SMS GATEWAY INTEGRATION (SUPERADMIN ONLY) */}
+        {/* CHANNEL 2: AIRTEL IQ CARRIER SMS GATEWAY INTEGRATION (SUPERADMIN ONLY) */}
         {activeTab === 'sms' && (
           <form onSubmit={handleSaveConfig} className="space-y-4 text-xs animate-fadeIn">
             <div className="p-4 rounded-xl bg-sky-50 border border-sky-200 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-sky-900 text-sm flex items-center gap-2">
                   <Radio className="w-4 h-4 text-sky-600" />
-                  <span>Carrier SMS Gateway (Twilio / AWS SNS / DLT Karix)</span>
+                  <span>Airtel IQ Carrier SMS Gateway (TRAI DLT India)</span>
                 </span>
-                <span className="badge badge-sky text-[10px]">Active SMS Gateway</span>
+                <span className="badge badge-sky text-[10px]">Airtel Business CPaaS</span>
               </div>
               <p className="text-sky-800 text-xs leading-relaxed">
-                SuperAdmin-controlled carrier SMS integration for transmitting candidate SMS OTP verification codes, instant mobile joining reminders, and government DLT-approved template notifications.
+                SuperAdmin-controlled carrier SMS integration for transmitting candidate onboarding magic links, 2FA login OTPs, password reset codes, and TRAI-approved registered DLT content templates.
               </p>
             </div>
 
@@ -297,77 +301,113 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
                   onChange={(e) => setSmsState({ ...smsState, provider: e.target.value })}
                   className="form-select text-xs font-bold"
                 >
+                  <option value="Airtel IQ">Airtel IQ Prepaid SMS (India DLT Compliant)</option>
                   <option value="Twilio">Twilio Programmable SMS API</option>
                   <option value="AWS SNS">Amazon AWS SNS (Simple Notification Service)</option>
-                  <option value="Karix / Gupshup">Karix / Gupshup (DLT India Compliant)</option>
                   <option value="Fast2SMS">Fast2SMS Quick Router API</option>
                   <option value="MSG91">MSG91 Enterprise SMS</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">DLT / Carrier Sender ID (Header) *</label>
+                <label className="block text-slate-700 font-bold mb-1">DLT Carrier Sender Header (Source Address) *</label>
                 <input 
                   type="text" 
                   required
                   maxLength={6}
-                  value={smsState.senderId}
+                  value={smsState.senderId || 'JYCORP'}
                   onChange={(e) => setSmsState({ ...smsState, senderId: e.target.value.toUpperCase() })}
-                  placeholder="e.g. JOYVER (6 characters)"
-                  className="form-input text-xs font-mono font-bold"
+                  placeholder="JYCORP"
+                  className="form-input text-xs font-mono font-bold uppercase text-sky-700"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">Account SID / API Key *</label>
-                <input 
-                  type="text" 
-                  required
-                  value={smsState.accountSid}
-                  onChange={(e) => setSmsState({ ...smsState, accountSid: e.target.value })}
-                  placeholder="AC99823412091..."
-                  className="form-input text-xs font-mono font-bold"
-                />
-              </div>
+            {smsState.provider === 'Airtel IQ' ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">Customer ID *</label>
+                    <input 
+                      type="text" 
+                      value={smsState.customerId || ''}
+                      onChange={(e) => setSmsState({ ...smsState, customerId: e.target.value })}
+                      placeholder="e.g. JYCORP_PREPAID_1029"
+                      className="form-input text-xs font-mono font-bold"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">Auth Token / API Secret *</label>
-                <input 
-                  type="password" 
-                  required
-                  value={smsState.authToken}
-                  onChange={(e) => setSmsState({ ...smsState, authToken: e.target.value })}
-                  placeholder="Auth token / API secret key"
-                  className="form-input text-xs font-mono"
-                />
-              </div>
-            </div>
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">Airtel IQ Username *</label>
+                    <input 
+                      type="text" 
+                      value={smsState.username || ''}
+                      onChange={(e) => setSmsState({ ...smsState, username: e.target.value })}
+                      placeholder="e.g. muthu_joycorp_iq"
+                      className="form-input text-xs font-mono font-bold"
+                    />
+                  </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">TRAI DLT Entity / Principal ID (India PE ID)</label>
-                <input 
-                  type="text" 
-                  value={smsState.dltEntityId}
-                  onChange={(e) => setSmsState({ ...smsState, dltEntityId: e.target.value })}
-                  placeholder="e.g. 1101234567890123456"
-                  className="form-input text-xs font-mono"
-                />
-              </div>
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">Airtel IQ Password *</label>
+                    <input 
+                      type="password" 
+                      value={smsState.password || ''}
+                      onChange={(e) => setSmsState({ ...smsState, password: e.target.value })}
+                      placeholder="Enter Airtel IQ password"
+                      className="form-input text-xs font-mono"
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <label className="block text-slate-700 font-bold mb-1">DLT Registered Template ID</label>
-                <input 
-                  type="text" 
-                  value={smsState.dltTemplateId}
-                  onChange={(e) => setSmsState({ ...smsState, dltTemplateId: e.target.value })}
-                  placeholder="e.g. DLT_1107161829304859"
-                  className="form-input text-xs font-mono"
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">TRAI DLT Entity / Principal ID (19 Digits) *</label>
+                    <input 
+                      type="text" 
+                      value={smsState.dltEntityId || ''}
+                      onChange={(e) => setSmsState({ ...smsState, dltEntityId: e.target.value })}
+                      placeholder="e.g. 1101234567890123456"
+                      className="form-input text-xs font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">Airtel IQ Base Endpoint URL</label>
+                    <input 
+                      type="text" 
+                      readOnly
+                      value="https://iqsms.airtel.in/api/v1/send-prepaid-sms"
+                      className="form-input text-xs font-mono bg-slate-50 text-slate-600"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Account SID / API Key *</label>
+                  <input 
+                    type="text" 
+                    value={smsState.accountSid}
+                    onChange={(e) => setSmsState({ ...smsState, accountSid: e.target.value })}
+                    placeholder="API key or Account SID"
+                    className="form-input text-xs font-mono font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Auth Token / API Secret *</label>
+                  <input 
+                    type="password" 
+                    value={smsState.authToken}
+                    onChange={(e) => setSmsState({ ...smsState, authToken: e.target.value })}
+                    placeholder="Auth token / API secret key"
+                    className="form-input text-xs font-mono"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
               <span className="font-extrabold text-slate-900 block">Automated SMS Dispatches & Triggers</span>
