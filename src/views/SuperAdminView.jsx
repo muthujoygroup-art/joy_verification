@@ -75,6 +75,7 @@ import {
   Plus,
   Power,
   Receipt,
+  Radio,
   RefreshCw,
   RotateCcw,
   Save,
