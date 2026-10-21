@@ -10,8 +10,16 @@ window.addEventListener('vite:preloadError', (event) => {
   window.location.reload();
 });
 
-createRoot(document.getElementById('root')).render(
+const rootElement = document.getElementById('root') || (() => {
+  const el = document.createElement('div');
+  el.id = 'root';
+  document.body.appendChild(el);
+  return el;
+})();
+
+createRoot(rootElement).render(
   <StrictMode>
     <App />
   </StrictMode>,
 )
+

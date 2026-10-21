@@ -1287,7 +1287,38 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
   - `PaymentRecord` created with status `Settled`: **PASSED**.
   - `Invoice` created with 18% GST and status `PAID`: **PASSED**.
   - Idempotent duplicate check handling: **PASSED**.
-- **Frontend Production Build (`npm run build`)**: Vite built production bundle in **1.38s** with 0 errors.
+### Session 22: Blank Screen Root DOM Container Fix & Resilient Mount Hardening (October 21, 2026)
+
+#### Context & Issue Reported:
+- Following deployment to cPanel (`https://trueprofile.joycorporatesolutions.com/` and `/superadmin/`), the browser loaded a completely blank white screen.
+- Tab title was properly displayed as *"Joy True Profile | Workforce Verification Platform"*, but no DOM elements rendered.
+
+#### Root Cause Analysis:
+1. **Accidental Deletion of `<div id="root"></div>` in `index.html`**:
+   - In the prior commit, adding the Razorpay Checkout script in the body section accidentally displaced `<div id="root"></div>`.
+   - In `src/main.jsx`, React 19's `createRoot(document.getElementById('root'))` threw `TypeError: Target container is not a DOM element` upon bundle initialization, aborting execution before rendering any component.
+2. **Duplicate Script Placement**:
+   - `<script src="https://checkout.razorpay.com/v1/checkout.js"></script>` was present both in `<head>` and `<body>`.
+
+#### Fix Applied & Architectural Hardening:
+1. **Restored `<div id="root"></div>` in `index.html`**:
+   - Cleaned up duplicate script tag in `<body>` and restored `<div id="root"></div>` immediately preceding `<script type="module" src="/src/main.jsx"></script>`.
+2. **Defensive Self-Healing Root Mounting (`src/main.jsx`)**:
+   - Added bulletproof fallback in `src/main.jsx`:
+     ```javascript
+     const rootElement = document.getElementById('root') || (() => {
+       const el = document.createElement('div');
+       el.id = 'root';
+       document.body.appendChild(el);
+       return el;
+     })();
+     createRoot(rootElement).render(...)
+     ```
+   - Guarantees that even if any reverse-proxy or HTML minification alters the template, React automatically recovers and mounts without blanking out.
+3. **Quality Gates & Build**:
+   - Rebuilt production bundle via `npm run build` (0 errors).
+   - Confirmed `<div id="root"></div>` is present in `dist/index.html`.
+   - Committed and pushed to GitHub `main` branch.
 
 ---
 *Last Updated: October 21, 2026 | Antigravity IDE Autonomous Agent Log*
