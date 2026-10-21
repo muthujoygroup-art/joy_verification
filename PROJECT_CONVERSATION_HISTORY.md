@@ -1397,6 +1397,40 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
    - Committed and pushed changes to GitHub `main` branch.
 
 ---
+
+### Session 26: Alignment of Single Plan Checklist Model Across Pricing & Contact Pages (October 21, 2026)
+
+#### Context & User Feedback:
+- User noted that while Razorpay and the Single Plan Pricing configurator were created, other pages still displayed obsolete 5-tier postpaid plans (`Tier 1 (<50), Tier 2 (<100), Tier 3 (<300), Tier 4 (<500), Tier 5 (Custom >500)`).
+- Specifically:
+  1. On the **Contact Us** page (`LandingPageView.jsx` and `PublicPagesView.jsx`), when choosing inquiry type `Purchasing Plan`, the legacy 5-tier postpaid grid was still rendered instead of the Single Plan volume quotas.
+  2. On the standalone **Pricing** page (`PublicPagesView.jsx` at route `/pricing`), the 5-tier grid was still present.
+  3. Terms of Service and FAQs still referenced legacy tiers.
+- User Directive: Complete project alignment so every customer-facing surface consistently presents the **Single Plan Architecture (100% Checklist Model)** with Razorpay integration.
+
+#### Actions & Fixes Applied:
+1. **Contact Us Page Inquiry Realignment (`LandingPageView.jsx` & `PublicPagesView.jsx`)**:
+   - Replaced all legacy 5-tier selectors under `inquiryType === 'Purchasing Plan'` with the 4 Single Plan Volume Presets (`100 Profiles`, `300 Profiles [Most Popular]`, `500 Profiles`, `Custom Quota`).
+   - Added a high-visibility fast-track card: `"Want to pick specific statutory checks & pay directly online?"` with an instant CTA `Customize Checklist & Pay ⚡` that directly launches `DynamicPlanBuilderModal`.
+   - Updated `handleContactSubmit` in both views so that submitting a plan inquiry logs the exact Single Plan quota (e.g., `"300 Profiles Single Plan"`).
+2. **Standalone Pricing Page Overhaul (`PublicPagesView.jsx` route `/pricing`)**:
+   - Completely replaced the legacy `{POSTPAID_PLANS && Object.values(POSTPAID_PLANS).map(...)}` 5-tier grid with modern Single Plan quota cards powered by `PROFILE_VOLUME_PRESETS`.
+   - Each card displays candidate quota, statutory scope bullets (UIDAI Aadhaar, NSDL PAN, Bank IMPS, EPFO UAN, Court checks, CLRA Gate Passes), and two clear CTAs:
+     - `Customize & Pay Online ⚡` (opens `DynamicPlanBuilderModal` with preselected volume quota).
+     - `Inquire for this Volume →` (navigates to Contact Us with `Purchasing Plan` selected).
+   - Added Statutory Registry Matrix displaying direct connectors: UIDAI, NSDL, NPCI IMPS, EPFO, e-Courts, and MCA 21 / GSTN.
+   - Passed `initialVolumePreset={selectedPlan}` to `DynamicPlanBuilderModal` at the root of `PublicPagesView.jsx`.
+3. **Terms of Service & FAQ Alignment**:
+   - Updated Section 3 of Terms of Service in `PublicPagesView.jsx` to state that enterprises are billed under the Single Plan Architecture based on selected hiring volume quotas and itemized statutory checks.
+   - Aligned Postpaid FAQ answers across public views.
+4. **Clean Code & Unused Import Removal**:
+   - Removed unused `POSTPAID_PLANS` imports from `LandingPageView.jsx` and `PublicPagesView.jsx`.
+   - Added missing `CreditCard` icon import to `PublicPagesView.jsx`.
+5. **Quality Gate & Production Build**:
+   - Executed `npm run build` — compiled cleanly in 2.35s with 0 errors.
+   - Verified `dist/index.html` structure and assets.
+
+---
 *Last Updated: October 21, 2026 | Antigravity IDE Autonomous Agent Log*
 
 

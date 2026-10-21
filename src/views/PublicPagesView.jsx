@@ -34,9 +34,11 @@ import {
   RefreshCw,
   Server,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  CreditCard
 } from 'lucide-react';
-import { useApp, DEFAULT_LANDING_PAGE_CONTENT, POSTPAID_PLANS } from '../context/AppContext';
+import { useApp, DEFAULT_LANDING_PAGE_CONTENT } from '../context/AppContext';
+import { PROFILE_VOLUME_PRESETS } from '../config/planPricingConfig';
 import { soundEngine } from '../utils/uiSoundEffects';
 import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
@@ -59,7 +61,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
 
   // 3-Option Inquiry Category & Contact Form State
   const [inquiryType, setInquiryType] = useState('General Query'); // 'General Query' | 'Purchasing Plan' | 'Other'
-  const [selectedPlan, setSelectedPlan] = useState('tier2');
+  const [selectedPlan, setSelectedPlan] = useState('vol_300');
   const [contactForm, setContactForm] = useState({
     fullName: '',
     companyName: '',
@@ -91,9 +93,9 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         email: contactForm.workEmail,
         phone: contactForm.mobileNumber,
         inquiry_type: inquiryType,
-        selected_plan: inquiryType === 'Purchasing Plan' ? selectedPlan : null,
+        selected_plan: inquiryType === 'Purchasing Plan' ? (PROFILE_VOLUME_PRESETS.find(p => p.id === selectedPlan)?.label || selectedPlan) : null,
         subject: inquiryType === 'Purchasing Plan'
-          ? `Plan Purchase Request: ${POSTPAID_PLANS[selectedPlan]?.name || selectedPlan}`
+          ? `Single Plan Purchase Request: ${PROFILE_VOLUME_PRESETS.find(p => p.id === selectedPlan)?.label || '300 Profiles Quota'}`
           : (contactForm.subject || `${inquiryType} Inquiry`),
         message: contactForm.message || `Inquiry submitted for ${inquiryType}`,
         preferred_contact: contactForm.preferredContact
@@ -1006,52 +1008,91 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                         </div>
                       </div>
 
-                      {/* Purchasing Plan Dynamic Tier Selector */}
+                      {/* Purchasing Plan Single Plan Volume Selector & Configurator */}
                       {inquiryType === 'Purchasing Plan' && (
-                        <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-xs text-[#182230]">Select Target Postpaid Plan:</span>
-                            <span className="text-[10px] text-[#299C68] font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                              100% Postpaid
+                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/50 via-white to-white border-2 border-indigo-200 space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-100 px-2.5 py-0.5 rounded-full inline-block mb-1">
+                                Single Plan Architecture • 100% Checklist Model
+                              </span>
+                              <h5 className="font-bold text-xs sm:text-sm text-slate-900">
+                                Select Hiring Profile Volume Quota:
+                              </h5>
+                            </div>
+                            <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                              ⚡ Instant Quota Credit via Razorpay
                             </span>
                           </div>
-                          
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {Object.values(POSTPAID_PLANS).map((p) => (
-                              <button
-                                key={p.id}
-                                type="button"
-                                onClick={() => {
-                                  soundEngine.playClick();
-                                  setSelectedPlan(p.id);
-                                }}
-                                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                                  selectedPlan === p.id
-                                    ? 'border-[#426CF5] bg-blue-50/60 shadow-xs'
-                                    : 'border-[#E5EAF0] bg-white hover:bg-slate-50'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span className="font-bold text-xs text-[#182230]">{p.shortName}</span>
-                                  <span className="text-xs font-mono font-bold text-[#426CF5]">
-                                    {p.ratePerProfile === 'Custom' ? 'Custom' : `₹${p.ratePerProfile}/check`}
-                                  </span>
-                                </div>
-                                <span className="text-[10px] text-slate-500 block mt-0.5">{p.employeeThreshold}</span>
-                              </button>
-                            ))}
+
+                          {/* 4 Volume Preset Selector Pills */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            {PROFILE_VOLUME_PRESETS.map((preset) => {
+                              const isSelected = selectedPlan === preset.id;
+                              return (
+                                <button
+                                  key={preset.id}
+                                  type="button"
+                                  onClick={() => {
+                                    soundEngine.playClick();
+                                    setSelectedPlan(preset.id);
+                                  }}
+                                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between ${
+                                    isSelected
+                                      ? 'border-indigo-600 bg-white shadow-sm ring-2 ring-indigo-500/20'
+                                      : 'border-slate-200 bg-white/80 hover:border-slate-300 hover:bg-white'
+                                  }`}
+                                >
+                                  {preset.badge && (
+                                    <span className={`text-[8px] font-black uppercase px-1.5 py-0.2 rounded-full mb-1 inline-block w-fit ${
+                                      preset.isPopular ? 'bg-amber-500 text-white' : 'bg-slate-800 text-white'
+                                    }`}>
+                                      {preset.badge}
+                                    </span>
+                                  )}
+                                  <div>
+                                    <span className="font-black text-xs text-slate-900 block font-outfit">
+                                      {preset.label}
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 line-clamp-1 block mt-0.5">
+                                      {preset.desc}
+                                    </span>
+                                  </div>
+                                  <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+                                    <span className="text-[9px] font-bold text-indigo-700">
+                                      {preset.isCustom ? 'Custom Input' : `${preset.count} Credits`}
+                                    </span>
+                                    {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600 stroke-[3]" />}
+                                  </div>
+                                </button>
+                              );
+                            })}
                           </div>
 
-                          {POSTPAID_PLANS[selectedPlan] && (
-                            <div className="mt-2 p-3 bg-white rounded-xl border border-blue-200 text-xs">
-                              <div className="font-bold text-[#182230]">
-                                Selected: {POSTPAID_PLANS[selectedPlan].name}
+                          {/* Fast-Track Launch Configurator CTA Card */}
+                          <div className="p-4 bg-indigo-950 rounded-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+                            <div>
+                              <div className="flex items-center gap-1.5 text-xs font-black text-amber-400">
+                                <Zap className="w-3.5 h-3.5 fill-amber-400" />
+                                <span>Want to pick specific statutory checks & pay directly online?</span>
                               </div>
-                              <div className="text-[11px] text-slate-500 mt-0.5">
-                                Rate: <strong className="text-slate-800">{POSTPAID_PLANS[selectedPlan].ratePerProfile === 'Custom' ? 'Custom Negotiated' : `₹${POSTPAID_PLANS[selectedPlan].ratePerProfile} per verified profile`}</strong> • Automated Monthly GST Tax Invoice (SAC 998311)
-                              </div>
+                              <p className="text-[11px] text-slate-300 mt-0.5">
+                                Choose checks (UIDAI, PAN, Bank IMPS, EPFO) and settle via Razorpay with instant 18% GST invoice.
+                              </p>
                             </div>
-                          )}
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundEngine.playClick();
+                                setShowDynamicPlanModal(true);
+                              }}
+                              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-300 hover:to-orange-500 text-slate-950 font-black text-xs shrink-0 cursor-pointer shadow-lg hover:shadow-amber-500/30 transition-all flex items-center gap-1.5"
+                            >
+                              <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                              <span>Customize Checklist & Pay ⚡</span>
+                            </button>
+                          </div>
                         </div>
                       )}
 
@@ -1302,8 +1343,8 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                   a: 'All data in transit and at rest is secured with 256-bit AES encryption. Sensitive identifiers like Aadhaar numbers are automatically masked (XXXX-XXXX-1234), and all processing is strictly consent-driven under the DPDP Act 2023.'
                 },
                 {
-                  q: 'How does postpaid billing work?',
-                  a: 'Enterprises verify candidates on demand without upfront prepayment blocks. At the end of the billing cycle, an official GST tax invoice is generated with an itemized transaction ledger based on your chosen tier.'
+                  q: 'How does the Single Plan postpaid billing work?',
+                  a: 'Enterprises verify candidates on demand without rigid upfront lock-ins. You select your profile volume quota and exact statutory checks. Invoices are generated with itemized transaction ledgers, settleable instantly via Razorpay or monthly Net-30 enterprise billing.'
                 }
               ].map((faq, idx) => (
                 <div key={idx} className="p-6 rounded-2xl bg-white border border-[#E5EAF0] shadow-xs">
@@ -1326,107 +1367,240 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
         )}
 
         {/* ========================================================================= */}
-        {/* PAGE 8: PRICING & PLANS                                                   */}
+        {/* PAGE 8: PRICING & PLANS - SINGLE PLAN CHECKLIST ARCHITECTURE              */}
         {/* ========================================================================= */}
         {activePage === 'pricing' && (
           <div className="space-y-12 animate-in fade-in duration-300 max-w-6xl mx-auto">
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF8F0] text-[#299C68] text-xs font-bold uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Transparent Enterprise Commercials
+            {/* Header Hero */}
+            <div className="text-center space-y-4 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-black uppercase tracking-wider shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                Single Plan Architecture • 100% Itemized Checklist Model
               </div>
-              <h1 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
-                100% Postpaid & Metered Billing
+              <h1 className="text-3xl sm:text-5xl font-black text-[#182230] font-outfit tracking-tight">
+                One Unified Plan. Choose Only What You Need.
               </h1>
-              <p className="text-base text-[#5C6878] leading-relaxed max-w-2xl mx-auto">
-                No rigid plans or lock-in minimums. Select your candidate volume (100, 300, 500, or Custom) and check only the exact Indian statutory verifications your compliance policies mandate. Settle seamlessly with Razorpay.
+              <p className="text-base text-[#5C6878] leading-relaxed">
+                No rigid tiered packages or locked-in minimums. Select your hiring profile volume (100, 300, 500, or Custom) and toggle only the exact Indian statutory verifications required by your compliance policies. Settle seamlessly with Razorpay.
               </p>
 
-              <div className="pt-2">
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
                 <button
-                  onClick={() => setShowDynamicPlanModal(true)}
-                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-slate-950 font-black text-xs sm:text-sm inline-flex items-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:scale-102 transition-all cursor-pointer"
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setShowDynamicPlanModal(true);
+                  }}
+                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-300 hover:to-orange-500 text-slate-950 font-black text-xs sm:text-sm inline-flex items-center gap-2 shadow-xl hover:shadow-amber-500/25 hover:scale-102 transition-all cursor-pointer"
                 >
                   <Zap className="w-4 h-4 fill-slate-950" />
                   <span>Launch Single Plan Checklist & Razorpay Pricing ⚡</span>
                 </button>
+
+                <button
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setInquiryType('Purchasing Plan');
+                    setActivePage('contact');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="px-6 py-3.5 rounded-2xl bg-white border border-[#E5EAF0] text-[#182230] hover:bg-slate-50 font-bold text-xs sm:text-sm inline-flex items-center gap-2 shadow-xs cursor-pointer"
+                >
+                  <Mail className="w-4 h-4 text-slate-600" />
+                  <span>Enterprise Purchase Inquiry 📋</span>
+                </button>
               </div>
             </div>
 
-            {/* 5-Tier Postpaid Pricing Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {POSTPAID_PLANS && Object.values(POSTPAID_PLANS).map((plan) => {
-                const isHighlight = plan.id === 'tier3';
+            {/* 4 Volume Quota Presets Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {PROFILE_VOLUME_PRESETS.map((preset) => {
+                const isPopular = preset.isPopular;
+                const isCustom = preset.isCustom;
                 return (
-                  <div 
-                    key={plan.id}
-                    className={`p-5 rounded-3xl bg-white border-2 transition-all flex flex-col justify-between space-y-4 relative ${
-                      isHighlight 
-                        ? 'border-[#426CF5] shadow-lg ring-2 ring-blue-100' 
-                        : 'border-[#E5EAF0] shadow-xs hover:border-[#426CF5]/60'
+                  <div
+                    key={preset.id}
+                    className={`p-6 rounded-3xl bg-white border-2 transition-all flex flex-col justify-between space-y-5 relative ${
+                      isPopular
+                        ? 'border-indigo-600 shadow-xl ring-2 ring-indigo-100'
+                        : 'border-[#E5EAF0] shadow-xs hover:border-indigo-400 hover:shadow-md'
                     }`}
                   >
-                    {isHighlight && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#426CF5] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
-                        Most Popular 🌟
+                    {isPopular && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 fill-white" /> Most Popular Choice
                       </span>
                     )}
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                      {/* Badge & Title */}
                       <div>
-                        <span className="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px]">
-                          {plan.employeeThreshold}
-                        </span>
-                        <h2 className="text-lg font-bold text-[#182230] mt-1.5">{plan.name}</h2>
-                        <p className="text-[11px] text-[#5C6878] line-clamp-2 mt-0.5">{plan.description}</p>
-                      </div>
-
-                      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                        <div className="text-xs text-slate-500 font-medium">Per Verified Profile</div>
-                        <div className="text-2xl font-black text-[#182230] font-mono mt-0.5">
-                          {plan.ratePerProfile === 'Custom' ? 'Custom' : `₹${plan.ratePerProfile}`}
+                        <div className="flex items-center justify-between">
+                          <span className={`inline-block px-2.5 py-1 rounded-full font-bold text-[10px] ${
+                            isPopular ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            {preset.badge || 'Volume Tier'}
+                          </span>
+                          <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                            100% Postpaid
+                          </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 mt-0.5 font-bold">100% Postpaid</div>
+                        <h2 className="text-xl font-bold text-[#182230] font-outfit mt-2">
+                          {preset.label}
+                        </h2>
+                        <p className="text-xs text-[#5C6878] line-clamp-2 mt-1 leading-relaxed">
+                          {preset.desc}
+                        </p>
                       </div>
 
-                      <ul className="space-y-2 text-[11px] text-[#5C6878] pt-1">
-                        {plan.features.slice(0, 4).map((feat, idx) => (
-                          <li key={idx} className="flex items-start gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#299C68] shrink-0 mt-0.5" />
-                            <span>{feat}</span>
+                      {/* Quota Highlights Box */}
+                      <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-100 space-y-1 text-center">
+                        <div className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">
+                          Candidate Quota Allocation
+                        </div>
+                        <div className="text-2xl font-black text-indigo-700 font-mono tracking-tight">
+                          {isCustom ? '500+ Profiles' : `${preset.count} Profiles`}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium">
+                          Itemized Per-Check Tariff Pass-Through
+                        </div>
+                      </div>
+
+                      {/* Included Capabilities Bullets */}
+                      <div className="space-y-2 pt-1">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                          Included Statutory Scope:
+                        </span>
+                        <ul className="space-y-2 text-xs text-[#5C6878]">
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>UIDAI Aadhaar (Masked) & NSDL PAN 2.0</span>
                           </li>
-                        ))}
-                      </ul>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>EPFO UAN Dual Employment Radar</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>Instant ₹1 Bank Penny Drop (NPCI IMPS)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>Pan-India Court & Criminal Record Screen</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>Scannable Digital CLRA QR Gate Passes</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
+                            <span>Official GST Invoices (SAC 998311)</span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
 
-                    <button
-                      onClick={() => setActivePage('contact')}
-                      className={`w-full py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer ${
-                        isHighlight
-                          ? 'bg-[#426CF5] hover:bg-[#3459D8] text-white shadow-sm'
-                          : 'bg-slate-100 hover:bg-[#426CF5] hover:text-white text-slate-800'
-                      }`}
-                    >
-                      {plan.id === 'tier5' ? 'Request Custom Quote' : 'Choose ' + plan.shortName}
-                    </button>
+                    {/* Dual Action CTAs */}
+                    <div className="space-y-2 pt-3 border-t border-slate-100">
+                      <button
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setSelectedPlan(preset.id);
+                          setShowDynamicPlanModal(true);
+                        }}
+                        className={`w-full py-2.5 px-3 rounded-xl font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm ${
+                          isPopular
+                            ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white ring-2 ring-indigo-200'
+                            : 'bg-slate-900 hover:bg-slate-800 text-white'
+                        }`}
+                      >
+                        <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                        <span>Customize & Pay Online ⚡</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          soundEngine.playClick();
+                          setInquiryType('Purchasing Plan');
+                          setSelectedPlan(preset.id);
+                          setActivePage('contact');
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="w-full py-2 px-3 rounded-xl font-bold text-[11px] text-[#5C6878] hover:text-[#182230] hover:bg-slate-100 transition-all cursor-pointer text-center"
+                      >
+                        Inquire for this Volume →
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
 
+            {/* Official Indian Regulatory Authority Rails */}
+            <div className="p-7 sm:p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs space-y-6">
+              <div className="text-center max-w-2xl mx-auto space-y-1.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 inline-block">
+                  Statutory Transparency
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-[#182230] font-outfit">
+                  Direct Integration with Official Government Registries
+                </h3>
+                <p className="text-xs text-[#5C6878]">
+                  Every check is executed live through official sovereign infrastructure with cryptographic tamper-proof SHA-256 audit trails.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[
+                  { tag: 'UIDAI', name: 'Aadhaar e-KYC', desc: 'Masked demographic & OTP match' },
+                  { tag: 'NSDL / ITD', name: 'PAN 2.0 Identity', desc: 'Real-time name & status audit' },
+                  { tag: 'NPCI IMPS', name: '₹1 Penny Drop', desc: 'Direct bank account name verification' },
+                  { tag: 'EPFO / MoLE', name: 'UAN Dual Employment', desc: 'Moonlighting & service history radar' },
+                  { tag: 'e-Courts', name: 'Pan-India Litigation', desc: 'Civil & criminal tribunal checks' },
+                  { tag: 'MCA 21 / GSTN', name: 'B2B Vendor Due Diligence', desc: 'Director DIN, GST & Udyam validity' }
+                ].map((item, idx) => (
+                  <div key={idx} className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/80 space-y-1">
+                    <span className="text-[9px] font-black uppercase text-indigo-700 font-mono tracking-wider">
+                      {item.tag}
+                    </span>
+                    <h5 className="text-xs font-bold text-[#182230] leading-snug">
+                      {item.name}
+                    </h5>
+                    <p className="text-[10px] text-[#5C6878] leading-tight">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Postpaid Guarantees Strip */}
-            <div className="p-6 rounded-3xl bg-[#FCFCFA] border border-[#E5EAF0] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-sm font-black text-[#182230]">⚡ Zero Upfront Lock-in</div>
-                <p className="text-xs text-[#5C6878] mt-1">Start verification immediately without credit recharge delays.</p>
+            <div className="p-6 rounded-3xl bg-slate-900 text-white grid grid-cols-1 sm:grid-cols-3 gap-6 text-center shadow-lg">
+              <div className="space-y-1">
+                <div className="text-sm font-black text-amber-400 flex items-center justify-center gap-1.5">
+                  <Zap className="w-4 h-4 fill-amber-400" />
+                  Zero Upfront Lock-in
+                </div>
+                <p className="text-xs text-slate-300">
+                  Verify candidates instantly. Settle seamlessly via Razorpay or monthly postpaid invoicing.
+                </p>
               </div>
-              <div>
-                <div className="text-sm font-black text-[#182230]">🧾 Automated GST Invoices</div>
-                <p className="text-xs text-[#5C6878] mt-1">Official month-end tax invoices with SAC 998311 & 18% GST.</p>
+              <div className="space-y-1">
+                <div className="text-sm font-black text-emerald-400 flex items-center justify-center gap-1.5">
+                  <FileText className="w-4 h-4 text-emerald-400" />
+                  Automated GST Invoices
+                </div>
+                <p className="text-xs text-slate-300">
+                  Official tax invoices under SAC 998311 with transparent 18% GST itemized ledgers.
+                </p>
               </div>
-              <div>
-                <div className="text-sm font-black text-[#182230]">🛡️ DPDP Act 2023 Shield</div>
-                <p className="text-xs text-[#5C6878] mt-1">Statutory consent gate and 256-bit AES cryptographic encryption.</p>
+              <div className="space-y-1">
+                <div className="text-sm font-black text-sky-400 flex items-center justify-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-sky-400" />
+                  DPDP Act 2023 Shield
+                </div>
+                <p className="text-xs text-slate-300">
+                  Consent-driven verification with 256-bit AES cryptographic encryption and masked Aadhaar storage.
+                </p>
               </div>
             </div>
           </div>
@@ -1541,13 +1715,13 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-[#182230] mb-2">3. Postpaid Metered Billing & Settlement</h2>
+                <h2 className="text-lg font-bold text-[#182230] mb-2">3. Metered Billing, Single Plan Quotas & Settlement</h2>
                 <p>
-                  Enterprises are billed under the selected <strong>Postpaid Tier</strong> (<span className="text-[#182230] font-semibold">Tier 1 &lt;50 @ ₹250, Tier 2 &lt;100 @ ₹230, Tier 3 &lt;300 @ ₹200, Tier 4 &lt;500 @ ₹180, or Tier 5 Custom</span>). Billing cycles run on a calendar month basis. At the close of each cycle:
+                  Enterprises are billed under our unified <strong>Single Plan Architecture</strong> based on selected hiring profile volume quotas (100, 300, 500, or Custom Profiles) and itemized statutory verification checks selected by the client. Instant online settlements are supported via Razorpay, and enterprise postpaid accounts are billed on a calendar month basis. At the close of each cycle:
                 </p>
                 <ul className="list-disc pl-5 space-y-1 mt-2">
                   <li>An official GST Tax Invoice is generated under Service Accounting Code (SAC) <strong>998311</strong> with 18% GST.</li>
-                  <li>Invoices are payable within the agreed credit term (standard Net-15 or Net-30 days).</li>
+                  <li>Invoices are payable within the agreed credit term (standard Net-15 or Net-30 days) or settled via Razorpay checkout.</li>
                   <li>Never-Block Policy: Overage verifications beyond base quotas are processed uninterruptedly at the agreed per-profile postpaid rate.</li>
                 </ul>
               </div>
@@ -1639,6 +1813,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
       <DynamicPlanBuilderModal
         isOpen={showDynamicPlanModal}
         onClose={() => setShowDynamicPlanModal(false)}
+        initialVolumePreset={selectedPlan}
       />
     </div>
   );
