@@ -43,6 +43,7 @@ import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 import { WhatsAppConcierge3D } from '../components/landing/WhatsAppConcierge3D';
 import { GoogleStyleProductExplorer } from '../components/landing/GoogleStyleProductExplorer';
+import { DynamicPlanBuilderModal } from '../components/DynamicPlanBuilderModal';
 
 export const PublicPagesView = ({ initialPage = 'features' }) => {
   const navigate = useNavigate();
@@ -54,6 +55,7 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
 
   const [activePage, setActivePage] = useState(initialPage);
   const [openFaq, setOpenFaq] = useState(0);
+  const [showDynamicPlanModal, setShowDynamicPlanModal] = useState(false);
 
   // 3-Option Inquiry Category & Contact Form State
   const [inquiryType, setInquiryType] = useState('General Query'); // 'General Query' | 'Purchasing Plan' | 'Other'
@@ -1337,8 +1339,18 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
                 100% Postpaid & Metered Billing
               </h1>
               <p className="text-base text-[#5C6878] leading-relaxed max-w-2xl mx-auto">
-                Never get blocked during critical recruitment surges. Verify on demand and settle monthly based on actual verified employee profiles consumed with official GST tax invoices.
+                No rigid plans or lock-in minimums. Select your candidate volume (100, 300, 500, or Custom) and check only the exact Indian statutory verifications your compliance policies mandate. Settle seamlessly with Razorpay.
               </p>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setShowDynamicPlanModal(true)}
+                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-slate-950 font-black text-xs sm:text-sm inline-flex items-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:scale-102 transition-all cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 fill-slate-950" />
+                  <span>Launch Single Plan Checklist & Razorpay Pricing ⚡</span>
+                </button>
+              </div>
             </div>
 
             {/* 5-Tier Postpaid Pricing Grid */}
@@ -1622,6 +1634,12 @@ export const PublicPagesView = ({ initialPage = 'features' }) => {
 
       {/* Floating WhatsApp Concierge Widget */}
       <WhatsAppConcierge3D />
+
+      {/* Single Plan Checklist & Razorpay Modal */}
+      <DynamicPlanBuilderModal
+        isOpen={showDynamicPlanModal}
+        onClose={() => setShowDynamicPlanModal(false)}
+      />
     </div>
   );
 };

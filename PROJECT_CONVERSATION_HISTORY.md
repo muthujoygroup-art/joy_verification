@@ -1275,7 +1275,8 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
    - `index.html`: injected official Razorpay `checkout.js` script tag.
    - `src/services/api.js`: added client methods for Razorpay order, verification, and configuration.
    - `CompanyAdminView.jsx`: added Single Plan Configurator button and modal trigger.
-   - `LandingPageView.jsx`: added Single Plan Checklist feature hero card in the Pricing tab.
+   - `LandingPageView.jsx`: replaced legacy 5-tier pricing grid with interactive Single Plan Checklist & Dynamic Pricing Deck with rich B2B regulatory copy and direct Razorpay checkout trigger.
+   - `PublicPagesView.jsx`: modernized `/pricing` page with Single Plan Checklist Architecture and modal trigger.
    - `SuperAdminView.jsx`: integrated Single Plan configurator and backend credential sync.
 
 #### Verification & Test Results:
@@ -1286,7 +1287,7 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
   - `PaymentRecord` created with status `Settled`: **PASSED**.
   - `Invoice` created with 18% GST and status `PAID`: **PASSED**.
   - Idempotent duplicate check handling: **PASSED**.
-- **Frontend Production Build (`npm run build`)**: Vite built production bundle in **1.86s** with 0 errors.
+- **Frontend Production Build (`npm run build`)**: Vite built production bundle in **1.38s** with 0 errors.
 
 ---
 *Last Updated: October 21, 2026 | Antigravity IDE Autonomous Agent Log*

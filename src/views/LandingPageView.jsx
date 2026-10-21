@@ -70,6 +70,13 @@ import { checkNetworkBeforeAction } from '../utils/networkChecker';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
 import { useApp, DEFAULT_LANDING_PAGE_CONTENT, POSTPAID_PLANS } from '../context/AppContext';
+import {
+  PROFILE_VOLUME_PRESETS,
+  EMPLOYEE_VERIFICATION_CHECKS,
+  VENDOR_VERIFICATION_CHECKS,
+  COMMUNICATION_GATEWAYS,
+  calculateDynamicPlanBill
+} from '../config/planPricingConfig';
 
 export const LandingPageView = () => {
   const navigate = useNavigate();
@@ -99,6 +106,67 @@ export const LandingPageView = () => {
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
   const [showDynamicPlanModal, setShowDynamicPlanModal] = useState(false);
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
+
+  // 🌟 Single Plan Checklist Interactive States for Landing Page
+  const [landingVolumePreset, setLandingVolumePreset] = useState('vol_300');
+  const [landingCustomVolume, setLandingCustomVolume] = useState(1000);
+  const [landingActiveCategory, setLandingActiveCategory] = useState('employee');
+  const [landingEmpChecks, setLandingEmpChecks] = useState(() => {
+    const list = [];
+    EMPLOYEE_VERIFICATION_CHECKS.forEach(c => c.items.forEach(i => { if (i.defaultChecked) list.push(i.id); }));
+    return list;
+  });
+  const [landingVendorChecks, setLandingVendorChecks] = useState(() => {
+    const list = [];
+    VENDOR_VERIFICATION_CHECKS.forEach(c => c.items.forEach(i => { if (i.defaultChecked) list.push(i.id); }));
+    return list;
+  });
+  const [landingGateways, setLandingGateways] = useState(() => {
+    return COMMUNICATION_GATEWAYS.filter(g => g.defaultChecked).map(g => g.id);
+  });
+
+  const landingProfileCount = useMemo(() => {
+    if (landingVolumePreset === 'vol_custom') return Math.max(10, Number(landingCustomVolume) || 100);
+    const p = PROFILE_VOLUME_PRESETS.find(x => x.id === landingVolumePreset);
+    return p ? p.count : 300;
+  }, [landingVolumePreset, landingCustomVolume]);
+
+  const landingDynamicBill = useMemo(() => {
+    return calculateDynamicPlanBill({
+      profileCount: landingProfileCount,
+      selectedEmployeeCheckIds: landingEmpChecks,
+      selectedVendorCheckIds: landingVendorChecks,
+      selectedGatewayIds: landingGateways
+    });
+  }, [landingProfileCount, landingEmpChecks, landingVendorChecks, landingGateways]);
+
+  const toggleLandingEmpCheck = (item) => {
+    soundEngine.playClick();
+    setLandingEmpChecks(prev => {
+      const exists = prev.includes(item.id);
+      if (exists) return prev.filter(x => x !== item.id);
+      let updated = [...prev, item.id];
+      if (item.group) {
+        if (item.id.endsWith('_basic')) {
+          updated = updated.filter(x => x !== item.id.replace('_basic', '_detailed'));
+        } else if (item.id.endsWith('_detailed')) {
+          updated = updated.filter(x => x !== item.id.replace('_detailed', '_basic'));
+        }
+      }
+      return updated;
+    });
+  };
+
+  const toggleLandingVendorCheck = (item) => {
+    soundEngine.playClick();
+    setLandingVendorChecks(prev => prev.includes(item.id) ? prev.filter(x => x !== item.id) : [...prev, item.id]);
+  };
+
+  const toggleLandingGateway = (item) => {
+    if (item.isFixed) return;
+    soundEngine.playClick();
+    setLandingGateways(prev => prev.includes(item.id) ? prev.filter(x => x !== item.id) : [...prev, item.id]);
+  };
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [soundMuted, setSoundMuted] = useState(soundEngine.isMuted());
 
@@ -1604,159 +1672,462 @@ export const LandingPageView = () => {
         </div>
       )}
 
-      {/* VIEW: PRICING & POSTPAID PLANS */}
+      {/* VIEW: PRICING & SINGLE PLAN CHECKLIST ARCHITECTURE */}
       {activeTab === 'pricing' && (
-        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
-          <div className="text-center max-w-3xl mx-auto space-y-4">
-            <span className="text-xs font-semibold text-[#299C68] px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 uppercase tracking-wider inline-block">
-              Single Plan Checklist Architecture
+        <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-12 animate-fadeIn">
+          {/* Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-black text-indigo-700 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+              Single Plan Architecture • 100% Checklist Model
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
-              One Custom Plan. 100% Itemized Checklist Pricing.
+            <h2 className="text-3xl sm:text-5xl font-black text-[#182230] font-outfit tracking-tight">
+              One Custom Plan. Choose Only What You Need.
             </h2>
-            <p className="text-base text-[#5C6878] leading-relaxed">
-              No rigid packages. Select your profile volume (100, 300, 500, or Custom) and select only the exact verification checks your company needs. Instant Razorpay checkout and automated 18% GST tax invoices.
+            <p className="text-sm sm:text-base text-[#5C6878] leading-relaxed">
+              No rigid packages or forced minimums. Select your candidate profile volume and toggle only the exact Indian statutory verifications required by your corporate compliance policy. Settle instantly via Razorpay with automated 18% GST tax invoices.
             </p>
           </div>
 
-          {/* 🌟 Single Plan Dynamic Checklist Engine Feature Banner */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-2 border-indigo-500/40 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-2 max-w-2xl">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/30 text-indigo-200 text-xs font-black uppercase tracking-wider border border-indigo-400/40">
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
-                  Itemized Indian Rate Card & Instant Razorpay Settlement
+          {/* Interactive Single Plan Calculator Deck */}
+          <div className="bg-white border-2 border-slate-200/90 rounded-3xl shadow-xl overflow-hidden">
+            {/* 1. Volume Quota Selector Strip */}
+            <div className="p-5 sm:p-6 bg-slate-50 border-b border-slate-200 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+                    Step 1: Choose Candidate Profile Volume
+                  </span>
+                  <h4 className="text-sm sm:text-base font-black text-slate-900 font-outfit">
+                    Select Verification Quota for Your Hiring Surge
+                  </h4>
+                </div>
+                <span className="text-xs font-bold text-indigo-700">
+                  {landingDynamicBill.profileCount.toLocaleString('en-IN')} Candidate Quotas Selected
                 </span>
-                <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit tracking-tight">
-                  Customize Your Verification Suite & Pay Only For What You Need
-                </h3>
-                <p className="text-xs sm:text-sm text-indigo-200/80 leading-relaxed font-medium">
-                  Choose from 100, 300, 500, or Custom Profiles. Configure individual Employee checks (Aadhaar Basic/Detailed, PAN Basic/Detailed, Bank Penny Drop, Driving License, Voter ID, ESIC, EPFO, Passport, DigiLocker), Vendor Due Diligence (MCA, GST, CIN, DIN, FSSAI, UDYAM), and Communication Gateways (Airtel DLT SMS, WhatsApp Meta API).
-                </p>
               </div>
 
-              <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => {
-                    soundEngine.playClick();
-                    setShowDynamicPlanModal(true);
-                  }}
-                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:scale-102 transition-all cursor-pointer"
-                >
-                  <Zap className="w-4 h-4 fill-slate-950" />
-                  <span>Launch Checklist & Pricing Calculator ⚡</span>
-                </button>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {PROFILE_VOLUME_PRESETS.map((preset) => {
+                  const isSelected = landingVolumePreset === preset.id;
+                  return (
+                    <div
+                      key={preset.id}
+                      onClick={() => {
+                        soundEngine.playClick();
+                        setLandingVolumePreset(preset.id);
+                      }}
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative flex flex-col justify-between ${
+                        isSelected
+                          ? 'border-indigo-600 bg-white shadow-md ring-2 ring-indigo-600/20'
+                          : 'border-slate-200 bg-white/70 hover:border-slate-300 hover:bg-white'
+                      }`}
+                    >
+                      {preset.badge && (
+                        <span
+                          className={`absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                            preset.isPopular
+                              ? 'bg-amber-500 text-white shadow-xs'
+                              : 'bg-slate-800 text-white'
+                          }`}
+                        >
+                          {preset.badge}
+                        </span>
+                      )}
+                      <div>
+                        <span className="text-base font-black text-slate-900 block font-outfit">
+                          {preset.label}
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-medium block mt-0.5 leading-snug">
+                          {preset.desc}
+                        </span>
+                      </div>
+                      <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-indigo-700">
+                          {preset.isCustom ? 'Custom Input' : `${preset.count} Credits`}
+                        </span>
+                        {isSelected && <Check className="w-4 h-4 text-indigo-600 stroke-[3]" />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Custom Number Input */}
+              {landingVolumePreset === 'vol_custom' && (
+                <div className="p-3.5 bg-indigo-50/70 rounded-2xl border border-indigo-200 flex flex-wrap items-center gap-3 animate-fadeIn">
+                  <span className="text-xs font-bold text-indigo-950 shrink-0">
+                    Enter Exact Number of Profiles:
+                  </span>
+                  <div className="relative w-44">
+                    <input
+                      type="number"
+                      min="10"
+                      step="10"
+                      value={landingCustomVolume}
+                      onChange={(e) => setLandingCustomVolume(Math.max(1, Number(e.target.value)))}
+                      className="w-full pl-3 pr-14 py-1.5 text-xs font-black bg-white border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                      placeholder="e.g. 1500"
+                    />
+                    <span className="absolute right-3 top-2 text-[10px] font-black text-slate-400 uppercase">
+                      Profiles
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-600 font-medium">
+                    (Minimum 10 profiles, custom volume pricing automatically calculated)
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 2. Interactive Category Tabs & Checklist Options */}
+            <div className="p-5 sm:p-6 space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+                    Step 2: Customize Verification Checklist
+                  </span>
+                  <h4 className="text-sm sm:text-base font-black text-slate-900 font-outfit">
+                    Toggle Checks Required for Your Organization
+                  </h4>
+                </div>
+
+                {/* Tab Pill Selectors */}
+                <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+                  <button
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setLandingActiveCategory('employee');
+                    }}
+                    className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      landingActiveCategory === 'employee'
+                        ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-black'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>Employee Checks ({landingEmpChecks.length})</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setLandingActiveCategory('vendor');
+                    }}
+                    className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      landingActiveCategory === 'vendor'
+                        ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-black'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>Vendor Checks ({landingVendorChecks.length})</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setLandingActiveCategory('gateways');
+                    }}
+                    className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      landingActiveCategory === 'gateways'
+                        ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-black'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>Gateways ({landingGateways.length})</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* TAB 1: EMPLOYEE BACKGROUND CHECKS */}
+              {landingActiveCategory === 'employee' && (
+                <div className="space-y-4 animate-fadeIn">
+                  {EMPLOYEE_VERIFICATION_CHECKS.map((cat, cIdx) => (
+                    <div key={cIdx} className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-700">
+                          {cat.category}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        {cat.items.map((item) => {
+                          const isChecked = landingEmpChecks.includes(item.id);
+                          const isDetailed = item.id.endsWith('_detailed');
+                          return (
+                            <div
+                              key={item.id}
+                              onClick={() => toggleLandingEmpCheck(item)}
+                              className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
+                                isChecked
+                                  ? 'bg-white border-indigo-500 shadow-xs ring-1 ring-indigo-200'
+                                  : 'bg-white/60 border-slate-200 hover:border-slate-300 hover:bg-white'
+                              }`}
+                            >
+                              <div
+                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                  isChecked
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'border border-slate-300 bg-white'
+                                }`}
+                              >
+                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1">
+                                  <span className="text-xs font-bold text-slate-900 truncate">
+                                    {item.name}
+                                  </span>
+                                  <span className="text-xs font-black text-indigo-700 shrink-0">
+                                    ₹{item.rate.toFixed(2)}/p
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span
+                                    className={`text-[9px] font-black px-1.5 py-0.2 rounded-full ${
+                                      isDetailed
+                                        ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                                        : 'bg-slate-100 text-slate-700 border border-slate-200'
+                                    }`}
+                                  >
+                                    {item.subType}
+                                  </span>
+                                </div>
+
+                                <p className="text-[11px] text-slate-500 font-medium mt-1 leading-snug">
+                                  {item.desc}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* TAB 2: VENDOR DUE DILIGENCE CHECKS */}
+              {landingActiveCategory === 'vendor' && (
+                <div className="space-y-4 animate-fadeIn">
+                  {VENDOR_VERIFICATION_CHECKS.map((cat, cIdx) => (
+                    <div key={catIdx || cIdx} className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-2.5">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 block">
+                        {cat.category}
+                      </span>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        {cat.items.map((item) => {
+                          const isChecked = landingVendorChecks.includes(item.id);
+                          return (
+                            <div
+                              key={item.id}
+                              onClick={() => toggleLandingVendorCheck(item)}
+                              className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
+                                isChecked
+                                  ? 'bg-white border-indigo-500 shadow-xs ring-1 ring-indigo-200'
+                                  : 'bg-white/60 border-slate-200 hover:border-slate-300 hover:bg-white'
+                              }`}
+                            >
+                              <div
+                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                  isChecked
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'border border-slate-300 bg-white'
+                                }`}
+                              >
+                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1">
+                                  <span className="text-xs font-bold text-slate-900 truncate">
+                                    {item.name}
+                                  </span>
+                                  <span className="text-xs font-black text-indigo-700 shrink-0">
+                                    ₹{item.rate.toFixed(2)}/p
+                                  </span>
+                                </div>
+
+                                <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200 inline-block mt-0.5">
+                                  {item.subType}
+                                </span>
+
+                                <p className="text-[11px] text-slate-500 font-medium mt-1 leading-snug">
+                                  {item.desc}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* TAB 3: GATEWAYS & DISPATCH INFRASTRUCTURE */}
+              {landingActiveCategory === 'gateways' && (
+                <div className="space-y-4 animate-fadeIn">
+                  <div className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-2.5">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 block">
+                      Enterprise Communication & OTP Delivery Gateways
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {COMMUNICATION_GATEWAYS.map((item) => {
+                        const isChecked = landingGateways.includes(item.id);
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => toggleLandingGateway(item)}
+                            className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                              isChecked
+                                ? 'bg-white border-indigo-500 shadow-xs ring-1 ring-indigo-200'
+                                : 'bg-white/60 border-slate-200 hover:border-slate-300'
+                            } ${item.isFixed ? 'opacity-90 cursor-not-allowed' : ''}`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div
+                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                  isChecked
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'border border-slate-300 bg-white'
+                                }`}
+                              >
+                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-slate-900">
+                                    {item.name}
+                                  </span>
+                                  {item.isFixed ? (
+                                    <span className="badge badge-emerald text-[8px] font-black uppercase">
+                                      Included
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs font-black text-indigo-700">
+                                      ₹{item.rate.toFixed(2)}/p
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[9px] font-bold text-slate-500 block mt-0.5">
+                                  {item.subType}
+                                </span>
+                                <p className="text-[11px] text-slate-500 font-medium mt-1 leading-snug">
+                                  {item.desc}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 3. Sticky Real-Time Bill Breakdown & Razorpay Checkout CTA */}
+            <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-t border-indigo-900/50 space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-indigo-800/50">
+                <div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-indigo-300 block">
+                    Dynamic Bill Computation • SAC Code 998311
+                  </span>
+                  <h3 className="text-lg sm:text-xl font-black text-white font-outfit mt-0.5">
+                    {landingDynamicBill.profileCount} Candidate Profiles • {landingDynamicBill.totalSelectedChecksCount} Verification Checks Selected
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  <div className="text-right">
+                    <span className="text-[10px] font-bold text-indigo-300 block uppercase">Rate Per Profile</span>
+                    <span className="text-xl font-black text-white font-mono">
+                      ₹{landingDynamicBill.totalRatePerProfile.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="text-right pl-6 border-l border-indigo-800/60">
+                    <span className="text-[10px] font-bold text-amber-300 block uppercase">Net Payable (incl. 18% GST)</span>
+                    <span className="text-2xl sm:text-3xl font-black text-yellow-300 font-mono">
+                      ₹{landingDynamicBill.totalAmount.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subtotal & GST Line Items */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-indigo-200/80">
+                <div>
+                  <span className="text-[10px] text-slate-400 block">Subtotal (Excl. Tax):</span>
+                  <span className="font-extrabold text-white">₹{landingDynamicBill.subtotal.toLocaleString('en-IN')}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block">18% GST (SAC 998311):</span>
+                  <span className="font-extrabold text-white">₹{landingDynamicBill.gstAmount.toLocaleString('en-IN')}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block">Statutory Gateways:</span>
+                  <span className="font-extrabold text-emerald-400">UIDAI, NSDL, EPFO, MCA</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block">Invoicing Mode:</span>
+                  <span className="font-extrabold text-emerald-400">Official GST Tax Invoice</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-xs text-indigo-200/80">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Secure 256-Bit TLS • RBI Authorized Razorpay Gateway • Instant Quota Allocation</span>
+                </div>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <button
+                    onClick={() => {
+                      soundEngine.playClick();
+                      setShowDynamicPlanModal(true);
+                    }}
+                    className="flex-1 sm:flex-none px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-500 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/30 transition-all cursor-pointer"
+                  >
+                    <Zap className="w-4 h-4 fill-slate-950" />
+                    <span>Proceed to Secure Razorpay Checkout ⚡</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* 5-Tier Postpaid Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 items-stretch">
-            {Object.values(POSTPAID_PLANS).map((plan) => {
-              const isHighlight = plan.id === 'tier3';
-              return (
-                <div
-                  key={plan.id}
-                  className={`p-6 rounded-3xl bg-white border-2 transition-all flex flex-col justify-between space-y-4 relative ${
-                    isHighlight
-                      ? 'border-[#426CF5] shadow-lg ring-2 ring-blue-100'
-                      : 'border-[#E5EAF0] shadow-xs hover:border-[#426CF5]/60'
-                  }`}
-                >
-                  {isHighlight && (
-                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#426CF5] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
-                      Most Popular 🌟
-                    </span>
-                  )}
-
-                  <div className="space-y-4">
-                    <div>
-                      <span className="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px]">
-                        {plan.employeeThreshold}
-                      </span>
-                      <h3 className="text-lg font-bold text-[#182230] mt-2 font-outfit">{plan.name}</h3>
-                      <p className="text-xs text-[#5C6878] mt-1 line-clamp-2">{plan.description}</p>
-                    </div>
-
-                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                      <div className="text-[11px] text-[#5C6878] font-medium">Per Verified Profile</div>
-                      <div className="text-3xl font-black text-[#182230] font-mono mt-1">
-                        {plan.ratePerProfile === 'Custom' ? 'Custom' : `₹${plan.ratePerProfile}`}
-                      </div>
-                      <div className="text-[10px] text-[#299C68] font-bold mt-0.5">100% Postpaid</div>
-                    </div>
-
-                    <ul className="space-y-2 text-xs text-[#5C6878] pt-1">
-                      {plan.features.slice(0, 5).map((feat, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 text-left">
-                          <CheckCircle2 className="w-4 h-4 text-[#299C68] shrink-0 mt-0.5" />
-                          <span className="text-[#182230]">{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="pt-4 border-t border-[#E5EAF0] space-y-2">
-                    <button
-                      onClick={() => {
-                        soundEngine.playClick();
-                        setInquiryType('Purchasing Plan');
-                        setSelectedPlanTier(plan.id);
-                        handleTabChange('contact');
-                      }}
-                      className={`w-full py-3 rounded-full font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                        isHighlight
-                          ? 'bg-[#426CF5] hover:bg-[#3459D8] text-white shadow-sm'
-                          : 'bg-[#182230] hover:bg-black text-white'
-                      }`}
-                    >
-                      <span>{plan.id === 'tier5' ? 'Request Custom Quote' : 'Select ' + plan.shortName}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-
-                    {plan.id !== 'tier5' && (
-                      <button
-                        onClick={() => {
-                          soundEngine.playClick();
-                          setLandingSelectedAmount(plan.ratePerProfile * 20);
-                          setShowLandingRazorpayModal(true);
-                        }}
-                        className="w-full py-1 text-[11px] font-bold text-[#426CF5] hover:underline bg-transparent border-none cursor-pointer text-center"
-                      >
-                        ⚡ Instant Online Deposit
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Postpaid Benefits Strip */}
+          {/* Compliance & Trust Benefits Strip */}
           <div className="p-8 rounded-3xl bg-white border border-[#E5EAF0] shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             <div className="space-y-2">
               <div className="w-10 h-10 rounded-2xl bg-[#EAF5FF] text-[#426CF5] flex items-center justify-center font-bold mx-auto">
                 <Zap className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-[#182230] font-outfit">Zero Upfront Lock-in</h4>
-              <p className="text-xs text-[#5C6878]">Start onboarding and verifying immediately. Never blocked during critical hiring surges.</p>
+              <h4 className="text-base font-bold text-[#182230] font-outfit">Instant Quota Activation</h4>
+              <p className="text-xs text-[#5C6878]">Candidate credits are added to your enterprise dashboard the second Razorpay completes the transaction.</p>
             </div>
 
             <div className="space-y-2">
               <div className="w-10 h-10 rounded-2xl bg-[#EAF8F0] text-[#299C68] flex items-center justify-center font-bold mx-auto">
                 <FileText className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-[#182230] font-outfit">Automated GST Invoices</h4>
-              <p className="text-xs text-[#5C6878]">Receive itemized calendar month-end tax invoices under SAC 998311 with 18% GST.</p>
+              <h4 className="text-base font-bold text-[#182230] font-outfit">Automated GST Tax Invoices</h4>
+              <p className="text-xs text-[#5C6878]">Receive downloadable, audit-ready GST tax invoices with SAC Code 998311 for 100% input tax credit claiming.</p>
             </div>
 
             <div className="space-y-2">
               <div className="w-10 h-10 rounded-2xl bg-[#FFF1E8] text-[#E06A26] flex items-center justify-center font-bold mx-auto">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-[#182230] font-outfit">Vendor Quota Parity</h4>
-              <p className="text-xs text-[#5C6878]">Contractor manpower agency personnel are verified at identical per-profile postpaid rates.</p>
+              <h4 className="text-base font-bold text-[#182230] font-outfit">DPDP Act 2023 Compliant</h4>
+              <p className="text-xs text-[#5C6878]">Every candidate verification generates an immutable cryptographic SHA-256 certificate and DPDP log.</p>
             </div>
           </div>
         </div>
