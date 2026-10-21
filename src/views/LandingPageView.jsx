@@ -44,7 +44,8 @@ import {
   Phone,
   Clock,
   Award,
-  ExternalLink
+  ExternalLink,
+  Users
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
