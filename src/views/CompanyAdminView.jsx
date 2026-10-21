@@ -15,6 +15,7 @@ import { DocumentComparisonPdfModal } from '../components/DocumentComparisonPdfM
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { DynamicPlanBuilderModal } from '../components/DynamicPlanBuilderModal';
 import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
 import { HrGovernanceModal } from '../components/HrGovernanceModal';
 import { VendorVerificationCertificateModal } from '../components/VendorVerificationCertificateModal';
@@ -195,6 +196,7 @@ export const CompanyAdminView = () => {
   const [showAddHrModal, setShowAddHrModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showRazorpayModal, setShowRazorpayModal] = useState(false);
+  const [showDynamicPlanModal, setShowDynamicPlanModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [inspectCandidate, setInspectCandidate] = useState(null);
   const [downloadingCandidate, setDownloadingCandidate] = useState(null);
@@ -5559,6 +5561,15 @@ export const CompanyAdminView = () => {
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
+                  onClick={() => setShowDynamicPlanModal(true)}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-700 text-white text-xs flex items-center gap-2 font-black shadow-lg cursor-pointer hover:scale-102 transition-all ring-2 ring-indigo-300"
+                >
+                  <Sparkles className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+                  <span>Single Plan Checklist Configurator (Razorpay) ⚡</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setShowRazorpayModal(true)}
                   className="btn btn-superadmin text-xs py-2.5 px-5 flex items-center gap-2 font-black shadow-lg cursor-pointer hover:scale-102 transition-all"
                 >
@@ -7469,6 +7480,13 @@ export const CompanyAdminView = () => {
       <RazorpayPaymentModal
         isOpen={showRazorpayModal}
         onClose={() => setShowRazorpayModal(false)}
+        targetCompanyId={company?.id}
+      />
+
+      {/* 📋 Single Plan Checklist & Dynamic Pricing Engine Modal */}
+      <DynamicPlanBuilderModal
+        isOpen={showDynamicPlanModal}
+        onClose={() => setShowDynamicPlanModal(false)}
         targetCompanyId={company?.id}
       />
 

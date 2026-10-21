@@ -1357,6 +1357,21 @@ export const api = {
   testDispatchSms: (payload) => request('/settings/sms-test-dispatch', {
     method: 'POST',
     body: JSON.stringify(payload)
+  }),
+
+  // 💳 Razorpay & Single Plan Checklist Billing APIs
+  getRazorpayConfig: () => request('/billing/razorpay/config', {}, false),
+  updateRazorpayConfig: (payload) => request('/billing/razorpay/config', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  createRazorpayOrder: (payload) => request('/billing/razorpay/create-order', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  verifyRazorpayPayment: (payload) => request('/billing/razorpay/verify-payment', {
+    method: 'POST',
+    body: JSON.stringify(payload)
   })
 };
 

@@ -48,6 +48,7 @@ import {
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { DynamicPlanBuilderModal } from '../components/DynamicPlanBuilderModal';
 import { InteractiveTourGuideModal } from '../components/InteractiveTourGuideModal';
 import Hero3DCharacter from '../components/landing/Hero3DCharacter';
 import HumanIdentitySection from '../components/landing/HumanIdentitySection';
@@ -96,6 +97,7 @@ export const LandingPageView = () => {
   const [showTourGuideModal, setShowTourGuideModal] = useState(false);
   const [showLegalHandbook, setShowLegalHandbook] = useState(false);
   const [showLandingRazorpayModal, setShowLandingRazorpayModal] = useState(false);
+  const [showDynamicPlanModal, setShowDynamicPlanModal] = useState(false);
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [soundMuted, setSoundMuted] = useState(soundEngine.isMuted());
@@ -1607,14 +1609,46 @@ export const LandingPageView = () => {
         <div className="py-12 px-4 sm:px-6 max-w-7xl mx-auto space-y-16 animate-fadeIn">
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <span className="text-xs font-semibold text-[#299C68] px-3.5 py-1 rounded-full bg-[#EAF8F0] border border-[#299C68]/20 uppercase tracking-wider inline-block">
-              100% POSTPAID TIER PLANS
+              Single Plan Checklist Architecture
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold text-[#182230] font-outfit tracking-tight">
-              Transparent, Metered Postpaid Pricing
+              One Custom Plan. 100% Itemized Checklist Pricing.
             </h2>
             <p className="text-base text-[#5C6878] leading-relaxed">
-              Never get blocked during critical recruitment surges. Verify candidates on demand and settle monthly based on actual verified employee profiles with official GST tax invoices (SAC 998311).
+              No rigid packages. Select your profile volume (100, 300, 500, or Custom) and select only the exact verification checks your company needs. Instant Razorpay checkout and automated 18% GST tax invoices.
             </p>
+          </div>
+
+          {/* 🌟 Single Plan Dynamic Checklist Engine Feature Banner */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-2 border-indigo-500/40 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-2xl">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/30 text-indigo-200 text-xs font-black uppercase tracking-wider border border-indigo-400/40">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
+                  Itemized Indian Rate Card & Instant Razorpay Settlement
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-white font-outfit tracking-tight">
+                  Customize Your Verification Suite & Pay Only For What You Need
+                </h3>
+                <p className="text-xs sm:text-sm text-indigo-200/80 leading-relaxed font-medium">
+                  Choose from 100, 300, 500, or Custom Profiles. Configure individual Employee checks (Aadhaar Basic/Detailed, PAN Basic/Detailed, Bank Penny Drop, Driving License, Voter ID, ESIC, EPFO, Passport, DigiLocker), Vendor Due Diligence (MCA, GST, CIN, DIN, FSSAI, UDYAM), and Communication Gateways (Airtel DLT SMS, WhatsApp Meta API).
+                </p>
+              </div>
+
+              <div className="shrink-0 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setShowDynamicPlanModal(true);
+                  }}
+                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/20 hover:scale-102 transition-all cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 fill-slate-950" />
+                  <span>Launch Checklist & Pricing Calculator ⚡</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* 5-Tier Postpaid Grid */}
@@ -2364,6 +2398,12 @@ export const LandingPageView = () => {
           }}
         />
       )}
+
+      {/* SINGLE PLAN CHECKLIST & PRICING BUILDER MODAL */}
+      <DynamicPlanBuilderModal
+        isOpen={showDynamicPlanModal}
+        onClose={() => setShowDynamicPlanModal(false)}
+      />
 
     </div>
   );

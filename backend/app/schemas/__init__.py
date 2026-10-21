@@ -14,7 +14,9 @@ from backend.app.schemas.master_data import (
     MasterFormFieldCreate, MasterFormFieldResponse
 )
 from backend.app.schemas.billing import (
-    InvoiceResponse, InvoiceUpdate, PaymentCreate, PaymentResponse
+    InvoiceResponse, InvoiceUpdate, PaymentCreate, PaymentResponse,
+    RazorpayOrderCreateRequest, RazorpayOrderResponse,
+    RazorpayPaymentVerifyRequest, RazorpayConfigUpdate
 )
 from backend.app.schemas.ticket import (
     SupportTicketCreate, SupportTicketResponse, TicketReplyCreate, TicketReplyResponse

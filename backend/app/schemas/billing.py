@@ -46,3 +46,32 @@ class PaymentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class RazorpayOrderCreateRequest(BaseModel):
+    amount: float
+    currency: str = "INR"
+    receipt: Optional[str] = None
+    notes: Optional[Dict[str, Any]] = None
+
+class RazorpayOrderResponse(BaseModel):
+    id: str
+    amount: int
+    amount_rupees: float
+    currency: str
+    key_id: str
+    receipt: Optional[str] = None
+    status: str
+    is_live: bool = False
+
+class RazorpayPaymentVerifyRequest(BaseModel):
+    company_id: str
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+    plan_data: Dict[str, Any]
+
+class RazorpayConfigUpdate(BaseModel):
+    key_id: str
+    key_secret: str
+    webhook_secret: Optional[str] = None
+

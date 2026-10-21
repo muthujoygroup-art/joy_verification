@@ -17,6 +17,7 @@ import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandb
 import { OfficialLegalDocumentViewerModal } from '../components/OfficialLegalDocumentViewerModal';
 import { UniversalDocumentExportModal } from '../components/UniversalDocumentExportModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
+import { DynamicPlanBuilderModal } from '../components/DynamicPlanBuilderModal';
 import { UniversalEntityTrackerModal } from '../components/UniversalEntityTrackerModal';
 import { LeadsInquiriesConsole } from '../components/LeadsInquiriesConsole';
 import { ReviewsModerationConsole } from '../components/ReviewsModerationConsole';
@@ -183,6 +184,7 @@ export const SuperAdminView = () => {
   const [ticketReplyText, setTicketReplyText] = useState({});
   const [activeTicketLightbox, setActiveTicketLightbox] = useState(null);
   const [showSuperAdminRazorpayModal, setShowSuperAdminRazorpayModal] = useState(false);
+  const [showSuperAdminDynamicPlanModal, setShowSuperAdminDynamicPlanModal] = useState(false);
   const [selectedRechargeCompanyId, setSelectedRechargeCompanyId] = useState('comp-1');
   const [gatewayForm, setGatewayForm] = useState({
     provider: paymentGatewayConfig?.provider || 'Razorpay Payments India',
@@ -3283,6 +3285,19 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                     {/* Actions: Settle Bill, Send Bill & Invoice PDF */}
                     <div className="space-y-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedRechargeCompanyId(comp.id);
+                          setShowSuperAdminDynamicPlanModal(true);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold w-full flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                        title="Configure Single Plan Checklist & Razorpay Purchase"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
+                        <span>Single Plan Checklist Configurator 📋</span>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => {
@@ -9878,6 +9893,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       <RazorpayPaymentModal
         isOpen={showSuperAdminRazorpayModal}
         onClose={() => setShowSuperAdminRazorpayModal(false)}
+        targetCompanyId={selectedRechargeCompanyId}
+      />
+
+      {/* 📋 Single Plan Checklist & Dynamic Pricing Engine Modal */}
+      <DynamicPlanBuilderModal
+        isOpen={showSuperAdminDynamicPlanModal}
+        onClose={() => setShowSuperAdminDynamicPlanModal(false)}
         targetCompanyId={selectedRechargeCompanyId}
       />
 

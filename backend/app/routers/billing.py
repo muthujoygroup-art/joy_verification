@@ -1,14 +1,19 @@
 import uuid
+import json
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from backend.app.database import get_db
+from backend.app.config import settings
 from backend.app.models import Invoice, PaymentRecord, Company
 from backend.app.schemas import (
-    InvoiceResponse, InvoiceUpdate, PaymentCreate, PaymentResponse
+    InvoiceResponse, InvoiceUpdate, PaymentCreate, PaymentResponse,
+    RazorpayOrderCreateRequest, RazorpayOrderResponse,
+    RazorpayPaymentVerifyRequest, RazorpayConfigUpdate
 )
+from backend.app.services import razorpay_service
 
 router = APIRouter(prefix="/billing", tags=["Billing & Invoicing"])
 
@@ -122,3 +127,130 @@ def record_payment(payload: PaymentCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_pay)
     return new_pay
+
+
+# =============================================================================
+# 💳 RAZORPAY B2B WALLET & SINGLE PLAN PAYMENT GATEWAY
+# =============================================================================
+
+@router.get("/razorpay/config")
+def get_razorpay_gateway_config(db: Session = Depends(get_db)):
+    """Fetches public Razorpay configuration (Key ID & setup status)"""
+    creds = razorpay_service.get_razorpay_credentials(db)
+    return {
+        "key_id": creds["key_id"],
+        "is_configured": creds["is_configured"],
+        "has_secret": bool(creds["key_secret"]),
+        "has_webhook_secret": bool(creds["webhook_secret"]),
+        "webhook_url": f"{settings.APP_BASE_URL}/api/billing/razorpay/webhook"
+    }
+
+
+@router.post("/razorpay/config")
+def update_razorpay_gateway_config(payload: RazorpayConfigUpdate, db: Session = Depends(get_db)):
+    """Allows SuperAdmin to configure live Razorpay Key ID, Secret, and Webhook Secret"""
+    if not payload.key_id or not payload.key_secret:
+        raise HTTPException(status_code=400, detail="Key ID and Key Secret are required")
+    result = razorpay_service.save_razorpay_credentials(
+        db=db,
+        key_id=payload.key_id,
+        key_secret=payload.key_secret,
+        webhook_secret=payload.webhook_secret
+    )
+    return result
+
+
+@router.post("/razorpay/create-order", response_model=RazorpayOrderResponse)
+def create_order(payload: RazorpayOrderCreateRequest, db: Session = Depends(get_db)):
+    """
+    Creates an official Razorpay order in INR paise.
+    Converts rupees to paise (amount * 100).
+    """
+    if payload.amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be greater than zero")
+
+    order = razorpay_service.create_razorpay_order(
+        amount_in_rupees=payload.amount,
+        currency=payload.currency,
+        receipt=payload.receipt,
+        notes=payload.notes,
+        db=db
+    )
+    return order
+
+
+@router.post("/razorpay/verify-payment")
+def verify_payment_and_settle(payload: RazorpayPaymentVerifyRequest, db: Session = Depends(get_db)):
+    """
+    Validates HMAC SHA-256 signature and settles single plan purchase:
+    Increases company candidate quota (`max_limit`), activates plan checklist,
+    issues official 18% GST invoice, and logs transaction ledger.
+    """
+    # 1. Verify cryptographic signature
+    is_valid, msg = razorpay_service.verify_payment_signature(
+        razorpay_order_id=payload.razorpay_order_id,
+        razorpay_payment_id=payload.razorpay_payment_id,
+        razorpay_signature=payload.razorpay_signature,
+        db=db
+    )
+
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=f"Payment verification failed: {msg}")
+
+    # 2. Settle Single Plan Purchase
+    try:
+        settlement_result = razorpay_service.settle_single_plan_purchase(
+            db=db,
+            company_id=payload.company_id,
+            payment_data={
+                "razorpay_order_id": payload.razorpay_order_id,
+                "razorpay_payment_id": payload.razorpay_payment_id
+            },
+            plan_data=payload.plan_data
+        )
+        return settlement_result
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to settle plan purchase: {str(e)}")
+
+
+@router.post("/razorpay/webhook")
+async def razorpay_webhook(
+    request: Request,
+    x_razorpay_signature: Optional[str] = Header(None, alias="X-Razorpay-Signature"),
+    db: Session = Depends(get_db)
+):
+    """
+    Receives and processes official Razorpay Webhook events
+    (e.g., payment.captured, order.paid).
+    Endpoint: https://trueprofile.joycorporatesolutions.com/api/billing/razorpay/webhook
+    """
+    body_bytes = await request.body()
+
+    # Verify signature if header is provided
+    if x_razorpay_signature:
+        verified = razorpay_service.verify_webhook_signature(body_bytes, x_razorpay_signature, db)
+        if not verified:
+            raise HTTPException(status_code=400, detail="Invalid Razorpay webhook signature")
+
+    try:
+        event_data = json.loads(body_bytes.decode("utf-8"))
+    except Exception:
+        return {"status": "ignored", "reason": "non-json payload"}
+
+    event_type = event_data.get("event")
+    logger_msg = f"Razorpay Webhook received event: {event_type}"
+
+    # Handle payment.captured or order.paid if needed for async settlements
+    if event_type in ("payment.captured", "order.paid"):
+        payload_entity = event_data.get("payload", {}).get("payment", {}).get("entity", {})
+        notes = payload_entity.get("notes", {})
+        company_id = notes.get("company_id")
+        if company_id:
+            # Idempotently confirm or mark payment
+            logger_msg += f" for company {company_id}"
+
+    return {"status": "ok", "event": event_type, "message": logger_msg}
+

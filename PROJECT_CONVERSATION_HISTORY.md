@@ -1217,7 +1217,80 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
   - Live carrier SMS successfully delivered to user's personal mobile handset via the cPanel production server using registered Airtel IQ credentials and approved TRAI DLT Header `JYCORP`.
 
 ---
-*Last Updated: October 20, 2026 | Antigravity IDE Autonomous Agent Log*
+
+### Session 21: Single Plan Checklist Architecture & Razorpay Payment Connection (October 21, 2026)
+
+#### User Directives & Goals:
+1. **Single Plan Architecture**:
+   - Eliminate rigid tiered subscription plans; enforce a single customizable plan where clients pick only the services they need.
+   - Profile Volume Presets: `100 Profiles`, `300 Profiles` (Most Popular), `500 Profiles` (Enterprise), and `Custom Profiles` (arbitrary user-specified volume).
+   - Dynamic real-time bill generation driven by itemized verification check selections.
+2. **Itemized Checklist Categories & Rate Card**:
+   - **Employee Background Checks**:
+     - Contact Verification: Mobile Number Check (Airtel IQ DLT OTP), Email Check (SMTP OTP).
+     - Government Statutory Identity: Aadhaar Basic (Name, Status) vs Aadhaar Detailed (Name, Status, Details & Photo); PAN Basic (Name, Status) vs PAN Detailed (Father Name, DOB, Category).
+     - Financial & Banking: Bank Account IMPS ₹1 Penny Drop validation.
+     - Licenses & Civil Identity: Driving License Basic vs Detailed (Sarathi class & validity); Voter ID Basic vs Detailed; Passport Verification.
+     - Social Security & Employment History: ESIC Basic vs Detailed; EPFO Basic vs Detailed (UAN service history & dual employment detection).
+     - Vault: DigiLocker Detailed certified documents.
+   - **Vendor Due Diligence Checks**:
+     - Corporate Tax & Legal Entity: Corporate PAN Detailed, Bank Account verify, MCA Name Lookup, GSTIN Active Status & Filings.
+     - Governance: CIN Detailed, DIN Detailed & disqualification audit.
+     - Statutory Registrations: FSSAI food safety verify, UDYAM MSME verify, Corporate DigiLocker documents, Vehicle RC Vahan fleet check.
+   - **Communication Gateways**:
+     - Email Gateway (Default Included, ₹0.00).
+     - Normal SMS Gateway (Airtel IQ DLT Carrier SMS, ₹0.25).
+     - WhatsApp Gateway (Meta Cloud API interactive bot, ₹0.85).
+3. **Razorpay Payment Integration**:
+   - Backend order creation with strict rupee-to-paise conversion (`amount * 100`).
+   - Pure Python zero-third-party-SDK HMAC-SHA256 signature verification (`order_id + "|" + payment_id`).
+   - Webhook processing with SHA-256 validation at `https://trueprofile.joycorporatesolutions.com/api/billing/razorpay/webhook`.
+   - Automatic quota incrementation (`company.max_limit += profileCount`), plan assignment, payment record ledgering, and 18% GST tax invoice generation (`status = PAID`).
+   - Idempotency protection on repeat webhook notifications and user retries.
+
+#### Architectural Implementations:
+1. **Plan Pricing Engine (`src/config/planPricingConfig.js`)**:
+   - Centralized rate card with category grouping, default selections, and mutual exclusivity pairings for Basic vs. Detailed checks.
+   - Exported `calculateDynamicPlanBill()` utility providing subtotal, 18% GST, rate per profile, and itemized breakdown.
+2. **Backend Razorpay Service (`backend/app/services/razorpay_service.py`)**:
+   - Pure Python implementation leveraging `requests`, `hmac`, and `hashlib`.
+   - `get_razorpay_credentials(db)`: fetches from `CommunicationGateway` table or settings fallback.
+   - `create_razorpay_order(...)`: creates orders via `https://api.razorpay.com/v1/orders` in paise.
+   - `verify_payment_signature(...)`: cryptographic HMAC-SHA256 signature verification with fallback for sandbox environments.
+   - `settle_single_plan_purchase(...)`: updates `company.max_limit`, records `PaymentRecord`, creates `Invoice` with 18% GST (SAC 998311), and enforces idempotency against duplicate `transaction_ref`.
+3. **Billing Router Endpoints (`backend/app/routers/billing.py`)**:
+   - `GET /api/billing/razorpay/config`: returns Key ID and configuration status.
+   - `POST /api/billing/razorpay/config`: SuperAdmin credential persistence.
+   - `POST /api/billing/razorpay/create-order`: generates Razorpay order in paise.
+   - `POST /api/billing/razorpay/verify-payment`: verifies signature and settles single plan.
+   - `POST /api/billing/razorpay/webhook`: handles incoming Razorpay webhooks.
+4. **Schemas (`backend/app/schemas/billing.py` & `__init__.py`)**:
+   - Added `RazorpayOrderCreateRequest`, `RazorpayOrderResponse`, `RazorpayPaymentVerifyRequest`, and `RazorpayConfigUpdate`.
+5. **Frontend Single Plan Modal (`src/components/DynamicPlanBuilderModal.jsx`)**:
+   - Interactive modal with volume selector pills (100, 300, 500, Custom).
+   - Category tabs for Employee checks, Vendor checks, and Gateways with mutual exclusivity toggles.
+   - Sticky live calculation card with Subtotal, 18% GST, and Total Payable.
+   - Embedded Razorpay Checkout modal execution with success receipt and print functionality.
+6. **Portal Integrations**:
+   - `index.html`: injected official Razorpay `checkout.js` script tag.
+   - `src/services/api.js`: added client methods for Razorpay order, verification, and configuration.
+   - `CompanyAdminView.jsx`: added Single Plan Configurator button and modal trigger.
+   - `LandingPageView.jsx`: added Single Plan Checklist feature hero card in the Pricing tab.
+   - `SuperAdminView.jsx`: integrated Single Plan configurator and backend credential sync.
+
+#### Verification & Test Results:
+- **Automated Backend Test Suite (`scratch/test_razorpay_single_plan.py`)**:
+  - Razorpay order created in paise (`3540.0` &rarr; `354000` paise): **PASSED**.
+  - HMAC SHA-256 signature verification: **PASSED**.
+  - Database single plan settlement: `max_limit` incremented from 800 to 1100 (+300 profiles): **PASSED**.
+  - `PaymentRecord` created with status `Settled`: **PASSED**.
+  - `Invoice` created with 18% GST and status `PAID`: **PASSED**.
+  - Idempotent duplicate check handling: **PASSED**.
+- **Frontend Production Build (`npm run build`)**: Vite built production bundle in **1.86s** with 0 errors.
+
+---
+*Last Updated: October 21, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

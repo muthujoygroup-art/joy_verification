@@ -4189,9 +4189,35 @@ export const AppProvider = ({ children }) => {
     sacCode: '998311'
   });
 
-  const updatePaymentGatewayConfig = (newConfig) => {
+  // Sync Razorpay config from backend on mount
+  useEffect(() => {
+    api.getRazorpayConfig()
+      .then(res => {
+        if (res?.key_id) {
+          setPaymentGatewayConfig(prev => ({
+            ...prev,
+            keyId: res.key_id,
+            mode: res.key_id.startsWith('rzp_live') ? 'Live Production' : 'Sandbox / Test Mode'
+          }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const updatePaymentGatewayConfig = async (newConfig) => {
     setPaymentGatewayConfig(prev => ({ ...prev, ...newConfig }));
-    showToast('Payment Gateway settings updated successfully!');
+    try {
+      if (newConfig.keyId && newConfig.keySecret) {
+        await api.updateRazorpayConfig({
+          key_id: newConfig.keyId,
+          key_secret: newConfig.keySecret,
+          webhook_secret: newConfig.webhookSecret
+        });
+      }
+      showToast('Razorpay Gateway credentials saved & synced with backend successfully!');
+    } catch (err) {
+      showToast('Payment Gateway settings updated locally (' + err.message + ')', 'warning');
+    }
   };
 
   // ⚡ Update Company Postpaid Plan Tier (Tier 1 through Tier 5)
