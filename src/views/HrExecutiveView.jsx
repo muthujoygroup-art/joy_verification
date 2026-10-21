@@ -6294,7 +6294,7 @@ export const HrExecutiveView = () => {
                                 <input 
                                   type="file" 
                                   className="hidden" 
-                                  accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                  accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*" 
                                   onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
                                 />
                               </label>
@@ -6318,7 +6318,7 @@ export const HrExecutiveView = () => {
                               <input 
                                 type="file" 
                                 className="hidden" 
-                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*" 
                                 onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
                               />
                             </label>
@@ -6456,7 +6456,7 @@ export const HrExecutiveView = () => {
                                 <input 
                                   type="file" 
                                   className="hidden" 
-                                  accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                  accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*" 
                                   onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
                                 />
                               </label>
@@ -6480,7 +6480,7 @@ export const HrExecutiveView = () => {
                               <input 
                                 type="file" 
                                 className="hidden" 
-                                accept=".pdf,.png,.jpg,.jpeg,.docx" 
+                                accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*" 
                                 onChange={(e) => handleDocFileUpload(doc.key, e.target.files[0], doc.title, doc.type)} 
                               />
                             </label>
@@ -6766,7 +6766,7 @@ export const HrExecutiveView = () => {
                                   <input
                                     type="file"
                                     className="hidden"
-                                    accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                    accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*"
                                     onChange={(e) => handleDocFileUpload(slot.id || slot.key, e.target.files[0], slot.title, slot.type || 'custom_doc')}
                                   />
                                 </label>
@@ -6790,7 +6790,7 @@ export const HrExecutiveView = () => {
                                 <input
                                   type="file"
                                   className="hidden"
-                                  accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                  accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*"
                                   onChange={(e) => handleDocFileUpload(slot.id || slot.key, e.target.files[0], slot.title, slot.type || 'custom_doc')}
                                 />
                               </label>

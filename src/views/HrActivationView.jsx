@@ -651,7 +651,7 @@ export const HrActivationView = () => {
                         <span>{documents[key] ? 'Replace File' : 'Upload File'}</span>
                         <input
                           type="file"
-                          accept=".pdf,.png,.jpg,.jpeg"
+                          accept=".pdf,.png,.jpg,.jpeg,.webp,image/*"
                           onChange={(e) => handleFileUpload(e, key)}
                           className="hidden"
                         />

@@ -3181,7 +3181,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                             <span>Select & Upload File</span>
                             <input 
                               type="file" 
-                              accept=".pdf,.png,.jpg,.jpeg"
+                              accept=".pdf,.png,.jpg,.jpeg,.webp,image/*"
                               onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)}
                               className="hidden" 
                             />
@@ -3270,7 +3270,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                             <span>Select & Upload File</span>
                             <input 
                               type="file" 
-                              accept=".pdf,.png,.jpg,.jpeg"
+                              accept=".pdf,.png,.jpg,.jpeg,.webp,image/*"
                               onChange={(e) => handleFileUpload(doc.key, e.target.files?.[0], doc.title)}
                               className="hidden" 
                             />
@@ -3453,7 +3453,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                                       <input
                                         type="file"
                                         className="hidden"
-                                        accept=".pdf,.png,.jpg,.jpeg,.docx"
+                                        accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,image/*"
                                         onChange={(e) => handleFileUpload(doc.id || doc.key, e.target.files?.[0], doc.title)}
                                       />
                                     </label>

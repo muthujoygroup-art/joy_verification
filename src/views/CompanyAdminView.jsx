@@ -2692,7 +2692,7 @@ export const CompanyAdminView = () => {
                   </div>
                   <input 
                     type="file" 
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,image/*"
                     onChange={(e) => handleCompanyDocUpload('coi', e.target.files[0])}
                     className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
                   />
@@ -2706,7 +2706,7 @@ export const CompanyAdminView = () => {
                   </div>
                   <input 
                     type="file" 
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,image/*"
                     onChange={(e) => handleCompanyDocUpload('pan', e.target.files[0])}
                     className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
                   />
@@ -2720,7 +2720,7 @@ export const CompanyAdminView = () => {
                   </div>
                   <input 
                     type="file" 
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,image/*"
                     onChange={(e) => handleCompanyDocUpload('gst', e.target.files[0])}
                     className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
                   />
@@ -2734,7 +2734,7 @@ export const CompanyAdminView = () => {
                   </div>
                   <input 
                     type="file" 
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,image/*"
                     onChange={(e) => handleCompanyDocUpload('signatory_proof', e.target.files[0])}
                     className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[9px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
                   />

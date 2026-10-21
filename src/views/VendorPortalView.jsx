@@ -701,7 +701,7 @@ export const VendorPortalView = ({ directToken = null }) => {
                       <label className="cursor-pointer shrink-0">
                         <input
                           type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
+                          accept=".pdf,.jpg,.jpeg,.png,.webp,image/*"
                           onChange={(e) => handleFileUpload(doc.key, e)}
                           className="hidden"
                         />

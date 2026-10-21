@@ -8384,7 +8384,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       <span>Upload 📎</span>
                       <input 
                         type="file" 
-                        accept=".pdf,.jpg,.png" 
+                        accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" 
                         className="hidden" 
                         onChange={(e) => handleUploadLegalCert(doc.id, e.target.files[0])}
                       />
