@@ -40,7 +40,13 @@ export const DynamicPlanBuilderModal = ({
   isOpen,
   onClose,
   targetCompanyId = null,
-  onSuccess = null
+  onSuccess = null,
+  initialVolumePreset = 'vol_300',
+  initialCustomProfileCount = 1000,
+  initialEmpChecks = null,
+  initialVendorChecks = null,
+  initialGateways = null,
+  initialActiveTab = 'employee'
 }) => {
   const {
     companies,
@@ -62,14 +68,15 @@ export const DynamicPlanBuilderModal = ({
   }, [companies, targetCompanyId, currentUser]);
 
   // Volume Selection State
-  const [selectedVolumePreset, setSelectedVolumePreset] = useState('vol_300');
-  const [customProfileCount, setCustomProfileCount] = useState(1000);
+  const [selectedVolumePreset, setSelectedVolumePreset] = useState(initialVolumePreset || 'vol_300');
+  const [customProfileCount, setCustomProfileCount] = useState(initialCustomProfileCount || 1000);
 
   // Active Category Tab
-  const [activeTab, setActiveTab] = useState('employee'); // 'employee' | 'vendor' | 'gateways'
+  const [activeTab, setActiveTab] = useState(initialActiveTab || 'employee'); // 'employee' | 'vendor' | 'gateways'
 
   // Selected Check IDs
   const [selectedEmpChecks, setSelectedEmpChecks] = useState(() => {
+    if (initialEmpChecks && Array.isArray(initialEmpChecks)) return initialEmpChecks;
     const initial = [];
     EMPLOYEE_VERIFICATION_CHECKS.forEach(cat => {
       cat.items.forEach(it => {
@@ -80,6 +87,7 @@ export const DynamicPlanBuilderModal = ({
   });
 
   const [selectedVendorChecks, setSelectedVendorChecks] = useState(() => {
+    if (initialVendorChecks && Array.isArray(initialVendorChecks)) return initialVendorChecks;
     const initial = [];
     VENDOR_VERIFICATION_CHECKS.forEach(cat => {
       cat.items.forEach(it => {
@@ -90,8 +98,21 @@ export const DynamicPlanBuilderModal = ({
   });
 
   const [selectedGateways, setSelectedGateways] = useState(() => {
+    if (initialGateways && Array.isArray(initialGateways)) return initialGateways;
     return COMMUNICATION_GATEWAYS.filter(gw => gw.defaultChecked).map(gw => gw.id);
   });
+
+  // Synchronize state when modal is opened with new props
+  useEffect(() => {
+    if (isOpen) {
+      if (initialVolumePreset) setSelectedVolumePreset(initialVolumePreset);
+      if (initialCustomProfileCount) setCustomProfileCount(initialCustomProfileCount);
+      if (initialEmpChecks && Array.isArray(initialEmpChecks)) setSelectedEmpChecks(initialEmpChecks);
+      if (initialVendorChecks && Array.isArray(initialVendorChecks)) setSelectedVendorChecks(initialVendorChecks);
+      if (initialGateways && Array.isArray(initialGateways)) setSelectedGateways(initialGateways);
+      if (initialActiveTab) setActiveTab(initialActiveTab);
+    }
+  }, [isOpen, initialVolumePreset, initialCustomProfileCount, initialEmpChecks, initialVendorChecks, initialGateways, initialActiveTab]);
 
   // Payment Execution State
   const [isProcessing, setIsProcessing] = useState(false);

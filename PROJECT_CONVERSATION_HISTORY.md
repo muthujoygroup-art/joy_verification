@@ -1366,6 +1366,37 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
    - Pushed commit to GitHub `main` branch.
 
 ---
+
+### Session 25: Single Plan Checklist UI Overhaul & Vendor Tab `catIdx` Fix (October 21, 2026)
+
+#### Context & User Feedback:
+- User reported `catIdx is not defined` (Incident: `ERR-20261021-6B1621`) when clicking the "Vendors Checks" tab on the Pricing page.
+- User requested visual alignment improvements, enhanced text readability, professional enterprise B2B terminology, and seamless execution of every single feature across the Single Plan pricing deck.
+
+#### Root Cause Analysis:
+- In `src/views/LandingPageView.jsx`, line 1918 declared `.map((cat, cIdx) =>` for vendor checks, but line 1919 referenced `key={catIdx || cIdx}`. Because `catIdx` was undeclared in that scope, clicking the vendor category triggered `ReferenceError: catIdx is not defined`.
+
+#### Architectural Enhancements & UI/UX Overhaul Applied:
+1. **Fixed Vendor Checks Crash**:
+   - Updated `VENDOR_VERIFICATION_CHECKS.map((cat, cIdx) => <div key={cIdx} ...>)` with clean, reliable keys.
+2. **Executive Section Alignment & Typography**:
+   - Replaced plain boxes with elevated `p-5 rounded-3xl border border-slate-200/90` category containers.
+   - Added category headers with active status counters (e.g., `4 of 4 checks active`).
+   - Redesigned verification check tiles with custom branded checkboxes, bold statutory titles, and clean right-aligned rate tags (`₹X.XX / candidate`).
+   - Integrated authoritative regulatory badges for UIDAI, Income Tax NSDL, NPCI IMPS, MoRTH Sarathi, ECI, EPFO, ESIC, MCA 21, GSTN, MSME Udyam, and MeitY DigiLocker.
+3. **High-Contrast Real-Time Bill Breakdown (Sticky Summary)**:
+   - Overhauled sticky summary deck with deep `#020617` (slate-950) slate glassmorphic background and border.
+   - Boosted text contrast: labels styled with `text-slate-300`, amounts in glowing white/amber monospace font (`₹XX,XXX Net Payable`).
+   - Financial line items (Subtotal, 18% GST SAC 998311, Statutory Gateways, Invoicing Mode) rendered in high-contrast cards.
+   - Prominent, high-converting Razorpay CTA button: `Proceed to Secure Razorpay Checkout ⚡` with smooth lift hover effects.
+4. **Interactive Modal Synchronization**:
+   - Upgraded `DynamicPlanBuilderModal.jsx` to accept `initialVolumePreset`, `initialCustomProfileCount`, `initialEmpChecks`, `initialVendorChecks`, and `initialGateways`.
+   - Wired `isOpen` synchronization effect so whatever the buyer customizes on the Pricing page mirrors seamlessly into the checkout modal.
+5. **Quality Gate & Push**:
+   - Executed clean production build via `npm run build` (1.98s).
+   - Committed and pushed changes to GitHub `main` branch.
+
+---
 *Last Updated: October 21, 2026 | Antigravity IDE Autonomous Agent Log*
 
 

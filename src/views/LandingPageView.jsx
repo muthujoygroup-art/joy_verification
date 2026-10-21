@@ -1782,32 +1782,35 @@ export const LandingPageView = () => {
             </div>
 
             {/* 2. Interactive Category Tabs & Checklist Options */}
-            <div className="p-5 sm:p-6 space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="p-5 sm:p-7 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
-                    Step 2: Customize Verification Checklist
+                  <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200 inline-block mb-1">
+                    Step 2: Customize Statutory Verification Scope
                   </span>
-                  <h4 className="text-sm sm:text-base font-black text-slate-900 font-outfit">
-                    Toggle Checks Required for Your Organization
+                  <h4 className="text-base sm:text-lg font-black text-slate-900 font-outfit">
+                    Toggle Checks Required for Your Compliance Mandate
                   </h4>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Click any check to include or exclude. Single plan dynamically re-calculates in real-time.
+                  </p>
                 </div>
 
                 {/* Tab Pill Selectors */}
-                <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-1.5 p-1.5 bg-slate-100 rounded-2xl border border-slate-200/90 shrink-0">
                   <button
                     onClick={() => {
                       soundEngine.playClick();
                       setLandingActiveCategory('employee');
                     }}
-                    className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                       landingActiveCategory === 'employee'
-                        ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-black'
+                        ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/80 font-black ring-1 ring-indigo-500/20'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <Users className="w-3.5 h-3.5" />
-                    <span>Employee Checks ({landingEmpChecks.length})</span>
+                    <Users className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Employee Background ({landingEmpChecks.length})</span>
                   </button>
 
                   <button
@@ -1815,14 +1818,14 @@ export const LandingPageView = () => {
                       soundEngine.playClick();
                       setLandingActiveCategory('vendor');
                     }}
-                    className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                       landingActiveCategory === 'vendor'
-                        ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-black'
+                        ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/80 font-black ring-1 ring-indigo-500/20'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>Vendor Checks ({landingVendorChecks.length})</span>
+                    <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Vendor Due Diligence ({landingVendorChecks.length})</span>
                   </button>
 
                   <button
@@ -1830,13 +1833,13 @@ export const LandingPageView = () => {
                       soundEngine.playClick();
                       setLandingActiveCategory('gateways');
                     }}
-                    className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                       landingActiveCategory === 'gateways'
-                        ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-black'
+                        ? 'bg-white text-indigo-700 shadow-sm border border-slate-200/80 font-black ring-1 ring-indigo-500/20'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <Smartphone className="w-3.5 h-3.5" />
+                    <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Gateways ({landingGateways.length})</span>
                   </button>
                 </div>
@@ -1844,186 +1847,237 @@ export const LandingPageView = () => {
 
               {/* TAB 1: EMPLOYEE BACKGROUND CHECKS */}
               {landingActiveCategory === 'employee' && (
-                <div className="space-y-4 animate-fadeIn">
-                  {EMPLOYEE_VERIFICATION_CHECKS.map((cat, cIdx) => (
-                    <div key={cIdx} className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-700">
-                          {cat.category}
-                        </span>
-                      </div>
+                <div className="space-y-6 animate-fadeIn">
+                  {EMPLOYEE_VERIFICATION_CHECKS.map((cat, cIdx) => {
+                    const activeInCat = cat.items.filter(it => landingEmpChecks.includes(it.id)).length;
+                    return (
+                      <div key={cIdx} className="bg-slate-50/80 p-5 rounded-3xl border border-slate-200/90 space-y-3.5">
+                        <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                              {cat.category}
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                            {activeInCat} of {cat.items.length} checks active
+                          </span>
+                        </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                        {cat.items.map((item) => {
-                          const isChecked = landingEmpChecks.includes(item.id);
-                          const isDetailed = item.id.endsWith('_detailed');
-                          return (
-                            <div
-                              key={item.id}
-                              onClick={() => toggleLandingEmpCheck(item)}
-                              className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
-                                isChecked
-                                  ? 'bg-white border-indigo-500 shadow-xs ring-1 ring-indigo-200'
-                                  : 'bg-white/60 border-slate-200 hover:border-slate-300 hover:bg-white'
-                              }`}
-                            >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {cat.items.map((item) => {
+                            const isChecked = landingEmpChecks.includes(item.id);
+                            const isDetailed = item.id.endsWith('_detailed');
+                            return (
                               <div
-                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                key={item.id}
+                                onClick={() => toggleLandingEmpCheck(item)}
+                                className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-start gap-3.5 relative group ${
                                   isChecked
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'border border-slate-300 bg-white'
+                                    ? 'bg-gradient-to-br from-indigo-50/70 via-white to-white border-indigo-500 shadow-xs ring-1 ring-indigo-500/20'
+                                    : 'bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-xs'
                                 }`}
                               >
-                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-slate-900 truncate">
-                                    {item.name}
-                                  </span>
-                                  <span className="text-xs font-black text-indigo-700 shrink-0">
-                                    ₹{item.rate.toFixed(2)}/p
-                                  </span>
+                                <div
+                                  className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                    isChecked
+                                      ? 'bg-indigo-600 text-white shadow-xs'
+                                      : 'border-2 border-slate-300 bg-slate-50 group-hover:border-slate-400'
+                                  }`}
+                                >
+                                  {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                                 </div>
 
-                                <div className="flex items-center gap-1.5 mt-0.5">
-                                  <span
-                                    className={`text-[9px] font-black px-1.5 py-0.2 rounded-full ${
-                                      isDetailed
-                                        ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                                        : 'bg-slate-100 text-slate-700 border border-slate-200'
-                                    }`}
-                                  >
-                                    {item.subType}
-                                  </span>
-                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div>
+                                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-indigo-950 transition-colors">
+                                        {item.name}
+                                      </h5>
+                                      <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                        <span
+                                          className={`text-[9px] font-black px-2 py-0.5 rounded-full ${
+                                            isDetailed
+                                              ? 'bg-purple-100 text-purple-900 border border-purple-200'
+                                              : 'bg-indigo-50 text-indigo-800 border border-indigo-100'
+                                          }`}
+                                        >
+                                          {item.subType}
+                                        </span>
+                                      </div>
+                                    </div>
 
-                                <p className="text-[11px] text-slate-500 font-medium mt-1 leading-snug">
-                                  {item.desc}
-                                </p>
+                                    <div className="text-right shrink-0">
+                                      <span className="text-xs sm:text-sm font-black font-mono text-indigo-700 block">
+                                        ₹{item.rate.toFixed(2)}
+                                      </span>
+                                      <span className="text-[9px] font-semibold text-slate-400 block -mt-0.5">
+                                        / candidate
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <p className="text-[11px] text-slate-500 font-medium mt-1.5 leading-relaxed">
+                                    {item.desc}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
               {/* TAB 2: VENDOR DUE DILIGENCE CHECKS */}
               {landingActiveCategory === 'vendor' && (
-                <div className="space-y-4 animate-fadeIn">
-                  {VENDOR_VERIFICATION_CHECKS.map((cat, cIdx) => (
-                    <div key={catIdx || cIdx} className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-2.5">
-                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 block">
-                        {cat.category}
-                      </span>
+                <div className="space-y-6 animate-fadeIn">
+                  {VENDOR_VERIFICATION_CHECKS.map((cat, cIdx) => {
+                    const activeInCat = cat.items.filter(it => landingVendorChecks.includes(it.id)).length;
+                    return (
+                      <div key={cIdx} className="bg-slate-50/80 p-5 rounded-3xl border border-slate-200/90 space-y-3.5">
+                        <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-sky-600"></span>
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                              {cat.category}
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                            {activeInCat} of {cat.items.length} checks active
+                          </span>
+                        </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                        {cat.items.map((item) => {
-                          const isChecked = landingVendorChecks.includes(item.id);
-                          return (
-                            <div
-                              key={item.id}
-                              onClick={() => toggleLandingVendorCheck(item)}
-                              className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
-                                isChecked
-                                  ? 'bg-white border-indigo-500 shadow-xs ring-1 ring-indigo-200'
-                                  : 'bg-white/60 border-slate-200 hover:border-slate-300 hover:bg-white'
-                              }`}
-                            >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {cat.items.map((item) => {
+                            const isChecked = landingVendorChecks.includes(item.id);
+                            return (
                               <div
-                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                key={item.id}
+                                onClick={() => toggleLandingVendorCheck(item)}
+                                className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-start gap-3.5 relative group ${
                                   isChecked
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'border border-slate-300 bg-white'
+                                    ? 'bg-gradient-to-br from-sky-50/70 via-white to-white border-sky-500 shadow-xs ring-1 ring-sky-500/20'
+                                    : 'bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-xs'
                                 }`}
                               >
-                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-slate-900 truncate">
-                                    {item.name}
-                                  </span>
-                                  <span className="text-xs font-black text-indigo-700 shrink-0">
-                                    ₹{item.rate.toFixed(2)}/p
-                                  </span>
+                                <div
+                                  className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                    isChecked
+                                      ? 'bg-sky-600 text-white shadow-xs'
+                                      : 'border-2 border-slate-300 bg-slate-50 group-hover:border-slate-400'
+                                  }`}
+                                >
+                                  {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                                 </div>
 
-                                <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200 inline-block mt-0.5">
-                                  {item.subType}
-                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div>
+                                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-sky-950 transition-colors">
+                                        {item.name}
+                                      </h5>
+                                      <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                        <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-sky-200">
+                                          {item.subType}
+                                        </span>
+                                      </div>
+                                    </div>
 
-                                <p className="text-[11px] text-slate-500 font-medium mt-1 leading-snug">
-                                  {item.desc}
-                                </p>
+                                    <div className="text-right shrink-0">
+                                      <span className="text-xs sm:text-sm font-black font-mono text-sky-700 block">
+                                        ₹{item.rate.toFixed(2)}
+                                      </span>
+                                      <span className="text-[9px] font-semibold text-slate-400 block -mt-0.5">
+                                        / vendor
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <p className="text-[11px] text-slate-500 font-medium mt-1.5 leading-relaxed">
+                                    {item.desc}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
               {/* TAB 3: GATEWAYS & DISPATCH INFRASTRUCTURE */}
               {landingActiveCategory === 'gateways' && (
-                <div className="space-y-4 animate-fadeIn">
-                  <div className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-2.5">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 block">
-                      Enterprise Communication & OTP Delivery Gateways
-                    </span>
+                <div className="space-y-6 animate-fadeIn">
+                  <div className="bg-slate-50/80 p-5 rounded-3xl border border-slate-200/90 space-y-3.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                          Enterprise Communication & OTP Delivery Gateways
+                        </span>
+                      </div>
+                      <span className="text-[11px] font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                        Official Carrier & API Infrastructure
+                      </span>
+                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                       {COMMUNICATION_GATEWAYS.map((item) => {
                         const isChecked = landingGateways.includes(item.id);
                         return (
                           <div
                             key={item.id}
                             onClick={() => toggleLandingGateway(item)}
-                            className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                            className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                               isChecked
-                                ? 'bg-white border-indigo-500 shadow-xs ring-1 ring-indigo-200'
-                                : 'bg-white/60 border-slate-200 hover:border-slate-300'
-                            } ${item.isFixed ? 'opacity-90 cursor-not-allowed' : ''}`}
+                                ? 'bg-gradient-to-br from-emerald-50/70 via-white to-white border-emerald-500 shadow-xs ring-1 ring-emerald-500/20'
+                                : 'bg-white border-slate-200/90 hover:border-slate-300'
+                            } ${item.isFixed ? 'cursor-default' : ''}`}
                           >
-                            <div className="flex items-start gap-3">
-                              <div
-                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                                  isChecked
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'border border-slate-300 bg-white'
-                                }`}
-                              >
-                                {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-bold text-slate-900">
-                                    {item.name}
-                                  </span>
+                            <div>
+                              <div className="flex items-start justify-between gap-2">
+                                <div
+                                  className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+                                    isChecked
+                                      ? 'bg-emerald-600 text-white shadow-xs'
+                                      : 'border-2 border-slate-300 bg-slate-50'
+                                  }`}
+                                >
+                                  {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                </div>
+
+                                <div className="text-right">
                                   {item.isFixed ? (
-                                    <span className="badge badge-emerald text-[8px] font-black uppercase">
-                                      Included
+                                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
+                                      Default Included
                                     </span>
                                   ) : (
-                                    <span className="text-xs font-black text-indigo-700">
-                                      ₹{item.rate.toFixed(2)}/p
-                                    </span>
+                                    <div>
+                                      <span className="text-xs sm:text-sm font-black font-mono text-emerald-700 block">
+                                        ₹{item.rate.toFixed(2)}
+                                      </span>
+                                      <span className="text-[9px] font-semibold text-slate-400 block -mt-0.5">
+                                        / profile
+                                      </span>
+                                    </div>
                                   )}
                                 </div>
-                                <span className="text-[9px] font-bold text-slate-500 block mt-0.5">
-                                  {item.subType}
-                                </span>
-                                <p className="text-[11px] text-slate-500 font-medium mt-1 leading-snug">
-                                  {item.desc}
-                                </p>
                               </div>
+
+                              <h5 className="text-xs sm:text-sm font-bold text-slate-900 mt-3">
+                                {item.name}
+                              </h5>
+                              <span className="text-[9px] font-bold text-slate-500 block mt-0.5">
+                                {item.subType}
+                              </span>
+                              <p className="text-[11px] text-slate-500 font-medium mt-1.5 leading-relaxed">
+                                {item.desc}
+                              </p>
                             </div>
                           </div>
                         );
@@ -2034,73 +2088,101 @@ export const LandingPageView = () => {
               )}
             </div>
 
-            {/* 3. Sticky Real-Time Bill Breakdown & Razorpay Checkout CTA */}
-            <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-t border-indigo-900/50 space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-indigo-800/50">
+            {/* 3. High-Contrast Real-Time Bill Breakdown & Razorpay Checkout Bar */}
+            <div className="p-6 sm:p-8 bg-slate-950 border-t-2 border-slate-800 text-white space-y-5">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-slate-800/80">
                 <div>
-                  <span className="text-[10px] uppercase font-black tracking-wider text-indigo-300 block">
+                  <span className="text-xs font-black tracking-widest text-amber-400 uppercase inline-flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     Dynamic Bill Computation • SAC Code 998311
                   </span>
-                  <h3 className="text-lg sm:text-xl font-black text-white font-outfit mt-0.5">
-                    {landingDynamicBill.profileCount} Candidate Profiles • {landingDynamicBill.totalSelectedChecksCount} Verification Checks Selected
+                  <h3 className="text-xl sm:text-2xl font-black text-white font-outfit mt-1">
+                    {landingDynamicBill.profileCount.toLocaleString('en-IN')} Candidate Profiles • {landingDynamicBill.totalSelectedChecksCount} Verification Checks Selected
                   </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    100% itemized pricing based on your custom checklist. No hidden charges or forced lock-ins.
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-5 sm:gap-7 bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
                   <div className="text-right">
-                    <span className="text-[10px] font-bold text-indigo-300 block uppercase">Rate Per Profile</span>
-                    <span className="text-xl font-black text-white font-mono">
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">
+                      Rate Per Profile
+                    </span>
+                    <span className="text-xl sm:text-2xl font-black text-white font-mono">
                       ₹{landingDynamicBill.totalRatePerProfile.toFixed(2)}
                     </span>
                   </div>
-                  <div className="text-right pl-6 border-l border-indigo-800/60">
-                    <span className="text-[10px] font-bold text-amber-300 block uppercase">Net Payable (incl. 18% GST)</span>
-                    <span className="text-2xl sm:text-3xl font-black text-yellow-300 font-mono">
+
+                  <div className="h-10 w-px bg-slate-800" />
+
+                  <div className="text-right">
+                    <span className="text-[10px] font-black text-amber-400 block uppercase tracking-wider">
+                      Net Payable (incl. 18% GST)
+                    </span>
+                    <span className="text-2xl sm:text-3xl font-black text-amber-400 font-mono tracking-tight">
                       ₹{landingDynamicBill.totalAmount.toLocaleString('en-IN')}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Subtotal & GST Line Items */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-indigo-200/80">
-                <div>
-                  <span className="text-[10px] text-slate-400 block">Subtotal (Excl. Tax):</span>
-                  <span className="font-extrabold text-white">₹{landingDynamicBill.subtotal.toLocaleString('en-IN')}</span>
+              {/* High-Contrast Financial Line Items */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                    Subtotal (Excl. Tax)
+                  </span>
+                  <span className="text-base font-black text-white font-mono mt-0.5 block">
+                    ₹{landingDynamicBill.subtotal.toLocaleString('en-IN')}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block">18% GST (SAC 998311):</span>
-                  <span className="font-extrabold text-white">₹{landingDynamicBill.gstAmount.toLocaleString('en-IN')}</span>
+
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                    18% GST (SAC 998311)
+                  </span>
+                  <span className="text-base font-black text-white font-mono mt-0.5 block">
+                    ₹{landingDynamicBill.gstAmount.toLocaleString('en-IN')}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block">Statutory Gateways:</span>
-                  <span className="font-extrabold text-emerald-400">UIDAI, NSDL, EPFO, MCA</span>
+
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                    Statutory Gateways
+                  </span>
+                  <span className="text-xs font-black text-emerald-400 mt-1 block truncate">
+                    UIDAI • NSDL • EPFO • MCA
+                  </span>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 block">Invoicing Mode:</span>
-                  <span className="font-extrabold text-emerald-400">Official GST Tax Invoice</span>
+
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                    Invoicing & Accounting
+                  </span>
+                  <span className="text-xs font-black text-emerald-400 mt-1 block truncate">
+                    Official GST Tax Invoice
+                  </span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Security Guarantee & High-Impact Razorpay Button */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-xs text-indigo-200/80">
+                <div className="flex items-center gap-2 text-xs text-slate-300">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>Secure 256-Bit TLS • RBI Authorized Razorpay Gateway • Instant Quota Allocation</span>
                 </div>
 
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <button
-                    onClick={() => {
-                      soundEngine.playClick();
-                      setShowDynamicPlanModal(true);
-                    }}
-                    className="flex-1 sm:flex-none px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-500 hover:to-orange-600 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/30 transition-all cursor-pointer"
-                  >
-                    <Zap className="w-4 h-4 fill-slate-950" />
-                    <span>Proceed to Secure Razorpay Checkout ⚡</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setShowDynamicPlanModal(true);
+                  }}
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-300 hover:to-orange-500 text-slate-950 font-black text-sm flex items-center justify-center gap-2.5 shadow-xl hover:shadow-amber-500/30 transform hover:-translate-y-0.5 transition-all cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 fill-slate-950" />
+                  <span>Proceed to Secure Razorpay Checkout ⚡</span>
+                </button>
               </div>
             </div>
           </div>
@@ -2775,6 +2857,12 @@ export const LandingPageView = () => {
       <DynamicPlanBuilderModal
         isOpen={showDynamicPlanModal}
         onClose={() => setShowDynamicPlanModal(false)}
+        initialVolumePreset={landingVolumePreset}
+        initialCustomProfileCount={landingCustomVolume}
+        initialEmpChecks={landingEmpChecks}
+        initialVendorChecks={landingVendorChecks}
+        initialGateways={landingGateways}
+        initialActiveTab={landingActiveCategory}
       />
 
     </div>
