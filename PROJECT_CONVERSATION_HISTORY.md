@@ -1517,5 +1517,70 @@ Connect official **Airtel IQ Prepaid SMS API** to the JOY TrueProfile platform, 
 - **Git Deployment**: Committed as `158f2ce` and pushed to `https://github.com/muthujoygroup-art/joytrueprofile.git` (`origin/main`).
 
 ---
+
+### Session 29: 2FA Login Flash of Unstyled Content (FOUC) Elimination & "Onboard New Company" Dedicated Workstation Display Overhaul (October 22, 2026)
+
+#### Context & User Feedback:
+The user reported two specific visual and layout issues in the Super Admin Portal:
+1. **2FA Login CSS Glitch**: After entering the 6-digit 2FA authentication code in the Super Admin login, before the portal displays, the browser flashed the raw unstyled HTML structure of the Super Admin portal for ~1 second without CSS.
+2. **"Onboard New Company" Display Positioning Glitch**: In the Super Admin console, clicking *"Onboard New Company"* in the left sidebar resulted in an awkwardly cropped, trapped popup modal inside a dark rectangle with the dashboard cut off vertically and a large empty white void below (as shown in user-uploaded screenshot).
+
+#### Root Cause Analysis:
+
+##### 1. Root Cause for 2FA Login FOUC:
+- **Runtime CDN Tailwind Conflict**: In `index.html`, `<script src="https://cdn.tailwindcss.com"></script>` was included in addition to Vite's compiled `@tailwindcss/vite` (Tailwind v4) bundle. The runtime CDN script ran an intensive MutationObserver across the DOM. When the 10,000+ line `SuperAdminView` component was injected upon successful 2FA login, the runtime CDN blocked the main thread and recomputed/injected styles at runtime, causing a visible ~1-second flash of unstyled content.
+- **Premature View Mount Before Preloader Render**: In `LoginView.jsx`, `await verify2FaAndLogin(payload)` immediately set `currentUser` and `currentRole` in `AppContext`. This immediately triggered a re-render of `SuperAdminRoute` in `App.jsx`, unmounting `LoginView` and mounting `SuperAdminView` in a single synchronous tick, before any client transition preloader was displayed.
+- **Keyframe Transform Containing Block Stacking Context**: In `src/index.css`, `@keyframes fadeInKeyframes` and `@keyframes fadeIn` had `transform: translateY(0)` at 100% with `animation-fill-mode: forwards`. In CSS specification, any non-none value for `transform` establishes a containing block for `position: fixed` descendants, preventing fixed overlays from escaping to the viewport.
+
+##### 2. Root Cause for "Onboard New Company" Layout Breakdown:
+- **Missing Dedicated Tab & Missing Division Meta**:
+  - In `PortalSidebarNav.jsx`, the navigation item was defined as `{ id: 'onboard_company', label: 'Onboard New Company', modal: 'add_company', icon: Plus }` with no `tab` property.
+  - When clicked, `handleNavigate` set `activeTab` to `'onboard_company'`.
+  - In `SuperAdminView.jsx`, `divisionMetaMap` had NO entry for `'onboard_company'`, so it fell back to `companies`.
+  - More critically, in `SuperAdminView.jsx`'s JSX tree, no tab condition matched (`activeTab === 'companies'` was false, and no `activeTab === 'onboard_company'` block existed), leaving the main workspace body completely empty (height ~200px).
+- **Stacking Context Trapping of Fixed Modal**:
+  - `showAddCompanyModal` was rendered with `fixed inset-0` WITHOUT React Portal (`createPortal`).
+  - Because its ancestor container `<div className="space-y-8 animate-fadeIn ...">` possessed an active CSS animation with `transform`, the modal's `fixed inset-0` was trapped inside the empty ~200px tall dashboard div rather than overlaying the browser viewport.
+  - This caused the modal to be horizontally cropped by dashboard container padding, vertically cut in half, and surrounded by an abrupt dark box with a white void beneath it.
+
+#### Architectural Implementations & Fixes Applied:
+
+1. **Eliminated Runtime CDN Tailwind & Added Native Tailwind v4 Theme Tokens (`index.html` & `src/index.css`)**:
+   - Removed `<script src="https://cdn.tailwindcss.com"></script>` and the inline `tailwind.config` script from `index.html`.
+   - In `src/index.css`, configured official `@theme` tokens for Tailwind v4 (`--font-sans`, `--font-outfit`, `--color-brand-*`), ensuring zero runtime DOM scanning and instantaneous zero-latency stylesheet application.
+   - Updated `@keyframes fadeInKeyframes` and `@keyframes fadeIn` to finish with `transform: none` at 100%, removing any persistent containing blocks on animated ancestor containers.
+
+2. **Preloader-Guarded 2FA Login Handshake (`src/views/LoginView.jsx` & `src/App.jsx`)**:
+   - In `LoginView.jsx`, dispatched `trigger_full_loading_animation` immediately before `verify2FaAndLogin`, mounting `GlobalPlatformPreloader` at `z-[99999]` fullscreen before any React state or role switch occurs.
+   - In `src/App.jsx`, enhanced `SuperAdminRoute`, `CompanyRoute`, and `HrRoute` with `isMountingTransition` state. When transitioning from unauthenticated to authenticated, the route automatically mounts `<GlobalPlatformPreloader subtitleText="AUTHENTICATING SUPERADMIN CONSOLE" />` for 950ms while the massive SuperAdmin DOM hydrates and calculates layout underneath, completely concealing any unstyled initial paint pass.
+
+3. **Dedicated "Onboard New Enterprise Company" Workstation View (`src/views/SuperAdminView.jsx`)**:
+   - Added `'onboard_company'` to `divisionMetaMap` with title `"Onboard New Enterprise Company"`, badge `"New Enterprise Onboarding"`, and subtitle.
+   - Added `'onboard_company'` to the URL route parser in `SuperAdminView.jsx` (`/superadmin/console/onboard_company`).
+   - Built a dedicated, full-width, clean Workstation card view (`activeTab === 'onboard_company'`) directly in the dashboard content area with:
+     - Header bar with `Building2` icon, title, subtitle, and `← View All Companies` shortcut.
+     - Corporate Logo upload with live preview and remove button.
+     - Company Legal Full Name, Registered City, Contact Person, Mobile, Login Email, and Login Password with show/hide toggle.
+     - Activation Link Security PIN with 1-click Random 4-Digit PIN generator.
+     - Link Expiry Window (7, 15, 30, 60 days).
+     - Subscribed Plan Tier and Allocated Headcount Quota.
+     - Instant Email Invitation notice with active cPanel SMTP status.
+     - DPDP Act 2023 Statutory Compliance & Multi-Channel Activation Notice.
+     - Clean action buttons (`Cancel / Return` and `Onboard & Send Activation Link 🚀`).
+
+4. **Sidebar Navigation Update (`src/components/PortalSidebarNav.jsx`)**:
+   - Updated line 465 to `{ id: 'onboard_company', label: 'Onboard New Company', tab: 'onboard_company', icon: Plus }`.
+   - Now clicking "Onboard New Company" in the sidebar smoothly switches the dashboard view to the dedicated full-width Onboarding Workstation, perfectly aligned with the rest of the console.
+
+5. **React Portal Modal Hardening (`createPortal(..., document.body)`)**:
+   - Wrapped `showAddCompanyModal`, `editingCustomTermsCompany`, `editingFeaturesCompany`, `showCandidateDetailModal`, `showTestEmailModal`, and `showAddMasterFieldModal` with `createPortal(..., document.body)`.
+   - This ensures that whenever any modal is triggered (e.g., clicking `+ Onboard Company` from the top header), it renders directly under `document.body` at full viewport dimensions (`100vw x 100vh`) with zero stacking context trapping or boundary clipping.
+
+#### Verification & Quality Gates:
+- **Build Status**: Executed `npm run build` &rarr; Vite compiled production bundle cleanly in **1.76s** with **0 errors** (`dist/assets/index-B7wA3Cxi.js` and `dist/assets/index-CpGQ5KK0.css`).
+- **Git Status**: All changes committed and pushed to GitHub `origin/main` (`https://github.com/muthujoygroup-art/joytrueprofile.git`).
+
+---
 *Last Updated: October 22, 2026 | Antigravity IDE Autonomous Agent Log*
+
 

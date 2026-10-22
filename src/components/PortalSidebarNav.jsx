@@ -462,7 +462,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           defaultTab: 'companies',
           divisions: [
             { id: 'companies', label: 'All Companies List', tab: 'companies', icon: Building2 },
-            { id: 'onboard_company', label: 'Onboard New Company', modal: 'add_company', icon: Plus },
+            { id: 'onboard_company', label: 'Onboard New Company', tab: 'onboard_company', icon: Plus },
             { id: 'ledger', label: 'Candidate Records', tab: 'ledger', icon: Users },
             { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck },
             { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search }

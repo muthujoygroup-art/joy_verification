@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { PortalLayout } from './components/PortalLayout';
@@ -113,11 +113,35 @@ const SuperAdminRoute = () => {
   const storedRole = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_role') : null;
   const storedUser = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_user') : null;
 
-  if ((currentUser && currentRole === 'superadmin') || (storedRole === 'superadmin' && storedUser)) {
+  const isAuth = Boolean((currentUser && currentRole === 'superadmin') || (storedRole === 'superadmin' && storedUser));
+  const [isMountingTransition, setIsMountingTransition] = useState(false);
+  const wasAuthRef = useRef(isAuth);
+
+  useEffect(() => {
+    if (isAuth && !wasAuthRef.current) {
+      setIsMountingTransition(true);
+      const timer = setTimeout(() => {
+        setIsMountingTransition(false);
+      }, 950);
+      return () => clearTimeout(timer);
+    }
+    wasAuthRef.current = isAuth;
+  }, [isAuth]);
+
+  if (isAuth) {
     return (
-      <PortalLayout>
-        <SuperAdminView />
-      </PortalLayout>
+      <>
+        {isMountingTransition && (
+          <GlobalPlatformPreloader 
+            isFullScreen={true}
+            autoDismissMs={950}
+            subtitleText="AUTHENTICATING SUPERADMIN CONSOLE"
+          />
+        )}
+        <PortalLayout>
+          <SuperAdminView />
+        </PortalLayout>
+      </>
     );
   }
   return <LoginView initialRole="superadmin" lockRole={true} />;
@@ -129,11 +153,35 @@ const CompanyRoute = () => {
   const storedRole = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_role') : null;
   const storedUser = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_user') : null;
 
-  if ((currentUser && currentRole === 'company') || (storedRole === 'company' && storedUser)) {
+  const isAuth = Boolean((currentUser && currentRole === 'company') || (storedRole === 'company' && storedUser));
+  const [isMountingTransition, setIsMountingTransition] = useState(false);
+  const wasAuthRef = useRef(isAuth);
+
+  useEffect(() => {
+    if (isAuth && !wasAuthRef.current) {
+      setIsMountingTransition(true);
+      const timer = setTimeout(() => {
+        setIsMountingTransition(false);
+      }, 950);
+      return () => clearTimeout(timer);
+    }
+    wasAuthRef.current = isAuth;
+  }, [isAuth]);
+
+  if (isAuth) {
     return (
-      <PortalLayout>
-        <CompanyAdminView />
-      </PortalLayout>
+      <>
+        {isMountingTransition && (
+          <GlobalPlatformPreloader 
+            isFullScreen={true}
+            autoDismissMs={950}
+            subtitleText="AUTHENTICATING COMPANY PORTAL"
+          />
+        )}
+        <PortalLayout>
+          <CompanyAdminView />
+        </PortalLayout>
+      </>
     );
   }
   return <LoginView initialRole="company" lockRole={true} />;
@@ -145,11 +193,35 @@ const HrRoute = () => {
   const storedRole = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_role') : null;
   const storedUser = typeof window !== 'undefined' ? localStorage.getItem('joy_auth_user') : null;
 
-  if ((currentUser && currentRole === 'hrexecutive') || (storedRole === 'hrexecutive' && storedUser)) {
+  const isAuth = Boolean((currentUser && currentRole === 'hrexecutive') || (storedRole === 'hrexecutive' && storedUser));
+  const [isMountingTransition, setIsMountingTransition] = useState(false);
+  const wasAuthRef = useRef(isAuth);
+
+  useEffect(() => {
+    if (isAuth && !wasAuthRef.current) {
+      setIsMountingTransition(true);
+      const timer = setTimeout(() => {
+        setIsMountingTransition(false);
+      }, 950);
+      return () => clearTimeout(timer);
+    }
+    wasAuthRef.current = isAuth;
+  }, [isAuth]);
+
+  if (isAuth) {
     return (
-      <PortalLayout>
-        <HrExecutiveView />
-      </PortalLayout>
+      <>
+        {isMountingTransition && (
+          <GlobalPlatformPreloader 
+            isFullScreen={true}
+            autoDismissMs={950}
+            subtitleText="AUTHENTICATING HR WORKSTATION"
+          />
+        )}
+        <PortalLayout>
+          <HrExecutiveView />
+        </PortalLayout>
+      </>
     );
   }
   return <LoginView initialRole="hrexecutive" lockRole={true} />;

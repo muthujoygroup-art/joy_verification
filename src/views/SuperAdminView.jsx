@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
@@ -1025,7 +1026,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
   useEffect(() => {
     const parts = window.location.pathname.split('/').filter(Boolean);
     const lastPart = parts[parts.length - 1];
-    if (['companies', 'apiconfig', 'billing', 'dbms', 'reports', 'settings', 'audit', 'analytics', 'issuelogs', 'system_health', 'ledger', 'omnisearch', 'landing_cms', 'inquiries', 'reviews', 'consumption_margins', 'whatsapp_sms', 'legal_governance', 'masterdata', 'masterfields', 'tickets', 'sessions', 'terms_hub', 'logins'].includes(lastPart)) {
+    if (['companies', 'onboard_company', 'apiconfig', 'billing', 'dbms', 'reports', 'settings', 'audit', 'analytics', 'issuelogs', 'system_health', 'ledger', 'omnisearch', 'landing_cms', 'inquiries', 'reviews', 'consumption_margins', 'whatsapp_sms', 'legal_governance', 'masterdata', 'masterfields', 'tickets', 'sessions', 'terms_hub', 'logins'].includes(lastPart)) {
       setActiveTab(lastPart);
     }
   }, []);
@@ -1587,6 +1588,14 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       subtitle: 'Manage company subscriptions, pricing per check, and enabled verification modules',
       icon: Building2,
       colorClass: 'from-purple-600 to-indigo-700'
+    },
+    onboard_company: {
+      pillarBadge: 'Core Operations',
+      badgeText: 'New Enterprise Onboarding',
+      title: 'Onboard New Enterprise Company',
+      subtitle: 'Provision organization account, configure verification modules, pricing, and generate instant activation link',
+      icon: Plus,
+      colorClass: 'from-indigo-600 to-purple-600'
     },
     ledger: {
       pillarBadge: 'Core Operations',
@@ -2571,6 +2580,333 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       {(activeTab === 'consumption_margins' || activeTab === 'api_margins') && (
         <div className="animate-fadeIn">
           <ApiConsumptionMarginConsole />
+        </div>
+      )}
+
+      {/* TAB: DEDICATED ONBOARD NEW ENTERPRISE COMPANY WORKSTATION */}
+      {activeTab === 'onboard_company' && (
+        <div className="glass-panel p-6 sm:p-8 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-black shadow-xs shrink-0">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base sm:text-lg font-black text-slate-900">Onboard New Enterprise Company</h3>
+                  <span className="badge badge-purple text-[10px] font-bold">Direct Provisioning</span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">Provision organization account, configure verification modules, and generate instant activation link</p>
+              </div>
+            </div>
+
+            <button 
+              type="button"
+              onClick={() => setActiveTab('companies')}
+              className="btn btn-secondary text-xs flex items-center gap-1.5 font-bold self-start sm:self-auto cursor-pointer"
+            >
+              <Building2 className="w-4 h-4 text-slate-500" />
+              <span>← View All Companies</span>
+            </button>
+          </div>
+
+          <form onSubmit={handleCreateCompanySubmit} className="space-y-5 text-xs max-w-4xl">
+            {/* Field: Company Official Logo Upload */}
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+              <label className="block text-slate-800 font-bold mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs">
+                  <Building2 className="w-4 h-4 text-indigo-600" />
+                  <span>Company Official Corporate Logo</span>
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">PNG, JPG, SVG, WebP (Max 2MB)</span>
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                  {newCompany.logo ? (
+                    <img src={newCompany.logo} alt="Company Logo" className="w-full h-full object-contain p-1" />
+                  ) : (
+                    <div className="text-center p-1">
+                      <Building2 className="w-6 h-6 text-slate-300 mx-auto" />
+                      <span className="text-[8px] text-slate-400 font-bold block mt-0.5">NO LOGO</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <label className="btn btn-secondary text-xs py-1.5 px-3 cursor-pointer flex items-center gap-1.5 font-bold text-slate-700 bg-white border-slate-300 hover:bg-slate-50 shadow-2xs">
+                      <UploadCloud className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>{newCompany.logo ? 'Change Logo 🖼️' : 'Upload Corporate Logo 🖼️'}</span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 2 * 1024 * 1024) {
+                              showToast('⚠️ Logo file size exceeds 2MB limit. Please choose a smaller image.', 'error');
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              setNewCompany(prev => ({ ...prev, logo: reader.result }));
+                              showToast('🖼️ Company logo uploaded successfully!');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                    {newCompany.logo && (
+                      <button
+                        type="button"
+                        onClick={() => setNewCompany(prev => ({ ...prev, logo: '' }))}
+                        className="btn btn-secondary text-xs py-1.5 px-2.5 text-red-600 hover:bg-red-50 border-red-200 cursor-pointer font-bold"
+                        title="Remove logo"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-medium">
+                    Displayed across Company Admin workstation, HR dashboard, and official Candidate Profile Dossier PDFs.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Field 1: Company Full Name */}
+            <div>
+              <label className="block text-slate-700 font-bold mb-1">Company Full Legal Name *</label>
+              <input 
+                type="text" 
+                required
+                placeholder="e.g. Apex Global Solutions Private Limited"
+                value={newCompany.name}
+                onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
+                className="form-input font-bold text-sm"
+              />
+            </div>
+
+            {/* Field: Company Registered Location / City */}
+            <div>
+              <label className="block text-slate-700 font-bold mb-1">Registered Location / Head Office City</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Bangalore, Karnataka (or registered street address)"
+                value={newCompany.location}
+                onChange={(e) => setNewCompany({ ...newCompany, location: e.target.value })}
+                className="form-input"
+              />
+            </div>
+
+            {/* Field 2 & 3: Contact Person & Contact Number */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Contact Person Name *</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="e.g. Vikram Malhotra"
+                  value={newCompany.contactPerson}
+                  onChange={(e) => setNewCompany({ ...newCompany, contactPerson: e.target.value })}
+                  className="form-input font-bold"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Contact Number (Mobile) *</label>
+                <input 
+                  type="tel" 
+                  required
+                  placeholder="e.g. +91 98765 43210"
+                  value={newCompany.phone}
+                  onChange={(e) => setNewCompany({ ...newCompany, phone: e.target.value })}
+                  className="form-input font-bold font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Field 4 & 5: Company Login Email & Company Login Password */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Company Email (Login Username) *</label>
+                <input 
+                  type="email" 
+                  required
+                  placeholder="admin@company.com"
+                  value={newCompany.email}
+                  onChange={(e) => setNewCompany({ ...newCompany, email: e.target.value })}
+                  className="form-input font-bold font-mono"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Used to sign in to Company Admin portal</span>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Company Login Password *</label>
+                <div className="relative flex items-center">
+                  <input 
+                    type={showNewCompLoginPassword ? 'text' : 'password'}
+                    required
+                    placeholder="e.g. Company@Admin2026"
+                    value={newCompany.password}
+                    onChange={(e) => setNewCompany({ ...newCompany, password: e.target.value })}
+                    className="form-input font-mono font-bold pr-9"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewCompLoginPassword(!showNewCompLoginPassword)}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                  >
+                    {showNewCompLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Permanent password for /company portal login</span>
+              </div>
+            </div>
+
+            {/* Field 6 & 7: Activation Link Security PIN & Link Expiry Window */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-slate-700 font-bold">Activation Link Security PIN *</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+                      setNewCompany({ ...newCompany, activation_password: randomPin });
+                    }}
+                    className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Random 4-Digit PIN</span>
+                  </button>
+                </div>
+                <div className="relative flex items-center">
+                  <input 
+                    type={showNewCompActivationPin ? 'text' : 'password'}
+                    required
+                    placeholder="e.g. 1234 or 1025"
+                    value={newCompany.activation_password}
+                    onChange={(e) => setNewCompany({ ...newCompany, activation_password: e.target.value })}
+                    className="form-input font-mono font-bold pr-9 text-indigo-700"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewCompActivationPin(!showNewCompActivationPin)}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                  >
+                    {showNewCompActivationPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">4-digit security code to unlock self-activation link</span>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Link Expiry Date / Window *</label>
+                <select 
+                  value={newCompany.expiry_days}
+                  onChange={(e) => setNewCompany({ ...newCompany, expiry_days: parseInt(e.target.value) || 15 })}
+                  className="form-select text-xs font-bold"
+                >
+                  <option value={7}>7 Days Window</option>
+                  <option value={15}>15 Days Window (Standard)</option>
+                  <option value={30}>30 Days Window</option>
+                  <option value={60}>60 Days Window</option>
+                </select>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Time-to-live before activation link expires</span>
+              </div>
+            </div>
+
+            {/* Field 8 & 9: Subscribed Plan & Employee Headcount Quota */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Subscribed Plan Tier *</label>
+                <select 
+                  value={newCompany.plan}
+                  onChange={(e) => {
+                    const selectedPlan = e.target.value;
+                    let quota = 150;
+                    if (selectedPlan.includes('50') && !selectedPlan.includes('150')) quota = 50;
+                    else if (selectedPlan.includes('150')) quota = 150;
+                    else if (selectedPlan.includes('300')) quota = 300;
+                    else if (selectedPlan.includes('500')) quota = 500;
+                    setNewCompany({ ...newCompany, plan: selectedPlan, credits_purchased: quota, maxLimit: quota });
+                  }}
+                  className="form-select text-xs font-bold"
+                >
+                  <option value="50 Employees Plan">50 Employees Plan (₹180 / check)</option>
+                  <option value="150 Employees Plan">150 Employees Plan (₹150 / check)</option>
+                  <option value="300 Employees Plan">300 Employees Plan (₹120 / check)</option>
+                  <option value="500 Employees Plan">500 Employees Plan (₹100 / check)</option>
+                  <option value="500+ Enterprise Plan">500+ Enterprise Plan (₹85 / check)</option>
+                </select>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Employee verification volume plan</span>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Employee Headcount Quota *</label>
+                <input 
+                  type="number" 
+                  min="10"
+                  max="100000"
+                  placeholder="150"
+                  value={newCompany.credits_purchased}
+                  onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: parseInt(e.target.value) || 150, maxLimit: parseInt(e.target.value) || 150 })}
+                  className="form-input font-mono font-bold"
+                />
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity</span>
+              </div>
+            </div>
+
+            {/* Automated Email Notification Box */}
+            <div className="p-3.5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/70 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-white border border-indigo-200 flex items-center justify-center text-indigo-600 shrink-0">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-black text-indigo-950 block">Instant Email Invitation</span>
+                  <span className="text-[10px] text-indigo-800 font-medium">
+                    Automatically sends activation link & PIN to <strong>{newCompany.email || 'admin email'}</strong> via cPanel SMTP
+                  </span>
+                </div>
+              </div>
+              <span className="badge badge-emerald text-[9px] font-black px-2 py-0.5 shrink-0 shadow-2xs">
+                AUTO-SEND ON 📨
+              </span>
+            </div>
+
+            {/* Terms Acceptance */}
+            <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 font-black text-slate-900 text-xs">
+                  <Scale className="w-4 h-4 text-indigo-700" />
+                  <span>Legal Compliance & Multi-Channel Activation</span>
+                </div>
+                <span className="badge badge-indigo text-[9px]">DPDP 2023 READY</span>
+              </div>
+
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Upon creation, an official activation link and 4-digit unlock PIN are generated. The company admin unlocks the portal to upload CIN, GSTIN, Company PAN, and execute the DPDP Master Services Agreement.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+              <button 
+                type="button" 
+                onClick={() => setActiveTab('companies')} 
+                className="btn btn-secondary text-xs py-2.5 px-5 cursor-pointer font-bold"
+              >
+                Cancel / Return
+              </button>
+              <button 
+                type="submit" 
+                className="btn btn-superadmin text-xs py-2.5 px-6 font-black shadow-md flex items-center gap-2 cursor-pointer"
+              >
+                <span>Onboard & Send Activation Link 🚀</span>
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -8669,7 +9005,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
 
       {/* Onboard Company Modal */}
-      {showAddCompanyModal && (
+      {showAddCompanyModal && createPortal((
         <div 
           className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-4 sm:p-6 md:p-8 flex justify-center items-center animate-fadeIn"
           onClick={(e) => {
@@ -8996,10 +9332,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </form>
           </div>
         </div>
-      )}
+      ), document.body)}
 
       {/* Edit Custom Company Terms Modal */}
-      {editingCustomTermsCompany && (
+      {editingCustomTermsCompany && createPortal((
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-lg p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -9074,10 +9410,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
         </div>
-      )}
+      ), document.body)}
 
       {/* 🛠️ COMPREHENSIVE COMPANY FEATURE FLAGS & GATEWAY GOVERNANCE MODAL */}
-      {editingFeaturesCompany && (
+      {editingFeaturesCompany && createPortal((
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 border-2 border-indigo-500/30 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring my-auto">
             
@@ -9340,10 +9676,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
         </div>
-      )}
+      ), document.body)}
 
       {/* Add Master Default Field Modal */}
-      {showAddMasterFieldModal && (
+      {showAddMasterFieldModal && createPortal((
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-md p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-2xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -9402,7 +9738,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </form>
           </div>
         </div>
-      )}
+      ), document.body)}
 
             {/* 👁️ 360° UNIVERSAL ENTITY TRACKER MODAL */}
       {selectedTrackedEntity && (
@@ -9790,7 +10126,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       
       {/* 🔍 CANDIDATE GRANULAR API CALL AUDIT & DOCUMENT LEDGER MODAL */}
-      {showCandidateDetailModal && selectedCandidateDetail && (
+      {showCandidateDetailModal && selectedCandidateDetail && createPortal((
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-indigo-100 space-y-6">
             
@@ -9983,7 +10319,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
           </div>
         </div>
-      )}
+      ), document.body)}
 
 
       {/* ⚡ Razorpay Verification Wallet Recharge Modal */}
@@ -10002,7 +10338,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
     
       {/* 📧 TEST EMAIL TRANSMISSION MODAL */}
-      {showTestEmailModal && (
+      {showTestEmailModal && createPortal((
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-modal-spring">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -10078,7 +10414,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </form>
           </div>
         </div>
-      )}
+      ), document.body)}
 
     
       {/* 📲 COMPANY ACTIVATION MODAL */}

@@ -471,6 +471,19 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     setTwoFaLoading(true);
     try {
       const pending = twoFaPendingAuth || { role: selectedRoleTab, email: twoFaTargetEmail };
+      // 🚀 Dispatch cinematic platform brand preloader immediately so it mounts at z-[99999] before state updates
+      window.dispatchEvent(new CustomEvent('trigger_full_loading_animation', {
+        detail: { 
+          subtitle: (pending.role === 'superadmin') 
+            ? 'AUTHENTICATING SUPERADMIN CONSOLE' 
+            : (pending.role === 'company') 
+            ? 'AUTHENTICATING COMPANY PORTAL' 
+            : (pending.role === 'hrexecutive') 
+            ? 'AUTHENTICATING HR WORKSTATION' 
+            : 'AUTHENTICATING CANDIDATE PORTAL'
+        }
+      }));
+
       const authRes = await verify2FaAndLogin({
         role: pending.role,
         email: pending.email,
