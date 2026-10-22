@@ -62,7 +62,7 @@ def seed_database(force_refresh=False):
     
     db = SessionLocal()
     try:
-        # 1. Super Admin
+        # 1. Super Admin (Persistent Platform Root Administrator)
         sa_admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
         if not sa_admin:
             logger.info("Seeding Super Admin: admin@joycorporatesolutions.com...")
@@ -75,105 +75,6 @@ def seed_database(force_refresh=False):
                 status="Active"
             )
             db.add(new_sa)
-            db.commit()
-
-        # 2. Companies
-        comp1 = db.query(Company).filter((Company.code == "COMP001") | (Company.id == "COMP001")).first()
-        if not comp1:
-            comp1 = Company(
-                id="COMP001",
-                code="COMP001",
-                name="Joy Corporate Solutions Private Limited",
-                contact_person="Muthu Kumar P",
-                email="admin@joycorporatesolutions.com",
-                phone="+91 98765 43210",
-                plan="tier2",
-                status="Active",
-                activation_status="Active",
-                max_limit=100,
-                verified_count_this_month=38,
-                wallet_balance=200000.0,
-                logo_url="/assets/logos/companies/joy_corporate_solutions_logo.png",
-                features={
-                    "cin": "U74999KA2026PTC098214",
-                    "gstin": "33AABCJ1234K1Z5",
-                    "pan": "AABCJ1234K",
-                    "location": "Joy Tech Park, Electronic City, Bengaluru",
-                    "tier_number": 2
-                }
-            )
-            db.add(comp1)
-            db.commit()
-
-        comp2 = db.query(Company).filter((Company.code == "COMP002") | (Company.id == "COMP002")).first()
-        if not comp2:
-            comp2 = Company(
-                id="COMP002",
-                code="COMP002",
-                name="Joy Man Power Service",
-                contact_person="Agilan",
-                email="agilan@joycorporatesolutions.com",
-                phone="+91 98450 12345",
-                plan="tier1",
-                status="Active",
-                activation_status="Active",
-                max_limit=50,
-                verified_count_this_month=12,
-                wallet_balance=100000.0,
-                logo_url="/assets/logos/companies/joy_manpower_service_logo.png",
-                features={
-                    "location": "Chennai Central Workstation, Tamil Nadu",
-                    "tier_number": 1
-                }
-            )
-            db.add(comp2)
-            db.commit()
-
-        # 3. HR Users
-        hr1 = db.query(HrUser).filter(HrUser.email == "agilan@joycorporatesolutions.com").first()
-        if not hr1:
-            hr1 = HrUser(
-                id="hr_comp002_001",
-                company_id="COMP002",
-                name="Agilan (Lead HR)",
-                email="agilan@joycorporatesolutions.com",
-                password_hash="Hr@Recruiter2026",
-                dept="Talent Acquisition",
-                active_links=5,
-                status="Active",
-                permissions={
-                    "can_create": True,
-                    "can_verify": True,
-                    "can_export": True,
-                    "designation": "Lead HR Recruiter",
-                    "phone": "+91 78459 66580",
-                    "activation_status": "Active"
-                }
-            )
-            db.add(hr1)
-            db.commit()
-
-        hr2 = db.query(HrUser).filter(HrUser.email == "haripriya@joycorporatesolutions.com").first()
-        if not hr2:
-            hr2 = HrUser(
-                id="hr_comp001_001",
-                company_id="COMP001",
-                name="Hari priya",
-                email="haripriya@joycorporatesolutions.com",
-                password_hash="Hr@Recruiter2026",
-                dept="Managing Recruitment",
-                active_links=0,
-                status="Active",
-                permissions={
-                    "can_create": True,
-                    "can_verify": True,
-                    "can_export": True,
-                    "designation": "HR & ADMIN",
-                    "phone": "+91 95007 88211",
-                    "activation_status": "Active"
-                }
-            )
-            db.add(hr2)
             db.commit()
     except Exception as e:
         db.rollback()

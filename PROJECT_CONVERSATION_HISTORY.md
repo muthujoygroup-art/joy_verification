@@ -1639,7 +1639,66 @@ Following cPanel git deployment of Session 29, the user reported that the Super 
 - **Git Deployment**: Pushed to `https://github.com/muthujoygroup-art/joytrueprofile.git` (`origin/main`).
 
 ---
+
+### Session 31: Automated Platform User & Demo Data Purge for Clean Enterprise Onboarding (October 22, 2026)
+
+#### Context & User Request:
+The user requested a full reset of all portal users, demo enterprises, HR recruiters, candidates/employees, and vendors in order to onboard live companies, vendor organizations, new HRs, and employees from a clean slate.
+**Critical Rule**: Strictly retain Super Administrator root access (`admin@joycorporatesolutions.com`) with zero disruption to authentication credentials or platform control privileges.
+
+#### Forensic Execution & Architectural Refactoring:
+1. **Backend Seed Hardening (`backend/app/seed.py`)**:
+   - Eliminated automatic insertion of demo enterprises `COMP001` (Joy Corporate Solutions Private Limited) and `COMP002` (Joy Man Power Service), along with demo HR accounts `hr1` (`agilan@joycorporatesolutions.com`) and `hr2` (`haripriya@joycorporatesolutions.com`).
+   - Retained idempotent seeding and verification of `SuperAdminUser` (`admin@joycorporatesolutions.com` / `I]iO[sfh+0;$OpQ6`).
+2. **Database Table Purge (`joy_verification.db` & Schema Integrity)**:
+   - Executed clean SQL wipe across all child and parent user tables:
+     - `companies`: 0 records
+     - `hr_users`: 0 records
+     - `candidates` & `candidate_documents`: 0 records
+     - `verification_records`, `digilocker_verifications`, `digilocker_documents`: 0 records
+     - `active_sessions`: 0 records
+     - `invoices` & `payment_records`: 0 records
+     - `company_requests`, `support_tickets`, `ticket_replies`: 0 records
+   - Verified that `super_admin_users` contains exactly 1 active account (`superadmin-01`, `admin@joycorporatesolutions.com`, role `superadmin`, status `Active`).
+   - Verified that system infrastructure (`communication_gateways`) is intact.
+3. **Frontend Mock State & LocalStorage Migration (`src/context/AppContext.jsx`)**:
+   - Set `DEFAULT_MOCK_VENDORS = []` (removed mock vendors `vend-1`, `vend-2`, and `vend-3`).
+   - Bumped `CURRENT_SCHEMA_VERSION = 'joy_v2026_10_22_clean_onboarding_v2'`.
+   - Added automatic client-side schema migration check:
+     ```javascript
+     if (localStorage.getItem(SCHEMA_VERSION_KEY) !== CURRENT_SCHEMA_VERSION) {
+       localStorage.removeItem('joy_companies_v1');
+       localStorage.removeItem('joy_hr_users_v1');
+       localStorage.removeItem('joy_candidates_v1');
+       localStorage.removeItem('joy_company_vendors_v1');
+       localStorage.removeItem('joy_candidates');
+       localStorage.removeItem('joy_digilocker_verified_records');
+       localStorage.removeItem('joy_active_company_id');
+       localStorage.removeItem('joy_hr_employee_draft_v1');
+       localStorage.removeItem('joy_hr_draft_saved_time_v1');
+       localStorage.removeItem('joy_hr_delegated_map_v1');
+
+       // Clean up legacy demo login sessions while keeping SuperAdmin intact
+       const savedUserStr = localStorage.getItem('joy_auth_user');
+       if (savedUserStr) {
+         const u = JSON.parse(savedUserStr);
+         if (u && (u.role !== 'superadmin' && u.email !== 'admin@joycorporatesolutions.com')) {
+           localStorage.removeItem('joy_auth_user');
+           localStorage.removeItem('joy_auth_role');
+           localStorage.removeItem('joy_auth_token');
+         }
+       }
+       localStorage.setItem(SCHEMA_VERSION_KEY, CURRENT_SCHEMA_VERSION);
+     }
+     ```
+   - Any client browser connecting to the portal will automatically clear cached demo companies, HRs, candidates, and vendors on first load, ensuring all dashboards immediately display 0 records ready for live enterprise onboarding.
+4. **Verification & Quality Gate**:
+   - `npm run build` executed cleanly in **1.83s** with **0 errors**.
+   - Direct SQLite validation confirmed 0 users, 0 companies, 0 HRs, 0 candidates, 0 invoices, and 1 active Super Admin.
+
+---
 *Last Updated: October 22, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 
