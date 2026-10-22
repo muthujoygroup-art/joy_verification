@@ -13,29 +13,29 @@
   --color-brand-rose: #e11d48;
 }
 
-:root {
-  --bg-light: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.95);
-  --bg-card-hover: #ffffff;
-  --border-card: rgba(226, 232, 240, 0.9);
-  
-  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  color-scheme: light;
-}
+@layer base {
+  *, ::after, ::before, ::backdrop {
+    box-sizing: border-box;
+  }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  :root {
+    --bg-light: #f8fafc;
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --bg-card-hover: #ffffff;
+    --border-card: rgba(226, 232, 240, 0.9);
+    
+    font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    color-scheme: light;
+  }
 
-body {
-  background-color: var(--bg-light);
-  background-attachment: fixed;
-  color: #0f172a;
-  min-height: 100vh;
-  overflow-x: hidden;
-  line-height: 1.5;
+  body {
+    background-color: var(--bg-light);
+    background-attachment: fixed;
+    color: #0f172a;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
 }
 
 /* LIGHT THEME ROLE BACKGROUND PASTEL GRADIENTS */

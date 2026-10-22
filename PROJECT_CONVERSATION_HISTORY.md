@@ -1581,6 +1581,65 @@ The user reported two specific visual and layout issues in the Super Admin Porta
 - **Git Status**: All changes committed and pushed to GitHub `origin/main` (`https://github.com/muthujoygroup-art/joytrueprofile.git`).
 
 ---
+
+### Session 30: Elimination of Unlayered CSS Cascade Override & Desktop Sidebar Flex Sibling Architecture Overhaul (October 22, 2026)
+
+#### Context & User Feedback:
+Following cPanel git deployment of Session 29, the user reported that the Super Admin Portal layout was misaligned (screenshot provided from `trueprofile.joycorporatesolutions.com/superadmin/console/omnisearch`). The left executive sidebar was floating directly over the main dashboard workspace, trapping the left ~288px of the dashboard header (`"Platform Administration & System Controls"`) and omnisearch records underneath the sidebar.
+
+#### Forensic Root Cause Investigation:
+1. **Unlayered CSS Universal Reset Precedence Conflict**:
+   - In `src/index.css`, a universal reset was declared at the root level without an `@layer`:
+     ```css
+     * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+     }
+     ```
+   - In CSS Cascade Layers specification (CSS Cascading and Inheritance Level 5), **unlayered CSS rules always take precedence over styles declared inside any `@layer`** (including `@layer utilities`), regardless of selector specificity.
+   - Vite and `@tailwindcss/vite` (Tailwind v4) compile utility classes such as `.lg\:ml-72 { margin-left: calc(var(--spacing) * 72); }` inside `@layer utilities`.
+   - Consequently, the browser's CSS engine matched `* { margin: 0; }` as an unlayered rule with higher cascade priority than `.lg\:ml-72`, forcing `margin-left: 0px` on the main workspace container (`mainCol`) across all screen widths!
+2. **Fragile `fixed` Aside + Fragile `margin-left` Synchronization**:
+   - In `PortalLayout.jsx`, `<aside>` was styled as `fixed top-0 left-0 bottom-0 h-screen`, which completely removed it from the document flow.
+   - The main workspace sibling `<div className="flex-1 ...">` relied on dynamic margin classes (`lg:ml-72 xl:ml-80`) to avoid underlapping the fixed aside.
+   - When `margin-left` was suppressed by the unlayered reset or during window scaling, the main column began at `x = 0`, causing the 288px sidebar to overlay the first 288px of the dashboard.
+3. **Compact Desktop (1024px) Header Crowding**:
+   - On compact desktop widths (1024px to 1279px, where available workspace width is 736px), the left breadcrumb path (`Joy True Profile > SUPER ADMIN CONSOLE`) and the right quick-actions toolbar competed for horizontal space when long text labels (`Search or jump to...`, `Tour`, `Reports`, `Support`) were rendered simultaneously.
+
+#### Architectural Implementations & Solutions Applied:
+1. **Encapsulated Base Resets in `@layer base` (`src/index.css`)**:
+   - Wrapped `:root`, `*, ::after, ::before, ::backdrop`, and `body` resets inside `@layer base`.
+   - Removed redundant unlayered `* { margin: 0; padding: 0; }`, allowing Tailwind v4 preflight and `@layer utilities` margin classes (`margin-left`, `margin-top`, etc.) to take full effect without being suppressed.
+2. **Modern Flex Sibling Architecture (`src/components/PortalLayout.jsx`)**:
+   - Replaced `fixed` positioning on `<aside>` with `sticky top-0 h-screen shrink-0`:
+     ```jsx
+     <aside className={`hidden lg:flex flex-col sticky top-0 h-screen shrink-0 bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs transition-all duration-300 ${
+       sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
+     }`}>
+     ```
+   - Cleaned the main column to a natural flex sibling:
+     ```jsx
+     <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden transition-all duration-300 w-full">
+     ```
+   - In standard Flexbox layout, sibling elements in the same flow CANNOT overlap. `<aside>` occupies its exact `w-72` (288px) or `w-20` (80px), and `<div className="flex-1 ...">` automatically occupies the remaining space from `x = 288px` (or `x = 320px` on xl) to `100%`, eliminating any possibility of layout overlap across all resolutions, zooms, and scaling modes.
+3. **Header Spacing & Responsive Icon Button Polish (`src/components/PortalLayout.jsx`)**:
+   - Added `shrink-0` to the left breadcrumb container (`Joy True Profile > SUPER ADMIN CONSOLE`).
+   - Replaced full text labels on secondary toolbar buttons (`Tour`, `Reports`, `Support`, and `Search or jump to...`) with responsive text (`hidden xl:inline` / `hidden 2xl:inline`), displaying clean, high-contrast icon buttons on 1024px screens with 100% breathing room.
+4. **Pruned Redundant Inner Border (`src/components/PortalSidebarNav.jsx`)**:
+   - Removed duplicate `border-r border-slate-200/80` from the inner container div, giving `<aside>` clean, singular ownership of the right boundary divider.
+
+#### Verification & Quality Gates:
+- **Production Build**: Executed `npm run build` &rarr; Compiled cleanly in **1.45s** with **0 errors** (`dist/assets/index-BPKKtErc.js` and `dist/assets/index-pWhccHxP.css`).
+- **Headless Chrome Automation (Puppeteer)**:
+  - Width 1024px: Sidebar `[0 to 288px]`, Main Column `[288px to 1024px]`, `isOverlapping: false`. H2 `left: 345px`.
+  - Width 1280px: Sidebar `[0 to 320px]`, Main Column `[320px to 1280px]`, `isOverlapping: false`. H2 `left: 377px`.
+  - Width 1440px: Sidebar `[0 to 320px]`, Main Column `[320px to 1440px]`, `isOverlapping: false`. H2 `left: 377px`.
+  - Visual verification screenshot confirmed zero collisions, beautiful alignment, and crisp aesthetics.
+- **Git Deployment**: Pushed to `https://github.com/muthujoygroup-art/joytrueprofile.git` (`origin/main`).
+
+---
 *Last Updated: October 22, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 

@@ -777,7 +777,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
   }, [pillarsConfig, searchQuery]);
 
   return (
-    <div className="h-full flex flex-col justify-between bg-[#F8FAFC] text-slate-800 font-sans select-none overflow-hidden relative border-r border-slate-200/80">
+    <div className="h-full flex flex-col justify-between bg-[#F8FAFC] text-slate-800 font-sans select-none overflow-hidden relative">
       
       {/* ========================================================================= */}
       {/* 1. TOP BRAND HEADER: Clean Apple/Notion Soft-Card Style                   */}

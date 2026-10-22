@@ -146,13 +146,13 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex text-slate-900 font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] flex text-slate-900 font-sans antialiased">
       
       {/* ========================================================================= */}
-      {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (FIXED ON >= lg SCREENS)           */}
+      {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (STICKY ON >= lg SCREENS)           */}
       {/* ========================================================================= */}
       {!isCandidateRoute && (
-        <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 h-screen bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs transition-all duration-300 ${
+        <aside className={`hidden lg:flex flex-col sticky top-0 h-screen shrink-0 bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs transition-all duration-300 ${
           sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
         }`}>
           <PortalSidebarNav 
@@ -185,9 +185,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
       {/* ========================================================================= */}
       {/* 🏛️ RIGHT-HAND MAIN WORKSPACE & CONTENT COLUMN                              */}
       {/* ========================================================================= */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden transition-all duration-300 ${
-        isCandidateRoute ? 'w-full ml-0' : (sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72 xl:ml-80')
-      }`}>
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden transition-all duration-300 w-full">
         
         {/* TOP SLIM PORTAL WORKSPACE HEADER BAR */}
         <header className="sticky top-0 z-20 backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-3 sm:px-6 py-2.5 transition-all shadow-2xs select-none">
@@ -268,7 +266,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
             <div className="w-full flex items-center justify-between gap-2.5">
             
             {/* Left: Mobile Drawer Trigger + Breadcrumb */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               
               {/* Mobile Hamburger Toggle Button */}
               <button
@@ -296,7 +294,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
               </div>
 
               {/* Desktop Breadcrumb Path */}
-              <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-500">
+              <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-500 shrink-0">
                 <div className="flex items-center gap-1 font-bold text-slate-700">
                   <span>Joy True Profile</span>
                 </div>
@@ -310,8 +308,6 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
             {/* Right: Quick Action Controls Toolbar (Only shown for SuperAdmin, Company & HR Consoles) */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
               
-
-
               {/* Universal Spotlight Omnibar Trigger Button */}
               <button
                 type="button"
@@ -323,7 +319,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                 title="Universal Spotlight Search (Press Ctrl+K or ⌘K)"
               >
                 <Search className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-600 transition-colors shrink-0" />
-                <span className="hidden md:inline font-semibold text-slate-600">Search or jump to...</span>
+                <span className="hidden 2xl:inline font-semibold text-slate-600">Search or jump to...</span>
                 <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500 bg-white border border-slate-300 rounded shadow-2xs">
                   ⌘K
                 </kbd>
@@ -341,7 +337,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                 title="Launch Interactive Feature Walkthroughs & How-To Guides"
               >
                 <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow shrink-0" />
-                <span>Tour</span>
+                <span className="hidden xl:inline">Tour</span>
               </button>
 
               {/* Statutory Legal Handbook Trigger */}
@@ -369,7 +365,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                 title="Download Date-Filtered Candidate Reports in PDF, Excel, Word, or ZIP"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                <span className="text-[11px] sm:text-xs font-bold text-emerald-950">Reports</span>
+                <span className="hidden xl:inline text-[11px] sm:text-xs font-bold text-emerald-950">Reports</span>
               </button>
 
               {/* Notifications Alert Bell */}
@@ -402,7 +398,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                 title="Raise Support Ticket / Feedback"
               >
                 <LifeBuoy className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                <span>Support</span>
+                <span className="hidden xl:inline">Support</span>
               </button>
 
               {/* Active Session Badge (Visible on all screen sizes) */}
