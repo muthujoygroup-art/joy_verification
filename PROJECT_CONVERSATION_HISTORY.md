@@ -1697,7 +1697,59 @@ The user requested a full reset of all portal users, demo enterprises, HR recrui
    - Direct SQLite validation confirmed 0 users, 0 companies, 0 HRs, 0 candidates, 0 invoices, and 1 active Super Admin.
 
 ---
+
+### Session 32: Remote PostgreSQL Database User Purge & SuperAdmin Direct Wipe Architecture (October 22, 2026)
+
+#### Context & User Feedback:
+The user shared a screenshot from the live deployment (`trueprofile.joycorporatesolutions.com/superadmin/console/omnisearch`) showing that 2 demo companies (`COMP001`, `COMP002`), 2 HR recruiters (`Hari priya`, `Agilan`), and 6 candidates (`Live Admin`, `Ramesh Kumar`, `Priya Sundaram`, `Karthik Raja`, `Priya Nair`, `Aarav Sharma`) were still visible in the Companies and Employees directories. The user asked why the data was still there and whether manual database deletion was required.
+
+#### Root Cause Analysis:
+1. **Local vs Remote PostgreSQL Database Boundary**:
+   - In Session 31, the SQL wipe was executed against the local development database file (`joy_verification.db`).
+   - The cPanel production server connects to a live **PostgreSQL 16** server (`PostgreSQL 16 · Live`).
+   - The remote PostgreSQL database on cPanel still contained the legacy demo records.
+2. **Passive Seed Pruning vs Active Database Purge**:
+   - `backend/app/seed.py` was previously modified to stop inserting demo companies and HRs on startup. However, removing `db.add()` does not delete pre-existing rows from an already populated PostgreSQL database.
+3. **Missing Automated Remote Wipe Mechanism**:
+   - There was no dedicated SuperAdmin API endpoint or startup migration executing `DELETE FROM companies, hr_users, candidates...` against the live PostgreSQL database engine.
+
+#### Multi-Tier Architectural Solutions Implemented:
+
+1. **Automatic PostgreSQL Startup Purge Migration (`backend/app/seed.py`)**:
+   - Added an automatic one-time database migration in `seed_database()` tracked by `SystemSetting` (`migration_clean_slate_v2_2026`).
+   - On backend startup, it executes atomic deletion across all user and company tables in foreign-key dependency order:
+     ```python
+     for tbl in [
+         "candidate_documents", "verification_records", "digilocker_documents", 
+         "digilocker_verifications", "candidates", "active_sessions", "hr_users", 
+         "payment_records", "invoices", "ticket_replies", "support_tickets", 
+         "company_requests", "companies"
+     ]:
+         conn.execute(text(f"DELETE FROM {tbl};"))
+     ```
+   - Sets the `migration_clean_slate_v2_2026` marker in `system_settings` so this clean-slate wipe executes once and **never touches future onboarded live companies or candidates**.
+   - Strictly preserves `super_admin_users` (`admin@joycorporatesolutions.com`).
+
+2. **Super Admin Direct Wipe API Endpoint (`backend/app/routers/superadmin.py`)**:
+   - Implemented `POST /api/superadmin/purge-all-portal-users`.
+   - Allows the Super Administrator to trigger an immediate, synchronous wipe of all demo companies, HR users, and candidate dossiers directly in PostgreSQL.
+
+3. **Frontend API Client & Context Integration (`src/services/api.js` & `src/context/AppContext.jsx`)**:
+   - Exposed `api.purgeAllPortalUsers()`.
+   - Updated `purgeClientCacheAndReset()` in `AppContext.jsx` to call `api.purgeAllPortalUsers()` first, clear local storage keys, and update React state (`companies = []`, `hrUsers = []`, `candidates = []`, `vendors = []`).
+
+4. **Omnisearch Console One-Click Wipe Action (`src/views/SuperAdminView.jsx`)**:
+   - Added a red **"🗑️ Wipe Demo Data from Database"** action button directly in the **Enterprise Directory Overview** bar on the Omnisearch page (matching the user's active screen).
+   - Clicking this button presents a confirmation dialog, invokes `purgeClientCacheAndReset()`, and instantly cleans both the PostgreSQL database and the browser screen to 0 records.
+   - Fixed count discrepancy in the summary bar so directory entity totals always reflect actual database and enriched state.
+
+#### Quality Gate & Build Status:
+- `npm run build` executed cleanly in **2.12s** with **0 errors**.
+- All changes committed and pushed to GitHub [`origin/main`](https://github.com/muthujoygroup-art/joytrueprofile.git).
+
+---
 *Last Updated: October 22, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

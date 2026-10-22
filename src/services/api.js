@@ -181,6 +181,7 @@ export const api = {
   },
 
   // Super Admin - Companies & Platform Governance
+  purgeAllPortalUsers: () => request('/superadmin/purge-all-portal-users', { method: 'POST' }),
   getCompanies: () => request('/superadmin/companies', {}, true),
   getCompanyRequests: () => request('/superadmin/company-requests', {}, true),
   submitCompanyRequest: (payload) => request('/superadmin/company-requests', { method: 'POST', body: JSON.stringify(payload) }),

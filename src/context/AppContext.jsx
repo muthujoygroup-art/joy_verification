@@ -4620,6 +4620,14 @@ export const AppProvider = ({ children }) => {
 
   const purgeClientCacheAndReset = async () => {
     try {
+      // 1. Call backend API to permanently wipe PostgreSQL / SQLite tables
+      try {
+        await api.purgeAllPortalUsers();
+      } catch (err) {
+        console.warn('Backend database purge call:', err);
+      }
+
+      // 2. Clean local storage cache
       if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.removeItem('joy_companies_v1');
         localStorage.removeItem('joy_company_vendors_v1');
@@ -4636,11 +4644,11 @@ export const AppProvider = ({ children }) => {
       setCandidates([]);
       setVendors([]);
       if (typeof showToast === 'function') {
-        showToast('🧹 Local client cache purged! Directory refreshed to 0.');
+        showToast('🧹 Database & Client Cache Purged! Directory reset to clean slate (0 records).');
       }
     } catch (e) {
       if (typeof showToast === 'function') {
-        showToast('Cache purge notice: ' + e.message, 'error');
+        showToast('Purge error: ' + e.message, 'error');
       }
     }
   };

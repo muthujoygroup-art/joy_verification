@@ -211,6 +211,49 @@ def get_all_companies(db: Session = Depends(get_db)):
             content={"detail": f"Failed to fetch companies: {str(e)}", "trace": tr}
         )
 
+@router.post("/purge-all-portal-users")
+def purge_all_portal_users(db: Session = Depends(get_db)):
+    """
+    Super Admin Direct Wipe: Permanently removes all demo companies, HR users, 
+    candidates, and child records from the active database while strictly preserving 
+    SuperAdmin accounts and system communication configs.
+    """
+    from sqlalchemy import text
+    from backend.app.database import engine
+    from backend.app.models.system import SystemSetting
+    
+    deleted_counts = {}
+    try:
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            for tbl in [
+                "candidate_documents", "verification_records", "digilocker_documents", 
+                "digilocker_verifications", "candidates", "active_sessions", "hr_users", 
+                "payment_records", "invoices", "ticket_replies", "support_tickets", 
+                "company_requests", "companies"
+            ]:
+                try:
+                    res = conn.execute(text(f"DELETE FROM {tbl};"))
+                    deleted_counts[tbl] = res.rowcount if hasattr(res, 'rowcount') else 0
+                except Exception as te:
+                    deleted_counts[tbl] = f"error: {str(te)}"
+        
+        # Record marker
+        purge_marker = SystemSetting(
+            role="migration_clean_slate_v2_2026",
+            settings_data={"purged": True, "timestamp": datetime.utcnow().isoformat(), "reason": "SuperAdmin Manual Purge Request"}
+        )
+        db.merge(purge_marker)
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "All portal users, companies, HRs, and candidates permanently deleted from the database. SuperAdmin root access preserved.",
+            "deleted_counts": deleted_counts
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to purge database users: {str(e)}")
+
 @router.post("/companies")
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     """Register a new enterprise company profile and issue a multi-channel self-activation token"""

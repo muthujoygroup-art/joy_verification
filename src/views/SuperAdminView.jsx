@@ -2165,24 +2165,41 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
           
           {/* Search Result Statistics Summary Bar */}
           <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-bold text-slate-900">
                 {globalSearchQuery ? `🔍 Search Results for "${globalSearchQuery}":` : '📂 Enterprise Directory Overview:'}
               </span>
               <span className="badge badge-emerald font-bold">
-                {searchResults.totalMatches} Active Entities Found
+                {globalSearchQuery ? searchResults.totalMatches : (enrichedDirectory.companies.length + enrichedDirectory.hrUsers.length + enrichedDirectory.candidates.length)} Active Entities Found
               </span>
             </div>
-            <div className="flex items-center gap-3 font-mono font-bold text-[11px]">
+            <div className="flex items-center gap-3 font-mono font-bold text-[11px] flex-wrap">
               <span className="text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
-                🏢 {searchResults.companies.length} Companies
+                🏢 {globalSearchQuery ? searchResults.companies.length : enrichedDirectory.companies.length} Companies
               </span>
               <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                👔 {searchResults.hrUsers.length} HRs
+                👔 {globalSearchQuery ? searchResults.hrUsers.length : enrichedDirectory.hrUsers.length} HRs
               </span>
               <span className="text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-                👤 {searchResults.candidates.length} Employees
+                👤 {globalSearchQuery ? searchResults.candidates.length : enrichedDirectory.candidates.length} Employees
               </span>
+              
+              {/* Clean Slate Purge Button for Database */}
+              {(enrichedDirectory.companies.length > 0 || enrichedDirectory.hrUsers.length > 0 || enrichedDirectory.candidates.length > 0) && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (window.confirm("⚠️ DANGER: Are you sure you want to PERMANENTLY delete all demo companies, HR recruiters, and candidate profiles from the PostgreSQL database?\n\nThis will clear the entire database for fresh enterprise onboarding.\nSuperAdmin root access will NOT be deleted.")) {
+                      await purgeClientCacheAndReset();
+                    }
+                  }}
+                  className="px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
+                  title="Permanently wipe all demo companies, HRs, and candidates from the PostgreSQL database"
+                >
+                  <Trash2 className="w-3 h-3 text-rose-600" />
+                  <span>Wipe Demo Data from Database</span>
+                </button>
+              )}
             </div>
           </div>
 

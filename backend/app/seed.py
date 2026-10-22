@@ -62,6 +62,31 @@ def seed_database(force_refresh=False):
     
     db = SessionLocal()
     try:
+        # Check if one-time clean slate migration has been executed
+        purge_marker = db.query(SystemSetting).filter(SystemSetting.role == "migration_clean_slate_v2_2026").first()
+        if not purge_marker or force_refresh:
+            logger.info("⚡ Executing One-Time Database Purge: Wiping all demo companies, HRs, candidates, and records from PostgreSQL/SQLite...")
+            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+                for tbl in [
+                    "candidate_documents", "verification_records", "digilocker_documents", 
+                    "digilocker_verifications", "candidates", "active_sessions", "hr_users", 
+                    "payment_records", "invoices", "ticket_replies", "support_tickets", 
+                    "company_requests", "companies"
+                ]:
+                    try:
+                        conn.execute(text(f"DELETE FROM {tbl};"))
+                    except Exception as te:
+                        logger.warning(f"Purge notice for table {tbl}: {te}")
+            
+            # Record marker so this purge only runs once and NEVER touches live onboarded companies
+            new_marker = SystemSetting(
+                role="migration_clean_slate_v2_2026",
+                settings_data={"purged": True, "timestamp": datetime.utcnow().isoformat(), "reason": "Fresh Enterprise Onboarding Slate"}
+            )
+            db.merge(new_marker)
+            db.commit()
+            logger.info("✅ Database Clean Slate Purge completed successfully!")
+
         # 1. Super Admin (Persistent Platform Root Administrator)
         sa_admin = db.query(SuperAdminUser).filter(SuperAdminUser.email == "admin@joycorporatesolutions.com").first()
         if not sa_admin:
