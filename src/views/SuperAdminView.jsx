@@ -5816,6 +5816,54 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                           <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
                             {/* 1-Click Remediation Shortcut */}
+                            {(forensics.why?.errorCode?.includes('SMTP') || forensics.why?.message?.toLowerCase().includes('smtp')) && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveTab('settings')}
+                                className="btn btn-secondary text-xs py-1.5 px-2.5 font-bold flex items-center gap-1 text-purple-800 bg-purple-50 border-purple-200 hover:bg-purple-100 cursor-pointer"
+                                title="Configure cPanel SMTP credentials and test socket probe"
+                              >
+                                <Mail className="w-3.5 h-3.5 text-purple-600" />
+                                <span>📧 Check SMTP</span>
+                              </button>
+                            )}
+
+                            {(forensics.why?.errorCode?.includes('AIRTEL') || forensics.why?.errorCode?.includes('SMS') || forensics.why?.errorCode?.includes('DLT')) && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveTab('whatsapp_sms')}
+                                className="btn btn-secondary text-xs py-1.5 px-2.5 font-bold flex items-center gap-1 text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 cursor-pointer"
+                                title="Open Airtel IQ Prepaid SMS Gateway & DLT Registry"
+                              >
+                                <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>💬 Airtel DLT</span>
+                              </button>
+                            )}
+
+                            {forensics.why?.errorCode?.includes('RAZORPAY') && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveTab('billing')}
+                                className="btn btn-secondary text-xs py-1.5 px-2.5 font-bold flex items-center gap-1 text-sky-800 bg-sky-50 border-sky-200 hover:bg-sky-100 cursor-pointer"
+                                title="Inspect Razorpay payment orders and settlement records"
+                              >
+                                <CreditCard className="w-3.5 h-3.5 text-sky-600" />
+                                <span>💳 Razorpay</span>
+                              </button>
+                            )}
+
+                            {(forensics.why?.errorCode?.includes('DB') || forensics.why?.errorCode?.includes('POSTGRES')) && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveTab('dbms')}
+                                className="btn btn-secondary text-xs py-1.5 px-2.5 font-bold flex items-center gap-1 text-indigo-800 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+                                title="Inspect PostgreSQL Database schema and table rows"
+                              >
+                                <Database className="w-3.5 h-3.5 text-indigo-600" />
+                                <span>🛡️ DB Vault</span>
+                              </button>
+                            )}
+
                             {forensics.why?.errorCode?.includes('UIDAI') && (
                               <button
                                 type="button"
@@ -6056,6 +6104,50 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                         {/* Interactive Remediation Triggers */}
                         <div className="pt-2 border-t border-emerald-200 flex flex-wrap items-center gap-2">
+                          {(f.why?.errorCode?.includes('SMTP') || f.why?.message?.toLowerCase().includes('smtp')) && (
+                            <button
+                              type="button"
+                              onClick={() => { setActiveTab('settings'); setSelectedLogForDetail(null); }}
+                              className="btn text-xs py-1.5 px-3 text-purple-900 bg-purple-100 border border-purple-300 hover:bg-purple-200 flex items-center gap-1.5 cursor-pointer rounded-xl font-bold"
+                            >
+                              <Mail className="w-3.5 h-3.5 text-purple-700" />
+                              <span>📧 Open Email Settings & Test Probe</span>
+                            </button>
+                          )}
+
+                          {(f.why?.errorCode?.includes('AIRTEL') || f.why?.errorCode?.includes('SMS') || f.why?.errorCode?.includes('DLT')) && (
+                            <button
+                              type="button"
+                              onClick={() => { setActiveTab('whatsapp_sms'); setSelectedLogForDetail(null); }}
+                              className="btn text-xs py-1.5 px-3 text-emerald-900 bg-emerald-100 border border-emerald-300 hover:bg-emerald-200 flex items-center gap-1.5 cursor-pointer rounded-xl font-bold"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5 text-emerald-700" />
+                              <span>💬 Open Airtel IQ DLT Registry</span>
+                            </button>
+                          )}
+
+                          {f.why?.errorCode?.includes('RAZORPAY') && (
+                            <button
+                              type="button"
+                              onClick={() => { setActiveTab('billing'); setSelectedLogForDetail(null); }}
+                              className="btn text-xs py-1.5 px-3 text-sky-900 bg-sky-100 border border-sky-300 hover:bg-sky-200 flex items-center gap-1.5 cursor-pointer rounded-xl font-bold"
+                            >
+                              <CreditCard className="w-3.5 h-3.5 text-sky-700" />
+                              <span>💳 Inspect Razorpay Billing</span>
+                            </button>
+                          )}
+
+                          {(f.why?.errorCode?.includes('DB') || f.why?.errorCode?.includes('POSTGRES')) && (
+                            <button
+                              type="button"
+                              onClick={() => { setActiveTab('dbms'); setSelectedLogForDetail(null); }}
+                              className="btn text-xs py-1.5 px-3 text-indigo-900 bg-indigo-100 border border-indigo-300 hover:bg-indigo-200 flex items-center gap-1.5 cursor-pointer rounded-xl font-bold"
+                            >
+                              <Database className="w-3.5 h-3.5 text-indigo-700" />
+                              <span>🛡️ Open Database Explorer</span>
+                            </button>
+                          )}
+
                           <button
                             type="button"
                             onClick={() => handlePingGatewayTest('uidai_aadhaar')}
@@ -6628,12 +6720,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                   {[
-                    { label: 'Candidates Table', count: candidates.length, table: 'candidates', icon: Users, color: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
-                    { label: 'Companies Table', count: companies.length, table: 'companies', icon: Building2, color: 'text-teal-600 bg-teal-50 border-teal-200' },
-                    { label: 'HR Users Table', count: hrUsers.length, table: 'hr_users', icon: UserCheck, color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
-                    { label: 'System Errors Log', count: totalLogsCount, table: 'system_error_logs', icon: AlertTriangle, color: 'text-rose-600 bg-rose-50 border-rose-200' },
-                    { label: 'Active Sessions', count: multiRoleSessions.length, table: 'active_sessions', icon: ShieldCheck, color: 'text-sky-600 bg-sky-50 border-sky-200' },
-                    { label: 'Support Tickets', count: supportTickets.length, table: 'support_tickets', icon: LifeBuoy, color: 'text-amber-600 bg-amber-50 border-amber-200' }
+                    { label: 'Candidates Table', count: (candidates || []).length, table: 'candidates', icon: Users, color: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
+                    { label: 'Companies Table', count: (companies || []).length, table: 'companies', icon: Building2, color: 'text-teal-600 bg-teal-50 border-teal-200' },
+                    { label: 'HR Users Table', count: (hrUsers || []).length, table: 'hr_users', icon: UserCheck, color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+                    { label: 'System Errors Log', count: (systemErrorLogs || []).length, table: 'system_error_logs', icon: AlertTriangle, color: 'text-rose-600 bg-rose-50 border-rose-200' },
+                    { label: 'Active Sessions', count: (multiRoleSessions || []).length, table: 'active_sessions', icon: ShieldCheck, color: 'text-sky-600 bg-sky-50 border-sky-200' },
+                    { label: 'Support Tickets', count: (supportTickets || []).length, table: 'support_tickets', icon: LifeBuoy, color: 'text-amber-600 bg-amber-50 border-amber-200' }
                   ].map((tbl, i) => (
                     <div key={i} className={`p-4 rounded-2xl border ${tbl.color} space-y-1 text-center`}>
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">{tbl.label}</span>
@@ -8578,8 +8670,13 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
       {/* Onboard Company Modal */}
       {showAddCompanyModal && (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
-          <div className="glass-panel w-full max-w-xl p-6 space-y-5 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-4 sm:p-6 md:p-8 flex justify-center items-center animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAddCompanyModal(false);
+          }}
+        >
+          <div className="glass-panel w-full max-w-2xl p-6 sm:p-8 space-y-5 border border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl animate-modal-spring max-h-[92vh] overflow-y-auto my-auto relative">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-3">

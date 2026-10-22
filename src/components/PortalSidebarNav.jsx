@@ -542,8 +542,7 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
             { id: 'guidelines', label: 'Legal & Privacy Rules', tab: 'legal_governance', icon: Scale },
             { id: 'masterfields', label: 'System Field Presets', tab: 'masterdata', icon: Sliders },
             { id: 'tickets', label: 'Support Helpdesk', tab: 'tickets', icon: LifeBuoy },
-            { id: 'settings', label: 'Platform Settings', tab: 'settings', icon: Settings },
-            { id: 'omnisearch_gov', label: 'Quick Search', tab: 'omnisearch', icon: Search }
+            { id: 'settings', label: 'Platform Settings', tab: 'settings', icon: Settings }
           ]
         }
       ];

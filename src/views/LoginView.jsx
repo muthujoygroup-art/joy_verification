@@ -74,6 +74,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   const [candidateTokenInput, setCandidateTokenInput] = useState('');
   const [candidatePinInput, setCandidatePinInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthTransitioning, setIsAuthTransitioning] = useState(false);
   const [loginError, setLoginError] = useState('');
 
   // 🛡️ Universal 2FA State
@@ -307,7 +308,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isAuthTransitioning) {
     const activeSub = selectedRoleTab === 'company'
       ? 'AUTHENTICATING COMPANY PORTAL'
       : selectedRoleTab === 'superadmin'
@@ -476,23 +477,28 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         otp: twoFaOtp.trim(),
         token: pending.token
       });
-      setIs2FaMode(false);
 
-      if (pending.role === 'superadmin') {
-        window.location.href = '/superadmin';
-      } else if (pending.role === 'company') {
-        const comp = (companies || []).find(c => c.email?.toLowerCase() === (pending.email || '').toLowerCase()) || (companies || [])[0];
-        const compSlug = (pending.compSlug || comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        window.location.href = `/company/${compSlug}`;
-      } else if (pending.role === 'hrexecutive') {
-        const compName = authRes?.user?.companyName || authRes?.user?.company_name || 'joy-corporate-solutions';
-        const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        window.location.href = `/hr/${hrSlug}`;
-      } else if (pending.role === 'employee_link') {
-        window.location.href = `/verify?token=${pending.token}`;
-      }
+      // Smooth client-side transition with preloader to eliminate any CSS flash
+      setIsAuthTransitioning(true);
+      setTimeout(() => {
+        setIs2FaMode(false);
+        if (pending.role === 'superadmin') {
+          navigate('/superadmin', { replace: true });
+        } else if (pending.role === 'company') {
+          const comp = (companies || []).find(c => c.email?.toLowerCase() === (pending.email || '').toLowerCase()) || (companies || [])[0];
+          const compSlug = (pending.compSlug || comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          navigate(`/company/${compSlug}`, { replace: true });
+        } else if (pending.role === 'hrexecutive') {
+          const compName = authRes?.user?.companyName || authRes?.user?.company_name || 'joy-corporate-solutions';
+          const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          navigate(`/hr/${hrSlug}`, { replace: true });
+        } else if (pending.role === 'employee_link') {
+          navigate(`/verify?token=${pending.token}`, { replace: true });
+        }
+      }, 350);
     } catch (err) {
       setTwoFaError(err.message || 'Invalid or expired 2FA passcode.');
+      setIsAuthTransitioning(false);
     } finally {
       setTwoFaLoading(false);
     }
@@ -571,7 +577,10 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        window.location.href = '/superadmin';
+        setIsAuthTransitioning(true);
+        setTimeout(() => {
+          navigate('/superadmin', { replace: true });
+        }, 350);
       } 
       else if (selectedRoleTab === 'company') {
         let email = emailInput.trim().toLowerCase();
