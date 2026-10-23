@@ -146,13 +146,13 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex text-slate-900 font-sans antialiased">
+    <div className="h-screen overflow-hidden bg-[#F8FAFC] flex text-slate-900 font-sans antialiased">
       
       {/* ========================================================================= */}
-      {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (STICKY ON >= lg SCREENS)           */}
+      {/* 🖥️ DESKTOP LEFT-SIDE SIDEBAR NAVIGATION (PERMANENTLY FIXED ON >= lg SCREENS)*/}
       {/* ========================================================================= */}
       {!isCandidateRoute && (
-        <aside className={`hidden lg:flex flex-col sticky top-0 h-screen shrink-0 bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs transition-all duration-300 ${
+        <aside className={`hidden lg:flex flex-col h-full shrink-0 bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs transition-all duration-300 ${
           sidebarCollapsed ? 'w-20' : 'w-72 xl:w-80'
         }`}>
           <PortalSidebarNav 
@@ -183,9 +183,9 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
       )}
 
       {/* ========================================================================= */}
-      {/* 🏛️ RIGHT-HAND MAIN WORKSPACE & CONTENT COLUMN                              */}
+      {/* 🏛️ RIGHT-HAND MAIN WORKSPACE & CONTENT COLUMN (INDEPENDENT SCROLL)        */}
       {/* ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden transition-all duration-300 w-full">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto overflow-x-hidden transition-all duration-300 w-full">
         
         {/* TOP SLIM PORTAL WORKSPACE HEADER BAR */}
         <header className="sticky top-0 z-20 backdrop-blur-2xl bg-white/95 border-b border-slate-200/90 px-3 sm:px-6 py-2.5 transition-all shadow-2xs select-none">

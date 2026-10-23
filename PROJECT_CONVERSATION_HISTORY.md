@@ -1748,7 +1748,79 @@ The user shared a screenshot from the live deployment (`trueprofile.joycorporate
 - **User Production Verification**: Confirmed by user on live deployment (`trueprofile.joycorporatesolutions.com`). Previous demo entities across all companies, HRs, and employees were successfully deleted from the PostgreSQL database, leaving SuperAdmin active and platform ready for live onboarding.
 
 ---
-*Last Updated: October 22, 2026 | Antigravity IDE Autonomous Agent Log*
+---
+
+### Session 33: Fixed Sidebar Navigation, Activation Security Mode (PIN vs Captcha), Postpaid Pricing Alignment & Company Approval Architecture (October 23, 2026)
+
+#### Context & User Feedback:
+The user provided 3 screenshots and highlighted three operational requirements:
+1. **Fixed Left Sidebar Navigation (Screenshots 1 & 2)**:
+   - When scrolling down on the SuperAdmin console (and other portals), the left-side navigation bar scrolled out of view along with the page content.
+   - Requirement: The left sidebar must remain **permanently fixed** in the viewport while only the right-side workspace content scrolls.
+2. **Pricing Structure & Plan Options Alignment (Screenshot 3)**:
+   - In SuperAdmin Onboard New Company, the "Subscribed Plan Tier *" dropdown displayed obsolete legacy plans (50 @ 180, 150 @ 150, 300 @ 120, 500 @ 100, 500+ @ 85).
+   - Requirement: Align the plan dropdown to strictly match the official Postpaid Tiered plans from the main landing page and `POSTPAID_PLANS` in `AppContext.jsx` (Tier 1 @ 250, Tier 2 @ 230, Tier 3 @ 200, Tier 4 @ 180, Tier 5 @ 150).
+3. **Activation Security Mode (PIN vs Captcha) & Full Company Application Review / Approval Workflow (Screenshot 3)**:
+   - In SuperAdmin onboarding: Allow selecting **either 4-Digit Security PIN or Anti-Bot Captcha Challenge**.
+   - Company activation flow:
+     - Recipient unlocks invitation via 4-digit PIN or solves dynamic anti-bot math Captcha.
+     - Enters complete legal entity profile: CIN, GSTIN, Company PAN, registered address, website, and **Corporate Bank Account Particulars** (Bank Name, Account Number, Confirm Account Number, IFSC, Account Type, Beneficiary Name), plus proofs.
+     - Accepts Master Services Agreement (MSA) and DPDP Act 2023 Consent.
+     - Submits application -> Moves to `Pending Approval` status with Application Reference ID.
+     - SuperAdmin reviews submitted data and clicks **"Approve & Dispatch Login Credentials"**, which marks company `Active` and emails permanent credentials.
+
+#### Comprehensive Engineering Implementation:
+
+1. **Fixed Sidebar Viewport Architecture (`src/components/PortalLayout.jsx` & `src/components/PortalSidebarNav.jsx`)**:
+   - Updated outer container to `h-screen overflow-hidden bg-[#F8FAFC] flex`.
+   - Updated desktop `<aside>` to `hidden lg:flex flex-col h-full shrink-0 bg-[#F8FAFC] border-r border-slate-200/80 z-30 select-none shadow-xs`.
+   - Updated main workspace column to `flex-1 flex flex-col min-w-0 h-full overflow-y-auto overflow-x-hidden transition-all duration-300 w-full`.
+   - The left sidebar is now permanently anchored in the viewport with independent inner scrolling, ensuring navigation controls remain visible at all times.
+
+2. **Backend Models & JSONB Persistence (`backend/app/models/company.py` & `backend/app/schemas/company.py`)**:
+   - Added virtual properties and setters backed by `features` JSONB: `security_mode`, `bank_name`, `bank_account_number`, `bank_ifsc`, `bank_account_type`, `bank_beneficiary_name`, `bank_details`, `application_submitted_at`, `approved_at`, `approved_by`.
+   - Added schema fields to `CompanyBase`, `CompanyCreate`, `CompanyActivationUnlockRequest`, and `CompanyActivationCompleteRequest`.
+
+3. **Backend cPanel SMTP Email Dispatch (`backend/app/services/email_service.py`)**:
+   - Updated `send_company_welcome_email` to support `security_mode`: displays 4-digit PIN block if `pin`, or "Anti-Bot Captcha Verification - No PIN Required" badge if `captcha`.
+   - Created `send_company_approval_credentials_email`: dispatches official congratulations email with assigned Company Code, Login Username, Permanent Login Password, subscribed plan, and direct `/company/login` link.
+
+4. **Backend SuperAdmin & Company Routers (`backend/app/routers/superadmin.py` & `backend/app/routers/company.py`)**:
+   - Added `POST /api/superadmin/companies/{company_id}/approve` endpoint: updates status to `Active`, records approval timestamps, and triggers automated credentials email dispatch.
+   - Updated `create_company` to validate against `POSTPAID_PLANS` tiers (Tier 1 @ 250, Tier 2 @ 230, Tier 3 @ 200, Tier 4 @ 180, Tier 5 @ 150) and propagate `security_mode`.
+   - Updated `unlock_company_activation` to support captcha mode (`captcha_solved: true`) without requiring a PIN.
+   - Updated `complete_company_activation` to persist all bank fields, set status to `Pending Approval`, and timestamp submission.
+
+5. **Frontend API Client & Context (`src/services/api.js` & `src/context/AppContext.jsx`)**:
+   - Added `api.approveCompanyApplication(companyId, payload)`.
+   - Enhanced `api.unlockCompanyActivation(token, payloadOrPin)` to accept captcha unlock objects.
+   - Added `approveCompanyRegistration(companyId)` to `AppContext.jsx` and exposed it via `useApp()`.
+   - Updated `addCompany` default plan to `Tier 2 (< 100 Employees)` (quota 100).
+
+6. **SuperAdmin Onboarding & Review Workstation (`src/views/SuperAdminView.jsx` & `src/components/CompanyProfileAuditModal.jsx`)**:
+   - Updated both inline form and modal form in `SuperAdminView.jsx`:
+     - Added 2-card Activation Security Mode toggle ("4-Digit Security PIN" vs "Anti-Bot Captcha Challenge").
+     - Mapped plan dropdown directly to `POSTPAID_PLANS` with automatic headcount quota assignment.
+   - In companies list table:
+     - Companies with `status === 'Pending Approval'` display `Pending Approval` badge with "Review Application" and "Approve & Dispatch" action buttons.
+   - In `CompanyProfileAuditModal.jsx`:
+     - Added prominent "Action Required: Self-Activation Application Submitted for Review" banner.
+     - Added display for submitted corporate bank particulars (Bank Name, A/C Number, IFSC, Account Type, Beneficiary Name).
+     - Added primary "Approve & Dispatch Login Credentials" CTA button.
+
+7. **Company Self-Activation Flow (`src/views/CompanyActivationView.jsx`)**:
+   - Step 1: Dynamic Anti-Bot math challenge (`captchaNum1 + captchaNum2 = ?`) with refresh button if `security_mode === 'captcha'`, or 4-digit PIN input if `pin`.
+   - Step 2: Complete corporate profile form with CIN, GSTIN, PAN, and full Corporate Bank Details (Bank Name, Account Number, Confirm Account Number with equality validation, IFSC, Account Type, Beneficiary Name) and document uploads.
+   - Step 3: Legal MSA and DPDP Act 2023 Consent checkboxes and signatory details.
+   - Step 4: Submission confirmation screen displaying Application Reference ID (`APP-{code}-{timestamp}`), submitted statutory particulars, and notification that credentials will be dispatched upon SuperAdmin verification.
+
+#### Quality Gate & Validation:
+- `npm run build` executed cleanly in **1.70s** with **0 errors**.
+- Backend Python compilation verified with **0 errors** across models, routers, schemas, and services.
+
+---
+*Last Updated: October 23, 2026 | Antigravity IDE Autonomous Agent Log*
+
 
 
 

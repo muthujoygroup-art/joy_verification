@@ -9,6 +9,7 @@ from typing import List, Dict, Any, Optional
 from backend.app.models import VerificationRecord
 from backend.app.services.email_service import (
     send_company_welcome_email,
+    send_company_approval_credentials_email,
     send_password_changed_confirmation_email,
     send_smtp_email,
     _build_email_shell
@@ -48,6 +49,54 @@ def set_company_activation_password(company_id: str, payload: dict, db: Session 
         "success": True,
         "message": f"Activation password updated to '{password}' for {comp.name}",
         "activation_password": comp.activation_password
+    }
+
+
+@router.post("/companies/{company_id}/approve")
+def approve_company_registration(company_id: str, payload: dict = None, db: Session = Depends(get_db)):
+    """
+    Super Admin Verification & Approval:
+    Verifies company registration application, statutory proofs, and bank details.
+    Activates the organization and dispatches official permanent login credentials.
+    """
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    comp.status = "Active"
+    comp.activation_status = "Active"
+    comp.is_active = True
+    comp.approved_at = datetime.utcnow()
+    comp.approved_by = "Super Administrator"
+
+    login_password = comp.password_hash or "Company@Admin2026"
+    db.commit()
+    db.refresh(comp)
+
+    # Dispatch Official Approval & Credentials Email via cPanel SMTP
+    email_dispatched = False
+    try:
+        if comp.email:
+            res = send_company_approval_credentials_email(
+                company_name=comp.name,
+                company_code=comp.code,
+                admin_email=comp.email,
+                contact_person=comp.contact_person or comp.name,
+                login_password=login_password,
+                plan_name=comp.plan or "Tier 2 (< 100 Employees)",
+                credits=comp.max_limit or 100,
+                db=db
+            )
+            email_dispatched = bool(res.get("success"))
+            print(f"✅ Dispatched company approval credentials email to {comp.email}: {res}")
+    except Exception as e:
+        print(f"Warning: Failed to dispatch company approval credentials email: {e}")
+
+    return {
+        "success": True,
+        "message": f"🎉 Organization '{comp.name}' verified and approved! Permanent login credentials dispatched to {comp.email}.",
+        "company": format_company_dict(comp),
+        "email_dispatched": email_dispatched
     }
 
 
@@ -174,10 +223,20 @@ def format_company_dict(c: Company) -> Dict[str, Any]:
         "activation_status": c.activation_status or "Pending Activation",
         "activation_token": c.activation_token,
         "activation_password": c.activation_password or "1234",
+        "security_mode": c.security_mode or "pin",
         "activation_expires_at": c.activation_expires_at.isoformat() if c.activation_expires_at else None,
         "cin_number": c.cin_number,
         "gstin_number": c.gstin_number,
         "company_pan": c.company_pan,
+        "bank_name": c.bank_name,
+        "bank_account_number": c.bank_account_number,
+        "bank_ifsc": c.bank_ifsc,
+        "bank_account_type": c.bank_account_type,
+        "bank_beneficiary_name": c.bank_beneficiary_name,
+        "bank_details": c.bank_details or {},
+        "application_submitted_at": c.application_submitted_at,
+        "approved_at": c.approved_at,
+        "approved_by": c.approved_by,
         "registered_address": c.registered_address,
         "location": c.location or c.registered_address or "",
         "logo": c.logo_url or "",
@@ -303,41 +362,53 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         comp_id = f"comp_{uuid.uuid4().hex[:10]}"
         activation_token = f"comp_act_{uuid.uuid4().hex[:14]}"
 
-        # Pricing according to Plan Tier
-        plan_name = payload.plan or "150 Employees Plan"
-        if "50" in plan_name and "150" not in plan_name and "500" not in plan_name:
-            plan_name = "50 Employees Plan"
+        # Pricing according to Official Postpaid Plan Tiers (Aligned with POSTPAID_PLANS)
+        plan_name = payload.plan or "Tier 2 (< 100 Employees)"
+        if "tier 1" in plan_name.lower() or "tier1" in plan_name.lower() or "< 50" in plan_name or "<50" in plan_name:
+            plan_name = "Tier 1 (< 50 Employees)"
+            price_per_check = 250.0
+            quota_limit = 50
+        elif "tier 2" in plan_name.lower() or "tier2" in plan_name.lower() or "< 100" in plan_name or "<100" in plan_name:
+            plan_name = "Tier 2 (< 100 Employees)"
+            price_per_check = 230.0
+            quota_limit = 100
+        elif "tier 3" in plan_name.lower() or "tier3" in plan_name.lower() or "< 300" in plan_name or "<300" in plan_name:
+            plan_name = "Tier 3 (< 300 Employees)"
+            price_per_check = 200.0
+            quota_limit = 300
+        elif "tier 4" in plan_name.lower() or "tier4" in plan_name.lower() or "< 500" in plan_name or "<500" in plan_name:
+            plan_name = "Tier 4 (< 500 Employees)"
             price_per_check = 180.0
+            quota_limit = 500
+        elif "tier 5" in plan_name.lower() or "tier5" in plan_name.lower() or "> 500" in plan_name or "custom" in plan_name.lower() or "500+" in plan_name:
+            plan_name = "Tier 5 (Custom > 500 Employees)"
+            price_per_check = 150.0
+            quota_limit = 1000
+        elif "50" in plan_name and "150" not in plan_name:
+            plan_name = "Tier 1 (< 50 Employees)"
+            price_per_check = 250.0
             quota_limit = 50
         elif "150" in plan_name:
-            plan_name = "150 Employees Plan"
-            price_per_check = 150.0
-            quota_limit = 150
+            plan_name = "Tier 2 (< 100 Employees)"
+            price_per_check = 230.0
+            quota_limit = 100
         elif "300" in plan_name:
-            plan_name = "300 Employees Plan"
-            price_per_check = 120.0
+            plan_name = "Tier 3 (< 300 Employees)"
+            price_per_check = 200.0
             quota_limit = 300
-        elif "500+" in plan_name or "Custom" in plan_name:
-            plan_name = "500+ Enterprise Plan"
-            price_per_check = 85.0
-            quota_limit = 999999
         elif "500" in plan_name:
-            plan_name = "500 Employees Plan"
-            price_per_check = 100.0
-            quota_limit = 500
-        elif "Basic" in plan_name:
+            plan_name = "Tier 4 (< 500 Employees)"
             price_per_check = 180.0
-            quota_limit = 50
-        elif "Standard" in plan_name:
-            price_per_check = 150.0
-            quota_limit = 150
+            quota_limit = 500
         else:
-            price_per_check = 150.0
-            quota_limit = 150
+            plan_name = "Tier 2 (< 100 Employees)"
+            price_per_check = 230.0
+            quota_limit = 100
 
         credits_bought = payload.credits_purchased or payload.max_limit or quota_limit
         login_password_set = payload.password or "Company@Admin2026"
         activation_pin_set = payload.activation_password or "1234"
+        security_mode = getattr(payload, 'security_mode', None) or ("captcha" if (activation_pin_set or "").upper() == "CAPTCHA" else "pin")
 
         # Expiry calculation
         if payload.expiry_date:
@@ -353,11 +424,11 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             "aadhaar": True,
             "mobileOtp": True,
             "faceCapture": True,
-            "drivingLicense": True if "Enterprise" in plan_name or "Standard" in plan_name else False,
+            "drivingLicense": True if "Enterprise" in plan_name or "Standard" in plan_name or "Tier 4" in plan_name or "Tier 5" in plan_name else False,
             "pan": True,
-            "uan": True if "Enterprise" in plan_name else False,
+            "uan": True if "Enterprise" in plan_name or "Tier 3" in plan_name or "Tier 4" in plan_name or "Tier 5" in plan_name else False,
             "education": False,
-            "criminalCheck": True if "Enterprise" in plan_name else False,
+            "criminalCheck": True if "Enterprise" in plan_name or "Tier 4" in plan_name or "Tier 5" in plan_name else False,
             "addressCheck": False,
             "bankCheck": True
         }
@@ -376,6 +447,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             "registered_address": location_data,
             "activation_token": activation_token,
             "activation_password": activation_pin_set,
+            "security_mode": security_mode,
             "activation_expires_at": expires_at.isoformat() if expires_at else None,
             "activation_status": "Pending Activation",
             "custom_tariffs": getattr(payload, 'custom_tariffs', None) or {}
@@ -434,7 +506,8 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
                     activation_token=activation_token,
                     expires_at_str=expires_at.strftime('%Y-%m-%d %H:%M:%S UTC'),
                     plan_name=new_comp.plan,
-                    credits=new_comp.max_limit or 500,
+                    credits=new_comp.max_limit or 100,
+                    security_mode=security_mode,
                     db=db
                 )
                 print(f"✅ Automated company welcome email dispatched to {new_comp.email}: {send_res}")

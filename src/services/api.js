@@ -244,8 +244,20 @@ export const api = {
     requestCache.clear();
     return request(`/superadmin/companies/${companyId}/approve-login`, { method: 'PUT' });
   },
+  approveCompanyApplication: (companyId, payload = {}) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
   getCompanyActivationDetails: (token) => request(`/company/activation/${token}`),
-  unlockCompanyActivation: (token, password) => request('/company/activation/unlock', { method: 'POST', body: JSON.stringify({ token, password }) }),
+  unlockCompanyActivation: (token, passwordOrPayload) => {
+    const body = typeof passwordOrPayload === 'object'
+      ? { token, ...passwordOrPayload }
+      : { token, password: passwordOrPayload };
+    return request('/company/activation/unlock', { method: 'POST', body: JSON.stringify(body) });
+  },
   completeCompanyActivation: (payload) => request('/company/activation/complete', { method: 'POST', body: JSON.stringify(payload) }),
 
   // Company SMTP Settings

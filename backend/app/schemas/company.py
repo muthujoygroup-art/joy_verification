@@ -36,6 +36,7 @@ class CompanyBase(BaseModel):
     activation_status: Optional[str] = "Pending Activation"
     activation_token: Optional[str] = None
     activation_password: Optional[str] = "1234"
+    security_mode: Optional[str] = "pin"
     activation_expires_at: Optional[datetime] = None
     cin_number: Optional[str] = None
     gstin_number: Optional[str] = None
@@ -43,6 +44,13 @@ class CompanyBase(BaseModel):
     registered_address: Optional[str] = None
     industry_sector: Optional[str] = None
     website: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    bank_account_type: Optional[str] = None
+    bank_beneficiary_name: Optional[str] = None
+    bank_details: Optional[Dict[str, Any]] = None
+    application_submitted_at: Optional[str] = None
     documents: Optional[Dict[str, Any]] = None
     terms_accepted: Optional[str] = None
     terms_accepted_at: Optional[datetime] = None
@@ -65,7 +73,8 @@ class CompanyUpdateFeatures(BaseModel):
 
 class CompanyActivationUnlockRequest(BaseModel):
     token: str
-    password: str
+    password: Optional[str] = ""
+    captcha_solved: Optional[bool] = False
 
 class CompanyActivationCompleteRequest(BaseModel):
     token: str
@@ -75,8 +84,17 @@ class CompanyActivationCompleteRequest(BaseModel):
     registered_address: Optional[str] = None
     industry_sector: Optional[str] = None
     website: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    bank_account_type: Optional[str] = None
+    bank_beneficiary_name: Optional[str] = None
+    bank_details: Optional[Dict[str, Any]] = None
+    company_logo: Optional[str] = None
     documents: Optional[Dict[str, Any]] = None
     terms_accepted: Optional[bool] = True
+    signatory_name: Optional[str] = None
+    signatory_designation: Optional[str] = None
 
 class CompanyResponse(CompanyBase):
     id: str

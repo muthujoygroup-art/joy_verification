@@ -177,7 +177,8 @@ export const SuperAdminView = () => {
     updateSecurityGateConfig,
     templateRequests,
     reviewTemplateRequest,
-    approveOfflinePayment
+    approveOfflinePayment,
+    approveCompanyRegistration
   } = useApp();
 
   const navigate = useNavigate();
@@ -894,9 +895,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     location: '',
     password: 'Company@Admin2026',
     activation_password: '1234',
-    plan: '150 Employees Plan',
-    credits_purchased: 150,
-    maxLimit: 150,
+    security_mode: 'pin',
+    plan: 'Tier 2 (< 100 Employees)',
+    credits_purchased: 100,
+    maxLimit: 100,
     expiry_days: 15,
     expiry_date: '',
     termsAccepted: true
@@ -1238,9 +1240,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       location: '',
       password: 'Company@Admin2026',
       activation_password: '1234',
-      plan: '150 Employees Plan',
-      credits_purchased: 150,
-      maxLimit: 150,
+      security_mode: 'pin',
+      plan: 'Tier 2 (< 100 Employees)',
+      credits_purchased: 100,
+      maxLimit: 100,
       expiry_days: 15,
       expiry_date: '',
       termsAccepted: true
@@ -2781,42 +2784,117 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
             </div>
 
-            {/* Field 6 & 7: Activation Link Security PIN & Link Expiry Window */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-slate-700 font-bold">Activation Link Security PIN *</label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
-                      setNewCompany({ ...newCompany, activation_password: randomPin });
-                    }}
-                    className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Random 4-Digit PIN</span>
-                  </button>
-                </div>
-                <div className="relative flex items-center">
-                  <input 
-                    type={showNewCompActivationPin ? 'text' : 'password'}
-                    required
-                    placeholder="e.g. 1234 or 1025"
-                    value={newCompany.activation_password}
-                    onChange={(e) => setNewCompany({ ...newCompany, activation_password: e.target.value })}
-                    className="form-input font-mono font-bold pr-9 text-indigo-700"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewCompActivationPin(!showNewCompActivationPin)}
-                    className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
-                  >
-                    {showNewCompActivationPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                <span className="text-[10px] text-slate-400 mt-0.5 block">4-digit security code to unlock self-activation link</span>
+            {/* Field 6: Activation Security Verification Mode (PIN vs Anti-Bot Captcha) */}
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="block text-slate-800 font-bold text-xs flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                  <span>Activation Security Verification Mode *</span>
+                </label>
+                <span className="badge badge-indigo text-[9px] font-bold">Security Challenge</span>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setNewCompany({ ...newCompany, security_mode: 'pin', activation_password: newCompany.activation_password === 'CAPTCHA' ? '1234' : (newCompany.activation_password || '1234') })}
+                  className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex items-start gap-2.5 ${
+                    newCompany.security_mode === 'pin'
+                      ? 'bg-indigo-50/90 border-indigo-400 text-indigo-950 shadow-xs ring-1 ring-indigo-400'
+                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center ${
+                    newCompany.security_mode === 'pin' ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300'
+                  }`}>
+                    {newCompany.security_mode === 'pin' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1">
+                      <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>4-Digit Security PIN</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                      SuperAdmin configures a 4-digit PIN. Company enters this PIN to unlock the activation portal.
+                    </p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setNewCompany({ ...newCompany, security_mode: 'captcha', activation_password: 'CAPTCHA' })}
+                  className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex items-start gap-2.5 ${
+                    newCompany.security_mode === 'captcha'
+                      ? 'bg-purple-50/90 border-purple-400 text-purple-950 shadow-xs ring-1 ring-purple-400'
+                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center ${
+                    newCompany.security_mode === 'captcha' ? 'border-purple-600 bg-purple-600' : 'border-slate-300'
+                  }`}>
+                    {newCompany.security_mode === 'captcha' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Anti-Bot Captcha Challenge</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                      No PIN required. Recipient solves an interactive Anti-Bot verification challenge to unlock.
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Field 7: Security PIN Entry (if PIN mode) OR Captcha Confirmation + Link Expiry Window */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {newCompany.security_mode === 'pin' ? (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-slate-700 font-bold">Activation Link Security PIN *</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+                        setNewCompany({ ...newCompany, activation_password: randomPin });
+                      }}
+                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>Random 4-Digit PIN</span>
+                    </button>
+                  </div>
+                  <div className="relative flex items-center">
+                    <input 
+                      type={showNewCompActivationPin ? 'text' : 'password'}
+                      required
+                      placeholder="e.g. 1234 or 1025"
+                      value={newCompany.activation_password}
+                      onChange={(e) => setNewCompany({ ...newCompany, activation_password: e.target.value })}
+                      className="form-input font-mono font-bold pr-9 text-indigo-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewCompActivationPin(!showNewCompActivationPin)}
+                      className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showNewCompActivationPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">4-digit security code to unlock self-activation link</span>
+                </div>
+              ) : (
+                <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-purple-950 block">Anti-Bot Captcha Active</span>
+                    <span className="text-[10px] text-purple-700 font-medium">Recipient will solve an anti-bot challenge upon opening link (No PIN required)</span>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-slate-700 font-bold mb-1">Link Expiry Date / Window *</label>
@@ -2834,30 +2912,31 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
             </div>
 
-            {/* Field 8 & 9: Subscribed Plan & Employee Headcount Quota */}
+            {/* Field 8 & 9: Subscribed Plan (From POSTPAID_PLANS) & Headcount Quota */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-700 font-bold mb-1">Subscribed Plan Tier *</label>
                 <select 
                   value={newCompany.plan}
                   onChange={(e) => {
-                    const selectedPlan = e.target.value;
-                    let quota = 150;
-                    if (selectedPlan.includes('50') && !selectedPlan.includes('150')) quota = 50;
-                    else if (selectedPlan.includes('150')) quota = 150;
-                    else if (selectedPlan.includes('300')) quota = 300;
-                    else if (selectedPlan.includes('500')) quota = 500;
-                    setNewCompany({ ...newCompany, plan: selectedPlan, credits_purchased: quota, maxLimit: quota });
+                    const selectedPlanName = e.target.value;
+                    const planObj = Object.values(POSTPAID_PLANS).find(p => p.name === selectedPlanName) || POSTPAID_PLANS.tier2;
+                    setNewCompany({ 
+                      ...newCompany, 
+                      plan: planObj.name, 
+                      credits_purchased: planObj.maxProfiles, 
+                      maxLimit: planObj.maxProfiles 
+                    });
                   }}
                   className="form-select text-xs font-bold"
                 >
-                  <option value="50 Employees Plan">50 Employees Plan (₹180 / check)</option>
-                  <option value="150 Employees Plan">150 Employees Plan (₹150 / check)</option>
-                  <option value="300 Employees Plan">300 Employees Plan (₹120 / check)</option>
-                  <option value="500 Employees Plan">500 Employees Plan (₹100 / check)</option>
-                  <option value="500+ Enterprise Plan">500+ Enterprise Plan (₹85 / check)</option>
+                  {Object.values(POSTPAID_PLANS).map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name} (₹{p.ratePerProfile} / check) — {p.maxProfiles} Profiles Quota
+                    </option>
+                  ))}
                 </select>
-                <span className="text-[10px] text-slate-400 mt-0.5 block">Employee verification volume plan</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Official Postpaid tiered rate matching landing page</span>
               </div>
 
               <div>
@@ -2866,12 +2945,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   type="number" 
                   min="10"
                   max="100000"
-                  placeholder="150"
+                  placeholder="100"
                   value={newCompany.credits_purchased}
-                  onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: parseInt(e.target.value) || 150, maxLimit: parseInt(e.target.value) || 150 })}
+                  onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: parseInt(e.target.value) || 100, maxLimit: parseInt(e.target.value) || 100 })}
                   className="form-input font-mono font-bold"
                 />
-                <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity (auto-filled by tier)</span>
               </div>
             </div>
 
@@ -2884,7 +2963,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <div>
                   <span className="text-xs font-black text-indigo-950 block">Instant Email Invitation</span>
                   <span className="text-[10px] text-indigo-800 font-medium">
-                    Automatically sends activation link & PIN to <strong>{newCompany.email || 'admin email'}</strong> via cPanel SMTP
+                    Automatically sends activation link {newCompany.security_mode === 'pin' ? '& security PIN' : '& Anti-Bot instructions'} to <strong>{newCompany.email || 'admin email'}</strong> via cPanel SMTP
                   </span>
                 </div>
               </div>
@@ -3166,21 +3245,32 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                           {/* Activation Buttons */}
                           <div className="flex items-center gap-1 mt-1">
                             {comp.status === 'Pending Approval' || comp.activation_status === 'Pending Approval' ? (
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  try {
-                                    const res = await api.approveCompanyLogin(comp.id);
-                                    showToast(res.message || `🎉 ${comp.name} approved and login access granted!`);
-                                    setCompanies(prev => prev.map(c => c.id === comp.id ? { ...c, status: 'Active', activation_status: 'Active' } : c));
-                                  } catch (err) {
-                                    showToast(`❌ Approval failed: ${err.message}`, 'error');
-                                  }
-                                }}
-                                className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer transition-all active:scale-95"
-                              >
-                                ✅ Approve Login
-                              </button>
+                              <div className="flex flex-col gap-1 items-center">
+                                <button
+                                  type="button"
+                                  onClick={() => setAuditingCompany(comp)}
+                                  className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs cursor-pointer transition-all active:scale-95 flex items-center gap-1"
+                                  title="Review submitted CIN, GST, Bank particulars and proofs"
+                                >
+                                  <span>Review Application 📋</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    try {
+                                      const res = await approveCompanyRegistration(comp.id);
+                                      showToast(res?.message || `🎉 ${comp.name} approved! Credentials dispatched to ${comp.email}`);
+                                    } catch (err) {
+                                      showToast(`❌ Approval failed: ${err.message}`, 'error');
+                                    }
+                                  }}
+                                  className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer transition-all active:scale-95 flex items-center gap-1"
+                                  title="Approve company and send permanent credentials email"
+                                >
+                                  <Mail className="w-3 h-3" />
+                                  <span>Approve & Dispatch ✉️</span>
+                                </button>
+                              </div>
                             ) : comp.status === 'Pending Activation' || comp.activation_status === 'Pending Activation' ? (
                               <>
                                 <button
@@ -9204,42 +9294,117 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
               </div>
 
-              {/* Field 6 & 7: Activation Link Security PIN & Link Expiry Window */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-slate-700 font-bold">Activation Link Security PIN *</label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
-                        setNewCompany({ ...newCompany, activation_password: randomPin });
-                      }}
-                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>Random 4-Digit PIN</span>
-                    </button>
-                  </div>
-                  <div className="relative flex items-center">
-                    <input 
-                      type={showNewCompActivationPin ? 'text' : 'password'}
-                      required
-                      placeholder="e.g. 1234 or 1025"
-                      value={newCompany.activation_password}
-                      onChange={(e) => setNewCompany({ ...newCompany, activation_password: e.target.value })}
-                      className="form-input font-mono font-bold pr-9 text-indigo-700"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewCompActivationPin(!showNewCompActivationPin)}
-                      className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
-                    >
-                      {showNewCompActivationPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">4-digit security code to unlock self-activation link</span>
+              {/* Field 6: Activation Security Verification Mode (PIN vs Anti-Bot Captcha) */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-slate-800 font-bold text-xs flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>Activation Security Verification Mode *</span>
+                  </label>
+                  <span className="badge badge-indigo text-[9px] font-bold">Security Challenge</span>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setNewCompany({ ...newCompany, security_mode: 'pin', activation_password: newCompany.activation_password === 'CAPTCHA' ? '1234' : (newCompany.activation_password || '1234') })}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex items-start gap-2.5 ${
+                      newCompany.security_mode === 'pin'
+                        ? 'bg-indigo-50/90 border-indigo-400 text-indigo-950 shadow-xs ring-1 ring-indigo-400'
+                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center ${
+                      newCompany.security_mode === 'pin' ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300'
+                    }`}>
+                      {newCompany.security_mode === 'pin' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1">
+                        <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>4-Digit Security PIN</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                        SuperAdmin sets a 4-digit PIN. Recipient must enter this PIN to unlock self-activation.
+                      </p>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewCompany({ ...newCompany, security_mode: 'captcha', activation_password: 'CAPTCHA' })}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex items-start gap-2.5 ${
+                      newCompany.security_mode === 'captcha'
+                        ? 'bg-purple-50/90 border-purple-400 text-purple-950 shadow-xs ring-1 ring-purple-400'
+                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center ${
+                      newCompany.security_mode === 'captcha' ? 'border-purple-600 bg-purple-600' : 'border-slate-300'
+                    }`}>
+                      {newCompany.security_mode === 'captcha' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Anti-Bot Captcha Challenge</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                        No PIN required. Recipient solves an anti-bot verification challenge to unlock.
+                      </p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Field 7: Security PIN Entry (if PIN mode) OR Captcha Confirmation + Link Expiry Window */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {newCompany.security_mode === 'pin' ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-slate-700 font-bold">Activation Link Security PIN *</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+                          setNewCompany({ ...newCompany, activation_password: randomPin });
+                        }}
+                        className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer flex items-center gap-0.5"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>Random 4-Digit PIN</span>
+                      </button>
+                    </div>
+                    <div className="relative flex items-center">
+                      <input 
+                        type={showNewCompActivationPin ? 'text' : 'password'}
+                        required
+                        placeholder="e.g. 1234 or 1025"
+                        value={newCompany.activation_password}
+                        onChange={(e) => setNewCompany({ ...newCompany, activation_password: e.target.value })}
+                        className="form-input font-mono font-bold pr-9 text-indigo-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewCompActivationPin(!showNewCompActivationPin)}
+                        className="absolute right-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        {showNewCompActivationPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <span className="text-[10px] text-slate-400 mt-0.5 block">4-digit security code to unlock self-activation link</span>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-purple-950 block">Anti-Bot Captcha Active</span>
+                      <span className="text-[10px] text-purple-700 font-medium">Recipient will solve an anti-bot challenge upon opening link (No PIN required)</span>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-slate-700 font-bold mb-1">Link Expiry Date / Window *</label>
@@ -9257,30 +9422,31 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
               </div>
 
-              {/* Field 8 & 9: Subscribed Plan & Employee Headcount Quota */}
+              {/* Field 8 & 9: Subscribed Plan (From POSTPAID_PLANS) & Headcount Quota */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-700 font-bold mb-1">Subscribed Plan Tier *</label>
                   <select 
                     value={newCompany.plan}
                     onChange={(e) => {
-                      const selectedPlan = e.target.value;
-                      let quota = 150;
-                      if (selectedPlan.includes('50') && !selectedPlan.includes('150')) quota = 50;
-                      else if (selectedPlan.includes('150')) quota = 150;
-                      else if (selectedPlan.includes('300')) quota = 300;
-                      else if (selectedPlan.includes('500')) quota = 500;
-                      setNewCompany({ ...newCompany, plan: selectedPlan, credits_purchased: quota, maxLimit: quota });
+                      const selectedPlanName = e.target.value;
+                      const planObj = Object.values(POSTPAID_PLANS).find(p => p.name === selectedPlanName) || POSTPAID_PLANS.tier2;
+                      setNewCompany({ 
+                        ...newCompany, 
+                        plan: planObj.name, 
+                        credits_purchased: planObj.maxProfiles, 
+                        maxLimit: planObj.maxProfiles 
+                      });
                     }}
                     className="form-select text-xs font-bold"
                   >
-                    <option value="50 Employees Plan">50 Employees Plan (₹180 / check)</option>
-                    <option value="150 Employees Plan">150 Employees Plan (₹150 / check)</option>
-                    <option value="300 Employees Plan">300 Employees Plan (₹120 / check)</option>
-                    <option value="500 Employees Plan">500 Employees Plan (₹100 / check)</option>
-                    <option value="500+ Enterprise Plan">500+ Enterprise Plan (₹85 / check)</option>
+                    {Object.values(POSTPAID_PLANS).map((p) => (
+                      <option key={p.id} value={p.name}>
+                        {p.name} (₹{p.ratePerProfile} / check) — {p.maxProfiles} Profiles Quota
+                      </option>
+                    ))}
                   </select>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Employee verification volume plan</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Official Postpaid tiered rate matching landing page</span>
                 </div>
 
                 <div>
@@ -9289,12 +9455,12 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     type="number" 
                     min="10"
                     max="100000"
-                    placeholder="150"
+                    placeholder="100"
                     value={newCompany.credits_purchased}
-                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: parseInt(e.target.value) || 150, maxLimit: parseInt(e.target.value) || 150 })}
+                    onChange={(e) => setNewCompany({ ...newCompany, credits_purchased: parseInt(e.target.value) || 100, maxLimit: parseInt(e.target.value) || 100 })}
                     className="form-input font-mono font-bold"
                   />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity (auto-filled by tier)</span>
                 </div>
               </div>
 
@@ -9307,7 +9473,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <div>
                     <span className="text-xs font-black text-indigo-950 block">Instant Email Invitation</span>
                     <span className="text-[10px] text-indigo-800 font-medium">
-                      Automatically sends activation link & PIN to <strong>{newCompany.email || 'admin email'}</strong> via cPanel SMTP
+                      Automatically sends activation link {newCompany.security_mode === 'pin' ? '& security PIN' : '& Anti-Bot instructions'} to <strong>{newCompany.email || 'admin email'}</strong> via cPanel SMTP
                     </span>
                   </div>
                 </div>

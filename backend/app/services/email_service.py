@@ -418,12 +418,41 @@ def send_company_welcome_email(
     activation_pin: str = "1234",
     activation_token: Optional[str] = None,
     expires_at_str: Optional[str] = None,
-    plan_name: Optional[str] = "Standard Tier",
-    credits: Optional[int] = 500,
+    plan_name: Optional[str] = "Tier 2 (< 100 Employees)",
+    credits: Optional[int] = 100,
+    security_mode: str = "pin",
     db=None
 ) -> Dict[str, Any]:
     app_url = settings.APP_BASE_URL.rstrip('/')
     activation_url = f"{app_url}/company-activation?token={activation_token}" if activation_token else f"{app_url}/login"
+
+    is_captcha_mode = (security_mode == "captcha") or (activation_pin == "CAPTCHA")
+
+    security_step_text = (
+        "Solve the dynamic anti-bot verification challenge to unlock your company onboarding dossier."
+        if is_captcha_mode
+        else f"Enter your <strong>4-digit Security Unlock PIN</strong> ({activation_pin}) to unlock your portal."
+    )
+
+    security_row_html = (
+        """<tr>
+            <td style="color: #64748b; font-weight: 600;">Verification Security Mode:</td>
+            <td>
+                <span style="background-color: #6366f1; color: #ffffff; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 11.5px; display: inline-block;">
+                    🛡️ Anti-Bot Captcha Verification (No PIN Required)
+                </span>
+            </td>
+        </tr>"""
+        if is_captcha_mode
+        else f"""<tr>
+            <td style="color: #64748b; font-weight: 600;">Activation Link Security PIN:</td>
+            <td>
+                <span style="background-color: #4338ca; color: #ffffff; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-family: monospace; font-size: 15px; letter-spacing: 2px; display: inline-block;">
+                    {activation_pin}
+                </span>
+            </td>
+        </tr>"""
+    )
 
     content = f"""
     <div style="margin-bottom: 24px;">
@@ -438,12 +467,13 @@ def send_company_welcome_email(
     <!-- Instructions Box -->
     <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 22px;">
         <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 12px; letter-spacing: 0.5px;">
-            📋 Easy 3-Step Organization Activation Instructions:
+            📋 Organization Onboarding & Verification Instructions:
         </div>
         <ol style="margin: 0; padding-left: 20px; font-size: 12.5px; color: #334155; line-height: 1.8;">
             <li>Click the <strong>Complete Company Portal Activation</strong> button below.</li>
-            <li>Enter your <strong>4-digit Security Unlock PIN</strong> (shown below) to unlock your portal.</li>
-            <li>Review pre-filled details, upload statutory proofs (COI, GSTIN, PAN), and accept the <strong>DPDP Act 2023 Master Services Agreement</strong>.</li>
+            <li>{security_step_text}</li>
+            <li>Enter your company statutory details (CIN, GSTIN, Company PAN), bank account particulars, and accept the <strong>DPDP Act 2023 Master Services Agreement</strong>.</li>
+            <li>Submit your registration dossier for SuperAdmin verification. Once verified, official permanent login credentials will be dispatched to this email.</li>
         </ol>
     </div>
 
@@ -469,14 +499,7 @@ def send_company_welcome_email(
                 <td style="color: #64748b; font-weight: 600;">Commercial Plan:</td>
                 <td style="color: #0f172a; font-weight: 800;">{plan_name} ({credits} Checks Allocated)</td>
             </tr>
-            <tr>
-                <td style="color: #64748b; font-weight: 600;">Activation Link Security PIN:</td>
-                <td>
-                    <span style="background-color: #4338ca; color: #ffffff; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-family: monospace; font-size: 15px; letter-spacing: 2px; display: inline-block;">
-                        {activation_pin}
-                    </span>
-                </td>
-            </tr>
+            {security_row_html}
             <tr>
                 <td style="color: #64748b; font-weight: 600;">Activation Link Valid Until:</td>
                 <td style="color: #b45309; font-weight: 700;">{expires_at_str or '15 Days from Issue'}</td>
@@ -506,6 +529,104 @@ def send_company_welcome_email(
     )
 
     subject = f"🏢 Welcome to JOY — Activate Your Organization Account ({company_name} - #{company_code})"
+    return send_smtp_email(admin_email, subject, html, db=db)
+
+
+def send_company_approval_credentials_email(
+    company_name: str,
+    company_code: str,
+    admin_email: str,
+    contact_person: str,
+    login_password: str,
+    plan_name: str = "Tier 2 (< 100 Employees)",
+    credits: int = 100,
+    db=None
+) -> Dict[str, Any]:
+    """Dispatches permanent login credentials after SuperAdmin reviews and approves company statutory registration"""
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    login_url = f"{app_url}/company/login"
+
+    content = f"""
+    <div style="margin-bottom: 24px;">
+        <div style="display: inline-block; background-color: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; margin-bottom: 10px;">
+            ✅ OFFICIAL SUPERADMIN VERIFICATION APPROVED
+        </div>
+        <h2 style="color: #0f172a; font-size: 19px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Congratulations, {contact_person}! Your Enterprise Account Is Active
+        </h2>
+        <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.6;">
+            We are pleased to inform you that your statutory registration application and bank account details for <strong>{company_name}</strong> have been thoroughly reviewed, verified, and officially approved by the <strong>Super Administrator</strong>.
+        </p>
+    </div>
+
+    <!-- Credentials Box -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 2px solid #86efac; border-radius: 16px; padding: 22px; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #166534; margin-bottom: 14px; letter-spacing: 0.5px;">
+            🔐 Permanent Enterprise Login Credentials:
+        </div>
+        <table width="100%" border="0" cellspacing="8" cellpadding="0" style="font-size: 13px;">
+            <tr>
+                <td width="40%" style="color: #64748b; font-weight: 600;">Organization Name:</td>
+                <td style="color: #0f172a; font-weight: 800;">{company_name}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Assigned Company Code:</td>
+                <td style="color: #4338ca; font-weight: 800; font-family: monospace;">#{company_code}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Admin Login Username:</td>
+                <td style="color: #0f172a; font-weight: 800; font-family: monospace;">{admin_email}</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Permanent Login Password:</td>
+                <td>
+                    <span style="background-color: #0f172a; color: #ffffff; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-family: monospace; font-size: 14px; letter-spacing: 1px; display: inline-block;">
+                        {login_password}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Subscribed Plan:</td>
+                <td style="color: #0f172a; font-weight: 800;">{plan_name} ({credits} Profile Quota)</td>
+            </tr>
+            <tr>
+                <td style="color: #64748b; font-weight: 600;">Direct Login Portal:</td>
+                <td>
+                    <a href="{login_url}" style="color: #4338ca; font-weight: 700; text-decoration: underline;">{login_url}</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Quick Start Guide -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 22px;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #4338ca; margin-bottom: 10px; letter-spacing: 0.5px;">
+            🚀 What You Can Do Now in Your Company Admin Portal:
+        </div>
+        <ul style="margin: 0; padding-left: 20px; font-size: 12.5px; color: #334155; line-height: 1.8;">
+            <li>Onboard your HR recruiters and assign verification quotas.</li>
+            <li>Dispatch candidate onboarding links via Email, Carrier SMS, or WhatsApp.</li>
+            <li>Monitor real-time verification status across UIDAI Aadhaar, NSDL PAN, EPFO UAN, and Bank IMPS.</li>
+            <li>Download tamper-proof, SHA-256 sealed Candidate Verification Dossier PDFs.</li>
+        </ul>
+    </div>
+
+    <p style="font-size: 11.5px; color: #64748b; margin-top: 18px; line-height: 1.5;">
+        🛡️ <em>Security Notice: Please change your password upon your initial login under Company Settings. Do not disclose your credentials to anyone.</em>
+    </p>
+    """
+
+    html = _build_email_shell(
+        header_title=f"Account Approved - Welcome {company_name}",
+        badge_text="ORGANIZATION APPLICATION APPROVED & ACTIVE",
+        content_html=content,
+        action_url=login_url,
+        action_text="Login to Company Portal Now 🏢",
+        sender_brand="JOY CORPORATE SOLUTIONS",
+        logo_url=PROJECT_LOGO_URL
+    )
+
+    subject = f"🎉 Approved: Your JOY TrueProfile Enterprise Organization Is Live (#{company_code})"
     return send_smtp_email(admin_email, subject, html, db=db)
 
 

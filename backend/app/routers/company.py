@@ -696,6 +696,7 @@ def get_company_activation_details(token: str, db: Session = Depends(get_db)):
         "max_limit": comp.max_limit,
         "status": comp.status,
         "activation_status": comp.activation_status,
+        "security_mode": comp.security_mode or "pin",
         "is_expired": is_expired,
         "expires_at": comp.activation_expires_at.isoformat() if comp.activation_expires_at else None,
         "cin_number": comp.cin_number,
@@ -704,22 +705,48 @@ def get_company_activation_details(token: str, db: Session = Depends(get_db)):
         "registered_address": comp.registered_address,
         "industry_sector": comp.industry_sector,
         "website": comp.website,
+        "bank_name": comp.bank_name,
+        "bank_account_number": comp.bank_account_number,
+        "bank_ifsc": comp.bank_ifsc,
+        "bank_account_type": comp.bank_account_type,
+        "bank_beneficiary_name": comp.bank_beneficiary_name,
+        "bank_details": comp.bank_details or {},
+        "application_submitted_at": comp.application_submitted_at,
         "documents": comp.documents or {}
     }
 
 @router.post("/activation/unlock")
 def unlock_company_activation(payload: dict, db: Session = Depends(get_db)):
-    """Validates security password to unlock company activation portal"""
+    """Validates security PIN or anti-bot captcha challenge to unlock company activation portal"""
     token = payload.get("token")
     password = (payload.get("password") or "").strip()
+    captcha_solved = payload.get("captcha_solved", False)
 
     comp = find_company_by_activation_token(token, db)
     if not comp:
         raise HTTPException(status_code=404, detail="Invalid activation link")
 
+    is_captcha_mode = (comp.security_mode == "captcha") or ((comp.activation_password or "").upper() == "CAPTCHA")
+
+    # If Captcha mode is configured or solved, accept
+    if is_captcha_mode and (captcha_solved or password.upper() == "CAPTCHA"):
+        return {
+            "success": True,
+            "message": f"Welcome {comp.contact_person}! Anti-bot verification passed. Company onboarding unlocked.",
+            "company": {
+                "id": comp.id,
+                "name": comp.name,
+                "code": comp.code,
+                "email": comp.email,
+                "plan": comp.plan,
+                "security_mode": "captcha"
+            }
+        }
+
+    # Otherwise validate security PIN
     expected_pw = (comp.activation_password or comp.password_hash or "").strip()
-    if expected_pw and password != expected_pw:
-        raise HTTPException(status_code=401, detail="Invalid security password. Please enter the password set by Super Admin.")
+    if expected_pw and expected_pw.upper() != "CAPTCHA" and password != expected_pw:
+        raise HTTPException(status_code=401, detail="Invalid security PIN. Please enter the 4-digit code provided in your official onboarding email.")
 
     return {
         "success": True,
@@ -729,13 +756,14 @@ def unlock_company_activation(payload: dict, db: Session = Depends(get_db)):
             "name": comp.name,
             "code": comp.code,
             "email": comp.email,
-            "plan": comp.plan
+            "plan": comp.plan,
+            "security_mode": comp.security_mode or "pin"
         }
     }
 
 @router.post("/activation/complete")
 def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
-    """Submits corporate details, uploaded statutory documents, accepts terms, and activates company"""
+    """Submits corporate details, bank account particulars, statutory documents, accepts terms, and moves company to Pending Approval"""
     token = payload.get("token")
     comp = find_company_by_activation_token(token, db)
     if not comp:
@@ -762,6 +790,28 @@ def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
     if payload.get("registered_address"): comp.registered_address = payload["registered_address"].strip()
     if payload.get("industry_sector"): comp.industry_sector = payload["industry_sector"].strip()
     if payload.get("website"): comp.website = payload["website"].strip()
+
+    # Bank Account Particulars
+    bank_name = (payload.get("bank_name") or "").strip()
+    bank_account_number = (payload.get("bank_account_number") or "").strip()
+    bank_ifsc = (payload.get("bank_ifsc") or "").strip().upper()
+    bank_account_type = (payload.get("bank_account_type") or "Current Account").strip()
+    bank_beneficiary_name = (payload.get("bank_beneficiary_name") or comp.name or "").strip()
+
+    if bank_name: comp.bank_name = bank_name
+    if bank_account_number: comp.bank_account_number = bank_account_number
+    if bank_ifsc: comp.bank_ifsc = bank_ifsc
+    if bank_account_type: comp.bank_account_type = bank_account_type
+    if bank_beneficiary_name: comp.bank_beneficiary_name = bank_beneficiary_name
+
+    comp.bank_details = {
+        "bank_name": comp.bank_name,
+        "account_number": comp.bank_account_number,
+        "ifsc": comp.bank_ifsc,
+        "account_type": comp.bank_account_type,
+        "beneficiary_name": comp.bank_beneficiary_name
+    }
+
     comp.documents = docs_dict
 
     signatory = payload.get("signatory_name") or payload.get("signatoryName") or comp.contact_person
@@ -771,19 +821,21 @@ def complete_company_activation(payload: dict, db: Session = Depends(get_db)):
     comp.terms_accepted_by = f"{signatory} ({designation})"
     comp.status = "Pending Approval"
     comp.activation_status = "Pending Approval"
+    comp.application_submitted_at = datetime.utcnow()
 
     db.commit()
     db.refresh(comp)
 
     return {
         "success": True,
-        "message": f"🎉 Statutory details and signed Master Services Agreement submitted successfully! Awaiting final authorization from Super Administrator.",
+        "message": f"🎉 Statutory dossier and bank account particulars submitted successfully! Application is now under SuperAdmin verification.",
         "company": {
             "id": comp.id,
             "name": comp.name,
             "code": comp.code,
             "email": comp.email,
-            "status": comp.status
+            "status": comp.status,
+            "bank_details": comp.bank_details
         }
     }
 

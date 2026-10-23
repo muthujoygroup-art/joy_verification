@@ -64,8 +64,26 @@ export const CompanyActivationView = () => {
     industry_sector: 'Information Technology & Software (IT/ITeS)',
     website: '',
     signatory_name: '',
-    signatory_designation: 'Director / Authorized Signatory'
+    signatory_designation: 'Director / Authorized Signatory',
+    bank_name: '',
+    bank_account_number: '',
+    confirm_account_number: '',
+    bank_ifsc: '',
+    bank_account_type: 'Current Account',
+    bank_beneficiary_name: ''
   });
+
+  // Anti-Bot Captcha Verification States
+  const [captchaNum1, setCaptchaNum1] = useState(() => Math.floor(6 + Math.random() * 15));
+  const [captchaNum2, setCaptchaNum2] = useState(() => Math.floor(3 + Math.random() * 12));
+  const [captchaInput, setCaptchaInput] = useState('');
+
+  const refreshCaptcha = () => {
+    setCaptchaNum1(Math.floor(6 + Math.random() * 15));
+    setCaptchaNum2(Math.floor(3 + Math.random() * 12));
+    setCaptchaInput('');
+    setUnlockError('');
+  };
 
   const [companyLogoBase64, setCompanyLogoBase64] = useState(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState(null);
@@ -75,6 +93,7 @@ export const CompanyActivationView = () => {
     coi: null, // Certificate of Incorporation
     pan: null, // Company PAN Card
     gst: null, // GST Certificate
+    bank_cheque: null, // Bank Cancelled Cheque / Statement
     signatory_proof: null // Board Resolution / Signatory Authorization
   });
 
@@ -101,23 +120,23 @@ export const CompanyActivationView = () => {
             setIsActivatedSuccess(true);
             setIsUnlocked(true);
           }
-          if (data.cin_number) {
-            setCorporateData({
-              cin_number: data.cin_number || '',
-              gstin_number: data.gstin_number || '',
-              company_pan: data.company_pan || '',
-              registered_address: data.registered_address || '',
-              industry_sector: data.industry_sector || 'Information Technology & Software (IT/ITeS)',
-              website: data.website || '',
-              signatory_name: data.contact_person || '',
-              signatory_designation: 'Director / Authorized Signatory'
-            });
-          } else {
-            setCorporateData(prev => ({
-              ...prev,
-              signatory_name: data.contact_person || ''
-            }));
-          }
+          setCorporateData(prev => ({
+            ...prev,
+            cin_number: data.cin_number || '',
+            gstin_number: data.gstin_number || '',
+            company_pan: data.company_pan || '',
+            registered_address: data.registered_address || '',
+            industry_sector: data.industry_sector || 'Information Technology & Software (IT/ITeS)',
+            website: data.website || '',
+            signatory_name: data.contact_person || '',
+            signatory_designation: 'Director / Authorized Signatory',
+            bank_name: data.bank_name || '',
+            bank_account_number: data.bank_account_number || '',
+            confirm_account_number: data.bank_account_number || '',
+            bank_ifsc: data.bank_ifsc || '',
+            bank_account_type: data.bank_account_type || 'Current Account',
+            bank_beneficiary_name: data.bank_beneficiary_name || data.name || ''
+          }));
         }
       })
       .catch((err) => {
@@ -128,28 +147,59 @@ export const CompanyActivationView = () => {
       });
   }, [token]);
 
-  // 2. Handle Password Unlock
+  // 2. Handle Unlock (PIN or Anti-Bot Captcha)
   const handleUnlockSubmit = async (e) => {
     if (e) e.preventDefault();
-    if (!enteredPassword.trim()) {
-      setUnlockError('Please enter your 4-digit security PIN or password');
-      return;
-    }
+    const isCaptchaMode = companyDetails?.security_mode === 'captcha' || companyDetails?.activation_password === 'CAPTCHA';
 
-    setIsUnlocking(true);
-    setUnlockError('');
-    try {
-      const res = await api.unlockCompanyActivation(token, enteredPassword.trim());
-      if (res && res.success) {
-        setIsUnlocked(true);
-        if (showToast) showToast('🔓 Security authentication successful! Welcome to company activation.');
-      } else {
-        setUnlockError('Invalid password. Please check the passcode provided by Super Admin.');
+    if (isCaptchaMode) {
+      if (!captchaInput.trim()) {
+        setUnlockError('Please enter the verification answer to prove you are human');
+        return;
       }
-    } catch (err) {
-      setUnlockError(err.message || 'Authentication failed. Please check your passcode.');
-    } finally {
-      setIsUnlocking(false);
+      if (parseInt(captchaInput.trim(), 10) !== (captchaNum1 + captchaNum2)) {
+        setUnlockError(`Incorrect answer (${captchaInput.trim()}). Please solve the math verification.`);
+        refreshCaptcha();
+        return;
+      }
+
+      setIsUnlocking(true);
+      setUnlockError('');
+      try {
+        const res = await api.unlockCompanyActivation(token, { captcha_solved: true });
+        if (res && res.success) {
+          setIsUnlocked(true);
+          if (showToast) showToast('🔓 Anti-Bot verification verified! Welcome to company activation.');
+        } else {
+          setUnlockError('Anti-Bot verification could not be verified by server.');
+        }
+      } catch (err) {
+        setUnlockError(err.message || 'Verification failed. Please try again.');
+      } finally {
+        setIsUnlocking(false);
+      }
+    } else {
+      // 4-Digit Security PIN Mode
+      if (!enteredPassword.trim()) {
+        setUnlockError('Please enter your 4-digit security PIN provided in your invitation email');
+        return;
+      }
+
+      setIsUnlocking(true);
+      setUnlockError('');
+      try {
+        const res = await api.unlockCompanyActivation(token, enteredPassword.trim());
+        if (res && res.success) {
+          setIsUnlocked(true);
+          if (showToast) showToast('🔓 Security PIN authenticated successfully! Welcome.');
+        } else {
+          setUnlockError('Invalid security PIN. Please check the 4-digit PIN sent to your email.');
+        }
+      } catch (err) {
+        setUnlockError(err.message || 'Authentication failed. Please check your passcode.');
+      } finally {
+        setIsUnlocking(false);
+      }
     }
   };
 
@@ -194,6 +244,13 @@ export const CompanyActivationView = () => {
       return;
     }
 
+    if (corporateData.bank_account_number && corporateData.confirm_account_number) {
+      if (corporateData.bank_account_number.trim() !== corporateData.confirm_account_number.trim()) {
+        if (showToast) showToast('⚠️ Bank Account Numbers do not match. Please verify.', 'error');
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -203,6 +260,7 @@ export const CompanyActivationView = () => {
         coi: documents.coi?.base64 || null,
         pan: documents.pan?.base64 || null,
         gst: documents.gst?.base64 || null,
+        bank_cheque: documents.bank_cheque?.base64 || null,
         signatory_proof: documents.signatory_proof?.base64 || null,
         terms_accepted: true
       };
@@ -210,10 +268,10 @@ export const CompanyActivationView = () => {
       if (res && res.success) {
         setIsActivatedSuccess(true);
         setActiveStep(4);
-        if (showToast) showToast('🎉 Company account successfully activated in database!');
+        if (showToast) showToast('🎉 Application submitted for SuperAdmin verification!');
       }
     } catch (err) {
-      if (showToast) showToast(`❌ Activation failed: ${err.message || 'Server error'}`, 'error');
+      if (showToast) showToast(`❌ Activation submission failed: ${err.message || 'Server error'}`, 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -317,62 +375,134 @@ export const CompanyActivationView = () => {
         {/* ========================================================================= */}
         {!isUnlocked && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 text-slate-900 shadow-2xl border border-slate-200 animate-fadeIn space-y-6 max-w-lg mx-auto">
-            <div className="text-center space-y-2">
-              <div className="w-14 h-14 bg-indigo-50 border-2 border-indigo-200 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <Lock className="w-7 h-7" />
-              </div>
-              <h2 className="text-lg font-black text-slate-900">Unlock Company Account</h2>
-              <p className="text-xs text-slate-500 font-medium">
-                Please enter the 4-digit PIN or password to unlock <strong>{companyDetails.name}</strong>.
-              </p>
-            </div>
+            {companyDetails.security_mode === 'captcha' || companyDetails.activation_password === 'CAPTCHA' ? (
+              <>
+                <div className="text-center space-y-2">
+                  <div className="w-14 h-14 bg-purple-50 border-2 border-purple-200 text-purple-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                    <Sparkles className="w-7 h-7" />
+                  </div>
+                  <h2 className="text-lg font-black text-slate-900">Anti-Bot Human Verification</h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Please solve the quick math challenge to unlock company onboarding for <strong>{companyDetails.name}</strong>.
+                  </p>
+                </div>
 
-            <form onSubmit={handleUnlockSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>4-Digit PIN or Password *</span>
-                </label>
-                <div className="relative flex items-center">
-                  <input 
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    autoFocus
-                    value={enteredPassword}
-                    onChange={(e) => setEnteredPassword(e.target.value)}
-                    placeholder="Enter 4-digit PIN..."
-                    className="w-full bg-slate-50 border-2 border-slate-300 focus:border-indigo-600 focus:bg-white text-slate-900 font-mono font-black text-base py-3 px-4 rounded-xl outline-none transition-all tracking-wider"
-                  />
+                <form onSubmit={handleUnlockSubmit} className="space-y-4">
+                  {/* Interactive Math Captcha Box */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border-2 border-purple-200 flex items-center justify-between shadow-2xs">
+                    <div>
+                      <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">Security Math Challenge</span>
+                      <span className="font-mono text-2xl font-black text-slate-900 tracking-wider">
+                        {captchaNum1} + {captchaNum2} = ?
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={refreshCaptcha}
+                      className="p-2.5 rounded-xl bg-white border border-purple-200 hover:bg-purple-100 text-purple-700 cursor-pointer shadow-xs transition-all active:scale-95"
+                      title="Generate new calculation challenge"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Enter Calculation Answer *</span>
+                    </label>
+                    <input 
+                      type="number"
+                      required
+                      autoFocus
+                      placeholder="e.g. 24"
+                      value={captchaInput}
+                      onChange={(e) => setCaptchaInput(e.target.value)}
+                      className="w-full bg-slate-50 border-2 border-slate-300 focus:border-purple-600 focus:bg-white text-slate-900 font-mono font-black text-base py-3 px-4 rounded-xl outline-none transition-all tracking-wider"
+                    />
+                  </div>
+
+                  {unlockError && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2 animate-fadeIn">
+                      <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
+                      <span>{unlockError}</span>
+                    </div>
+                  )}
+
                   <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    type="submit"
+                    disabled={isUnlocking}
+                    className="w-full btn bg-purple-600 hover:bg-purple-700 text-white font-black py-3 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 text-xs"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {isUnlocking ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4" />
+                    )}
+                    <span>{isUnlocking ? 'Verifying Challenge...' : 'Verify Challenge & Unlock Portal 🚀'}</span>
                   </button>
+                </form>
+              </>
+            ) : (
+              <>
+                <div className="text-center space-y-2">
+                  <div className="w-14 h-14 bg-indigo-50 border-2 border-indigo-200 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                    <Lock className="w-7 h-7" />
+                  </div>
+                  <h2 className="text-lg font-black text-slate-900">Unlock Company Account</h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Please enter the 4-digit security PIN provided in your invitation email to unlock <strong>{companyDetails.name}</strong>.
+                  </p>
                 </div>
-              </div>
 
-              {unlockError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2 animate-fadeIn">
-                  <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
-                  <span>{unlockError}</span>
-                </div>
-              )}
+                <form onSubmit={handleUnlockSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                      <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>4-Digit PIN or Password *</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <input 
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        autoFocus
+                        value={enteredPassword}
+                        onChange={(e) => setEnteredPassword(e.target.value)}
+                        placeholder="Enter 4-digit PIN..."
+                        className="w-full bg-slate-50 border-2 border-slate-300 focus:border-indigo-600 focus:bg-white text-slate-900 font-mono font-black text-base py-3 px-4 rounded-xl outline-none transition-all tracking-wider"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
 
-              <button
-                type="submit"
-                disabled={isUnlocking}
-                className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 text-xs"
-              >
-                {isUnlocking ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowRight className="w-4 h-4" />
-                )}
-                <span>{isUnlocking ? 'Checking PIN...' : 'Unlock & Continue 🚀'}</span>
-              </button>
-            </form>
+                  {unlockError && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium flex items-center gap-2 animate-fadeIn">
+                      <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
+                      <span>{unlockError}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isUnlocking}
+                    className="w-full btn bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 text-xs"
+                  >
+                    {isUnlocking ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4" />
+                    )}
+                    <span>{isUnlocking ? 'Checking PIN...' : 'Unlock & Continue 🚀'}</span>
+                  </button>
+                </form>
+              </>
+            )}
 
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-500 flex items-center justify-between">
               <span>Admin: <strong>{companyDetails.email}</strong></span>
@@ -590,47 +720,100 @@ export const CompanyActivationView = () => {
                       </div>
                     </div>
 
-                    {/* Bank Account Details for Penny Drop API Verification */}
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                      <span className="font-extrabold text-slate-800 text-xs block flex items-center gap-1.5">
-                        <CreditCard className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Corporate Bank Account Details (for SuperAdmin Penny Drop Verification)</span>
-                      </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Bank Account Details */}
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-slate-800 text-xs flex items-center gap-1.5">
+                          <CreditCard className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Corporate Bank Account Particulars (for Institutional Compliance)</span>
+                        </span>
+                        <span className="badge badge-indigo text-[9px]">Verified IMPS / Penny Drop</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-600 mb-1">Bank Account Number *</label>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank Name *</label>
                           <input
                             type="text"
                             required
-                            placeholder="e.g. 91802004812739"
-                            value={corporateData.bank_account || ''}
-                            onChange={(e) => setCorporateData({ ...corporateData, bank_account: e.target.value })}
+                            placeholder="e.g. HDFC Bank, ICICI Bank, State Bank of India"
+                            value={corporateData.bank_name || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_name: e.target.value })}
+                            className="form-input text-xs font-bold"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">Account Holder / Beneficiary Name *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Full Legal Company Name"
+                            value={corporateData.bank_beneficiary_name || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_beneficiary_name: e.target.value })}
+                            className="form-input text-xs font-bold"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank Account Number *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. 50200012345678"
+                            value={corporateData.bank_account_number || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_account_number: e.target.value })}
                             className="form-input text-xs font-mono font-bold"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-600 mb-1">IFSC Code *</label>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">Confirm Account Number *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Re-enter Account Number"
+                            value={corporateData.confirm_account_number || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, confirm_account_number: e.target.value })}
+                            className={`form-input text-xs font-mono font-bold ${
+                              corporateData.confirm_account_number && corporateData.bank_account_number !== corporateData.confirm_account_number
+                                ? 'border-rose-400 bg-rose-50/50'
+                                : ''
+                            }`}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank IFSC Code *</label>
                           <input
                             type="text"
                             required
                             maxLength={11}
                             placeholder="e.g. HDFC0001234"
-                            value={corporateData.ifsc_code || ''}
-                            onChange={(e) => setCorporateData({ ...corporateData, ifsc_code: e.target.value.toUpperCase() })}
+                            value={corporateData.bank_ifsc || ''}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_ifsc: e.target.value.toUpperCase() })}
                             className="form-input text-xs font-mono font-bold uppercase"
                           />
                         </div>
+                      </div>
 
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-600 mb-1">Bank Name *</label>
-                          <input
-                            type="text"
-                            placeholder="e.g. HDFC Bank Ltd"
-                            value={corporateData.bank_name || ''}
-                            onChange={(e) => setCorporateData({ ...corporateData, bank_name: e.target.value })}
-                            className="form-input text-xs font-bold"
-                          />
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank Account Type *</label>
+                          <select
+                            value={corporateData.bank_account_type || 'Current Account'}
+                            onChange={(e) => setCorporateData({ ...corporateData, bank_account_type: e.target.value })}
+                            className="form-select text-xs font-bold"
+                          >
+                            <option value="Current Account">Current Account (Commercial)</option>
+                            <option value="Cash Credit Account">Cash Credit (CC) / Overdraft (OD)</option>
+                            <option value="Savings Account">Corporate Savings Account</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center text-[10.5px] text-slate-500 pt-5">
+                          <span>Verified against NPCI & RBI clearing gateways for automated GST invoicing settlements.</span>
                         </div>
                       </div>
                     </div>
@@ -805,26 +988,40 @@ export const CompanyActivationView = () => {
 
                 <div className="space-y-1">
                   <span className="badge badge-purple text-xs font-black uppercase tracking-wider">
-                    STATUTORY PROFILE & AGREEMENT SUBMITTED 🟡
+                    APPLICATION SUBMITTED — PENDING SUPERADMIN APPROVAL 🟡
                   </span>
                   <h2 className="text-xl font-black text-slate-900">{companyDetails.name}</h2>
                   <p className="text-xs text-slate-600 font-medium max-w-md mx-auto leading-relaxed">
-                    Thank you, <strong>{corporateData.signatory_name || companyDetails.contact_person}</strong>! Your statutory documents, entity identifiers, and signed Master Services Agreement have been submitted to JOY Super Administration.
+                    Thank you, <strong>{corporateData.signatory_name || companyDetails.contact_person}</strong>! Your statutory entity profile, registered corporate identifiers, bank particulars, and executed Master Services Agreement have been submitted to Muthu Joy Group Super Administration.
                   </p>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-md mx-auto">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2.5 max-w-md mx-auto">
                   <div className="flex justify-between text-slate-600">
-                    <span>Account Status:</span>
-                    <strong className="badge badge-amber text-[10px]">Pending Super Admin Approval</strong>
+                    <span>Application Status:</span>
+                    <strong className="badge badge-amber text-[10px]">Pending SuperAdmin Verification</strong>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Application Reference:</span>
+                    <strong className="font-mono text-indigo-700 font-bold">APP-{companyDetails.code}-{Date.now().toString().slice(-4)}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>Company Code:</span>
                     <strong className="font-mono text-slate-900">#{companyDetails.code}</strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>Admin Username:</span>
-                    <strong className="font-mono text-slate-900">{companyDetails.email}</strong>
+                    <span>CIN Number:</span>
+                    <strong className="font-mono text-slate-800">{corporateData.cin_number || 'Under Review'}</strong>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>GSTIN / Tax ID:</span>
+                    <strong className="font-mono text-slate-800">{corporateData.gstin_number || 'Under Review'}</strong>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Bank Particulars:</span>
+                    <strong className="font-mono text-slate-800">
+                      {corporateData.bank_name || 'Bank'} (••••{corporateData.bank_account_number?.slice(-4) || 'XXXX'})
+                    </strong>
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>Signatory Officer:</span>
@@ -832,8 +1029,8 @@ export const CompanyActivationView = () => {
                   </div>
                 </div>
 
-                <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-xs text-indigo-950 font-medium max-w-md mx-auto">
-                  📬 An automated confirmation email will be sent to <strong>{companyDetails.email}</strong> as soon as the Super Administrator reviews and authorizes your live portal access.
+                <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-2xl text-xs text-indigo-950 font-medium max-w-md mx-auto leading-relaxed">
+                  📬 Our compliance desk is reviewing your documents. Once verified by Super Administration, your <strong>permanent login credentials</strong> and activation confirmation will be dispatched directly to <strong>{companyDetails.email}</strong>.
                 </div>
 
                 <button

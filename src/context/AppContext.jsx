@@ -1533,6 +1533,15 @@ export const AppProvider = ({ children }) => {
                 cin_number: c.cin_number || (c.features || {}).cin_number || '',
                 gstin_number: c.gstin_number || (c.features || {}).gstin_number || '',
                 company_pan: c.company_pan || (c.features || {}).company_pan || '',
+                bank_name: c.bank_name || ((c.features || {}).bank_details || {}).bank_name || '',
+                bank_account_number: c.bank_account_number || ((c.features || {}).bank_details || {}).account_number || '',
+                bank_ifsc: c.bank_ifsc || ((c.features || {}).bank_details || {}).ifsc || '',
+                bank_account_type: c.bank_account_type || ((c.features || {}).bank_details || {}).account_type || 'Current Account',
+                bank_beneficiary_name: c.bank_beneficiary_name || ((c.features || {}).bank_details || {}).beneficiary_name || '',
+                bank_details: c.bank_details || (c.features || {}).bank_details || {},
+                application_submitted_at: c.application_submitted_at || (c.features || {}).application_submitted_at || null,
+                approved_at: c.approved_at || (c.features || {}).approved_at || null,
+                approved_by: c.approved_by || (c.features || {}).approved_by || null,
                 documents: c.documents || {},
                 plan: c.plan,
                 pricePerVerification: c.price_per_verification,
@@ -1542,6 +1551,7 @@ export const AppProvider = ({ children }) => {
                 activation_status: c.activation_status || c.status || 'Pending Activation',
                 activation_token: c.activation_token,
                 activation_password: c.activation_password,
+                security_mode: c.security_mode || (c.features || {}).security_mode || ((c.activation_password || '').toUpperCase() === 'CAPTCHA' ? 'captcha' : 'pin'),
                 features: c.features || {},
                 custom_tariffs: c.custom_tariffs || {}
               });
@@ -1830,8 +1840,9 @@ export const AppProvider = ({ children }) => {
         email: (companyData.email || '').trim().toLowerCase(),
         password: companyData.password || 'Company@Admin2026',
         activation_password: companyData.activation_password || companyData.password || '1234',
-        plan: companyData.plan || 'Standard Tier',
-        credits_purchased: parseInt(companyData.credits_purchased || companyData.maxLimit || 500),
+        security_mode: companyData.security_mode || (companyData.activation_password === 'CAPTCHA' ? 'captcha' : 'pin'),
+        plan: companyData.plan || 'Tier 2 (< 100 Employees)',
+        credits_purchased: parseInt(companyData.credits_purchased || companyData.maxLimit || 100),
         expiry_days: parseInt(companyData.expiry_days || 15),
         expiry_date: companyData.expiry_date || null,
         logo: companyData.logo || companyData.logo_url || companyData.company_logo || '',
@@ -1843,6 +1854,7 @@ export const AppProvider = ({ children }) => {
           logo: companyData.logo || companyData.logo_url || companyData.company_logo || '',
           logo_url: companyData.logo || companyData.logo_url || companyData.company_logo || '',
           location: companyData.location || companyData.registered_address || '',
+          security_mode: companyData.security_mode || (companyData.activation_password === 'CAPTCHA' ? 'captcha' : 'pin'),
           aadhaar: true,
           pan: true,
           bankCheck: true,
@@ -1881,15 +1893,23 @@ export const AppProvider = ({ children }) => {
         cin_number: created.cin_number || (created.features || {}).cin_number || '',
         gstin_number: created.gstin_number || (created.features || {}).gstin_number || '',
         company_pan: created.company_pan || (created.features || {}).company_pan || '',
+        bank_name: created.bank_name || '',
+        bank_account_number: created.bank_account_number || '',
+        bank_ifsc: created.bank_ifsc || '',
+        bank_account_type: created.bank_account_type || 'Current Account',
+        bank_beneficiary_name: created.bank_beneficiary_name || '',
+        bank_details: created.bank_details || {},
+        application_submitted_at: null,
         documents: created.documents || {},
         plan: created.plan,
         pricePerVerification: created.price_per_verification,
         verifiedCountThisMonth: 0,
-        maxLimit: created.max_limit || 500,
+        maxLimit: created.max_limit || 100,
         status: created.status || 'Pending Activation',
         activation_status: created.activation_status || 'Pending Activation',
         activation_token: created.activation_token,
         activation_password: created.activation_password,
+        security_mode: created.security_mode || companyData.security_mode || 'pin',
         features: created.features || {},
         custom_tariffs: created.custom_tariffs || {}
       };
@@ -4653,6 +4673,29 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const approveCompanyRegistration = async (companyId) => {
+    try {
+      const res = await api.approveCompanyApplication(companyId);
+      setCompanies(prev => prev.map(c => {
+        if (c.id === companyId || c.code === companyId) {
+          return {
+            ...c,
+            status: 'Active',
+            activation_status: 'Active',
+            approved_at: new Date().toISOString(),
+            approved_by: 'Super Administrator'
+          };
+        }
+        return c;
+      }));
+      showToast(res.message || '🎉 Company registration verified and approved! Permanent login credentials dispatched via SMTP!');
+      return res;
+    } catch (err) {
+      showToast('Approval failed: ' + (err.message || 'Server error'), 'error');
+      throw err;
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -4780,10 +4823,11 @@ export const AppProvider = ({ children }) => {
       deleteCompanyVendor,
       verifyVendorDocument,
       verifyVendorFullSuite,
-      // 🏛️ Company Statutory Profile Verification
+      // 🏛️ Company Statutory Profile Verification & Approval
       verifyCompanyProfileDetail,
       updateCompanyVerificationStatus,
       requestCompanyProfileReview,
+      approveCompanyRegistration,
       // 💳 100% Postpaid Tier Billing Engine
       POSTPAID_PLANS,
       getCompanyPostpaidPlan,

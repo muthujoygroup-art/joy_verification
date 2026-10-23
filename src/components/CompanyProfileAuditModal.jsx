@@ -16,7 +16,8 @@ import {
   Lock, 
   Clock, 
   Sparkles,
-  Search
+  Search,
+  Mail
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -25,6 +26,7 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
     updateCompanyVerificationStatus, 
     verifyCompanyProfileDetail,
     platformLogoEmblem,
+    approveCompanyRegistration,
     showToast 
   } = useApp();
 
@@ -43,6 +45,7 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
   const [isVerifyingCin, setIsVerifyingCin] = useState(false);
   const [isVerifyingBank, setIsVerifyingBank] = useState(false);
   const [isSavingStatus, setIsSavingStatus] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
 
   // Local document review status
   const [docStatuses, setDocStatuses] = useState(checks.documents || {
@@ -162,6 +165,47 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
         {/* Scrollable Audit Workspace */}
         <div className="p-5 sm:p-6 overflow-y-auto space-y-6 text-xs bg-slate-50/50">
           
+          {/* Pending Application Review Banner */}
+          {(c.status === 'Pending Approval' || c.activation_status === 'Pending Approval') && (
+            <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-indigo-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shrink-0 shadow-xs">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="badge badge-purple text-[9px] font-black uppercase">ACTION REQUIRED</span>
+                    <strong className="text-slate-900 text-xs">Self-Activation Application Submitted for Review</strong>
+                  </div>
+                  <p className="text-[11px] text-slate-600 mt-0.5">
+                    Company submitted official CIN, GSTIN, Entity PAN, and Corporate Bank details. Verify documents below and authorize credentials dispatch.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                disabled={isApproving}
+                onClick={async () => {
+                  setIsApproving(true);
+                  try {
+                    const res = await approveCompanyRegistration(c.id);
+                    showToast(res?.message || `🎉 ${c.name} approved! Credentials dispatched to ${c.email}`);
+                    if (typeof onClose === 'function') onClose();
+                  } catch (err) {
+                    showToast(`❌ Approval failed: ${err.message}`, 'error');
+                  } finally {
+                    setIsApproving(false);
+                  }
+                }}
+                className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 px-4 font-black shadow-md flex items-center gap-1.5 cursor-pointer shrink-0 transition-all active:scale-95 rounded-xl"
+              >
+                {isApproving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
+                <span>{isApproving ? 'Approving...' : 'Approve & Dispatch Login Credentials ✉️'}</span>
+              </button>
+            </div>
+          )}
+
           {/* 1. Entity Overview Banner */}
           <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
@@ -366,7 +410,9 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
                     </span>
                     <div>
                       <strong className="text-slate-900 font-bold block">Bank Account Penny Drop (IMPS)</strong>
-                      <span className="text-[10px] text-slate-400 font-mono">HDFC Bank • IFSC: HDFC0000053</span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {c.bank_name || 'Corporate Bank'} • IFSC: {c.bank_ifsc || c.ifsc_code || 'HDFC0000053'}
+                      </span>
                     </div>
                   </div>
 
@@ -385,18 +431,28 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
                   )}
                 </div>
 
-                {checks.bank && (
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1 font-mono text-slate-700">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Beneficiary Name:</span>
-                      <strong className="text-emerald-800 font-sans">{checks.bank.beneficiaryName}</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Name Match Score:</span>
-                      <span className="text-emerald-700 font-bold">{checks.bank.matchScore}% Match</span>
-                    </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-1 font-mono text-slate-700">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Bank Name:</span>
+                    <strong className="text-slate-900 font-sans">{c.bank_name || 'Not provided'}</strong>
                   </div>
-                )}
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Account Number:</span>
+                    <strong className="text-indigo-900">{c.bank_account_number || c.bank_account || '••••••••4819'}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">IFSC Code:</span>
+                    <span className="text-slate-900 font-bold uppercase">{c.bank_ifsc || c.ifsc_code || 'HDFC0000053'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Account Type:</span>
+                    <span className="text-slate-800">{c.bank_account_type || 'Current Account'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Beneficiary Name:</span>
+                    <strong className="text-emerald-800 font-sans">{c.bank_beneficiary_name || checks.bank?.beneficiaryName || c.name}</strong>
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -488,11 +544,34 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
               type="button"
               disabled={isSavingStatus}
               onClick={handleSaveAudit}
-              className="btn btn-primary text-xs py-2 px-5 font-black flex items-center gap-1.5 shadow-md cursor-pointer"
+              className="btn btn-secondary text-xs py-2 px-4 font-bold flex items-center gap-1.5 cursor-pointer"
             >
               {isSavingStatus ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>Save & Publish Statutory Verification Status</span>
+              <span>Save Audit Status</span>
             </button>
+
+            {(c.status === 'Pending Approval' || c.activation_status === 'Pending Approval') && (
+              <button
+                type="button"
+                disabled={isApproving}
+                onClick={async () => {
+                  setIsApproving(true);
+                  try {
+                    const res = await approveCompanyRegistration(c.id);
+                    showToast(res?.message || `🎉 ${c.name} approved! Credentials dispatched to ${c.email}`);
+                    if (typeof onClose === 'function') onClose();
+                  } catch (err) {
+                    showToast(`❌ Approval failed: ${err.message}`, 'error');
+                  } finally {
+                    setIsApproving(false);
+                  }
+                }}
+                className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 px-5 font-black flex items-center gap-1.5 shadow-md cursor-pointer transition-all active:scale-95 rounded-xl"
+              >
+                {isApproving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                <span>Approve & Dispatch Login Credentials ✉️</span>
+              </button>
+            )}
           </div>
         </div>
 

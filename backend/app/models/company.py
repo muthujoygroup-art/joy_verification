@@ -208,6 +208,118 @@ class Company(Base):
         self.features = f
         self.registered_address = val
 
+    @property
+    def security_mode(self) -> str:
+        return (self.features or {}).get("security_mode") or ("captcha" if (self.activation_password or "").upper() == "CAPTCHA" else "pin")
+
+    @security_mode.setter
+    def security_mode(self, val: str):
+        f = dict(self.features or {})
+        f["security_mode"] = val
+        self.features = f
+
+    @property
+    def bank_name(self) -> Optional[str]:
+        return (self.features or {}).get("bank_name") or ((self.features or {}).get("bank_details") or {}).get("bank_name")
+
+    @bank_name.setter
+    def bank_name(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["bank_name"] = val
+        self.features = f
+
+    @property
+    def bank_account_number(self) -> Optional[str]:
+        return (self.features or {}).get("bank_account_number") or ((self.features or {}).get("bank_details") or {}).get("account_number")
+
+    @bank_account_number.setter
+    def bank_account_number(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["bank_account_number"] = val
+        self.features = f
+
+    @property
+    def bank_ifsc(self) -> Optional[str]:
+        return (self.features or {}).get("bank_ifsc") or ((self.features or {}).get("bank_details") or {}).get("ifsc")
+
+    @bank_ifsc.setter
+    def bank_ifsc(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["bank_ifsc"] = (val or "").upper()
+        self.features = f
+
+    @property
+    def bank_account_type(self) -> Optional[str]:
+        return (self.features or {}).get("bank_account_type") or ((self.features or {}).get("bank_details") or {}).get("account_type") or "Current Account"
+
+    @bank_account_type.setter
+    def bank_account_type(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["bank_account_type"] = val
+        self.features = f
+
+    @property
+    def bank_beneficiary_name(self) -> Optional[str]:
+        return (self.features or {}).get("bank_beneficiary_name") or ((self.features or {}).get("bank_details") or {}).get("beneficiary_name") or self.name
+
+    @bank_beneficiary_name.setter
+    def bank_beneficiary_name(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["bank_beneficiary_name"] = val
+        self.features = f
+
+    @property
+    def bank_details(self) -> Dict[str, Any]:
+        return (self.features or {}).get("bank_details") or {
+            "bank_name": self.bank_name,
+            "account_number": self.bank_account_number,
+            "ifsc": self.bank_ifsc,
+            "account_type": self.bank_account_type,
+            "beneficiary_name": self.bank_beneficiary_name
+        }
+
+    @bank_details.setter
+    def bank_details(self, val: Dict[str, Any]):
+        f = dict(self.features or {})
+        f["bank_details"] = val or {}
+        if val:
+            if "bank_name" in val: f["bank_name"] = val["bank_name"]
+            if "account_number" in val: f["bank_account_number"] = val["account_number"]
+            if "ifsc" in val: f["bank_ifsc"] = (val["ifsc"] or "").upper()
+            if "account_type" in val: f["bank_account_type"] = val["account_type"]
+            if "beneficiary_name" in val: f["bank_beneficiary_name"] = val["beneficiary_name"]
+        self.features = f
+
+    @property
+    def application_submitted_at(self) -> Optional[str]:
+        return (self.features or {}).get("application_submitted_at")
+
+    @application_submitted_at.setter
+    def application_submitted_at(self, val: Any):
+        f = dict(self.features or {})
+        f["application_submitted_at"] = val.isoformat() if hasattr(val, "isoformat") else str(val) if val else None
+        self.features = f
+
+    @property
+    def approved_at(self) -> Optional[str]:
+        return (self.features or {}).get("approved_at")
+
+    @approved_at.setter
+    def approved_at(self, val: Any):
+        f = dict(self.features or {})
+        f["approved_at"] = val.isoformat() if hasattr(val, "isoformat") else str(val) if val else None
+        self.features = f
+
+    @property
+    def approved_by(self) -> Optional[str]:
+        return (self.features or {}).get("approved_by")
+
+    @approved_by.setter
+    def approved_by(self, val: Optional[str]):
+        f = dict(self.features or {})
+        f["approved_by"] = val
+        self.features = f
+
     # Relationships
     hr_users = relationship("HrUser", back_populates="company", cascade="all, delete-orphan")
     candidates = relationship("Candidate", back_populates="company", cascade="all, delete-orphan")
