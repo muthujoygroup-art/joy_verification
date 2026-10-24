@@ -41,7 +41,8 @@ import {
   Globe,
   BookOpen,
   BarChart3,
-  Share2
+  Share2,
+  HardDrive
 } from 'lucide-react';
 
 export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed = false, onToggleCollapse }) => {
@@ -456,13 +457,14 @@ export const PortalSidebarNav = ({ onCloseMobile, isMobile = false, isCollapsed 
           id: 'core_ops',
           title: 'Companies & Tenants',
           subtitle: 'Tenants & Candidates',
-          badgeText: '4 Modules',
+          badgeText: '6 Modules',
           icon: Building2,
           colorClass: 'from-indigo-600 to-purple-600',
           defaultTab: 'companies',
           divisions: [
             { id: 'companies', label: 'All Companies List', tab: 'companies', icon: Building2 },
             { id: 'onboard_company', label: 'Onboard New Company', tab: 'onboard_company', icon: Plus },
+            { id: 'storage_mgmt', label: 'Cloud Storage & Vaults', tab: 'storage_mgmt', icon: HardDrive },
             { id: 'ledger', label: 'Candidate Records', tab: 'ledger', icon: Users },
             { id: 'logins', label: 'Login Directory', tab: 'logins', icon: UserCheck },
             { id: 'omnisearch', label: 'Quick Search', tab: 'omnisearch', icon: Search }

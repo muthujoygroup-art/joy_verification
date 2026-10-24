@@ -378,6 +378,14 @@ export const api = {
       body: JSON.stringify({ features }),
     });
   },
+  getStorageMetrics: () => request('/superadmin/storage/metrics', {}, false),
+  updateCompanyStorage: (companyId, storageLimitGb) => {
+    requestCache.clear();
+    return request(`/superadmin/companies/${companyId}/storage`, {
+      method: 'PUT',
+      body: JSON.stringify({ storage_limit_gb: parseFloat(storageLimitGb) }),
+    });
+  },
   getApiConfigs: () => request('/superadmin/api-configs', {}, true),
   createApiConfig: (configData) => {
     requestCache.clear();

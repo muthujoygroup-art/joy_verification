@@ -320,6 +320,34 @@ class Company(Base):
         f["approved_by"] = val
         self.features = f
 
+    @property
+    def storage_limit_gb(self) -> float:
+        val = (self.features or {}).get("storage_limit_gb")
+        if val is not None:
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                pass
+        plan_str = (self.plan or "").lower()
+        if "tier 5" in plan_str or "custom" in plan_str or "500+" in plan_str or "premier" in plan_str:
+            return 500.0
+        elif "tier 4" in plan_str:
+            return 100.0
+        elif "tier 3" in plan_str:
+            return 50.0
+        elif "tier 1" in plan_str or "< 50" in plan_str:
+            return 10.0
+        return 25.0
+
+    @storage_limit_gb.setter
+    def storage_limit_gb(self, val: Any):
+        f = dict(self.features or {})
+        try:
+            f["storage_limit_gb"] = float(val) if val is not None else 25.0
+        except (ValueError, TypeError):
+            f["storage_limit_gb"] = 25.0
+        self.features = f
+
     # Relationships
     hr_users = relationship("HrUser", back_populates="company", cascade="all, delete-orphan")
     candidates = relationship("Candidate", back_populates="company", cascade="all, delete-orphan")

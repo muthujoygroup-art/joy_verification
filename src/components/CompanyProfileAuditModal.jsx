@@ -17,7 +17,8 @@ import {
   Clock, 
   Sparkles,
   Search,
-  Mail
+  Mail,
+  HardDrive
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -27,7 +28,8 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
     verifyCompanyProfileDetail,
     platformLogoEmblem,
     approveCompanyRegistration,
-    showToast 
+    showToast,
+    updateCompanyStorageQuota
   } = useApp();
 
   const c = company || {};
@@ -46,6 +48,26 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
   const [isVerifyingBank, setIsVerifyingBank] = useState(false);
   const [isSavingStatus, setIsSavingStatus] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+
+  // Cloud Storage Quota State
+  const [companyStorageQuota, setCompanyStorageQuota] = useState(c.storage_limit_gb || c.features?.storage_limit_gb || 25);
+  const [isEditingStorage, setIsEditingStorage] = useState(false);
+  const [customQuotaInput, setCustomQuotaInput] = useState(c.storage_limit_gb || c.features?.storage_limit_gb || 25);
+  const [isUpdatingStorage, setIsUpdatingStorage] = useState(false);
+
+  const handleUpdateStorageQuota = async (newLimit) => {
+    setIsUpdatingStorage(true);
+    try {
+      await updateCompanyStorageQuota(c.id, Number(newLimit));
+      setCompanyStorageQuota(Number(newLimit));
+      setIsEditingStorage(false);
+      showToast(`☁️ Storage vault quota updated to ${newLimit} GB for ${c.name}`);
+    } catch (err) {
+      showToast(`❌ Failed to update storage quota: ${err.message}`, 'error');
+    } finally {
+      setIsUpdatingStorage(false);
+    }
+  };
 
   // Local document review status
   const [docStatuses, setDocStatuses] = useState(checks.documents || {
@@ -506,7 +528,146 @@ export const CompanyProfileAuditModal = ({ company, onClose }) => {
             </div>
           </div>
 
-          {/* 4. Auditor Remarks & Sync to Company */}
+          {/* 4. CLOUD STORAGE VAULT & QUOTA ALLOCATION */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                  <HardDrive className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">
+                    Cloud Storage Vault Allocation & Tenant Usage
+                  </h4>
+                  <p className="text-[10px] text-slate-500">
+                    Dedicated cryptographic file isolation for candidate KYC, face biometrics & statutory contracts
+                  </p>
+                </div>
+              </div>
+
+              {!isEditingStorage ? (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingStorage(true)}
+                  className="btn btn-secondary text-[11px] py-1 px-3 font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border-indigo-200 cursor-pointer self-start sm:self-auto rounded-lg"
+                >
+                  Adjust Storage Quota ⚙️
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingStorage(false)}
+                  className="btn btn-secondary text-[11px] py-1 px-2.5 font-bold text-slate-500 hover:text-slate-800 cursor-pointer rounded-lg"
+                >
+                  Close Edit
+                </button>
+              )}
+            </div>
+
+            {/* Storage Metric Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Allocated Quota</span>
+                <span className="text-sm font-black text-indigo-950 font-mono mt-0.5 block">{companyStorageQuota} GB</span>
+                <span className="text-[10px] text-slate-400">Plan Tier Quota</span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Vault Consumption</span>
+                <span className="text-sm font-black text-slate-900 font-mono mt-0.5 block">
+                  {c.storage_used_mb !== undefined ? `${c.storage_used_mb} MB` : (c.storage_used_gb !== undefined ? `${c.storage_used_gb} GB` : '0.00 MB')}
+                </span>
+                <span className="text-[10px] text-slate-400">Physical + DB Docs</span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Utilization</span>
+                <span className={`text-sm font-black font-mono mt-0.5 block ${
+                  (c.storage_used_percentage || 0) > 85 ? 'text-rose-600' : (c.storage_used_percentage || 0) > 65 ? 'text-amber-600' : 'text-emerald-600'
+                }`}>
+                  {c.storage_used_percentage !== undefined ? `${c.storage_used_percentage}%` : '0.0%'}
+                </span>
+                <span className="text-[10px] text-slate-400">Quota Consumed</span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Stored Files</span>
+                <span className="text-sm font-black text-slate-900 font-mono mt-0.5 block">
+                  {c.storage_file_count !== undefined ? `${c.storage_file_count} files` : '0 files'}
+                </span>
+                <span className="text-[10px] text-slate-400">Isolated Artifacts</span>
+              </div>
+            </div>
+
+            {/* Utilization Progress Bar */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                <span>Vault Capacity Utilization</span>
+                <span>{c.storage_used_percentage || 0}% used of {companyStorageQuota} GB</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    (c.storage_used_percentage || 0) > 85 ? 'bg-rose-500' : (c.storage_used_percentage || 0) > 65 ? 'bg-amber-500' : 'bg-indigo-600'
+                  }`}
+                  style={{ width: `${Math.min(c.storage_used_percentage || 0.1, 100)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Quota Adjustment Controls (Expanded when editing) */}
+            {isEditingStorage && (
+              <div className="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-200 space-y-3 mt-2 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-indigo-950 uppercase tracking-wider">
+                    Select New Cloud Vault Storage Quota:
+                  </span>
+                  <span className="text-[10px] text-indigo-600 font-bold">Instantly updates tenant cloud capacity</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {[10, 25, 50, 100, 500].map(val => (
+                    <button
+                      key={val}
+                      type="button"
+                      disabled={isUpdatingStorage}
+                      onClick={() => handleUpdateStorageQuota(val)}
+                      className={`px-3 py-1.5 rounded-xl font-black text-xs cursor-pointer border transition-all ${
+                        companyStorageQuota === val
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                      }`}
+                    >
+                      {val} GB
+                    </button>
+                  ))}
+
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <span className="text-[10px] font-bold text-slate-500">Custom:</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10000}
+                      value={customQuotaInput}
+                      onChange={(e) => setCustomQuotaInput(e.target.value)}
+                      className="w-20 px-2 py-1 text-xs rounded-lg border border-slate-300 bg-white font-mono font-bold"
+                      placeholder="GB"
+                    />
+                    <button
+                      type="button"
+                      disabled={isUpdatingStorage || !customQuotaInput}
+                      onClick={() => handleUpdateStorageQuota(customQuotaInput)}
+                      className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-1 px-3 font-bold rounded-lg shadow-xs cursor-pointer"
+                    >
+                      {isUpdatingStorage ? 'Saving...' : 'Apply'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 5. Auditor Remarks & Sync to Company */}
           <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-200 space-y-2">
             <label className="block font-bold text-xs text-indigo-950">
               Auditor Remarks & Compliance Instructions (Synced to Company Admin in Real-Time):

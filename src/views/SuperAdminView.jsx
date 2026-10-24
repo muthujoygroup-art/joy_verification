@@ -28,6 +28,7 @@ import ApiGatewayConfigModal from '../components/ApiGatewayConfigModal';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
 import { CommunicationGatewaysModal } from '../components/CommunicationGatewaysModal';
 import { AirtelIqSmsGatewayConsole } from '../components/AirtelIqSmsGatewayConsole';
+import { StorageManagementConsole } from '../components/StorageManagementConsole';
 import UniversalDocumentSandbox from '../components/UniversalDocumentSandbox';
 import { searchUniversalDirectory, enrichEntitiesWithHierarchy } from '../utils/entityCodes';
 import { analyzeIncidentForensics } from '../utils/diagnosticPlaybooks';
@@ -58,6 +59,7 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  HardDrive,
   FileCode,
   FileDown,
   FileSpreadsheet,
@@ -178,7 +180,11 @@ export const SuperAdminView = () => {
     templateRequests,
     reviewTemplateRequest,
     approveOfflinePayment,
-    approveCompanyRegistration
+    approveCompanyRegistration,
+    storageMetrics,
+    isLoadingStorageMetrics,
+    fetchStorageMetrics,
+    updateCompanyStorageQuota
   } = useApp();
 
   const navigate = useNavigate();
@@ -899,10 +905,16 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     plan: 'Tier 2 (< 100 Employees)',
     credits_purchased: 100,
     maxLimit: 100,
+    storage_limit_gb: 25,
     expiry_days: 15,
     expiry_date: '',
     termsAccepted: true
   });
+
+  // 💾 Storage Quota Quick Provisioning Modal (From Companies Table)
+  const [tableStorageModalCompany, setTableStorageModalCompany] = useState(null);
+  const [tableStorageModalQuota, setTableStorageModalQuota] = useState(25);
+  const [isSavingTableQuota, setIsSavingTableQuota] = useState(false);
 
   // 📧 cPanel SMTP Configuration & Test Email States
   const [smtpConfig, setSmtpConfig] = useState({
@@ -1244,6 +1256,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       plan: 'Tier 2 (< 100 Employees)',
       credits_purchased: 100,
       maxLimit: 100,
+      storage_limit_gb: 25,
       expiry_days: 15,
       expiry_date: '',
       termsAccepted: true
@@ -2921,11 +2934,19 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   onChange={(e) => {
                     const selectedPlanName = e.target.value;
                     const planObj = Object.values(POSTPAID_PLANS).find(p => p.name === selectedPlanName) || POSTPAID_PLANS.tier2;
+                    let recommendedStorage = 25;
+                    if (planObj.name.includes('< 50')) recommendedStorage = 10;
+                    else if (planObj.name.includes('< 100')) recommendedStorage = 25;
+                    else if (planObj.name.includes('< 300')) recommendedStorage = 50;
+                    else if (planObj.name.includes('< 500')) recommendedStorage = 100;
+                    else if (planObj.name.includes('> 500') || planObj.name.includes('Custom')) recommendedStorage = 500;
+
                     setNewCompany({ 
                       ...newCompany, 
                       plan: planObj.name, 
                       credits_purchased: planObj.maxProfiles, 
-                      maxLimit: planObj.maxProfiles 
+                      maxLimit: planObj.maxProfiles,
+                      storage_limit_gb: recommendedStorage
                     });
                   }}
                   className="form-select text-xs font-bold"
@@ -2951,6 +2972,56 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   className="form-input font-mono font-bold"
                 />
                 <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity (auto-filled by tier)</span>
+              </div>
+            </div>
+
+            {/* Field 10: Dedicated Cloud Storage Quota Allocation */}
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-slate-800 font-bold text-xs flex items-center gap-1.5">
+                  <HardDrive className="w-4 h-4 text-indigo-600" />
+                  <span>Cloud Storage Vault Allocation *</span>
+                </label>
+                <span className="badge badge-indigo text-[10.5px] font-black">
+                  {newCompany.storage_limit_gb || 25} GB Vault
+                </span>
+              </div>
+
+              {/* Presets */}
+              <div className="grid grid-cols-5 gap-1.5">
+                {[10, 25, 50, 100, 500].map(gb => (
+                  <button
+                    key={gb}
+                    type="button"
+                    onClick={() => setNewCompany({ ...newCompany, storage_limit_gb: gb })}
+                    className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                      (newCompany.storage_limit_gb || 25) === gb
+                        ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs scale-102'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {gb} GB
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom Input */}
+              <div className="flex items-center gap-2 pt-1">
+                <div className="flex-1 relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max="10000"
+                    placeholder="Custom GB"
+                    value={newCompany.storage_limit_gb || 25}
+                    onChange={(e) => setNewCompany({ ...newCompany, storage_limit_gb: Math.max(1, parseFloat(e.target.value) || 25) })}
+                    className="form-input text-xs font-mono font-bold pl-3 pr-12"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GB Vault</span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-medium">
+                  Dedicated storage for candidate KYC proofs, face biometrics & signed contracts.
+                </span>
               </div>
             </div>
 
@@ -3096,6 +3167,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   <th className="py-3.5 px-4 min-w-[260px]">Company</th>
                   <th className="py-3.5 px-4 min-w-[200px]">Contact Details</th>
                   <th className="py-3.5 px-4 min-w-[170px]">Plan & Pricing</th>
+                  <th className="py-3.5 px-4 min-w-[170px]">Cloud Vault</th>
                   <th className="py-3.5 px-4 text-center min-w-[150px]">Verification Features</th>
                   <th className="py-3.5 px-4 text-center min-w-[170px]">Status</th>
                   <th className="py-3.5 px-4 text-right min-w-[340px]">Actions</th>
@@ -3205,7 +3277,44 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                         )}
                       </td>
 
-                      {/* 4. 10 Active Feature Flags */}
+                      {/* 4. Cloud Vault Storage Quota */}
+                      <td className="py-4 px-4 min-w-[170px]">
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="font-bold text-slate-800 text-xs flex items-center gap-1 font-mono">
+                            <HardDrive className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>{comp.storage_limit_gb || 25} GB Vault</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTableStorageModalCompany(comp);
+                              setTableStorageModalQuota(comp.storage_limit_gb || 25);
+                            }}
+                            className="p-1 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                            title="Adjust Cloud Storage Quota"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-300 ${
+                              (comp.storage_used_percentage || 0) >= 90
+                                ? 'bg-rose-500'
+                                : (comp.storage_used_percentage || 0) >= 70
+                                ? 'bg-amber-500'
+                                : 'bg-indigo-600'
+                            }`}
+                            style={{ width: `${Math.max(3, Math.min(100, comp.storage_used_percentage || 0))}%` }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium mt-1">
+                          <span>{comp.storage_used_mb ? `${comp.storage_used_mb} MB` : '0.0 MB'} used</span>
+                          <span className="font-mono font-bold text-slate-700">{comp.storage_used_percentage || 0}%</span>
+                        </div>
+                      </td>
+
+                      {/* 5. 10 Active Feature Flags */}
                       <td className="py-4 px-4 text-center min-w-[150px]">
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-800 text-[10px] font-black">
                           <Sliders className="w-3 h-3 text-purple-600" />
@@ -3380,6 +3489,127 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* 💾 TAB: CLOUD STORAGE & VAULT MANAGEMENT */}
+      {activeTab === 'storage_mgmt' && (
+        <StorageManagementConsole />
+      )}
+
+      {/* 💾 Quick Storage Quota Provisioning Modal from Table */}
+      {tableStorageModalCompany && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+                  <HardDrive className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-slate-900">Provision Storage Quota</h4>
+                  <p className="text-[11px] text-slate-500 font-medium">{tableStorageModalCompany.name} ({tableStorageModalCompany.code})</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTableStorageModalCompany(null)}
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setIsSavingTableQuota(true);
+                try {
+                  await updateCompanyStorageQuota(tableStorageModalCompany.id, tableStorageModalQuota);
+                  setTableStorageModalCompany(null);
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setIsSavingTableQuota(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>Current Consumption:</span>
+                  <strong className="text-slate-900 font-mono">
+                    {tableStorageModalCompany.storage_used_mb ? `${tableStorageModalCompany.storage_used_mb} MB` : '0.0 MB'}
+                  </strong>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Current Quota:</span>
+                  <strong className="text-indigo-600 font-mono">{tableStorageModalCompany.storage_limit_gb || 25} GB</strong>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Current Utilization:</span>
+                  <strong className="text-slate-900 font-mono">{tableStorageModalCompany.storage_used_percentage || 0}%</strong>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-slate-700 font-bold text-xs">Select Cloud Vault Quota Preset</label>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[10, 25, 50, 100, 500].map(gb => (
+                    <button
+                      key={gb}
+                      type="button"
+                      onClick={() => setTableStorageModalQuota(gb)}
+                      className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                        tableStorageModalQuota === gb
+                          ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs scale-102'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {gb} GB
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-slate-700 font-bold text-xs">Or Enter Custom GB Quota</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value={tableStorageModalQuota}
+                    onChange={(e) => setTableStorageModalQuota(Math.max(1, parseFloat(e.target.value) || 25))}
+                    className="form-input text-xs font-mono font-bold pl-3 pr-12"
+                    required
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">GB</span>
+                </div>
+                <span className="text-[10px] text-slate-400 block">
+                  Isolated cloud vault disk space provisioned exclusively for this tenant.
+                </span>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setTableStorageModalCompany(null)}
+                  className="btn btn-secondary text-xs font-bold py-2 px-3 text-slate-600 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingTableQuota}
+                  className="btn btn-superadmin text-xs font-black py-2 px-4 shadow-sm flex items-center gap-1.5 cursor-pointer"
+                >
+                  {isSavingTableQuota ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>Save Quota Allocation</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -9431,11 +9661,19 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     onChange={(e) => {
                       const selectedPlanName = e.target.value;
                       const planObj = Object.values(POSTPAID_PLANS).find(p => p.name === selectedPlanName) || POSTPAID_PLANS.tier2;
+                      let recommendedStorage = 25;
+                      if (planObj.name.includes('< 50')) recommendedStorage = 10;
+                      else if (planObj.name.includes('< 100')) recommendedStorage = 25;
+                      else if (planObj.name.includes('< 300')) recommendedStorage = 50;
+                      else if (planObj.name.includes('< 500')) recommendedStorage = 100;
+                      else if (planObj.name.includes('> 500') || planObj.name.includes('Custom')) recommendedStorage = 500;
+
                       setNewCompany({ 
                         ...newCompany, 
                         plan: planObj.name, 
                         credits_purchased: planObj.maxProfiles, 
-                        maxLimit: planObj.maxProfiles 
+                        maxLimit: planObj.maxProfiles,
+                        storage_limit_gb: recommendedStorage
                       });
                     }}
                     className="form-select text-xs font-bold"
@@ -9461,6 +9699,56 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     className="form-input font-mono font-bold"
                   />
                   <span className="text-[10px] text-slate-400 mt-0.5 block">Allocated employee profile capacity (auto-filled by tier)</span>
+                </div>
+              </div>
+
+              {/* Field 10: Dedicated Cloud Storage Quota Allocation */}
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-800 font-bold text-xs flex items-center gap-1.5">
+                    <HardDrive className="w-4 h-4 text-indigo-600" />
+                    <span>Cloud Storage Vault Allocation *</span>
+                  </label>
+                  <span className="badge badge-indigo text-[10.5px] font-black">
+                    {newCompany.storage_limit_gb || 25} GB Vault
+                  </span>
+                </div>
+
+                {/* Presets */}
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[10, 25, 50, 100, 500].map(gb => (
+                    <button
+                      key={gb}
+                      type="button"
+                      onClick={() => setNewCompany({ ...newCompany, storage_limit_gb: gb })}
+                      className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                        (newCompany.storage_limit_gb || 25) === gb
+                          ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs scale-102'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {gb} GB
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom Input */}
+                <div className="flex items-center gap-2 pt-1">
+                  <div className="flex-1 relative">
+                    <input
+                      type="number"
+                      min="1"
+                      max="10000"
+                      placeholder="Custom GB"
+                      value={newCompany.storage_limit_gb || 25}
+                      onChange={(e) => setNewCompany({ ...newCompany, storage_limit_gb: Math.max(1, parseFloat(e.target.value) || 25) })}
+                      className="form-input text-xs font-mono font-bold pl-3 pr-12"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GB Vault</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    Dedicated storage for candidate KYC proofs, face biometrics & signed contracts.
+                  </span>
                 </div>
               </div>
 

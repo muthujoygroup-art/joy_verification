@@ -1819,7 +1819,85 @@ The user provided 3 screenshots and highlighted three operational requirements:
 - Backend Python compilation verified with **0 errors** across models, routers, schemas, and services.
 
 ---
-*Last Updated: October 23, 2026 | Antigravity IDE Autonomous Agent Log*
+---
+
+### Session 34: Real-Time Project Storage Calculation, Enterprise Company Vault Management & Storage Allocation Architecture (October 24, 2026)
+
+#### Context & User Feedback:
+The user requested an enterprise storage calculation and quota management system for the SuperAdmin portal:
+> *"Hey bro, now we need to do one more thing... storage calculation management for this project in the superadmin... like how much MB or GB currently project have and how much storage for companies and storage allocation option to the companies... while creating account.... so do this thing correctly.."*
+
+Key Deliverables:
+1. **Total Project Storage Calculation**: Real-time measurement of the overall project footprint (physical uploads, database records, brand assets) in MB and GB, plus host server disk capacity (Total, Free, Used, % Utilization).
+2. **Per-Company Storage Vault Management**: Isolated tracking for each enterprise tenant showing storage consumed (MB/GB), allocated quota (GB), % utilization, file count, and storage health classification (`Normal`, `Near Limit`, `Critical`).
+3. **Storage Allocation Option on Account Creation**: Dedicated storage allocation selector in SuperAdmin onboarding (inline and modal) with standard presets (`10 GB`, `25 GB`, `50 GB`, `100 GB`, `500 GB`) and custom GB inputs, auto-suggested dynamically based on the chosen Postpaid Plan Tier, with on-the-fly quota expansion in both the directory table and company audit modal.
+
+---
+
+#### Architectural Engineering & Implementation Details:
+
+1. **Backend Database Models & Schema Extensions (`backend/app/models/company.py`, `backend/app/schemas/company.py` & `backend/app/schemas/__init__.py`)**:
+   - Added `storage_limit_gb` virtual property on `Company` with getter and setter backed by `features` JSONB, preventing fragile raw SQL table alterations while auto-defaulting by Plan Tier:
+     - Tier 1 (< 50 Employees): 10 GB
+     - Tier 2 (< 100 Employees): 25 GB (default)
+     - Tier 3 (< 300 Employees): 50 GB
+     - Tier 4 (< 500 Employees): 100 GB
+     - Tier 5 (> 500 Employees): 500 GB
+   - Added `storage_limit_gb`, `storage_used_mb`, `storage_used_bytes`, and `storage_used_percentage` to `CompanyBase`, `CompanyCreate`, and `CompanyResponse`.
+   - Created and exported `CompanyStorageUpdate` schema (`storage_limit_gb: float`).
+
+2. **Enterprise Storage Service Engine (`backend/app/services/storage_service.py`)**:
+   - `get_directory_size_and_count(dir_path)`: High-performance recursive directory walker measuring exact byte size and file count.
+   - `get_company_storage_usage(company_id, comp_code, features_dict)`: Aggregates physical company subdirectories (`candidates/`, `contracts/`, `hr/`, `invoices/`) and inline base64/encrypted candidate documents stored in database rows.
+   - `get_overall_project_storage(db)`: Comprehensive project telemetry computing:
+     - **Overall Project Used**: Uploads folder + Database size + visual assets.
+     - **Host Server Disk Health**: Leverages `shutil.disk_usage` for real host drive capacity (Total, Free, Used, % Utilization).
+     - **Cross-Dialect Database Sizing**: Executes `pg_database_size(current_database())` on PostgreSQL 16 production and `PRAGMA page_count * PRAGMA page_size` on local SQLite.
+     - **Distribution Breakdown**: Candidate KYC Vault, Corporate Contracts, Exported Reports & Dossiers, System Database, and Brand Media.
+     - **Tenant Matrix**: Complete per-company breakdown of allocated quota, used MB/GB, percentage, file count, and health status.
+
+3. **Backend SuperAdmin Routers (`backend/app/routers/superadmin.py`)**:
+   - `GET /api/superadmin/storage/metrics`: Real-time storage telemetry endpoint.
+   - `PUT /api/superadmin/companies/{company_id}/storage`: Dynamic quota expansion and tenant storage limit provisioning endpoint.
+   - Updated `create_company` to accept `storage_limit_gb` and auto-provision based on Plan Tier if omitted.
+   - Updated `format_company_dict` to calculate and return `storage_limit_gb`, `storage_used_mb`, `storage_used_gb`, `storage_used_percentage`, `storage_file_count`, and `storage_breakdown`.
+
+4. **Frontend API Client & Global State Engine (`src/services/api.js` & `src/context/AppContext.jsx`)**:
+   - Added `api.getStorageMetrics()` and `api.updateCompanyStorage(companyId, storageLimitGb)`.
+   - Added `storageMetrics`, `isLoadingStorageMetrics`, `fetchStorageMetrics()`, and `updateCompanyStorageQuota(companyId, newQuotaGb)` in `AppContext.jsx`.
+   - Updated `addCompany` to propagate `storage_limit_gb` in create payload and local optimistic state.
+
+5. **Dedicated Storage Console (`src/components/StorageManagementConsole.jsx`) & Sidebar Navigation (`src/components/PortalSidebarNav.jsx`)**:
+   - Added `{ id: 'storage_mgmt', label: 'Cloud Storage & Vaults', tab: 'storage_mgmt', icon: HardDrive }` under Core Operations.
+   - Created `StorageManagementConsole.jsx` featuring:
+     - 4 Executive KPI cards: Total Project Consumed, Total Quota Allocated, Server Free Disk Space, Average Tenant Usage.
+     - Storage Category Breakdown grid (Candidate Documents, Company Contracts, Exported Dossiers, Database Records).
+     - Searchable and filterable Company Cloud Vault table with colored progress bars, file counts, and direct "Adjust Quota" action.
+     - Interactive Quota Provisioning modal with quick-select presets (`10 GB`, `25 GB`, `50 GB`, `100 GB`, `500 GB`) and custom GB input.
+
+6. **SuperAdmin Account Creation & Directory Workstation (`src/views/SuperAdminView.jsx`)**:
+   - Updated both Onboard Inline Form (`activeTab === 'onboard_company'`) and Modal Form (`showAddCompanyModal`):
+     - Added Field 10: **"Cloud Storage Vault Allocation *"** with preset buttons (`10 GB`, `25 GB`, `50 GB`, `100 GB`, `500 GB`) and custom input.
+     - Auto-syncs recommended storage quota whenever the Subscribed Plan Tier is changed (Tier 1 &rarr; 10 GB, Tier 2 &rarr; 25 GB, Tier 3 &rarr; 50 GB, Tier 4 &rarr; 100 GB, Tier 5 &rarr; 500 GB).
+   - In Companies Directory Table:
+     - Added **"Cloud Vault"** column showing `Used / Allocated` with mini progress bar and direct quota edit button.
+     - Added table-level quick quota provisioning modal.
+
+7. **Company Profile & Statutory Audit Modal (`src/components/CompanyProfileAuditModal.jsx`)**:
+   - Added Section 4: **"Cloud Storage Vault Allocation & Tenant Usage"** displaying:
+     - Allocated Quota, Vault Consumption, Utilization %, and Stored Artifacts count.
+     - Capacity utilization progress bar.
+     - Inline quota adjustment controls with presets and custom GB input.
+
+---
+
+#### Quality Gate & Validation:
+- `npm run build`: Production client bundle compiled in **9.53s** with **0 errors**.
+- Backend unit and route verification: `scratch/test_storage.py` verified with **0 errors**, confirming project usage, total allocated quota, and host disk calculation.
+- Git repository synchronized to `main` branch.
+
+---
+*Last Updated: October 24, 2026 | Antigravity IDE Autonomous Agent Log*
 
 
 

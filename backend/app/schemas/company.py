@@ -61,12 +61,20 @@ class CompanyBase(BaseModel):
     logo_url: Optional[str] = None
     company_logo: Optional[str] = None
     location: Optional[str] = None
+    storage_limit_gb: Optional[float] = 25.0
+    storage_used_mb: Optional[float] = 0.0
+    storage_used_bytes: Optional[int] = 0
+    storage_used_percentage: Optional[float] = 0.0
 
 class CompanyCreate(CompanyBase):
     password: Optional[str] = "Company@Admin2026"
     credits_purchased: Optional[int] = 500
     expiry_days: Optional[int] = 15
     expiry_date: Optional[str] = None
+    storage_limit_gb: Optional[float] = 25.0
+
+class CompanyStorageUpdate(BaseModel):
+    storage_limit_gb: float
 
 class CompanyUpdateFeatures(BaseModel):
     features: Dict[str, bool]

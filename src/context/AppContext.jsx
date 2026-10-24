@@ -757,6 +757,10 @@ export const AppProvider = ({ children }) => {
     }
   });
 
+  // 💾 Real-time System & Company Cloud Storage Metrics
+  const [storageMetrics, setStorageMetrics] = useState(null);
+  const [isLoadingStorageMetrics, setIsLoadingStorageMetrics] = useState(false);
+
   const updatePlatformLogo = (newLogoUrl, option = false) => {
     if (option === 'dark' || option === true) {
       setPlatformLogoDark(newLogoUrl);
@@ -1843,6 +1847,7 @@ export const AppProvider = ({ children }) => {
         security_mode: companyData.security_mode || (companyData.activation_password === 'CAPTCHA' ? 'captcha' : 'pin'),
         plan: companyData.plan || 'Tier 2 (< 100 Employees)',
         credits_purchased: parseInt(companyData.credits_purchased || companyData.maxLimit || 100),
+        storage_limit_gb: parseFloat(companyData.storage_limit_gb || companyData.storageLimitGb || 25),
         expiry_days: parseInt(companyData.expiry_days || 15),
         expiry_date: companyData.expiry_date || null,
         logo: companyData.logo || companyData.logo_url || companyData.company_logo || '',
@@ -1855,6 +1860,7 @@ export const AppProvider = ({ children }) => {
           logo_url: companyData.logo || companyData.logo_url || companyData.company_logo || '',
           location: companyData.location || companyData.registered_address || '',
           security_mode: companyData.security_mode || (companyData.activation_password === 'CAPTCHA' ? 'captcha' : 'pin'),
+          storage_limit_gb: parseFloat(companyData.storage_limit_gb || companyData.storageLimitGb || 25),
           aadhaar: true,
           pan: true,
           bankCheck: true,
@@ -1905,6 +1911,13 @@ export const AppProvider = ({ children }) => {
         pricePerVerification: created.price_per_verification,
         verifiedCountThisMonth: 0,
         maxLimit: created.max_limit || 100,
+        storage_limit_gb: created.storage_limit_gb || parseFloat(companyData.storage_limit_gb || 25),
+        storage_used_mb: created.storage_used_mb || 0,
+        storage_used_gb: created.storage_used_gb || 0,
+        storage_used_bytes: created.storage_used_bytes || 0,
+        storage_used_percentage: created.storage_used_percentage || 0,
+        storage_file_count: created.storage_file_count || 0,
+        storage_breakdown: created.storage_breakdown || {},
         status: created.status || 'Pending Activation',
         activation_status: created.activation_status || 'Pending Activation',
         activation_token: created.activation_token,
@@ -4696,6 +4709,50 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // 💾 Fetch Real-Time Storage Calculations & Metrics
+  const fetchStorageMetrics = async () => {
+    setIsLoadingStorageMetrics(true);
+    try {
+      const data = await api.getStorageMetrics();
+      if (data) {
+        setStorageMetrics(data);
+      }
+      return data;
+    } catch (err) {
+      console.error('Failed to fetch storage metrics:', err);
+    } finally {
+      setIsLoadingStorageMetrics(false);
+    }
+  };
+
+  // 💾 Update / Expand Company Cloud Storage Allocation (GB)
+  const updateCompanyStorageQuota = async (companyId, newQuotaGb) => {
+    try {
+      const res = await api.updateCompanyStorage(companyId, newQuotaGb);
+      if (res?.success) {
+        setCompanies(prev => prev.map(c => {
+          if (c.id === companyId || c.code === companyId) {
+            return {
+              ...c,
+              storage_limit_gb: parseFloat(newQuotaGb),
+              storage_used_mb: res.used_mb !== undefined ? res.used_mb : c.storage_used_mb,
+              storage_used_gb: res.used_gb !== undefined ? res.used_gb : c.storage_used_gb,
+              storage_used_percentage: res.used_percentage !== undefined ? res.used_percentage : c.storage_used_percentage
+            };
+          }
+          return c;
+        }));
+        showToast(res.message || `Storage quota updated to ${newQuotaGb} GB!`);
+        fetchStorageMetrics();
+        return res;
+      }
+    } catch (err) {
+      console.error('Failed to update company storage quota:', err);
+      showToast(`Storage update failed: ${err.message || 'Server error'}`, 'error');
+      throw err;
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -4854,7 +4911,12 @@ export const AppProvider = ({ children }) => {
       // 🚀 Candidate Link Dispatch & Expiry Alerts
       dispatchCandidateLink,
       candidateExpiryAlerts,
-      fetchExpiryAlerts
+      fetchExpiryAlerts,
+      // 💾 Real-Time Project Storage Calculation & Cloud Vault Quotas
+      storageMetrics,
+      isLoadingStorageMetrics,
+      fetchStorageMetrics,
+      updateCompanyStorageQuota
     }}>
       {children}
     </AppContext.Provider>

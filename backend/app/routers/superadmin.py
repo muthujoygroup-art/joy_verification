@@ -1,6 +1,6 @@
 from backend.app.services.logger_service import record_system_error_log
 from backend.app.models.company_request import CompanyRequest
-from backend.app.services.storage_service import get_company_folder
+from backend.app.services.storage_service import get_company_folder, get_company_storage_usage, get_overall_project_storage
 import uuid
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
@@ -22,7 +22,7 @@ from backend.app.models import Company, HrUser, ApiConfiguration, FeatureItem, S
 from backend.app.services.live_verification_service import test_generic_neev_endpoint
 from backend.app.services.neev_catalogue import NEEV_81_ENDPOINTS
 from backend.app.schemas import (
-    CompanyCreate, CompanyResponse, CompanyUpdateFeatures,
+    CompanyCreate, CompanyResponse, CompanyUpdateFeatures, CompanyStorageUpdate,
     ApiConfigCreate, ApiConfigResponse, ApiConfigUpdate, ApiConfigToggle,
     SystemErrorLogResponse, SystemErrorLogToggle, SystemErrorLogInboundPayload
 )
@@ -97,6 +97,58 @@ def approve_company_registration(company_id: str, payload: dict = None, db: Sess
         "message": f"🎉 Organization '{comp.name}' verified and approved! Permanent login credentials dispatched to {comp.email}.",
         "company": format_company_dict(comp),
         "email_dispatched": email_dispatched
+    }
+
+
+# =========================================================================
+# 💾 STORAGE CALCULATION & VAULT ALLOCATION MANAGEMENT
+# =========================================================================
+
+@router.get("/storage/metrics")
+def get_system_storage_metrics_endpoint(db: Session = Depends(get_db)):
+    """
+    Return comprehensive system-wide storage calculations:
+    - Current project storage used in MB / GB (Uploads, Database, Media assets)
+    - Total storage allocated across all registered companies
+    - Host server physical disk total, used, and free capacity
+    - Per-company storage allocations, consumption, percentages, and health statuses
+    """
+    try:
+        return get_overall_project_storage(db)
+    except Exception as e:
+        print(f"❌ Error computing storage metrics: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to calculate storage metrics: {str(e)}")
+
+
+@router.put("/companies/{company_id}/storage")
+def update_company_storage_allocation(company_id: str, payload: CompanyStorageUpdate, db: Session = Depends(get_db)):
+    """
+    Super Admin endpoint to dynamically adjust or expand a company's cloud storage quota in GB.
+    """
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    new_limit_gb = max(1.0, float(payload.storage_limit_gb or 25.0))
+    comp.storage_limit_gb = new_limit_gb
+    db.commit()
+    db.refresh(comp)
+
+    storage_stats = get_company_storage_usage(comp.id, comp.code, comp.features)
+    allocated_bytes = new_limit_gb * (1024 ** 3)
+    used_bytes = storage_stats["used_bytes"]
+    used_pct = round((used_bytes / allocated_bytes) * 100, 2) if allocated_bytes > 0 else 0.0
+
+    return {
+        "success": True,
+        "message": f"Storage quota successfully updated to {new_limit_gb:g} GB for {comp.name}",
+        "company_id": comp.id,
+        "allocated_gb": new_limit_gb,
+        "used_mb": storage_stats["used_mb"],
+        "used_gb": storage_stats["used_gb"],
+        "used_percentage": used_pct,
+        "file_count": storage_stats["file_count"],
+        "company": format_company_dict(comp)
     }
 
 
@@ -207,6 +259,12 @@ def get_all_hr_users_superadmin(db: Session = Depends(get_db)):
 
 def format_company_dict(c: Company) -> Dict[str, Any]:
     """Helper to safely serialize a Company model into a clean JSON dictionary"""
+    storage_stats = get_company_storage_usage(c.id, c.code, c.features)
+    storage_limit = float(getattr(c, 'storage_limit_gb', 25.0) or 25.0)
+    allocated_bytes = storage_limit * (1024 ** 3)
+    storage_used_bytes = storage_stats["used_bytes"]
+    storage_used_pct = round((storage_used_bytes / allocated_bytes) * 100, 2) if allocated_bytes > 0 else 0.0
+
     return {
         "id": c.id,
         "name": c.name or "",
@@ -219,6 +277,13 @@ def format_company_dict(c: Company) -> Dict[str, Any]:
         "verified_count_this_month": int(c.verified_count_this_month or 0),
         "max_limit": int(c.max_limit or 500),
         "wallet_balance": float(c.wallet_balance or 50000.0),
+        "storage_limit_gb": storage_limit,
+        "storage_used_mb": storage_stats["used_mb"],
+        "storage_used_gb": storage_stats["used_gb"],
+        "storage_used_bytes": storage_used_bytes,
+        "storage_used_percentage": storage_used_pct,
+        "storage_file_count": storage_stats["file_count"],
+        "storage_breakdown": storage_stats["breakdown"],
         "status": c.status or "Pending Activation",
         "activation_status": c.activation_status or "Pending Activation",
         "activation_token": c.activation_token,
@@ -436,6 +501,22 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
         logo_data = getattr(payload, 'logo', None) or getattr(payload, 'logo_url', None) or getattr(payload, 'company_logo', None)
         location_data = getattr(payload, 'location', None) or getattr(payload, 'registered_address', None) or ""
 
+        # Dedicated Storage Quota Allocation
+        raw_storage = getattr(payload, 'storage_limit_gb', None)
+        if raw_storage is not None and float(raw_storage) > 0:
+            storage_quota_gb = float(raw_storage)
+        else:
+            if "tier 5" in plan_name.lower() or "custom" in plan_name.lower():
+                storage_quota_gb = 500.0
+            elif "tier 4" in plan_name.lower():
+                storage_quota_gb = 100.0
+            elif "tier 3" in plan_name.lower():
+                storage_quota_gb = 50.0
+            elif "tier 1" in plan_name.lower() or "< 50" in plan_name:
+                storage_quota_gb = 10.0
+            else:
+                storage_quota_gb = 25.0
+
         # Store all extended attributes inside features JSONB for bulletproof PostgreSQL schema compatibility
         combined_features = {
             **default_features,
@@ -448,6 +529,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             "activation_token": activation_token,
             "activation_password": activation_pin_set,
             "security_mode": security_mode,
+            "storage_limit_gb": storage_quota_gb,
             "activation_expires_at": expires_at.isoformat() if expires_at else None,
             "activation_status": "Pending Activation",
             "custom_tariffs": getattr(payload, 'custom_tariffs', None) or {}
@@ -465,6 +547,7 @@ def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
             price_per_verification=price_per_check,
             max_limit=credits_bought,
             wallet_balance=credits_bought * price_per_check,
+            storage_limit_gb=storage_quota_gb,
             features=combined_features,
             verified_count_this_month=0,
             status="Pending Activation",

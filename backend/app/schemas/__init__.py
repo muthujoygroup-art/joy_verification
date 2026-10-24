@@ -1,5 +1,5 @@
 from backend.app.schemas.company import (
-    CompanyCreate, CompanyResponse, CompanyUpdateFeatures,
+    CompanyCreate, CompanyResponse, CompanyUpdateFeatures, CompanyStorageUpdate,
     HrUserCreate, HrUserResponse
 )
 from backend.app.schemas.candidate import (
