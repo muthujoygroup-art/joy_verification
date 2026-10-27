@@ -28,14 +28,43 @@
     color-scheme: light;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     background-color: var(--bg-light);
     background-attachment: fixed;
     color: #0f172a;
     min-height: 100vh;
+    min-height: -webkit-fill-available;
     overflow-x: hidden;
     line-height: 1.5;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+}
+
+/* 📱 Responsive Device Dimension Optimizations (Mobile, Tablet, Desktop) */
+@media (max-width: 640px) {
+  /* Prevent iOS automatic viewport zoom on form field focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Smooth Table Responsive Horizontal Wrapper */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* LIGHT THEME ROLE BACKGROUND PASTEL GRADIENTS */

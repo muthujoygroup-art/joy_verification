@@ -663,7 +663,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
   };
 
   return (
-    <div className="h-screen max-h-screen bg-slate-50 flex flex-col justify-between py-2 sm:py-3.5 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-x-hidden overflow-y-auto lg:overflow-y-hidden select-none">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen bg-slate-50 flex flex-col justify-between py-2 sm:py-3.5 px-3 sm:px-6 lg:px-8 text-slate-900 relative overflow-x-hidden overflow-y-auto lg:overflow-y-hidden select-none">
       
       {/* Background Lighting Accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] bg-gradient-to-b from-indigo-100/60 via-sky-50/40 to-transparent blur-3xl pointer-events-none"></div>
@@ -696,14 +696,14 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
         </div>
 
         {/* Selected Portal Split-Screen Enterprise Card (Auto-Fit & Zero Scroll) */}
-        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-2xl sm:rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0 max-h-[660px] lg:max-h-[700px] my-auto">
+        <div className="glass-panel border-slate-200/90 bg-white shadow-2xl relative overflow-hidden rounded-2xl sm:rounded-3xl animate-tab-switch grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0 max-h-none lg:max-h-[720px] my-auto">
           
           <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ background: currentDetail.headerGradient }} />
 
           {/* ========================================================================= */}
           {/* 🎨 LEFT HALF: FULL-BLEED 3D CINEMATIC VISUAL HERO PANEL (5 cols) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-5 relative flex flex-col justify-between overflow-hidden bg-slate-950 p-4 sm:p-5 lg:p-6 text-white min-h-[280px] lg:min-h-full group">
+          <div className="hidden md:flex md:min-h-[220px] lg:min-h-full lg:col-span-5 relative flex-col justify-between overflow-hidden bg-slate-950 p-4 sm:p-5 lg:p-6 text-white group">
             
             {/* Full-Bleed 3:4 High-Resolution 3D Artwork */}
             <img 
@@ -781,7 +781,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           {/* ========================================================================= */}
           {/* 🔐 RIGHT HALF: PROFESSIONAL ENTERPRISE SIGN-IN WORKSTATION (7 cols) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-7 p-4 sm:p-5 lg:p-6 flex flex-col justify-between overflow-hidden bg-white h-full space-y-2.5 relative">
+          <div className="lg:col-span-7 p-4 sm:p-5 lg:p-6 flex flex-col justify-between overflow-y-auto lg:overflow-hidden bg-white h-full space-y-2.5 relative">
             
             {/* Header Section of the Right Column */}
             <div className="border-b border-slate-100 pb-2 space-y-1.5">

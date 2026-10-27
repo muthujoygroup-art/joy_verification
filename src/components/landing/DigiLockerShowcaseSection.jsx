@@ -256,7 +256,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
               </div>
 
               {/* Document Type Selector Tabs */}
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5 p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
                 {documentTypes.map(doc => {
                   const Icon = doc.icon;
                   const isActive = activeDocTab === doc.id;

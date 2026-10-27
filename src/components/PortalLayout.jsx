@@ -241,11 +241,12 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                     soundEngine.playClick?.();
                     setShowLegalHandbook(true);
                   }}
-                  className="flex h-8 px-2.5 rounded-xl items-center gap-1 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                  className="flex h-8 px-2 sm:px-2.5 rounded-xl items-center gap-1 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                   title="DPDP Act 2023 Statutory Privacy & Data Rights"
                 >
                   <Scale className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
-                  <span>DPDP Shield 🛡️</span>
+                  <span className="hidden sm:inline">DPDP Shield 🛡️</span>
+                  <span className="sm:hidden font-bold">DPDP</span>
                 </button>
                 <button
                   type="button"
@@ -253,11 +254,12 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                     soundEngine.playClick?.();
                     setShowSupportModal(true);
                   }}
-                  className="flex h-8 px-2.5 rounded-xl items-center gap-1 text-purple-900 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                  className="flex h-8 px-2 sm:px-2.5 rounded-xl items-center gap-1 text-purple-900 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                   title="Need Help? Contact Support"
                 >
                   <LifeBuoy className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                  <span>Help 🛟</span>
+                  <span className="hidden sm:inline">Help 🛟</span>
+                  <span className="sm:hidden font-bold">Help</span>
                 </button>
               </div>
             </div>

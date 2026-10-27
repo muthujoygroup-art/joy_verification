@@ -586,7 +586,7 @@ export const LandingPageView = () => {
           </button>
 
           {/* Center Navigation: Standard Clean 8 Titles */}
-          <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FCFCFA] border border-[#E5EAF0]">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 p-1 rounded-full bg-[#FCFCFA] border border-[#E5EAF0]">
             {[
               { id: 'overview', label: 'Home' },
               { id: 'features', label: 'Features' },
@@ -602,7 +602,7 @@ export const LandingPageView = () => {
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`px-3 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-2 xl:px-3 py-1.5 xl:py-2 rounded-full text-[11px] xl:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'bg-[#426CF5] text-white shadow-xs font-bold scale-[1.02]'
                       : 'text-[#5C6878] hover:text-[#182230] hover:bg-white'
@@ -615,7 +615,7 @@ export const LandingPageView = () => {
           </nav>
 
           {/* Right Action CTAs */}
-          <div className="hidden sm:flex items-center gap-3 shrink-0">
+          <div className="hidden sm:flex items-center gap-2 xl:gap-3 shrink-0">
             {/* Tour Guide Trigger */}
             <button
               onClick={() => {
@@ -623,7 +623,7 @@ export const LandingPageView = () => {
                 setShowTourGuideModal(true);
                 window.dispatchEvent(new CustomEvent('open_tour_guide_modal'));
               }}
-              className="whitespace-nowrap px-4 py-2.5 rounded-full text-xs font-semibold text-[#426CF5] bg-[#EAF5FF] hover:bg-[#E0EFFE] border border-[#E5EAF0] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="whitespace-nowrap px-3 xl:px-4 py-2 xl:py-2.5 rounded-full text-xs font-semibold text-[#426CF5] bg-[#EAF5FF] hover:bg-[#E0EFFE] border border-[#E5EAF0] transition-all hidden md:flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Compass className="w-3.5 h-3.5 text-[#426CF5] animate-spin-slow" />
               <span>Tour & Guide 🧭</span>
@@ -635,7 +635,7 @@ export const LandingPageView = () => {
                 soundEngine.playClick();
                 setShowDemoModal(true);
               }}
-              className="whitespace-nowrap px-6 py-2.5 rounded-full text-xs font-semibold text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+              className="whitespace-nowrap px-4 xl:px-6 py-2 xl:py-2.5 rounded-full text-xs font-semibold text-white bg-[#426CF5] hover:bg-[#3459D8] shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
             >
               <span>Get Started</span>
               <ArrowRight className="w-3.5 h-3.5 text-white" />
