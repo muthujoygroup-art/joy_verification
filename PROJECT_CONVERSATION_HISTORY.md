@@ -2242,3 +2242,37 @@ The user requested a fixed navbar for the main landing page:
 
 ---
 *Last Updated: October 28, 2026 | Antigravity IDE Autonomous Agent Log*
+
+---
+---
+
+### Session 42: Pricing Page Service Micro-Price Removal & Enterprise Scope Standardization (October 28, 2026)
+
+#### Context & User Request:
+The user requested removing confusing retail micro-prices (1, 2, 3 rupees) from individual service checks on the main landing pricing page:
+> *"And, In the pricing page from the main page.. don't mention the service prices like 1, 2, 3 rupees... "*
+
+---
+
+#### Modifications Applied:
+1. **Service Checklist Badging (`src/views/LandingPageView.jsx`)**:
+   - Eliminated individual check micro-rate tags (`₹1.00 / candidate`, `₹2.50 / candidate`, `₹0.50 / candidate`, `₹8.00 / vendor`, `₹0.25 / profile`).
+   - Replaced with clean B2B enterprise scope status pills:
+     - Employee Checks: `Included in Scope` (when active) vs `Click to Add` (when optional).
+     - Vendor Checks: `Active Check` (when active) vs `Click to Add` (when optional).
+     - Gateways: `Active Channel` / `Default Included` vs `Optional Channel`.
+2. **Text Copy Sanitization**:
+   - Replaced all copy mentioning "₹1 IMPS" with professional banking terminology ("Instant IMPS Account Match", "Instant Bank Beneficiary Match", "Instant IMPS penny-drop validation").
+3. **Plan Pricing Configuration Alignment (`src/config/planPricingConfig.js`)**:
+   - Sanitized subTypes and descriptions removing all "₹1" references while preserving dynamic calculation math in the background.
+4. **Dynamic Plan Builder Modal Alignment (`src/components/DynamicPlanBuilderModal.jsx`)**:
+   - Standardized status tags to `Included` and `Active`, ensuring zero 1, 2, 3 rupee micro-prices appear when launching custom configuration modals.
+
+---
+
+#### Quality Gate & Production Build Verification:
+- **Client Build (`npm run build`)**: Vite built production environment in **1.81s with 0 errors** (2,136 modules transformed).
+- **Git Synchronization**: Synchronized with `origin main` and `old_repo main`.
+
+---
+*Last Updated: October 28, 2026 | Antigravity IDE Autonomous Agent Log*

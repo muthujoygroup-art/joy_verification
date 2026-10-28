@@ -30,7 +30,7 @@ export const EMPLOYEE_VERIFICATION_CHECKS = [
   {
     category: 'Financial & Banking',
     items: [
-      { id: 'bank_basic', name: 'Bank Account Check', subType: 'IMPS ₹1 Penny Drop (Name, Status)', rate: 4.0, defaultChecked: true, desc: 'Real-time NPCI IMPS ₹1 penny-drop validation matching candidate legal title' }
+      { id: 'bank_basic', name: 'Bank Account Check', subType: 'IMPS Penny Drop (Name, Status)', rate: 4.0, defaultChecked: true, desc: 'Real-time NPCI IMPS penny-drop validation matching candidate legal title' }
     ]
   },
   {
@@ -65,7 +65,7 @@ export const VENDOR_VERIFICATION_CHECKS = [
     category: 'Corporate Tax & Legal Entity',
     items: [
       { id: 'vendor_pan_detailed', name: 'PAN Check (Vendor)', subType: 'Company Name, DIN, GST Details', rate: 8.0, defaultChecked: true, desc: 'Corporate PAN entity check cross-referencing GSTIN and director names' },
-      { id: 'vendor_bank_account', name: 'Bank Account Number Check', subType: 'Bank Account Verify (Company Legal Name)', rate: 5.0, defaultChecked: true, desc: 'NPCI IMPS ₹1 penny-drop validation matching corporate trade name' },
+      { id: 'vendor_bank_account', name: 'Bank Account Number Check', subType: 'Bank Account Verify (Company Legal Name)', rate: 5.0, defaultChecked: true, desc: 'NPCI IMPS penny-drop validation matching corporate trade name' },
       { id: 'vendor_mca_name', name: 'MCA to Company Name', subType: 'MCA Verify (Company Name Search)', rate: 6.0, defaultChecked: true, desc: 'Ministry of Corporate Affairs name-to-CIN lookup and legal registration verification' },
       { id: 'vendor_gst_details', name: 'GST Check', subType: 'GST Details (Company Name, Active Status, Filings)', rate: 6.0, defaultChecked: true, desc: '15-digit GSTIN active status, legal vs trade name, and tax return filing regularity' }
     ]

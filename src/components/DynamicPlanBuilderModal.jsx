@@ -683,8 +683,8 @@ export const DynamicPlanBuilderModal = ({
                                     <span className="text-xs font-bold text-slate-900 truncate">
                                       {item.name}
                                     </span>
-                                    <span className="text-xs font-black text-indigo-700 shrink-0">
-                                      ₹{item.rate.toFixed(2)}
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0">
+                                      {isChecked ? 'Included' : 'Optional'}
                                     </span>
                                   </div>
 
@@ -750,8 +750,8 @@ export const DynamicPlanBuilderModal = ({
                                     <span className="text-xs font-bold text-slate-900 truncate">
                                       {item.name}
                                     </span>
-                                    <span className="text-xs font-black text-indigo-700 shrink-0">
-                                      ₹{item.rate.toFixed(2)}
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200 shrink-0">
+                                      {isChecked ? 'Included' : 'Optional'}
                                     </span>
                                   </div>
 
@@ -813,8 +813,8 @@ export const DynamicPlanBuilderModal = ({
                                         Included Free
                                       </span>
                                     ) : (
-                                      <span className="text-xs font-black text-indigo-700">
-                                        ₹{item.rate.toFixed(2)}/p
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        {isChecked ? 'Active' : 'Optional'}
                                       </span>
                                     )}
                                   </div>

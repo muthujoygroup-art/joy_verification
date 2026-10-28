@@ -420,7 +420,7 @@ export const LandingPageView = () => {
       { label: 'Workforce Gate Passes', value: 'Digital Scannable QR', detail: 'Instant digital employee badges for security gates' },
       { label: 'CLRA Form XVI Muster', value: 'Always Audit-Ready', detail: 'Permanent, verifiable compliance log for statutory audits' },
       { label: 'Employment History', value: 'Full Career Timeline', detail: 'Past company tenures and relieving dates confirmed' },
-      { label: 'Bank Account Match', value: 'Instant ₹1 IMPS Match', detail: 'Validates beneficiary name directly with recipient bank' },
+      { label: 'Bank Account Match', value: 'Instant IMPS Account Match', detail: 'Validates beneficiary name directly with recipient bank' },
       { label: 'Court Record Scope', value: 'Pan-India Databases', detail: 'Covers civil, criminal, and commercial tribunals' }
     ],
     infrastructure: [
@@ -1169,7 +1169,7 @@ export const LandingPageView = () => {
                 <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> UIDAI Aadhaar OTP verification & e-KYC</li>
                 <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> NSDL PAN 2.0 active status validation</li>
                 <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> EPFO past service history & tenure audits</li>
-                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> NPCI IMPS ₹1 penny drop account match</li>
+                <li className="flex items-center gap-2 text-[#182230] font-medium"><Check className="w-4 h-4 text-[#299C68]" /> NPCI IMPS penny-drop account verification</li>
               </ul>
             </div>
 
@@ -1276,7 +1276,7 @@ export const LandingPageView = () => {
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
                 <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">NPCI IMPS Penny Drop</span>
                 <div className="text-xl font-black text-teal-700 font-mono">0.38s TAT</div>
-                <span className="text-[10px] text-slate-500">₹1 Bank Beneficiary Match</span>
+                <span className="text-[10px] text-slate-500">Instant Bank Beneficiary Match</span>
               </div>
             </div>
           </div>
@@ -1622,7 +1622,7 @@ export const LandingPageView = () => {
               { title: 'Aadhaar UIDAI e-KYC', desc: 'Direct UIDAI OTP authentication with automatic data redaction and address verification.', speed: '0.42s', icon: ShieldCheck, color: 'text-indigo-600 bg-indigo-50' },
               { title: 'PAN 2.0 ID Verification', desc: 'Real-time Income Tax & NSDL direct check validating full candidate legal name and status.', speed: '0.35s', icon: CreditCard, color: 'text-emerald-600 bg-emerald-50' },
               { title: 'EPFO Moonlighting Radar', desc: 'Queries active UAN contributions to flag undisclosed secondary jobs and overlap periods.', speed: '0.78s', icon: Search, color: 'text-amber-600 bg-amber-50' },
-              { title: 'Bank Account Penny Drop', desc: 'Instant ₹1 IMPS transfer validating bank account number and beneficiary name with 100% accuracy.', speed: '0.38s', icon: CheckCircle2, color: 'text-blue-600 bg-blue-50' },
+              { title: 'Bank Account Penny Drop', desc: 'Instant IMPS penny-drop validation matching bank account number and beneficiary name with 100% accuracy.', speed: '0.38s', icon: CheckCircle2, color: 'text-blue-600 bg-blue-50' },
               { title: 'Driving License (DL) Check', desc: 'Parivahan Sarathi check verifying license validity, transport classes, and active badges.', speed: '0.52s', icon: Smartphone, color: 'text-purple-600 bg-purple-50' },
               { title: 'Pan-India Court & Litigation', desc: 'e-Courts civil and criminal tribunal search across District, High, and Supreme courts.', speed: '1.12s', icon: Scale, color: 'text-rose-600 bg-rose-50' },
               { title: 'Factory Turnstile Gate Pass', desc: 'Instant scannable QR badge for plant turnstiles and statutory CLRA Form XVI muster records.', speed: '0.21s', icon: HardHat, color: 'text-teal-600 bg-teal-50' },
@@ -1929,12 +1929,15 @@ export const LandingPageView = () => {
                                     </div>
 
                                     <div className="text-right shrink-0">
-                                      <span className="text-xs sm:text-sm font-black font-mono text-indigo-700 block">
-                                        ₹{item.rate.toFixed(2)}
-                                      </span>
-                                      <span className="text-[9px] font-semibold text-slate-400 block -mt-0.5">
-                                        / candidate
-                                      </span>
+                                      {isChecked ? (
+                                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200 block shadow-2xs">
+                                          Included in Scope
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 block">
+                                          Click to Add
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
 
@@ -2008,12 +2011,15 @@ export const LandingPageView = () => {
                                     </div>
 
                                     <div className="text-right shrink-0">
-                                      <span className="text-xs sm:text-sm font-black font-mono text-sky-700 block">
-                                        ₹{item.rate.toFixed(2)}
-                                      </span>
-                                      <span className="text-[9px] font-semibold text-slate-400 block -mt-0.5">
-                                        / vendor
-                                      </span>
+                                      {isChecked ? (
+                                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-200 block shadow-2xs">
+                                          Active Check
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 block">
+                                          Click to Add
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
 
@@ -2079,12 +2085,15 @@ export const LandingPageView = () => {
                                     </span>
                                   ) : (
                                     <div>
-                                      <span className="text-xs sm:text-sm font-black font-mono text-emerald-700 block">
-                                        ₹{item.rate.toFixed(2)}
-                                      </span>
-                                      <span className="text-[9px] font-semibold text-slate-400 block -mt-0.5">
-                                        / profile
-                                      </span>
+                                      {isChecked ? (
+                                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 block shadow-2xs">
+                                          Active Channel
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 block">
+                                          Optional Channel
+                                        </span>
+                                      )}
                                     </div>
                                   )}
                                 </div>
