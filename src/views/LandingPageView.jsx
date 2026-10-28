@@ -171,6 +171,18 @@ export const LandingPageView = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [soundMuted, setSoundMuted] = useState(soundEngine.isMuted());
 
+  // Fixed Navbar Scroll Detection State
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Listen for open_tour_guide_modal event
   useEffect(() => {
     const handleOpenTour = () => setShowTourGuideModal(true);
@@ -560,8 +572,12 @@ export const LandingPageView = () => {
         <LandingPagePreloader onFinish={() => setShowPreloader(false)} />
       )}
 
-      {/* 2. Premium Light Navbar with 7 Standard Clean Titles */}
-      <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-[#E5EAF0] shadow-xs transition-all">
+      {/* 2. Fixed Enterprise Navbar with Dynamic Scroll Elevation */}
+      <header className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/95 backdrop-blur-xl border-b border-[#E5EAF0] shadow-md shadow-slate-900/5'
+          : 'bg-white/85 backdrop-blur-lg border-b border-[#E5EAF0]/80 shadow-xs'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           
           {/* Brand Logo */}
@@ -654,7 +670,7 @@ export const LandingPageView = () => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#E5EAF0] px-4 py-4 bg-white shadow-xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="lg:hidden border-t border-[#E5EAF0] px-4 py-4 bg-white/98 backdrop-blur-xl shadow-xl flex flex-col gap-2 font-sans text-xs animate-in fade-in slide-in-from-top-2 duration-150 max-h-[calc(100vh-5.5rem)] overflow-y-auto">
             <button onClick={() => { handleTabChange('overview'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Home</button>
             <button onClick={() => { handleTabChange('features'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Features</button>
             <button onClick={() => { handleTabChange('solutions'); setMobileMenuOpen(false); }} className="py-2.5 px-3 rounded-xl text-[#182230] hover:text-[#426CF5] hover:bg-[#EAF5FF] font-semibold text-left">Solutions</button>
@@ -687,6 +703,9 @@ export const LandingPageView = () => {
           </div>
         )}
       </header>
+
+      {/* 3. Fixed Navbar Spacer - offsets 80px (h-20) fixed header height */}
+      <div className="h-20 shrink-0 w-full" aria-hidden="true" />
 
       {/* ==============================================================================
        * TAB VIEW CONTENT ROUTING (7 CLEAN VIEWS)
