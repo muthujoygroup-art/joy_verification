@@ -401,12 +401,12 @@ export const HrActivationView = () => {
         </div>
 
         {/* STEP PROGRESS BAR */}
-        <div className="grid grid-cols-4 bg-slate-100 border-b border-slate-200 text-center text-xs font-bold">
+        <div className="grid grid-cols-2 sm:grid-cols-4 bg-slate-100 border-b border-slate-200 text-center text-xs font-bold">
           {[
-            { num: 1, label: '👤 Personal Info' },
-            { num: 2, label: '🎓 Education & Work' },
-            { num: 3, label: '📄 Upload Documents' },
-            { num: 4, label: '⚖️ Terms & Agreement' }
+            { num: 1, label: '👤 Personal Info', shortLabel: '👤 Personal' },
+            { num: 2, label: '🎓 Education & Work', shortLabel: '🎓 Education' },
+            { num: 3, label: '📄 Upload Documents', shortLabel: '📄 Documents' },
+            { num: 4, label: '⚖️ Terms & Agreement', shortLabel: '⚖️ Terms' }
           ].map(s => (
             <button
               key={s.num}
@@ -419,8 +419,9 @@ export const HrActivationView = () => {
                   : 'text-slate-400 border-transparent'
               }`}
             >
-              <span>{s.label}</span>
-              {activeStep > s.num && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+              <span className="hidden sm:inline">{s.label}</span>
+              <span className="sm:hidden">{s.shortLabel}</span>
+              {activeStep > s.num && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />}
             </button>
           ))}
         </div>

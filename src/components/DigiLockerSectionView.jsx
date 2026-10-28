@@ -1107,38 +1107,41 @@ export const DigiLockerSectionView = ({ currentCompany, activeHr, initialSubTab 
                   {/* 1. Identifier Type Tabs */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5">Authentication Identifier</label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                       <button
                         type="button"
                         onClick={() => { setAuthType('mobile'); }}
-                        className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer truncate ${
                           authType === 'mobile' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
                         }`}
                       >
-                        <Smartphone className="w-3.5 h-3.5" />
-                        <span>Mobile (10-Digit)</span>
+                        <Smartphone className="w-3.5 h-3.5 shrink-0" />
+                        <span className="hidden sm:inline">Mobile (10-Digit)</span>
+                        <span className="sm:hidden">Mobile</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => { setAuthType('aadhaar'); }}
-                        className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer truncate ${
                           authType === 'aadhaar' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
                         }`}
                       >
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Aadhaar (12-Digit)</span>
+                        <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                        <span className="hidden sm:inline">Aadhaar (12-Digit)</span>
+                        <span className="sm:hidden">Aadhaar</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => { setAuthType('pan'); }}
-                        className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-1.5 px-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer truncate ${
                           authType === 'pan' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-700'
                         }`}
                       >
-                        <CreditCard className="w-3.5 h-3.5" />
-                        <span>PAN Number</span>
+                        <CreditCard className="w-3.5 h-3.5 shrink-0" />
+                        <span className="hidden sm:inline">PAN Number</span>
+                        <span className="sm:hidden">PAN</span>
                       </button>
                     </div>
                   </div>

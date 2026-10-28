@@ -2988,7 +2988,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
               </div>
 
               {/* Presets */}
-              <div className="grid grid-cols-5 gap-1.5">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                 {[10, 25, 50, 100, 500].map(gb => (
                   <button
                     key={gb}
@@ -3555,7 +3555,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
               <div className="space-y-1.5">
                 <label className="block text-slate-700 font-bold text-xs">Select Cloud Vault Quota Preset</label>
-                <div className="grid grid-cols-5 gap-1.5">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                   {[10, 25, 50, 100, 500].map(gb => (
                     <button
                       key={gb}
@@ -9715,7 +9715,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 </div>
 
                 {/* Presets */}
-                <div className="grid grid-cols-5 gap-1.5">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                   {[10, 25, 50, 100, 500].map(gb => (
                     <button
                       key={gb}

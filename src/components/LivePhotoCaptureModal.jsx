@@ -269,7 +269,7 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
             </div>
 
             {/* Verification Telemetry Checklist */}
-            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
               <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-bold">
                 <span className="text-[10px] text-emerald-700 block uppercase">Face Geometry</span>
                 <span>✓ Centered 3D</span>
@@ -433,7 +433,7 @@ export const LivePhotoCaptureModal = ({ isOpen, onClose, onPhotoCaptured, curren
               {/* ⚡ 1-Click Demo Photo Selection Options */}
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                 <span className="text-[11px] font-bold text-slate-600 block">⚡ Or Select a 1-Click Demo Verified Portrait:</span>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {demoPortraits.map((portrait, idx) => (
                     <button
                       key={idx}

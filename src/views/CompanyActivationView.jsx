@@ -531,17 +531,17 @@ export const CompanyActivationView = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 mt-4">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mt-4">
                     {[
-                      { step: 1, label: '1. Company Profile' },
-                      { step: 2, label: '2. Documents & Tax' },
-                      { step: 3, label: '3. Agreement & Terms' },
+                      { step: 1, label: '1. Company Profile', shortLabel: '1. Profile' },
+                      { step: 2, label: '2. Documents & Tax', shortLabel: '2. Tax & Docs' },
+                      { step: 3, label: '3. Agreement & Terms', shortLabel: '3. Agreement' },
                     ].map(s => (
                       <button
                         key={s.step}
                         type="button"
                         onClick={() => setActiveStep(s.step)}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center ${
+                        className={`py-2 px-1.5 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold border transition-all text-center truncate ${
                           activeStep === s.step
                             ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                             : activeStep > s.step
@@ -549,7 +549,8 @@ export const CompanyActivationView = () => {
                             : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
-                        {s.label}
+                        <span className="hidden sm:inline">{s.label}</span>
+                        <span className="sm:hidden">{s.shortLabel}</span>
                       </button>
                     ))}
                   </div>
