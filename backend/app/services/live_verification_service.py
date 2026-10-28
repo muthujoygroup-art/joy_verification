@@ -5,6 +5,9 @@ import logging
 import time
 import urllib.request
 import urllib.error
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from datetime import datetime, timedelta
 from typing import Dict, Any, Tuple, Optional, List
 from sqlalchemy.orm import Session
