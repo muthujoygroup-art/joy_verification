@@ -81,7 +81,9 @@ import {
 
 export const LandingPageView = () => {
   const navigate = useNavigate();
-  const { platformLogoEmblem, landingPageContent } = useApp() || {};
+  const { platformLogoEmblem, landingPageContent, systemSettings } = useApp() || {};
+  const minPlanOrderAmount = Number(systemSettings?.superadmin?.minPlanOrderAmount) || 2000;
+  const [showMinOrderWarningModal, setShowMinOrderWarningModal] = useState(false);
   const content = {
     ...DEFAULT_LANDING_PAGE_CONTENT,
     ...(landingPageContent || {})
@@ -1809,7 +1811,7 @@ export const LandingPageView = () => {
                   <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200 inline-block mb-1">
                     Step 2: Customize Statutory Verification Scope
                   </span>
-                  <h4 className="text-base sm:text-lg font-black text-slate-900 font-outfit">
+                  <h4 id="step2-verification-scope" className="text-base sm:text-lg font-black text-slate-900 font-outfit scroll-mt-28">
                     Toggle Checks Required for Your Compliance Mandate
                   </h4>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -2196,6 +2198,21 @@ export const LandingPageView = () => {
                 </div>
               </div>
 
+              {/* Minimum Order Policy Notice if below base amount */}
+              {landingDynamicBill.totalAmount < minPlanOrderAmount && (
+                <div className="w-full p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-amber-300 animate-fadeIn">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>
+                      Minimum Order Value Policy: <strong>₹{minPlanOrderAmount.toLocaleString('en-IN')}</strong> (Current: ₹{landingDynamicBill.totalAmount.toLocaleString('en-IN')}). Please add ₹{(minPlanOrderAmount - landingDynamicBill.totalAmount).toLocaleString('en-IN')} to qualify for instant checkout.
+                    </span>
+                  </div>
+                  <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30 self-start sm:self-auto shrink-0">
+                    Policy Protected
+                  </span>
+                </div>
+              )}
+
               {/* Security Guarantee & High-Impact Razorpay Button */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-xs text-slate-300">
@@ -2206,12 +2223,24 @@ export const LandingPageView = () => {
                 <button
                   onClick={() => {
                     soundEngine.playClick();
+                    if (landingDynamicBill.totalAmount < minPlanOrderAmount) {
+                      setShowMinOrderWarningModal(true);
+                      return;
+                    }
                     setShowDynamicPlanModal(true);
                   }}
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-300 hover:to-orange-500 text-slate-950 font-black text-sm flex items-center justify-center gap-2.5 shadow-xl hover:shadow-amber-500/30 transform hover:-translate-y-0.5 transition-all cursor-pointer"
+                  className={`w-full sm:w-auto px-8 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2.5 shadow-xl transition-all cursor-pointer ${
+                    landingDynamicBill.totalAmount < minPlanOrderAmount
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
+                      : 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 hover:from-amber-300 hover:to-orange-500 text-slate-950 hover:shadow-amber-500/30 transform hover:-translate-y-0.5'
+                  }`}
                 >
                   <Zap className="w-4 h-4 fill-slate-950" />
-                  <span>Proceed to Secure Razorpay Checkout ⚡</span>
+                  <span>
+                    {landingDynamicBill.totalAmount < minPlanOrderAmount
+                      ? `Minimum Order ₹${minPlanOrderAmount.toLocaleString('en-IN')} Required →`
+                      : 'Proceed to Secure Razorpay Checkout →'}
+                  </span>
                 </button>
               </div>
             </div>
@@ -2903,6 +2932,80 @@ export const LandingPageView = () => {
             confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
           }}
         />
+      )}
+
+      {/* MINIMUM PLAN ORDER THRESHOLD PROFESSIONAL MODAL */}
+      {showMinOrderWarningModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-white border border-[#E5EAF0] rounded-3xl p-6 sm:p-7 shadow-2xl text-[#182230]">
+            <button
+              onClick={() => setShowMinOrderWarningModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-[#FCFCFA] text-[#5C6878] hover:text-[#182230] transition-colors cursor-pointer border border-[#E5EAF0]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3.5 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0 shadow-xs">
+                <AlertCircle className="w-6 h-6 stroke-[2.5]" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+                  Corporate Tariff Policy
+                </span>
+                <h3 className="text-xl font-bold text-[#182230] font-outfit mt-1">
+                  Minimum Order ₹{minPlanOrderAmount.toLocaleString('en-IN')}
+                </h3>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FCFCFA] border border-[#E5EAF0] space-y-2.5 text-xs text-[#5C6878] mb-5">
+              <p className="leading-relaxed">
+                In accordance with enterprise statutory processing tariffs, single plan purchases require a minimum order commitment of <strong className="text-[#182230]">₹{minPlanOrderAmount.toLocaleString('en-IN')}</strong> (incl. 18% GST).
+              </p>
+              <div className="flex items-center justify-between pt-2 border-t border-[#E5EAF0] font-mono">
+                <span className="text-[#5C6878]">Current Configuration:</span>
+                <span className="font-bold text-[#182230]">₹{landingDynamicBill.totalAmount.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex items-center justify-between text-amber-700 font-bold font-mono">
+                <span>Required Additional Scope:</span>
+                <span>+₹{Math.max(0, minPlanOrderAmount - landingDynamicBill.totalAmount).toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              <button
+                onClick={() => {
+                  soundEngine.playClick();
+                  if (landingVolumePreset === 'vol_100') {
+                    setLandingVolumePreset('vol_300');
+                  } else if (landingVolumePreset === 'vol_300') {
+                    setLandingVolumePreset('vol_500');
+                  } else if (landingVolumePreset === 'vol_custom') {
+                    setLandingCustomVolume(prev => Math.max(prev + 100, 200));
+                  } else {
+                    setLandingVolumePreset('vol_300');
+                  }
+                  setShowMinOrderWarningModal(false);
+                }}
+                className="w-full py-3.5 rounded-full bg-[#426CF5] hover:bg-[#3459D8] text-white font-bold text-xs shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Upgrade Profile Quota (Recommended)</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {
+                  setShowMinOrderWarningModal(false);
+                  const el = document.getElementById('step2-verification-scope');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full py-2.5 rounded-full bg-[#FCFCFA] hover:bg-[#F2F4F7] text-[#182230] font-semibold text-xs border border-[#E5EAF0] transition-colors cursor-pointer"
+              >
+                Select Additional Verification Checks
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* SINGLE PLAN CHECKLIST & PRICING BUILDER MODAL */}

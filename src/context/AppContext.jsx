@@ -827,6 +827,36 @@ export const AppProvider = ({ children }) => {
       }
     };
     fetchLandingPageSettings();
+
+    const fetchSuperAdminSettings = async () => {
+      try {
+        const cached = localStorage.getItem('joy_settings_superadmin');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (isMounted) {
+              setSystemSettings(prev => ({
+                ...prev,
+                superadmin: { ...prev.superadmin, ...parsed }
+              }));
+            }
+          } catch (e) {}
+        }
+        const res = await api.getRoleSettings('superadmin');
+        if (res && res.settings && Object.keys(res.settings).length > 0 && isMounted) {
+          setSystemSettings(prev => {
+            const merged = { ...prev.superadmin, ...res.settings };
+            try {
+              localStorage.setItem('joy_settings_superadmin', JSON.stringify(merged));
+            } catch (e) {}
+            return { ...prev, superadmin: merged };
+          });
+        }
+      } catch (err) {
+        console.warn('Could not load superadmin settings from backend:', err);
+      }
+    };
+    fetchSuperAdminSettings();
     return () => { isMounted = false; };
   }, []);
 
@@ -1143,7 +1173,8 @@ export const AppProvider = ({ children }) => {
       requireSuperAdmin2FA: true,
       sessionTimeoutMins: 30,
       logRetentionDays: 90,
-      defaultSmsCarrier: 'AWS SNS / Twilio'
+      defaultSmsCarrier: 'AWS SNS / Twilio',
+      minPlanOrderAmount: 2000
     },
     company: {
       faceMatchThreshold: 85,
@@ -3585,10 +3616,13 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateRoleSettings = async (roleKey, newSettings) => {
-    setSystemSettings(prev => ({
-      ...prev,
-      [roleKey]: { ...(prev[roleKey] || {}), ...newSettings }
-    }));
+    setSystemSettings(prev => {
+      const merged = { ...(prev[roleKey] || {}), ...newSettings };
+      try {
+        localStorage.setItem(`joy_settings_${roleKey}`, JSON.stringify(merged));
+      } catch (e) {}
+      return { ...prev, [roleKey]: merged };
+    });
     showToast(`Settings for ${roleKey.toUpperCase()} saved to Database!`);
     try {
       await api.updateRoleSettings(roleKey, newSettings);

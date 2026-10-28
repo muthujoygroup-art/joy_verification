@@ -32,7 +32,8 @@ import {
   Layers,
   Lock,
   Download,
-  Printer
+  Printer,
+  AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -53,8 +54,11 @@ export const DynamicPlanBuilderModal = ({
     currentUser,
     platformLogoEmblem,
     showToast,
-    refreshUserData
+    refreshUserData,
+    systemSettings
   } = useApp();
+
+  const minPlanOrderAmount = Number(systemSettings?.superadmin?.minPlanOrderAmount) || 2000;
 
   // Determine active company
   const company = useMemo(() => {
@@ -219,8 +223,8 @@ export const DynamicPlanBuilderModal = ({
       return;
     }
 
-    if (bill.totalAmount <= 0) {
-      showToast('Please select at least one verification check module.', 'warning');
+    if (bill.totalAmount < minPlanOrderAmount) {
+      showToast(`Minimum Order Requirement: In accordance with statutory processing tariffs, single plan purchases require a minimum order commitment of ₹${minPlanOrderAmount.toLocaleString('en-IN')}. Please increase your profile quota or select additional verification checks to proceed.`, 'warning');
       return;
     }
 
@@ -878,6 +882,16 @@ export const DynamicPlanBuilderModal = ({
                   </div>
                 </div>
 
+                {/* Minimum Order Warning Banner if below threshold */}
+                {bill.totalAmount < minPlanOrderAmount && (
+                  <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>
+                      Enterprise Minimum Order Policy: <strong>₹{minPlanOrderAmount.toLocaleString('en-IN')}</strong> required (Current: ₹{bill.totalAmount.toLocaleString('en-IN')}). Please add ₹{(minPlanOrderAmount - bill.totalAmount).toLocaleString('en-IN')} in checks or profiles to proceed.
+                    </span>
+                  </div>
+                )}
+
                 {/* Purchase Button */}
                 <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-[11px] text-indigo-200/80">
@@ -887,14 +901,20 @@ export const DynamicPlanBuilderModal = ({
 
                   <button
                     onClick={handleExecutePurchase}
-                    disabled={isProcessing || bill.totalAmount <= 0}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/30 transition-all cursor-pointer disabled:opacity-50"
+                    disabled={isProcessing || bill.totalAmount < minPlanOrderAmount}
+                    className={`w-full sm:w-auto px-6 py-3 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer ${
+                      bill.totalAmount < minPlanOrderAmount
+                        ? 'bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed opacity-80'
+                        : 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 shadow-amber-500/30'
+                    }`}
                   >
                     <Zap className="w-4 h-4 fill-slate-950" />
                     <span>
                       {isProcessing
                         ? 'Opening Razorpay Gateway...'
-                        : `Pay ₹${bill.totalAmount.toLocaleString('en-IN')} & Activate Plan`}
+                        : bill.totalAmount < minPlanOrderAmount
+                          ? `Minimum Order ₹${minPlanOrderAmount.toLocaleString('en-IN')} Required`
+                          : `Pay ₹${bill.totalAmount.toLocaleString('en-IN')} & Activate Plan`}
                     </span>
                   </button>
                 </div>

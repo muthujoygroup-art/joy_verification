@@ -8212,6 +8212,30 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   onChange={(e) => updateRoleSettings('superadmin', { logRetentionDays: parseInt(e.target.value) || 90 })}
                   className="form-input" 
                 />
+              <div className="md:col-span-2 p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-200/90 space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block font-black text-slate-900 text-xs uppercase tracking-wider">
+                      Minimum Plan Purchase Base Amount (₹)
+                    </label>
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                      Enforces the minimum payable checkout threshold on the public landing page Single Plan purchasing flow (Default: ₹2,000).
+                    </p>
+                  </div>
+                  <div className="relative w-48 shrink-0">
+                    <span className="absolute left-3 top-2 text-xs font-black text-amber-700">₹</span>
+                    <input
+                      type="number"
+                      min="500"
+                      step="100"
+                      value={systemSettings.superadmin?.minPlanOrderAmount ?? 2000}
+                      onChange={(e) => updateRoleSettings('superadmin', { minPlanOrderAmount: Math.max(0, parseInt(e.target.value) || 0) })}
+                      className="w-full pl-7 pr-3 py-1.5 text-xs font-black text-slate-900 bg-white border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 font-mono shadow-xs"
+                      placeholder="2000"
+                    />
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
           </div>

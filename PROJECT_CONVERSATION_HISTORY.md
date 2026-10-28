@@ -2276,3 +2276,40 @@ The user requested removing confusing retail micro-prices (1, 2, 3 rupees) from 
 
 ---
 *Last Updated: October 28, 2026 | Antigravity IDE Autonomous Agent Log*
+
+---
+---
+
+### Session 43: Minimum Order Base Amount (₹2,000) Checkout Enforcement & SuperAdmin Dynamic Configuration (October 28, 2026)
+
+#### Context & User Request:
+The user requested enforcing a minimum order purchase threshold (at least ₹2,000) when purchasing plans from the main page, notifying users/companies in a professional manner if their selected scope is below the threshold, and providing a dynamic editing option in the Super Admin panel:
+> *"hey bro... now, while paying or purchasing for any plan in the main page.. atleast 2000 need to pay... which means if any company or user, need to buy a paln or purchase a plan, natleat that checklists need to cover 2000 if not informing to the user or company in professional manner while try to pay... and that base amount pay option editing option in the superadmin panel...."*
+
+---
+
+#### Modifications Applied:
+
+1. **Super Admin Editable Minimum Base Amount (`src/views/SuperAdminView.jsx`)**:
+   - Added a dedicated card in System Settings for **"Minimum Plan Purchase Base Amount (₹)"**.
+   - Input is bound to `systemSettings.superadmin.minPlanOrderAmount` (default: ₹2,000).
+   - Allows Super Admin to dynamically update the threshold (persisted directly to PostgreSQL via `api.updateRoleSettings`).
+2. **Central State & Database Sync (`src/context/AppContext.jsx`)**:
+   - Initialized `minPlanOrderAmount: 2000` under `systemSettings.superadmin`.
+   - Added asynchronous initial load on mount via `api.getRoleSettings('superadmin')` with offline `localStorage` caching.
+   - Updated `updateRoleSettings` to sync state, cache, and backend DB.
+3. **Landing Page Minimum Order Safeguard (`src/views/LandingPageView.jsx`)**:
+   - Live Warning Banner: If the total amount of selected checks & volume is below the threshold, a non-intrusive amber status banner appears in the summary strip indicating the deficit required.
+   - Professional Policy Dialog (`showMinOrderWarningModal`): If the user clicks *"Proceed to Secure Razorpay Checkout"* with an amount under the threshold, a styled modal opens explaining the statutory tariff minimum commitment (₹2,000 incl. GST), displaying their current configuration and exact deficit, with instant actions to **"Upgrade Profile Quota (Recommended)"** or **"Select Additional Verification Checks"**.
+4. **Dynamic Plan Builder Modal Safeguard (`src/components/DynamicPlanBuilderModal.jsx`)**:
+   - Guarded `handleExecutePurchase` against order totals below `minPlanOrderAmount`.
+   - Displays live policy notice and dynamically disables checkout button with explicit minimum order guidance.
+
+---
+
+#### Quality Gate & Production Build Verification:
+- **Client Build (`npm run build`)**: Vite built production environment in **1.68s with 0 errors** (2,136 modules transformed).
+- **Git Synchronization**: Synchronized with `origin main` and `old_repo main`.
+
+---
+*Last Updated: October 28, 2026 | Antigravity IDE Autonomous Agent Log*
