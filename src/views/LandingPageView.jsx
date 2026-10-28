@@ -45,7 +45,9 @@ import {
   Clock,
   Award,
   ExternalLink,
-  Users
+  Users,
+  AlertTriangle,
+  AlertCircle
 } from 'lucide-react';
 import { LegalComplianceHandbookModal } from '../components/LegalComplianceHandbookModal';
 import { RazorpayPaymentModal } from '../components/RazorpayPaymentModal';
@@ -110,23 +112,13 @@ export const LandingPageView = () => {
   const [showDynamicPlanModal, setShowDynamicPlanModal] = useState(false);
   const [landingSelectedAmount, setLandingSelectedAmount] = useState(5000);
 
-  // 🌟 Single Plan Checklist Interactive States for Landing Page
+  // 🌟 Single Plan Checklist Interactive States for Landing Page (Default: Empty Selection)
   const [landingVolumePreset, setLandingVolumePreset] = useState('vol_300');
   const [landingCustomVolume, setLandingCustomVolume] = useState(1000);
   const [landingActiveCategory, setLandingActiveCategory] = useState('employee');
-  const [landingEmpChecks, setLandingEmpChecks] = useState(() => {
-    const list = [];
-    EMPLOYEE_VERIFICATION_CHECKS.forEach(c => c.items.forEach(i => { if (i.defaultChecked) list.push(i.id); }));
-    return list;
-  });
-  const [landingVendorChecks, setLandingVendorChecks] = useState(() => {
-    const list = [];
-    VENDOR_VERIFICATION_CHECKS.forEach(c => c.items.forEach(i => { if (i.defaultChecked) list.push(i.id); }));
-    return list;
-  });
-  const [landingGateways, setLandingGateways] = useState(() => {
-    return COMMUNICATION_GATEWAYS.filter(g => g.defaultChecked).map(g => g.id);
-  });
+  const [landingEmpChecks, setLandingEmpChecks] = useState([]);
+  const [landingVendorChecks, setLandingVendorChecks] = useState([]);
+  const [landingGateways, setLandingGateways] = useState(['gw_email']);
 
   const landingProfileCount = useMemo(() => {
     if (landingVolumePreset === 'vol_custom') return Math.max(10, Number(landingCustomVolume) || 100);

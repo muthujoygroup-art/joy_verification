@@ -78,32 +78,20 @@ export const DynamicPlanBuilderModal = ({
   // Active Category Tab
   const [activeTab, setActiveTab] = useState(initialActiveTab || 'employee'); // 'employee' | 'vendor' | 'gateways'
 
-  // Selected Check IDs
+  // Selected Check IDs (Default: Empty Selection)
   const [selectedEmpChecks, setSelectedEmpChecks] = useState(() => {
     if (initialEmpChecks && Array.isArray(initialEmpChecks)) return initialEmpChecks;
-    const initial = [];
-    EMPLOYEE_VERIFICATION_CHECKS.forEach(cat => {
-      cat.items.forEach(it => {
-        if (it.defaultChecked) initial.push(it.id);
-      });
-    });
-    return initial;
+    return [];
   });
 
   const [selectedVendorChecks, setSelectedVendorChecks] = useState(() => {
     if (initialVendorChecks && Array.isArray(initialVendorChecks)) return initialVendorChecks;
-    const initial = [];
-    VENDOR_VERIFICATION_CHECKS.forEach(cat => {
-      cat.items.forEach(it => {
-        if (it.defaultChecked) initial.push(it.id);
-      });
-    });
-    return initial;
+    return [];
   });
 
   const [selectedGateways, setSelectedGateways] = useState(() => {
     if (initialGateways && Array.isArray(initialGateways)) return initialGateways;
-    return COMMUNICATION_GATEWAYS.filter(gw => gw.defaultChecked).map(gw => gw.id);
+    return ['gw_email'];
   });
 
   // Synchronize state when modal is opened with new props
