@@ -517,7 +517,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 title="Print Complete Multi-Page Dossier (with Annexures)"
               >
                 <Printer className="w-3.5 h-3.5 text-slate-600" />
-                <span>Print Packet</span>
+                <span className="hidden sm:inline">Print Packet</span>
+                <span className="sm:hidden">Print</span>
               </button>
               <button 
                 type="button" 
@@ -526,7 +527,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 title="Download Comprehensive Candidate Profile in Excel (.xlsx) Workbook"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Export Excel (.xlsx)</span>
+                <span className="hidden sm:inline">Export Excel (.xlsx)</span>
+                <span className="sm:hidden">Excel</span>
               </button>
               <button 
                 type="button" 
@@ -535,7 +537,8 @@ export const EmployeeProfileDossierModal = ({ candidate, onClose }) => {
                 className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-1.5 px-3.5 rounded-xl flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all text-xs cursor-pointer print:hidden disabled:opacity-75"
               >
                 {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                <span>{isExporting ? "Compiling Master PDF..." : "Download Dossier (PDF)"}</span>
+                <span className="hidden sm:inline">{isExporting ? "Compiling Master PDF..." : "Download Dossier (PDF)"}</span>
+                <span className="sm:hidden">{isExporting ? "Compiling..." : "PDF"}</span>
               </button>
               <button 
                 type="button" 

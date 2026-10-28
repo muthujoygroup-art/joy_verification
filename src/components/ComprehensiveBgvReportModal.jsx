@@ -442,7 +442,8 @@ export const ComprehensiveBgvReportModal = ({
               title="Download Master All-In-One Report"
             >
               {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Download className="w-3.5 h-3.5 text-white" />}
-              <span>{isExporting ? "Compiling 360° PDF..." : "Download Master PDF"}</span>
+              <span className="hidden sm:inline">{isExporting ? "Compiling 360° PDF..." : "Download Master PDF"}</span>
+              <span className="sm:hidden">{isExporting ? "PDF..." : "Master PDF"}</span>
             </button>
 
             <button

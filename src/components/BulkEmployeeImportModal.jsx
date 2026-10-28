@@ -1627,7 +1627,8 @@ export const BulkEmployeeImportModal = ({
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">1</span>
-            <span>1. Sector Template & Upload</span>
+            <span className="hidden sm:inline">1. Sector Template & Upload</span>
+            <span className="sm:hidden">1. Upload</span>
           </button>
 
           <button
@@ -1646,7 +1647,8 @@ export const BulkEmployeeImportModal = ({
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">2</span>
-            <span>2. Document Checklist & Channels</span>
+            <span className="hidden sm:inline">2. Document Checklist & Channels</span>
+            <span className="sm:hidden">2. Checklist</span>
           </button>
 
           <div
@@ -1657,7 +1659,8 @@ export const BulkEmployeeImportModal = ({
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">3</span>
-            <span>3. Batch Summary & Links</span>
+            <span className="hidden sm:inline">3. Batch Summary & Links</span>
+            <span className="sm:hidden">3. Summary</span>
           </div>
         </div>
 

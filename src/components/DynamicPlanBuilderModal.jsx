@@ -879,7 +879,7 @@ export const DynamicPlanBuilderModal = ({
                 </div>
 
                 {/* Purchase Button */}
-                <div className="pt-2 flex items-center justify-between gap-3">
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-[11px] text-indigo-200/80">
                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span>Instant activation via Razorpay • UPI / NetBanking / Cards</span>
@@ -888,7 +888,7 @@ export const DynamicPlanBuilderModal = ({
                   <button
                     onClick={handleExecutePurchase}
                     disabled={isProcessing || bill.totalAmount <= 0}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs flex items-center gap-2 shadow-xl hover:shadow-amber-500/30 transition-all cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:shadow-amber-500/30 transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Zap className="w-4 h-4 fill-slate-950" />
                     <span>
