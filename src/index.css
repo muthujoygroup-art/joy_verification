@@ -1972,3 +1972,189 @@ textarea:disabled {
   }
 }
 
+
+
+/* ==============================================================================
+ * ☁️ HYPERSCALER ENTERPRISE DESIGN SYSTEM (AWS Cloudscape / Azure Fluent / GCP)
+ * ============================================================================== */
+
+/* Enterprise Command Ribbon Buttons */
+.btn-enterprise-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%);
+  color: #ffffff;
+  border: 1px solid rgba(67, 56, 202, 0.9);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.btn-enterprise-primary:hover {
+  background: linear-gradient(180deg, #4338ca 0%, #3730a3 100%);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.24);
+  transform: translateY(-0.5px);
+}
+.btn-enterprise-primary:active {
+  transform: translateY(0);
+}
+
+.btn-enterprise-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 0.4375rem 0.75rem;
+  border-radius: 0.625rem;
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.btn-enterprise-secondary:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.btn-enterprise-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 0.4375rem 0.625rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #475569;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.btn-enterprise-ghost:hover {
+  background: rgba(241, 245, 249, 0.9);
+  color: #0f172a;
+}
+
+/* Monospace Statutory Identifiers */
+.statutory-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.375rem;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+/* Status Dot Indicators */
+.status-dot-emerald {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+.status-dot-sky {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+}
+.status-dot-amber {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+.status-dot-rose {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: #f43f5e;
+  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2);
+}
+
+/* High-Density AWS Cloudscape Data Grids */
+.table-enterprise {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+}
+.table-enterprise thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(248, 250, 252, 0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.71875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 0.625rem 0.875rem;
+  white-space: nowrap;
+}
+.table-density-compact td {
+  padding: 0.4375rem 0.875rem !important;
+  font-size: 0.78125rem !important;
+  height: 2.25rem !important;
+}
+.table-density-comfortable td {
+  padding: 0.75rem 0.875rem !important;
+  font-size: 0.8125rem !important;
+  height: 3.25rem !important;
+}
+
+/* Azure Lateral Slide-Over Blade Drawer */
+.blade-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  animation: bladeFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.blade-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-left: 1px solid #e2e8f0;
+  box-shadow: -8px 0 24px rgba(15, 23, 42, 0.12);
+  z-index: 51;
+  display: flex;
+  flex-direction: column;
+  animation: bladeSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bladeFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bladeSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}

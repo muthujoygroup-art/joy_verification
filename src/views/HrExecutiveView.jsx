@@ -33,6 +33,7 @@ import { BulkEmployeeImportModal } from '../components/BulkEmployeeImportModal';
 import { DigiLockerFetchModal } from '../components/DigiLockerFetchModal';
 import { DigiLockerSectionView } from '../components/DigiLockerSectionView';
 import { MyWorkspacePersonalView } from '../components/MyWorkspacePersonalView';
+import { CandidateDossierBlade } from '../components/CandidateDossierBlade';
 import { OfficialDocRedirectPill, OfficialDocumentHubBanner, OFFICIAL_DOCUMENT_PORTALS } from '../config/officialDocumentPortals';
 import { evaluateVerificationReadiness, VERIFICATION_REQUIREMENTS, getFieldOwnershipStatus, getNextFieldOwnershipMode } from '../utils/verificationRequirements';
 import { 
@@ -422,6 +423,8 @@ export const HrExecutiveView = () => {
   const [latestVerificationTelemetry, setLatestVerificationTelemetry] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
   const [showHrLivePhotoModal, setShowHrLivePhotoModal] = useState(false);
+  const [bladeCandidate, setBladeCandidate] = useState(null);
+  const [tableDensity, setTableDensity] = useState('comfortable');
   
   // 🪪 Live Aadhaar OTP Modal for HR Verification
   const [hrAadhaarModal, setHrAadhaarModal] = useState({
@@ -2365,6 +2368,30 @@ export const HrExecutiveView = () => {
                 <option value="Inactive">⚪ Inactive ({companyCandidates.filter(c => c.status?.toLowerCase() === 'inactive').length})</option>
                 <option value="Draft">Draft ({companyCandidates.filter(c => c.status === 'Draft' || !c.status).length})</option>
               </select>
+
+              {/* AWS Cloudscape Table Density Switcher */}
+              <div className="hidden sm:flex items-center gap-1 bg-white border border-slate-200/90 rounded-xl p-0.5 shadow-2xs ml-1">
+                <button
+                  type="button"
+                  onClick={() => setTableDensity('comfortable')}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                    tableDensity === 'comfortable' ? 'bg-indigo-50 text-indigo-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Normal Density View"
+                >
+                  Normal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTableDensity('compact')}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                    tableDensity === 'compact' ? 'bg-indigo-50 text-indigo-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Compact High-Density Table View"
+                >
+                  Compact
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2696,16 +2723,16 @@ export const HrExecutiveView = () => {
           </div>
 
           {/* 🖥️ WIDESCREEN DESKTOP CANDIDATE TABLE (SHOWN ON TABLETS & DESKTOPS >= 640px) */}
-          <div className="hidden sm:block overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+          <div className="hidden sm:block overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs bg-white">
+            <table className={`w-full text-left text-xs border-collapse ${tableDensity === 'compact' ? 'table-density-compact' : 'table-density-comfortable'}`}>
+              <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-md z-10 border-b border-slate-200 shadow-2xs">
+                <tr className="text-slate-500 uppercase font-bold text-[11px] tracking-wide">
                   <th className="py-3 px-4">Candidate Profile</th>
                   <th className="py-3 px-4">Contact & IDs</th>
                   <th className="py-3 px-4">Verification Checklist</th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4 text-center">Certificate Validity (60-Day)</th>
-                  <th className="py-3 px-4 text-right">Official Document Downloads & Actions</th>
+                  <th className="py-3 px-4 text-right">Actions & Inspection</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -2843,6 +2870,19 @@ export const HrExecutiveView = () => {
                       </td>
                       <td className="py-4 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                          {/* Hyperscaler Lateral Inspection Blade Trigger */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              try { soundEngine.playClick?.(); } catch (err) {}
+                              setBladeCandidate(cand);
+                            }}
+                            className="btn-enterprise-secondary text-[11px] py-1 px-2.5 flex items-center gap-1 font-bold text-indigo-900 bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-2xs transition-all cursor-pointer"
+                            title="Instant Dossier & Statutory Inspection (Azure Lateral Blade)"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>Inspect ⚡</span>
+                          </button>
                           
                           {/* 0. HR Review & Approval Button (for Submitted Profiles) */}
                           {cand.status === 'Submitted - Pending HR Review' && (
@@ -7541,6 +7581,31 @@ export const HrExecutiveView = () => {
           onViewCandidateDossier={(cand) => openDossier(cand)}
           onViewCandidateCertificate={(cand) => openCertificate(cand)}
           onDispatchLink={(cand) => setDispatchingCandidate(cand)}
+        />
+      )}
+
+      {/* Azure-Style Lateral Candidate Dossier Blade Drawer */}
+      {bladeCandidate && (
+        <CandidateDossierBlade
+          candidate={bladeCandidate}
+          isOpen={Boolean(bladeCandidate)}
+          onClose={() => setBladeCandidate(null)}
+          onOpenBgvReport={(c) => {
+            setBladeCandidate(null);
+            openBgvReport(c);
+          }}
+          onOpenProfileDossier={(c) => {
+            setBladeCandidate(null);
+            openDossier(c);
+          }}
+          onOpenCertificate={(c) => {
+            setBladeCandidate(null);
+            openCertificate(c);
+          }}
+          onDispatchLink={(c) => {
+            setBladeCandidate(null);
+            setDispatchingCandidate(c);
+          }}
         />
       )}
 

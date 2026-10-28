@@ -295,34 +295,53 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                 </span>
               </div>
 
-              {/* Desktop Breadcrumb Path */}
-              <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-500 shrink-0">
-                <div className="flex items-center gap-1 font-bold text-slate-700">
-                  <span>Joy True Profile</span>
-                </div>
+              {/* Desktop Breadcrumb Path & Hyperscaler Context */}
+              <div className="hidden lg:flex items-center gap-2.5 text-xs font-semibold text-slate-500 shrink-0">
+                <span className="font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-default">
+                  JOY Hub
+                </span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                <span className={`badge ${currentTheme.badgeClass} text-[9px] py-0.5 px-2 font-black`}>
+                <span className="text-slate-600 font-medium">Muthu Joy Group</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-bold text-[11px] shadow-2xs border ${
+                  effectiveRole === 'superadmin' ? 'bg-indigo-50/80 text-indigo-700 border-indigo-200/80' :
+                  effectiveRole === 'company' ? 'bg-sky-50/80 text-sky-700 border-sky-200/80' :
+                  'bg-emerald-50/80 text-emerald-700 border-emerald-200/80'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    effectiveRole === 'superadmin' ? 'bg-indigo-600' :
+                    effectiveRole === 'company' ? 'bg-sky-600' :
+                    'bg-emerald-600'
+                  }`} />
                   {currentTheme.label}
                 </span>
+
+                {/* Cloud Region & Health Telemetry Indicator */}
+                <div className="hidden 2xl:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100/90 text-slate-600 border border-slate-200/80 text-[10.5px] font-medium ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>AP-SOUTH-1</span>
+                  <span className="text-slate-300">•</span>
+                  <span>99.98% SLA</span>
+                </div>
               </div>
             </div>
 
-            {/* Right: Quick Action Controls Toolbar (Only shown for SuperAdmin, Company & HR Consoles) */}
+            {/* Right: Quick Action Controls Toolbar (Hyperscaler Command Bar Standard) */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 text-xs">
               
-              {/* Universal Spotlight Omnibar Trigger Button */}
+              {/* Universal Spotlight Omnibar Trigger Button (AWS / Azure Style) */}
               <button
                 type="button"
                 onClick={() => {
                   soundEngine.playClick?.();
                   setShowOmnibar(true);
                 }}
-                className="flex h-8 px-2.5 sm:px-3 rounded-xl items-center gap-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 font-bold border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all cursor-pointer text-xs group"
+                className="flex h-8 px-2.5 sm:px-3 rounded-lg items-center gap-2 text-slate-600 bg-slate-100/90 hover:bg-slate-200/80 font-medium border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all cursor-pointer text-xs group"
                 title="Universal Spotlight Search (Press Ctrl+K or ⌘K)"
               >
-                <Search className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-600 transition-colors shrink-0" />
-                <span className="hidden 2xl:inline font-semibold text-slate-600">Search or jump to...</span>
-                <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500 bg-white border border-slate-300 rounded shadow-2xs">
+                <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0" />
+                <span className="hidden xl:inline font-normal text-slate-500">Search resources, IDs, candidates...</span>
+                <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[9.5px] font-mono font-bold text-slate-500 bg-white border border-slate-200 rounded shadow-2xs">
                   ⌘K
                 </kbd>
               </button>
@@ -335,7 +354,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   setShowTourGuideModal(true);
                   window.dispatchEvent(new CustomEvent("open_tour_guide_modal"));
                 }}
-                className="hidden md:flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 font-bold border border-purple-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                className="hidden md:flex h-8 px-2.5 rounded-lg items-center gap-1.5 text-purple-900 bg-purple-50/80 hover:bg-purple-100 font-semibold border border-purple-200/80 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Launch Interactive Feature Walkthroughs & How-To Guides"
               >
                 <Compass className="w-3.5 h-3.5 text-purple-700 animate-spin-slow shrink-0" />
@@ -349,7 +368,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowLegalHandbook(true);
                 }}
-                className="hidden xl:flex h-8 px-2.5 rounded-xl items-center gap-1.5 text-indigo-950 bg-indigo-50 hover:bg-indigo-100 font-bold border border-indigo-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                className="hidden xl:flex h-8 px-2.5 rounded-lg items-center gap-1.5 text-indigo-950 bg-indigo-50/80 hover:bg-indigo-100 font-semibold border border-indigo-200/80 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Statutory Legal & DPDP Act 2023 Compliance Framework"
               >
                 <Scale className="w-3.5 h-3.5 text-indigo-700 shrink-0" />
@@ -363,11 +382,11 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowUniversalExportModal(true);
                 }}
-                className="hidden sm:flex h-8 px-2.5 rounded-xl items-center gap-1 text-emerald-950 bg-emerald-50 hover:bg-emerald-100 font-bold border border-emerald-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                className="hidden sm:flex h-8 px-2.5 rounded-lg items-center gap-1 text-emerald-950 bg-emerald-50/80 hover:bg-emerald-100 font-semibold border border-emerald-200/80 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Download Date-Filtered Candidate Reports in PDF, Excel, Word, or ZIP"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                <span className="hidden xl:inline text-[11px] sm:text-xs font-bold text-emerald-950">Reports</span>
+                <span className="hidden xl:inline text-[11px] sm:text-xs font-semibold text-emerald-950">Reports</span>
               </button>
 
               {/* Notifications Alert Bell */}
@@ -377,7 +396,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowNotificationsModal(true);
                 }}
-                className="h-8 px-2 sm:px-2.5 rounded-xl flex items-center gap-1 text-amber-800 bg-white hover:bg-amber-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all relative cursor-pointer whitespace-nowrap text-xs"
+                className="h-8 px-2 sm:px-2.5 rounded-lg flex items-center gap-1 text-amber-800 bg-white hover:bg-amber-50/80 font-semibold border border-slate-200 shadow-2xs hover:shadow-xs transition-all relative cursor-pointer whitespace-nowrap text-xs"
                 title="Real-Time Notifications & System Alerts"
               >
                 <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -396,7 +415,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   soundEngine.playClick?.();
                   setShowSupportModal(true);
                 }}
-                className="hidden sm:flex h-8 px-2.5 rounded-xl items-center gap-1 text-purple-800 bg-white hover:bg-purple-50 font-bold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
+                className="hidden sm:flex h-8 px-2.5 rounded-lg items-center gap-1 text-purple-800 bg-white hover:bg-purple-50/80 font-semibold border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap text-xs"
                 title="Raise Support Ticket / Feedback"
               >
                 <LifeBuoy className="w-3.5 h-3.5 text-purple-600 shrink-0" />

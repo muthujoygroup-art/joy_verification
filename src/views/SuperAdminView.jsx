@@ -1941,10 +1941,10 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs bg-white">
             <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+              <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-md z-10 border-b border-slate-200 shadow-2xs">
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] tracking-wide">
                   <th className="py-3 px-4">Candidate Profile</th>
                   <th className="py-3 px-4">Company</th>
                   <th className="py-3 px-4">Contact Info</th>

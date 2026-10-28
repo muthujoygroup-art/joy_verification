@@ -1895,10 +1895,10 @@ export const CompanyAdminView = () => {
           </div>
 
           {/* 🖥️ WIDESCREEN DESKTOP TABLE (>= 640px) */}
-          <div className="hidden sm:block overflow-x-auto">
+          <div className="hidden sm:block overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs bg-white">
             <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold">
+              <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-md z-10 border-b border-slate-200 shadow-2xs">
+                <tr className="border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px] tracking-wide">
                   <th className="py-3 px-4">Employee Details</th>
                   <th className="py-3 px-4">Designation & Dept</th>
                   <th className="py-3 px-4">Aadhaar Check</th>
