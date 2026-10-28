@@ -174,9 +174,13 @@ export const DocumentStorageHub = () => {
   };
 
   const filteredDocuments = allStoredDocuments.filter(doc => {
-    const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          doc.candidateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          doc.empId.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = (searchQuery || '').toLowerCase().trim();
+    const matchesSearch = !q ||
+                          (doc.title && doc.title.toLowerCase().includes(q)) ||
+                          (doc.candidateName && doc.candidateName.toLowerCase().includes(q)) ||
+                          (doc.empId && doc.empId.toLowerCase().includes(q));
+
+
     const matchesCategory = selectedCategory === 'all' || doc.category === selectedCategory;
     const matchesCompany = selectedCompanyFilter === 'all' || doc.companyId === selectedCompanyFilter;
     return matchesSearch && matchesCategory && matchesCompany;

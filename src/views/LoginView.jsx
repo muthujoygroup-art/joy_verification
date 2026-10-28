@@ -502,7 +502,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           const compSlug = (pending.compSlug || comp?.name || 'joy-corporate-solutions').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
           navigate(`/company/${compSlug}`, { replace: true });
         } else if (pending.role === 'hrexecutive') {
-          const compName = authRes?.user?.companyName || authRes?.user?.company_name || 'joy-corporate-solutions';
+          const compName = String(authRes?.user?.companyName || authRes?.user?.company_name || 'joy-corporate-solutions');
           const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
           navigate(`/hr/${hrSlug}`, { replace: true });
         } else if (pending.role === 'employee_link') {
@@ -651,7 +651,7 @@ export const LoginView = ({ initialRole = null, lockRole = false }) => {
           return;
         }
 
-        const compName = res?.companyName || res?.company_name || 'joy-corporate-solutions';
+        const compName = String(res?.companyName || res?.company_name || 'joy-corporate-solutions');
         const hrSlug = compName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         navigate(`/hr/${hrSlug}`);
       }

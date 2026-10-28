@@ -1722,7 +1722,7 @@ export const HrExecutiveView = () => {
         const dispatchedCandidate = {
           ...candidatePayload,
           id: `emp-${Date.now()}`,
-          token: (typeof createdToken === 'string' ? createdToken : createdToken?.token) || `tok_${formData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100+Math.random()*900)}`,
+          token: (typeof createdToken === 'string' ? createdToken : createdToken?.token) || `tok_${(formData.name || 'candidate').toLowerCase().replace(/[^a-z0-9]/g, '')}_${Math.floor(100+Math.random()*900)}`,
           status: 'Link Sent',
           portalPassword: formData.portalPassword || '1234'
         };

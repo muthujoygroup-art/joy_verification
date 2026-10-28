@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from backend.app.config import settings
 from backend.app.database import engine, Base
 import backend.app.models  # Guarantees all 21 models and relationships are registered
@@ -39,6 +40,9 @@ app = FastAPI(
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json"
 )
+
+# 0. High-Performance GZip Compression for Large JSON Payloads (>1KB)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # 1. Enterprise Security, Rate Limiting & Anti-DDoS Middleware
 app.add_middleware(EnterpriseSecurityMiddleware)
@@ -288,6 +292,7 @@ async def receive_whatsapp_webhook(request: Request, background_tasks: Backgroun
 
 @app.get("/health")
 @app.get(f"{settings.API_PREFIX}/health")
+@app.get(f"{settings.API_PREFIX}/system/health")
 def health_check():
     """Health check endpoint to verify backend service and database connectivity"""
     return {

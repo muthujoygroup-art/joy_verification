@@ -24,10 +24,28 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
             }
-            if (id.includes('canvas-confetti') || id.includes('dompurify') || id.includes('html2canvas') || id.includes('jspdf')) {
+            if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('pdfjs')) {
+              return 'vendor-pdf-engines';
+            }
+            if (id.includes('canvas-confetti') || id.includes('dompurify') || id.includes('xlsx')) {
               return 'vendor-utils';
             }
             return 'vendor-core';
+          }
+          if (id.includes('SuperAdminView')) {
+            return 'chunk-superadmin';
+          }
+          if (id.includes('CompanyAdminView')) {
+            return 'chunk-company-admin';
+          }
+          if (id.includes('HrExecutiveView') || id.includes('FullJoiningFormModal')) {
+            return 'chunk-hr-workstation';
+          }
+          if (id.includes('LandingPageView') || id.includes('PublicPagesView') || id.includes('LoginView')) {
+            return 'chunk-landing-auth';
+          }
+          if (id.includes('DigiLockerSectionView') || id.includes('EmployeePortalView')) {
+            return 'chunk-candidate-portal';
           }
         }
       }

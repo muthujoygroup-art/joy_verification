@@ -4592,7 +4592,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
         const currentMasterCategoryObj = MASTER_CATEGORIES.find(c => c.key === activeMasterMenu) || MASTER_CATEGORIES[0];
         const allCurrentMasterItems = (masterDropdownOptions?.[activeMasterMenu] || []) || [];
         const filteredMasterItems = allCurrentMasterItems.filter(item => 
-          item.toLowerCase().includes(masterSearchQuery.toLowerCase())
+          String(item || '').toLowerCase().includes((masterSearchQuery || '').toLowerCase())
         );
         const displayedMasterItems = filteredMasterItems.slice(0, masterEntriesPerPage);
 
@@ -5314,7 +5314,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       const filtered = list.filter(c => {
                         const matchComp = candidateLedgerCompany === 'all' || c.company_id === candidateLedgerCompany;
                         const s = candidateLedgerSearch.toLowerCase().trim();
-                        const matchSearch = !s || c.name.toLowerCase().includes(s) || (c.emp_id && c.emp_id.toLowerCase().includes(s)) || (c.token && c.token.toLowerCase().includes(s));
+                        const matchSearch = !s || (c.name && c.name.toLowerCase().includes(s)) || (c.emp_id && c.emp_id.toLowerCase().includes(s)) || (c.token && c.token.toLowerCase().includes(s)) || (c.email && c.email.toLowerCase().includes(s));
                         return matchComp && matchSearch;
                       });
 

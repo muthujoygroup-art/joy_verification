@@ -65,6 +65,11 @@ def save_base64_file(data_uri_or_base64: str, target_folder: str, filename_prefi
             b64_data = data_uri_or_base64
             ext = ".jpg"
 
+        # Safety guard: Prevent memory exhaustion on oversized base64 payloads (>15MB)
+        if len(b64_data) > 20 * 1024 * 1024:
+            logger.warning("File upload rejected: Payload exceeds 15MB safety limit.")
+            return ""
+
         file_bytes = base64.b64decode(b64_data)
         file_name = f"{filename_prefix}_{uuid.uuid4().hex[:8]}{ext}"
         file_path = os.path.join(target_folder, file_name)

@@ -16,6 +16,18 @@ from backend.app.schemas import CandidateCreate, CandidateResponse, CandidateUpd
 logger = logging.getLogger("hr_router")
 router = APIRouter(prefix="/hr", tags=["HR Executive"])
 
+def safe_int(val, default=None):
+    """Safely converts string or numerical candidate fields to integer or None."""
+    if val is None or val == "":
+        return default
+    try:
+        if isinstance(val, str):
+            digits = "".join(ch for ch in val if ch.isdigit() or ch == "-")
+            return int(digits) if digits else default
+        return int(val)
+    except Exception:
+        return default
+
 def serialize_candidate(c: Candidate) -> Dict[str, Any]:
     """Bulletproof serializer for Candidate SQLAlchemy models to prevent any FastAPI 500 serialization crashes"""
     if not c:
@@ -92,7 +104,7 @@ def serialize_candidate(c: Candidate) -> Dict[str, Any]:
         "employeeType": str(c.employee_type or "it_tech"),
         "dob": str(c.dob or ""),
         "doj": str(c.doj or ""),
-        "age": int(c.age) if c.age is not None else None,
+        "age": safe_int(c.age),
         "gender": str(c.gender or ""),
         "marital_status": str(c.marital_status or "Single / Unmarried"),
         "maritalStatus": str(c.marital_status or "Single / Unmarried"),
@@ -589,7 +601,7 @@ def _save_or_update_candidate_record(payload: CandidateCreate, db: Session, comm
         employee_type=payload.employee_type or "it_tech",
         dob=payload.dob or joining_data.get("dob"),
         doj=payload.doj or joining_data.get("doj"),
-        age=payload.age or (int(joining_data.get("age")) if joining_data.get("age") else None),
+        age=payload.age or safe_int(joining_data.get("age")),
         gender=payload.gender or joining_data.get("gender") or None,
         marital_status=payload.marital_status or joining_data.get("maritalStatus") or None,
         mother_tongue=payload.mother_tongue or joining_data.get("motherTongue") or None,
@@ -903,6 +915,7 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
                     id="comp-joy",
                     code="COMP001",
                     name=company_name or "JOY CORPORATE SOLUTIONS PRIVATE LIMITED",
+                    contact_person="Praveen Kumar B",
                     email="info@joycorporatesolutions.com",
                     status="Active"
                 )
