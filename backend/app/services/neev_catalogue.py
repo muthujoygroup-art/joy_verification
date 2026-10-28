@@ -180,7 +180,7 @@ NEEV_81_ENDPOINTS = [
         "sample": {
             "fileNumber": "V9481920",
             "dob": "1996-05-15",
-            "name": "MUTHUKUMAR P"
+            "name": "ARUN KUMAR R"
         },
         "desc": "Verifies Indian Passport with MEA Passport Seva."
     },
@@ -202,7 +202,7 @@ NEEV_81_ENDPOINTS = [
         "path": "/crif",
         "sample": {
             "pan": "ABCDE1234F",
-            "name": "MUTHUKUMAR P",
+            "name": "ARUN KUMAR R",
             "mobile": "9942817491"
         },
         "desc": "Commercial and retail credit bureau check."
@@ -274,7 +274,7 @@ NEEV_81_ENDPOINTS = [
         "path": "/pan-experian",
         "sample": {
             "pan": "ABCDE1234F",
-            "name": "MUTHUKUMAR P",
+            "name": "ARUN KUMAR R",
             "mobile": "9942817491"
         },
         "desc": "Experian credit score and default check."
@@ -325,7 +325,7 @@ NEEV_81_ENDPOINTS = [
         "category": "Financial & Credit",
         "path": "/upi-id-payment-analyser",
         "sample": {
-            "upi_id": "muthukumar@okaxis"
+            "upi_id": "arunkumar@okaxis"
         },
         "desc": "Analyzes UPI transaction health and reliability."
     },
@@ -335,7 +335,7 @@ NEEV_81_ENDPOINTS = [
         "category": "Financial & Credit",
         "path": "/upi-to-account",
         "sample": {
-            "upi_id": "muthukumar@okaxis"
+            "upi_id": "arunkumar@okaxis"
         },
         "desc": "Maps UPI ID to bank account details."
     },
@@ -345,7 +345,7 @@ NEEV_81_ENDPOINTS = [
         "category": "Financial & Credit",
         "path": "/verify-upi-id",
         "sample": {
-            "upi_id": "muthukumar@okaxis"
+            "upi_id": "arunkumar@okaxis"
         },
         "desc": "Validates UPI VPA handle existence."
     },
@@ -807,7 +807,7 @@ NEEV_81_ENDPOINTS = [
         "category": "Court & Criminal",
         "path": "/realtime-court-case-search",
         "sample": {
-            "name": "MUTHUKUMAR P",
+            "name": "ARUN KUMAR R",
             "father_name": "Suresh Kumar P",
             "address": "Bengaluru, Karnataka",
             "dob": "1996-05-15"

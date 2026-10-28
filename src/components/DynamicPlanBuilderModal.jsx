@@ -909,7 +909,7 @@ export const DynamicPlanBuilderModal = ({
             <Lock className="w-3.5 h-3.5 text-emerald-600" />
             <span>DPDP Act 2023 Compliant • Official Indian Statutory Gateways</span>
           </div>
-          <span className="font-bold text-slate-700">Muthu Joy Group Verification Platform</span>
+          <span className="font-bold text-slate-700">JOY TrueProfile Verification Platform</span>
         </div>
       </div>
     </div>,

@@ -86,7 +86,7 @@ export const QrCodeModal = ({
 
   const company = (companies && companies.find(c => c.id === candidate.companyId || c.id === candidate.company_id)) || (companies && companies[0]) || { name: 'JOY Corporate Solutions' };
   const activePin = (passcodeText || candidate.portalPassword || '1234').toString().trim();
-  const verifyToken = candidate.token || candidate.id || 'tok_muthukumar_937';
+  const verifyToken = candidate.token || candidate.id || 'tok_candidate_937';
   const verifyUrl = `${window.location.origin}/verify?token=${verifyToken}`;
   const isLinkCopied = Boolean(isCopied || copiedInternal);
 

@@ -343,7 +343,7 @@ export const CommunicationGatewaysModal = ({ onClose }) => {
                       type="text" 
                       value={smsState.username || ''}
                       onChange={(e) => setSmsState({ ...smsState, username: e.target.value })}
-                      placeholder="e.g. muthu_joycorp_iq"
+                      placeholder="e.g. joycorp_iq"
                       className="form-input text-xs font-mono font-bold"
                     />
                   </div>

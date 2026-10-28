@@ -247,15 +247,15 @@ export const AirtelIqSmsGatewayConsole = () => {
         } else if (vLower.includes('id')) {
           varsObj[vKey] = 'JOY-2026-99';
         } else {
-          varsObj[vKey] = 'Muthu';
+          varsObj[vKey] = 'Praveen';
         }
       });
     } else if (tpl.category === 'Onboarding Link') {
-      varsObj.candidate_name = 'Muthu';
+      varsObj.candidate_name = 'Praveen';
       varsObj.company_name = 'Joy Group';
       varsObj.verify_url = tpl.cta_url || 'https://trueprofile.joycorporatesolutions.com/verify?token=demo123';
     } else {
-      varsObj.name = 'Muthu';
+      varsObj.name = 'Praveen';
       varsObj.otp = '492015';
     }
 
@@ -367,7 +367,7 @@ export const AirtelIqSmsGatewayConsole = () => {
                   dlt_template_id: '',
                   header: gatewayConfig.source_address || 'JYCORP',
                   message_type: 'SERVICE_IMPLICIT',
-                  variables: { name: 'Muthu', otp: '492015' },
+                  variables: { name: 'Praveen', otp: '492015' },
                   custom_message: ''
                 });
                 setTestResult(null);
@@ -449,7 +449,7 @@ export const AirtelIqSmsGatewayConsole = () => {
                 type="text"
                 value={gatewayConfig.username}
                 onChange={(e) => setGatewayConfig({ ...gatewayConfig, username: e.target.value })}
-                placeholder="e.g. muthu_joycorp_iq"
+                placeholder="e.g. joycorp_iq"
                 className="form-input text-xs font-mono font-bold"
               />
               <span className="text-[10px] text-slate-400 mt-0.5 block">Prepaid API authentication username</span>

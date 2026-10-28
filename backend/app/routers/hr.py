@@ -963,7 +963,7 @@ def dispatch_onboarding_link(payload: dict, db: Session = Depends(get_db)):
 
     # 3. Resolve target variables
     target_email = (candidate.email if candidate else None) or candidate_email
-    target_token = (candidate.token if candidate else None) or token or "tok-muthu-99"
+    target_token = (candidate.token if candidate else None) or token or "tok-candidate-99"
     cand_name = (candidate.name if candidate else None) or candidate_name
     cand_code = (candidate.emp_id if candidate else None) or (candidate.employee_number if candidate else None) or candidate_code
     cand_pin = (candidate.portal_password if candidate else None) or security_pin

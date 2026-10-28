@@ -196,7 +196,7 @@ export const AiFaceMatchModal = ({
   aadhaarPhotoUrl, 
   aadhaarUpdateDate, 
   candidateDob, 
-  candidateName = 'MUTHUKUMAR P',
+  candidateName = 'ARUN KUMAR R',
   onConfirmMatch 
 }) => {
   const [analyzing, setAnalyzing] = useState(true);

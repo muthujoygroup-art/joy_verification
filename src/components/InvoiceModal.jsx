@@ -502,13 +502,13 @@ export const InvoiceModal = ({ company, postpaidBill: initialPostpaidBill, trans
                   <span className="text-[10px] text-slate-500 font-bold uppercase">IFSC / UPI ID</span>
                   <button 
                     type="button" 
-                    onClick={() => handleCopyField('muthujoy@hdfcbank', 'upi')}
+                    onClick={() => handleCopyField('joycorp@hdfcbank', 'upi')}
                     className="text-emerald-700 hover:text-emerald-900 cursor-pointer text-[10px] font-bold"
                   >
                     {copiedBankField === 'upi' ? 'Copied ✓' : 'Copy'}
                   </button>
                 </div>
-                <span className="font-mono font-black text-slate-900 text-xs block">HDFC0000240 / muthujoy@hdfcbank</span>
+                <span className="font-mono font-black text-slate-900 text-xs block">HDFC0000240 / joycorp@hdfcbank</span>
               </div>
             </div>
 

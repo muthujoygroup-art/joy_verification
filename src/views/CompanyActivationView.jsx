@@ -993,7 +993,7 @@ export const CompanyActivationView = () => {
                   </span>
                   <h2 className="text-xl font-black text-slate-900">{companyDetails.name}</h2>
                   <p className="text-xs text-slate-600 font-medium max-w-md mx-auto leading-relaxed">
-                    Thank you, <strong>{corporateData.signatory_name || companyDetails.contact_person}</strong>! Your statutory entity profile, registered corporate identifiers, bank particulars, and executed Master Services Agreement have been submitted to Muthu Joy Group Super Administration.
+                    Thank you, <strong>{corporateData.signatory_name || companyDetails.contact_person}</strong>! Your statutory entity profile, registered corporate identifiers, bank particulars, and executed Master Services Agreement have been submitted to JOY Corporate Super Administration.
                   </p>
                 </div>
 

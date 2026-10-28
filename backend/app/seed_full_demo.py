@@ -33,7 +33,7 @@ def seed_full():
                 id="comp_076a8152e0",
                 code="COMP001",
                 name="Joy Corporate Solutions Pvt Ltd",
-                contact_person="Muthu Kumar P",
+                contact_person="Praveen Kumar B",
                 email="admin@joycorporatesolutions.com",
                 plan="tier2",
                 status="Active",

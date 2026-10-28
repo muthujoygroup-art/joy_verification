@@ -3938,7 +3938,7 @@ export const FullJoiningFormModal = ({ candidate, isHrMode = false, onClose, onS
                       className="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                     />
                     <label htmlFor="digilocker_consent_cb" className="cursor-pointer leading-tight">
-                      I hereby authorize Muthu Joy Group to retrieve verifiable e-KYC credentials from DigiLocker repository under DPDP Act 2023 for employment verification.
+                      I hereby authorize Joy Corporate Solutions to retrieve verifiable e-KYC credentials from DigiLocker repository under DPDP Act 2023 for employment verification.
                     </label>
                   </div>
 

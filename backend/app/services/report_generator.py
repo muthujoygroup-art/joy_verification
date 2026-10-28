@@ -377,12 +377,12 @@ def generate_employee_profile_dossier_pdf(candidate: Dict[str, Any]) -> io.Bytes
     attrs = candidate.get('verifiedAttributes') or candidate.get('verified_attributes') or {}
     spec = jf.get('industrySpecialization') or candidate.get('industrySpecialization') or {}
     
-    c_name = candidate.get('name') or jf.get('fullName') or 'MUTHUKUMAR P'
+    c_name = candidate.get('name') or jf.get('fullName') or 'ARUN KUMAR R'
     emp_code = candidate.get('empId') or candidate.get('emp_id') or candidate.get('employee_number') or jf.get('empId') or 'JOY-2026-001'
     desig = candidate.get('designation') or jf.get('designation') or 'Senior Verification Engineer'
     dept = candidate.get('dept') or jf.get('department') or 'Technology & Engineering'
     mob = candidate.get('mobile') or jf.get('mobile') or '+91 98765 43210'
-    email = candidate.get('email') or jf.get('email') or 'muthukumar.p@joycorporatesolutions.com'
+    email = candidate.get('email') or jf.get('email') or 'arunkumar.r@joycorporatesolutions.com'
     
     father_name = jf.get('fatherName') or candidate.get('fatherName') or attrs.get('aadhaar', {}).get('care_of') or attrs.get('pan', {}).get('father_name') or 'Suresh Kumar P'
     mother_name = jf.get('motherName') or candidate.get('motherName') or 'Kavitha Kumar'
@@ -1087,7 +1087,7 @@ def generate_360_bgv_dossier_pdf(candidate: Dict[str, Any]) -> io.BytesIO:
         textColor=colors.HexColor('#0f172a')
     )
     
-    c_name = candidate.get('name') or 'MUTHUKUMAR P'
+    c_name = candidate.get('name') or 'ARUN KUMAR R'
     emp_code = candidate.get('empId') or candidate.get('emp_id') or candidate.get('employee_number') or 'JOY-2026-001'
     desig = candidate.get('designation') or 'Senior Verification Engineer'
     dept = candidate.get('dept') or 'Technology & Engineering'

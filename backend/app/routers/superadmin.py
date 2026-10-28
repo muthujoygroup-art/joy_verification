@@ -2146,7 +2146,7 @@ def trigger_database_migrations():
         ("candidates.identification_marks", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS identification_marks TEXT;"),
         ("candidates.employee_type", "ALTER TABLE candidates ADD COLUMN IF NOT EXISTS employee_type VARCHAR(50) DEFAULT 'it_tech';"),
         ("companies.primary_enterprise_fix", "UPDATE companies SET name = 'JOY CORPORATE SOLUTIONS PRIVATE LIMITED', code = 'JOYCORP' WHERE id = 'comp-1' OR LOWER(name) LIKE '%acme%';"),
-        ("hr_users.lead_fix", "UPDATE hr_users SET name = 'Muthu Kumar P (HR Lead)' WHERE email = 'muthujoygroup@gmail.com' OR company_id = 'comp-1';"),
+        ("hr_users.lead_fix", "UPDATE hr_users SET name = 'Praveen Kumar B (HR Lead)' WHERE email = 'admin@joycorporatesolutions.com' OR company_id = 'comp-1';"),
         ("candidates.company_binding_fix", "UPDATE candidates SET company_id = 'comp-1' WHERE company_id IS NULL OR company_id = 'COMP001' OR company_id = 'comp-joy';")
     ]
     

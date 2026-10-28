@@ -8359,11 +8359,11 @@ export const CompanyAdminView = () => {
                   <span className="text-[8px] font-mono text-slate-400 font-bold">BHIM UPI / GPay / PhonePe</span>
                 </div>
                 <div className="flex items-center gap-1.5 font-mono text-xs font-black text-indigo-950">
-                  <span>muthujoy@hdfcbank</span>
+                  <span>joycorp@hdfcbank</span>
                   <button 
                     type="button" 
                     onClick={() => {
-                      navigator.clipboard.writeText('muthujoy@hdfcbank');
+                      navigator.clipboard.writeText('joycorp@hdfcbank');
                       showToast('UPI ID copied!');
                     }}
                     className="text-emerald-700 hover:text-emerald-900 cursor-pointer"

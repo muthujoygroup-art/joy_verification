@@ -42,7 +42,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
       description: 'Instant demographic validation, high-res citizen photograph, verified residential address, and UIDAI masked identity with zero physical paperwork.',
       sampleData: {
         idNo: 'XXXX-XXXX-8942',
-        name: 'Muthukumar P',
+        name: 'Rajesh Sharma',
         dob: '15-08-1992 (Male)',
         issuer: 'Unique Identification Authority of India (UIDAI)',
         address: 'No. 12/A, Gandhi Street, Trichy Head Post Office, Tamil Nadu - 620001',
@@ -59,7 +59,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
       description: 'Real-time Permanent Account Number validation directly matching Income Tax Department database with citizen full name and date of birth.',
       sampleData: {
         idNo: 'AAAPM8942K',
-        name: 'Muthukumar P',
+        name: 'Rajesh Sharma',
         dob: '15-08-1992',
         issuer: 'Income Tax Department (ITD / Protean NSDL)',
         address: 'Verified against Permanent Tax Registry Records',
@@ -76,7 +76,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
       description: 'Validates commercial and non-commercial motor vehicle license validity, vehicle class endorsements (LMV/HMV), and transport authority records.',
       sampleData: {
         idNo: 'TN-45-2016-0049210',
-        name: 'Muthukumar P',
+        name: 'Rajesh Sharma',
         dob: '15-08-1992',
         issuer: 'Ministry of Road Transport & Highways (MoRTH)',
         address: 'RTO Tiruchirappalli West, Tamil Nadu',
@@ -93,7 +93,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
       description: 'Authentic 10th grade academic marksheet and pass certificate issued directly by the Central Board of Secondary Education with subject grades.',
       sampleData: {
         idNo: 'CBSE-X-2008-892104',
-        name: 'Muthukumar P',
+        name: 'Rajesh Sharma',
         dob: '15-08-1992',
         issuer: 'Central Board of Secondary Education (CBSE)',
         address: 'Roll No: 4109282 • Kendriya Vidyalaya No. 1',
@@ -110,7 +110,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
       description: 'Higher secondary school certificate and marks statement authenticated directly against central educational board repositories.',
       sampleData: {
         idNo: 'CBSE-XII-2010-459102',
-        name: 'Muthukumar P',
+        name: 'Rajesh Sharma',
         dob: '15-08-1992',
         issuer: 'Central Board of Secondary Education (CBSE)',
         address: 'Roll No: 6201948 • Senior Secondary Board Pass',
@@ -127,7 +127,7 @@ export const DigiLockerShowcaseSection = ({ onOpenDemo, onOpenLegalHandbook }) =
       description: 'Service tenure history, member IDs, active provident fund contribution records, and automated dual-employment moonlighting audit.',
       sampleData: {
         idNo: 'UAN 100829141052',
-        name: 'Muthukumar P',
+        name: 'Rajesh Sharma',
         dob: '15-08-1992',
         issuer: 'Employees\' Provident Fund Organisation (EPFO)',
         address: 'Regional Office: Trichy • Establishment: JOY CORP',

@@ -301,7 +301,7 @@ export const PortalLayout = ({ children, isCandidatePortal = false }) => {
                   JOY Hub
                 </span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                <span className="text-slate-600 font-medium">Muthu Joy Group</span>
+                <span className="text-slate-600 font-medium">Joy Corporate Solutions</span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-bold text-[11px] shadow-2xs border ${
                   effectiveRole === 'superadmin' ? 'bg-indigo-50/80 text-indigo-700 border-indigo-200/80' :

@@ -7961,7 +7961,7 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <button
                   type="button"
                   onClick={() => {
-                    setTestEmailRecipient('muthukumar@joycorporatesolutions.com');
+                    setTestEmailRecipient('admin@joycorporatesolutions.com');
                     setShowTestEmailModal(true);
                   }}
                   className="btn btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5 font-bold cursor-pointer hover:bg-slate-100"

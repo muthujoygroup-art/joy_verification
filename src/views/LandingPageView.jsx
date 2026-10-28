@@ -232,7 +232,7 @@ export const LandingPageView = () => {
       title: 'Automotive Factory Contractor',
       category: 'Contract Labor • Sriperumbudur Hub',
       icon: HardHat,
-      candidate: { name: 'Muthukumar P.', role: 'Assembly Line Technician', agency: 'Apex Staffing Solutions' },
+      candidate: { name: 'Rajesh Sharma', role: 'Assembly Line Technician', agency: 'Apex Staffing Solutions' },
       checks: [
         { title: 'Aadhaar e-KYC (Masked)', status: 'Demographic Validated', time: '0.42s' },
         { title: '3D Biometric Liveness Scan', status: '99.98% Confidence', time: '0.65s' },

@@ -38,7 +38,7 @@ export const SANDBOX_MODULES = [
       { slug: '/pan-to-itr', name: 'PAN to ITR Filing History', defaultPayload: { pan_number: 'JEOPK5626F' }, desc: 'Verifies ITR acknowledgement & filing regularity.' },
       { slug: '/pan-to-gst-numbers', name: 'PAN to GST Numbers', defaultPayload: { pan_number: 'AAACR5055K' }, desc: 'Discovers all GSTIN registrations under this PAN.' },
       { slug: '/pan-to-insurance', name: 'PAN to Insurance Policies', defaultPayload: { pan_number: 'JEOPK5626F' }, desc: 'IRDAI insurance policy records linked to PAN.' },
-      { slug: '/crif', name: 'CRIF Credit Bureau Check', defaultPayload: { name: 'MUTHUKUMAR P', mobile_number: '9942817491' }, desc: 'Commercial & retail credit report & score check.' }
+      { slug: '/crif', name: 'CRIF Credit Bureau Check', defaultPayload: { name: 'ARUN KUMAR R', mobile_number: '9942817491' }, desc: 'Commercial & retail credit report & score check.' }
     ]
   },
   {
@@ -62,8 +62,8 @@ export const SANDBOX_MODULES = [
     endpoints: [
       { slug: '/ifsc-lookup', name: 'RBI IFSC Code Lookup (Active ✓)', defaultPayload: { ifsc: 'HDFC0000128' }, desc: 'Fetches bank name, branch address, city, state, MICR & NEFT/IMPS flags.' },
       { slug: '/account-validation', name: 'IMPS Penny Drop (₹1)', defaultPayload: { account_number: '501002349845', ifsc_code: 'HDFC0000128' }, desc: 'Live NPCI ₹1 penny drop to extract beneficiary legal name.' },
-      { slug: '/upi-verification', name: 'UPI VPA Verification (Active ✓)', defaultPayload: { upi: 'muthukumar@okaxis' }, desc: 'Validates UPI ID active status and registered name.' },
-      { slug: '/upi-to-account', name: 'UPI to Bank Account', defaultPayload: { upi_id: 'muthukumar@okaxis' }, desc: 'Resolves destination bank account for UPI handle.' }
+      { slug: '/upi-verification', name: 'UPI VPA Verification (Active ✓)', defaultPayload: { upi: 'arunkumar@okaxis' }, desc: 'Validates UPI ID active status and registered name.' },
+      { slug: '/upi-to-account', name: 'UPI to Bank Account', defaultPayload: { upi_id: 'arunkumar@okaxis' }, desc: 'Resolves destination bank account for UPI handle.' }
     ]
   },
   {
@@ -93,7 +93,7 @@ export const SANDBOX_MODULES = [
     icon: Scale,
     color: 'from-red-600 to-rose-700',
     endpoints: [
-      { slug: '/realtime-court-case-search', name: 'Realtime Indian e-Courts Search', defaultPayload: { name: 'MUTHUKUMAR P', father_name: 'Suresh Kumar P', address: 'Bengaluru, Karnataka' }, desc: 'Searches High Courts, District Courts, and Tribunals across India.' }
+      { slug: '/realtime-court-case-search', name: 'Realtime Indian e-Courts Search', defaultPayload: { name: 'ARUN KUMAR R', father_name: 'Suresh Kumar P', address: 'Bengaluru, Karnataka' }, desc: 'Searches High Courts, District Courts, and Tribunals across India.' }
     ]
   },
   {

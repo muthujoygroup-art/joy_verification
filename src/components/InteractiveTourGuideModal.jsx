@@ -491,7 +491,7 @@ export const InteractiveTourGuideModal = ({
     adminEmail: 'admin@apexsolutions.in',
     smtpHost: 'smtp.apexsolutions.in',
     smtpVerified: false,
-    hrName: 'R. Muthu Kumar',
+    hrName: 'Praveen B',
     hrRole: 'HR Recruiter Lead',
     hrAdded: false
   });
