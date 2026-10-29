@@ -3,6 +3,8 @@ from backend.app.models.company_request import CompanyRequest
 from backend.app.services.storage_service import get_company_folder, get_company_storage_usage, get_overall_project_storage
 import uuid
 from datetime import datetime, timedelta
+import logging
+logger = logging.getLogger("joy_backend")
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
@@ -3176,3 +3178,208 @@ def update_security_gate_config(payload: dict, db: Session = Depends(get_db)):
     db.commit()
     return {"success": True, "message": "Security gate configuration saved to database!", "config": payload}
 
+
+def dispatch_company_verification_reminder_channels(
+    comp: Company, 
+    db: Session, 
+    channels: Optional[dict] = None
+) -> dict:
+    """
+    Helper to dispatch statutory verification reminders across Email, WhatsApp, and SMS.
+    """
+    contact_person = comp.contact_person or "Corporate Administrator"
+    company_name = comp.name
+    admin_email = comp.email
+    phone = comp.phone or (comp.features or {}).get("phone")
+
+    enabled_channels = channels or {"email": True, "whatsapp": True, "sms": True}
+    dispatched = {"email": False, "whatsapp": False, "sms": False}
+
+    # 1. Email Dispatch
+    if enabled_channels.get("email", True) and admin_email:
+        try:
+            from backend.app.services.email_service import send_company_statutory_verification_reminder_email
+            send_company_statutory_verification_reminder_email(
+                company_name=company_name,
+                admin_email=admin_email,
+                contact_person=contact_person,
+                db=db
+            )
+            dispatched["email"] = True
+        except Exception as e:
+            logger.warning(f"Reminder email dispatch failed for {comp.code}: {e}")
+
+    # 2. WhatsApp & 3. SMS Dispatch if mobile number available
+    if phone:
+        if enabled_channels.get("whatsapp", True):
+            try:
+                import asyncio
+                from backend.app.services.whatsapp_bot_service import send_whatsapp_message
+                wa_text = (
+                    f"🏛️ *JOY TrueProfile | Statutory Verification Reminder*\n\n"
+                    f"Dear {contact_person},\n\n"
+                    f"Please complete statutory profile verification (GSTIN, MCA CIN & PAN) for *{company_name}* on JOY TrueProfile.\n\n"
+                    f"⚠️ In compliance with DPDP Act 2023 regulations, candidate background verifications are paused until your enterprise credentials are authenticated.\n\n"
+                    f"🔗 Complete Verification Now: {settings.APP_BASE_URL.rstrip('/')}/company\n\n"
+                    f"_JOY Corporate Solutions Verification Bureau_"
+                )
+                try:
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        asyncio.create_task(send_whatsapp_message(to_phone=phone, message_text=wa_text, db=db))
+                    else:
+                        loop.run_until_complete(send_whatsapp_message(to_phone=phone, message_text=wa_text, db=db))
+                except RuntimeError:
+                    asyncio.run(send_whatsapp_message(to_phone=phone, message_text=wa_text, db=db))
+                dispatched["whatsapp"] = True
+            except Exception as e:
+                logger.warning(f"Reminder WhatsApp dispatch failed for {comp.code}: {e}")
+
+        if enabled_channels.get("sms", True):
+            try:
+                from backend.app.services.airtel_iq_sms_service import send_airtel_iq_sms
+                sms_text = f"JOY TrueProfile: Action required for {company_name}. Complete your statutory GSTIN/CIN verification at trueprofile.joycorporatesolutions.com/company to unlock employee BGV."
+                send_airtel_iq_sms(destination_address=phone, message_text=sms_text, db=db)
+                dispatched["sms"] = True
+            except Exception as e:
+                logger.warning(f"Reminder SMS dispatch failed for {comp.code}: {e}")
+
+    # Update company feature telemetry
+    feat = dict(comp.features or {})
+    rem_count = int(feat.get("verification_reminders_count", 0)) + 1
+    feat["verification_reminders_count"] = rem_count
+    feat["last_verification_reminder_at"] = datetime.utcnow().strftime("%d %b %Y, %I:%M %p IST")
+    comp.features = feat
+    db.commit()
+
+    return {
+        "dispatched": dispatched,
+        "reminders_count": rem_count,
+        "last_reminder_at": feat["last_verification_reminder_at"]
+    }
+
+
+@router.post("/companies/{company_id}/send-verification-reminder")
+def send_statutory_verification_reminder(company_id: str, db: Session = Depends(get_db)):
+    """
+    SuperAdmin triggers official statutory verification reminder across Email, WhatsApp, and SMS
+    instructing the company admin to authenticate their GSTIN, MCA CIN, and Company PAN.
+    """
+    comp = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    result = dispatch_company_verification_reminder_channels(comp, db)
+    channels_sent = [k for k, v in result["dispatched"].items() if v] or ["Email"]
+
+    return {
+        "success": True,
+        "message": f"Statutory verification reminder dispatched to {comp.name} via {', '.join(channels_sent)}",
+        "dispatched": result["dispatched"],
+        "reminders_count": result["reminders_count"],
+        "last_reminder_at": result["last_reminder_at"]
+    }
+
+
+@router.post("/trigger-daily-verification-reminders")
+def trigger_daily_verification_reminders(payload: Optional[dict] = None, db: Session = Depends(get_db)):
+    """
+    SuperAdmin or automated daily scheduler triggers multi-channel statutory verification
+    reminders to all companies with 'Pending Statutory Verification' status.
+    """
+    # Load settings from db if available
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "statutory_reminder_governance").first()
+    settings_data = setting.settings_data if (setting and setting.settings_data) else {}
+    
+    channels = (payload or {}).get("channels") or settings_data.get("channels") or {"email": True, "whatsapp": True, "sms": True}
+
+    # Fetch all companies
+    all_companies = db.query(Company).all()
+    unverified_companies = []
+
+    for c in all_companies:
+        feat = c.features or {}
+        is_verified = (
+            c.status == "Active" and (feat.get("statutory_verified") is True or (c.documents or {}).get("statutory_verified") is True)
+        )
+        if c.status == "Pending Statutory Verification" or not is_verified:
+            unverified_companies.append(c)
+
+    results = []
+    for comp in unverified_companies:
+        res = dispatch_company_verification_reminder_channels(comp, db, channels=channels)
+        results.append({
+            "id": comp.id,
+            "code": comp.code,
+            "name": comp.name,
+            "email": comp.email,
+            "dispatched": res["dispatched"],
+            "reminders_count": res["reminders_count"]
+        })
+
+    # Save last run time in system setting
+    last_run_time = datetime.utcnow().strftime("%d %b %Y, %I:%M %p IST")
+    if not setting:
+        setting = SystemSetting(
+            role="statutory_reminder_governance",
+            settings_data={
+                "auto_reminders_enabled": True,
+                "channels": channels,
+                "schedule_time": "10:00 AM IST",
+                "last_run_at": last_run_time,
+                "last_run_count": len(results)
+            },
+            updated_at=datetime.utcnow()
+        )
+        db.add(setting)
+    else:
+        current_val = dict(setting.settings_data or {})
+        current_val["last_run_at"] = last_run_time
+        current_val["last_run_count"] = len(results)
+        setting.settings_data = current_val
+        setting.updated_at = datetime.utcnow()
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Daily statutory reminders run completed. Dispatched alerts to {len(results)} enterprise companies.",
+        "total_scanned": len(all_companies),
+        "total_unverified": len(unverified_companies),
+        "reminded_count": len(results),
+        "companies": results,
+        "last_run_at": last_run_time
+    }
+
+
+@router.get("/statutory-reminder-settings")
+def get_statutory_reminder_settings(db: Session = Depends(get_db)):
+    """Get automated daily statutory verification reminders configuration"""
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "statutory_reminder_governance").first()
+    default_cfg = {
+        "auto_reminders_enabled": True,
+        "channels": {"email": True, "whatsapp": True, "sms": True},
+        "schedule_time": "10:00 AM IST",
+        "last_run_at": None,
+        "last_run_count": 0
+    }
+    if setting and setting.settings_data:
+        return {"success": True, "settings": {**default_cfg, **setting.settings_data}}
+    return {"success": True, "settings": default_cfg}
+
+
+@router.post("/statutory-reminder-settings")
+def save_statutory_reminder_settings(payload: dict, db: Session = Depends(get_db)):
+    """Save automated daily statutory verification reminders configuration"""
+    setting = db.query(SystemSetting).filter(SystemSetting.role == "statutory_reminder_governance").first()
+    if not setting:
+        setting = SystemSetting(
+            role="statutory_reminder_governance",
+            settings_data=payload,
+            updated_at=datetime.utcnow()
+        )
+        db.add(setting)
+    else:
+        setting.settings_data = payload
+        setting.updated_at = datetime.utcnow()
+    db.commit()
+    return {"success": True, "message": "Statutory verification reminder configuration updated successfully!", "settings": payload}

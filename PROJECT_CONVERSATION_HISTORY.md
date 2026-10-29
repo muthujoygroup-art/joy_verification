@@ -2438,3 +2438,54 @@ The user mandated an exhaustive, end-to-end audit of all 4 onboarding workflows 
 
 ---
 *Last Updated: October 28, 2026 | Antigravity IDE Autonomous Agent Log*
+
+
+---
+
+### Session 47: End-to-End Enterprise Company Onboarding, Multi-Channel Notifications (Email, WhatsApp, SMS) & Statutory Verification Action Gating (October 29, 2026)
+
+#### Core Directives & User Requirements Addressed:
+1. **Outdated Plan Options Modernization in SuperAdmin**:
+   - Replaced legacy `POSTPAID_PLANS` tiers (`Tier 2 (< 100 Employees) (₹230 / check)`) in `SuperAdminView.jsx` with the official platform plans (`ENTERPRISE_ONBOARDING_PLANS`): Starter (100 Profiles, 10 GB Vault), Professional (300 Profiles, 25 GB Vault), Enterprise Scale (500 Profiles, 50 GB Vault), Custom Enterprise (1,000+ Profiles, 100 GB Vault), and Tailored Single Plan.
+   - Updated auto-filling of employee headcount quotas and cloud vault storage limits in both company creation dropdowns.
+
+2. **Flow A: Main Page Guest Buyer Direct Plan Purchase & Instant Account Provisioning**:
+   - In `DynamicPlanBuilderModal.jsx`, added guest buyer detection and input form (`companyName`, `contactPerson`, `email`, `phone`).
+   - In `backend/app/services/razorpay_service.py` (`settle_single_plan_purchase`), auto-provisions a new PostgreSQL `Company` record when unauthenticated visitors complete checkout.
+   - Initial company status is set to `"Pending Statutory Verification"`.
+   - Provisions profile credits and generates 18% GST tax invoice (`INV-...`).
+   - Automatically dispatches multi-channel welcome package:
+     - **Email**: Dispatches tax invoice, login credentials, temporary password, and step-by-step onboarding guide via cPanel SMTP gateway (`send_company_payment_and_credentials_email`).
+     - **WhatsApp**: Dispatches interactive welcome alert with direct portal login URL via Meta Graph API (`send_whatsapp_message`).
+     - **SMS**: Dispatches carrier SMS alert via Airtel IQ gateway (`send_airtel_iq_sms`).
+   - Displays Enterprise Access Pass Credentials Card directly in the modal with a 1-click CTA button to sign in at `/company`.
+
+3. **Flow B: SuperAdmin Panel Direct Company Creation**:
+   - SuperAdmin onboards companies with modernized plan tiers, custom vault storage, and security credentials.
+   - Initial status defaults to `"Pending Statutory Verification"`.
+
+4. **Mandatory Company Statutory Verification & DPDP Action Gating (`CompanyAdminView.jsx`)**:
+   - Added `isCompanyStatutoryVerified` helper and `checkStatutoryOrGate` action interceptor.
+   - **Top Sticky Warning Banner**: Prominently informs company admins when statutory verification is pending, displaying reminder dispatch counts and a direct `[ Verify Corporate Profile Now ⚡ ]` navigation CTA.
+   - **Statutory Action Gating Interceptor Modal (`StatutoryActionGatingModal`)**: Intercepts restricted workforce operations (adding HR recruiters via `setShowAddHrModal`, adding vendors, or running candidate background checks) if the company's GSTIN, CIN, and PAN are not yet authenticated.
+   - **Instant Registry Authentication & Celebratory Unlock**: When GSTIN, CIN, and PAN are authenticated via live/mock statutory gateways, dynamically updates company status to `Active` and `verification_status: Verified`, immediately unlocking all candidate and vendor operations.
+
+5. **Multi-Channel Reminders & SuperAdmin Automated Governance**:
+   - **SuperAdmin Companies Directory**: Added `Statutory Status` badge (`🟢 STATUTORY VERIFIED ✓` vs `⚠️ PENDING STATUTORY`) and a `Remind Statutory 🔔` button per pending company to manually trigger instant 3-channel reminder dispatches.
+   - **SuperAdmin System Settings Card**: Added dedicated "Corporate Statutory Verification Automated Reminders & Multi-Channel Governance" card with toggles for Email, WhatsApp, and SMS, automated daily scheduler configuration, and a `[ 🚀 Trigger Daily Reminders Run Now ]` manual execution button.
+   - **Backend Endpoints (`backend/app/routers/superadmin.py`)**:
+     - `POST /superadmin/companies/{id}/send-verification-reminder`: Dispatches 3-channel reminder and updates reminder telemetry.
+     - `POST /superadmin/trigger-daily-verification-reminders`: Scans unverified companies and triggers bulk dispatch across enabled rails.
+     - `GET /superadmin/statutory-reminder-settings` & `POST /superadmin/statutory-reminder-settings`: Persists configuration in PostgreSQL `system_settings` table.
+
+#### Verification & Test Telemetry:
+- **Backend Test Suite (`scratch/test_statutory_onboarding_flow.py`)**:
+  - `GET /save statutory reminder settings`: **[PASS]**
+  - `POST /trigger-daily-verification-reminders`: **[PASS]** (dispatched alerts across Email, WhatsApp, SMS to unverified enterprises).
+  - `POST /companies/{id}/send-verification-reminder`: **[PASS]**
+  - Email shell rendering and SMTP dispatch: **[PASS]**
+- **Production Client Build (`npm run build`)**: Vite 8.2.2 compiled with 0 errors in 1.66s.
+- **Git Synchronization**: Synchronized on branch `main`.
+
+---
+*Last Updated: October 29, 2026 | Antigravity IDE Autonomous Agent Log*

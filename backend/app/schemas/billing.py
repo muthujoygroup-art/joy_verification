@@ -64,7 +64,7 @@ class RazorpayOrderResponse(BaseModel):
     is_live: bool = False
 
 class RazorpayPaymentVerifyRequest(BaseModel):
-    company_id: str
+    company_id: Optional[str] = None
     razorpay_order_id: str
     razorpay_payment_id: str
     razorpay_signature: str

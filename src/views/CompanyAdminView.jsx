@@ -67,6 +67,7 @@ import {
   Server,
   Settings,
   Share2,
+  ShieldAlert,
   ShieldCheck,
   Sliders,
   Sparkles,
@@ -329,6 +330,33 @@ export const CompanyAdminView = () => {
   const [isVerifyingPan, setIsVerifyingPan] = useState(false);
   const [isVerifyingCin, setIsVerifyingCin] = useState(false);
   const [isRequestingReview, setIsRequestingReview] = useState(false);
+  const [showStatutoryGateModal, setShowStatutoryGateModal] = useState(false);
+  const [statutoryGateActionName, setStatutoryGateActionName] = useState('');
+
+  // 🏛️ Statutory Verification State Evaluator
+  const isCompanyStatutoryVerified = (comp) => {
+    const target = comp || company;
+    if (!target) return false;
+    if (target.statutory_verified === true) return true;
+    if (target.features?.statutory_verified === true) return true;
+    if (target.status === 'Active' && target.verification_status === 'Verified') return true;
+    const checks = target.company_verification?.checks || target.statutory_checks || {};
+    const gstOk = checks.gst?.verified || checks.gst?.status === 'Verified';
+    const panOk = checks.pan?.verified || checks.pan?.status === 'Verified';
+    const cinOk = checks.cin?.verified || checks.cin?.status === 'Verified';
+    return Boolean(gstOk && (panOk || cinOk));
+  };
+
+  // 🛡️ Action Gating Interceptor for DPDP Compliance
+  const checkStatutoryOrGate = (actionName, callback) => {
+    if (isCompanyStatutoryVerified(company)) {
+      if (typeof callback === 'function') callback();
+      return true;
+    }
+    setStatutoryGateActionName(actionName);
+    setShowStatutoryGateModal(true);
+    return false;
+  };
 
   // 👔 HR Recruiter Governance & Activation States
   const [governanceHr, setGovernanceHr] = useState(null);
@@ -619,6 +647,21 @@ export const CompanyAdminView = () => {
         await verifyCompanyProfileDetail(company.id, checkType, data);
       }
       showToast(`🏛️ ${checkType.toUpperCase()} verified successfully against government statutory gateway!`);
+
+      // Evaluate whether company has achieved full statutory verification
+      const updatedCompany = {
+        ...company,
+        company_verification: {
+          ...(company.company_verification || {}),
+          checks: {
+            ...((company.company_verification || {}).checks || {}),
+            [checkType]: { status: 'Verified' }
+          }
+        }
+      };
+      if (isCompanyStatutoryVerified(updatedCompany)) {
+        showToast('🎉 Enterprise Statutory Verification Completed! Candidate, HR and Vendor actions are now fully unlocked.', 'success');
+      }
     } catch (err) {
       showToast(`❌ Gateway check failed: ${err.message}`, 'error');
     } finally {
@@ -1348,7 +1391,8 @@ export const CompanyAdminView = () => {
       badgeText: `${(vendors || []).length} Corporate Vendors`,
       title: 'Vendor Verification & Document Checks',
       subtitle: 'Verify vendor GST, PAN, and Bank details, and download verified business certificates',
-      icon: ShieldCheck,
+      icon: ShieldAlert,
+  ShieldCheck,
       colorClass: 'from-purple-600 to-indigo-700'
     },
     profile_details: {
@@ -1550,6 +1594,46 @@ export const CompanyAdminView = () => {
           </div>
         </div>
       </div>
+
+      {/* 🏛️ MANDATORY STATUTORY VERIFICATION ACTION BANNER */}
+      {!isCompanyStatutoryVerified(company) && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-50/90 to-rose-50 border-2 border-amber-400 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-sm shrink-0">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4 className="text-sm font-black text-amber-950">Action Required: Complete Company Statutory Verification</h4>
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
+                  Pending Statutory Verification
+                </span>
+                {company.features?.verification_reminders_count > 0 && (
+                  <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                    {company.features.verification_reminders_count} Reminder(s) Dispatched
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-amber-900/90 mt-0.5">
+                In compliance with DPDP Act 2023 regulations, candidate background verifications and HR/Vendor actions are gated until your organization's GSTIN, MCA CIN, and PAN are officially verified.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveMainSection('profile_details');
+                setActiveTab('profile_details');
+              }}
+              className="btn bg-amber-600 hover:bg-amber-700 text-white text-xs py-2 px-4 font-black rounded-xl shadow-md cursor-pointer flex items-center gap-1.5 transition-all"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Verify Corporate Profile Now ⚡</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Metrics Row: Context-Aware for Vendor Hub vs Candidate Operations */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -2131,7 +2215,7 @@ export const CompanyAdminView = () => {
             </div>
             
             <button 
-              onClick={() => setShowAddHrModal(true)}
+              onClick={() => checkStatutoryOrGate('Add HR Recruiter & Staff Member', () => setShowAddHrModal(true))}
               data-tour-step="company-add-hr-btn"
               className="btn btn-company text-xs flex items-center gap-1.5 py-2 px-4 shadow-md font-bold cursor-pointer"
             >
@@ -2927,7 +3011,7 @@ export const CompanyAdminView = () => {
 
               <button
                 type="button"
-                onClick={() => setVendorSubDivision('register')}
+                onClick={() => checkStatutoryOrGate('Register & Onboard New Vendor', () => setVendorSubDivision('register'))}
                 className={`px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 transition-all cursor-pointer ${
                   vendorSubDivision === 'register'
                     ? 'bg-white text-indigo-900 shadow-sm border border-slate-200'
@@ -6348,7 +6432,78 @@ export const CompanyAdminView = () => {
         </div>
       )}
 
-            {/* Add HR Onboarding Modal (Comprehensive Full-Fidelity Profiler) */}
+      {/* 🏛️ MANDATORY STATUTORY VERIFICATION ACTION GATING MODAL */}
+      {showStatutoryGateModal && (
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/85 backdrop-blur-md p-4 flex items-center justify-center animate-fadeIn">
+          <div className="glass-panel w-full max-w-lg p-6 sm:p-7 space-y-5 border-amber-300 bg-white text-slate-900 rounded-3xl shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600" />
+            
+            <div className="flex items-start justify-between gap-3 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center font-black shadow-sm shrink-0">
+                  <ShieldAlert className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                    DPDP ACT 2023 REGULATORY GATE
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1 font-outfit">
+                    Action Locked: Statutory Verification Required
+                  </h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowStatutoryGateModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-2">
+              <p className="font-semibold text-slate-900">
+                You attempted to: <strong className="text-indigo-600 font-black">{statutoryGateActionName || 'Perform Workforce Action'}</strong>
+              </p>
+              <p className="text-[11.5px] leading-relaxed text-slate-600">
+                Under the <strong>Digital Personal Data Protection (DPDP) Act 2023</strong> and Indian statutory compliance directives, your company account is currently in <strong>"Pending Statutory Verification"</strong> status.
+              </p>
+              <p className="text-[11.5px] leading-relaxed text-slate-600">
+                To prevent statutory non-compliance, adding HR team members, initiating employee background verifications, and onboarding external corporate vendors remain restricted until your official <strong>GSTIN, MCA CIN, and Corporate PAN</strong> are authenticated against government registries.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-300 flex items-center gap-2.5 text-xs text-amber-950 font-medium">
+              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Instant Verification: GSTIN & MCA checks are automated and complete in under 5 seconds!</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowStatutoryGateModal(false)}
+                className="btn btn-secondary text-xs py-2.5 px-4 font-bold rounded-xl w-full sm:w-auto cursor-pointer"
+              >
+                Cancel / Dismiss
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowStatutoryGateModal(false);
+                  setActiveMainSection('profile_details');
+                  setActiveTab('profile_details');
+                }}
+                className="btn bg-gradient-to-r from-amber-600 to-indigo-600 hover:from-amber-700 hover:to-indigo-700 text-white text-xs py-2.5 px-5 font-black rounded-xl shadow-md flex items-center justify-center gap-1.5 w-full sm:w-auto cursor-pointer transition-all"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Verify Corporate Profile Now ⚡</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add HR Onboarding Modal (Comprehensive Full-Fidelity Profiler) */}
       {showAddHrModal && (
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 flex justify-center items-start animate-fadeIn">
           <div className="glass-panel w-full max-w-4xl p-5 sm:p-6 space-y-4 border-slate-200 bg-white text-slate-900 rounded-3xl shadow-2xl my-4">

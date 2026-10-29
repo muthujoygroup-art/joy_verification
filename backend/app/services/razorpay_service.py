@@ -238,21 +238,69 @@ def verify_webhook_signature(
 
 def settle_single_plan_purchase(
     db: Session,
-    company_id: str,
+    company_id: Optional[str],
     payment_data: Dict[str, Any],
     plan_data: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
     Executes single plan purchase settlement:
-    1. Validates company.
+    1. Validates or auto-provisions company account for guest buyers from main landing page.
     2. Updates profile quota (`max_limit`).
     3. Updates active verification checklist in `company.features`.
     4. Records settled `PaymentRecord`.
     5. Issues full 18% GST `Invoice` marked as Settled/PAID.
+    6. Dispatches Payment Confirmation Receipt & Login Credentials with Onboarding Guide via Email, WhatsApp & SMS.
     """
-    company = db.query(Company).filter(Company.id == company_id).first()
+    import re
+    is_new_company = False
+    temp_password = None
+
+    company = None
+    if company_id and company_id != "new_company":
+        company = db.query(Company).filter((Company.id == company_id) | (Company.code == company_id)).first()
+
+    # If no company found, auto-provision guest company from plan_data
+    guest_info = plan_data.get("guestCompany") or payment_data.get("guestCompany") or {}
+    if not company and guest_info:
+        guest_email = (guest_info.get("email") or "").strip().lower()
+        guest_name = (guest_info.get("companyName") or "New Enterprise Client").strip()
+        guest_person = (guest_info.get("contactPerson") or "Corporate Admin").strip()
+        guest_phone = (guest_info.get("phone") or "").strip()
+
+        if guest_email:
+            company = db.query(Company).filter(Company.email == guest_email).first()
+
+        if not company:
+            clean_code = re.sub(r'[^A-Z0-9]', '', guest_name.upper())[:6] or "JOY"
+            unique_code = f"{clean_code}{uuid.uuid4().hex[:3].upper()}"
+            temp_password = f"Joy@{uuid.uuid4().hex[:4].upper()}2026"
+
+            company = Company(
+                id=f"comp_{uuid.uuid4().hex[:10]}",
+                name=guest_name,
+                code=unique_code,
+                contact_person=guest_person,
+                email=guest_email,
+                password_hash=temp_password,
+                plan=f"Single Plan ({plan_data.get('profileCount', 100)} Profiles)",
+                max_limit=int(plan_data.get("profileCount", 100)),
+                status="Pending Statutory Verification",
+                features={
+                    "phone": guest_phone,
+                    "temp_password": temp_password,
+                    "statutory_verified": False,
+                    "verification_status": "Pending Statutory Verification",
+                    "created_via": "main_landing_purchase",
+                    "activation_password": "1234",
+                    "security_mode": "pin"
+                }
+            )
+            db.add(company)
+            db.flush()
+            is_new_company = True
+
     if not company:
-        raise ValueError(f"Company '{company_id}' not found")
+        raise ValueError(f"Company could not be resolved or provisioned. Please provide company details.")
 
     profile_count = int(plan_data.get("profileCount", 100))
     subtotal = float(plan_data.get("subtotal", 0.0))
@@ -374,6 +422,65 @@ def settle_single_plan_purchase(
     db.refresh(payment_record)
     db.refresh(invoice)
 
+    # 4. Dispatch Multi-Channel Notifications (Payment Receipt + Login Credentials + Onboarding Guide)
+    app_base = settings.APP_BASE_URL.rstrip('/')
+    login_url = f"{app_base}/company"
+
+    # A. Email Dispatch
+    try:
+        from backend.app.services.email_service import send_company_payment_and_credentials_email
+        send_company_payment_and_credentials_email(
+            company_name=company.name,
+            company_code=company.code,
+            admin_email=company.email,
+            contact_person=company.contact_person,
+            temp_password=temp_password or (company.features or {}).get("temp_password") or "JoyCompany@2026",
+            plan_name=company.plan,
+            profile_count=profile_count,
+            total_amount=total_amount,
+            payment_id=razorpay_payment_id,
+            invoice_id=invoice.id,
+            db=db
+        )
+    except Exception as em_err:
+        logger.warning(f"Payment confirmation email dispatch notice: {em_err}")
+
+    # B. WhatsApp & SMS Dispatch if mobile number available
+    comp_phone = company.phone or (company.features or {}).get("phone")
+    if comp_phone:
+        try:
+            import asyncio
+            from backend.app.services.whatsapp_bot_service import send_whatsapp_message
+            effective_pw = temp_password or (company.features or {}).get("temp_password") or "JoyCompany@2026"
+            wa_text = (
+                f"🏛️ *Welcome to JOY TrueProfile! Plan Purchase Confirmed*\n\n"
+                f"Dear {company.contact_person},\n\n"
+                f"Your payment of ₹{total_amount:,.2f} for *{company.name}* is confirmed. {profile_count} candidate profile credits are provisioned.\n\n"
+                f"🔐 *Your Login Details:*\n"
+                f"• Portal: {login_url}\n"
+                f"• Username: {company.email}\n"
+                f"• Passcode: {effective_pw}\n\n"
+                f"⚠️ *Next Step:* Log in and verify your GSTIN/CIN in Corporate Profile to activate candidate verification actions.\n\n"
+                f"_JOY Corporate Solutions Verification Bureau_"
+            )
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(send_whatsapp_message(to_phone=comp_phone, message_text=wa_text, db=db))
+                else:
+                    loop.run_until_complete(send_whatsapp_message(to_phone=comp_phone, message_text=wa_text, db=db))
+            except RuntimeError:
+                asyncio.run(send_whatsapp_message(to_phone=comp_phone, message_text=wa_text, db=db))
+        except Exception as wa_err:
+            logger.warning(f"WhatsApp dispatch notice: {wa_err}")
+
+        try:
+            from backend.app.services.airtel_iq_sms_service import send_airtel_iq_sms
+            sms_text = f"JOY TrueProfile: Welcome {company.name}! Payment confirmed. Login at trueprofile.joycorporatesolutions.com/company using {company.email} to complete statutory verification."
+            send_airtel_iq_sms(destination_address=comp_phone, message_text=sms_text, db=db)
+        except Exception as sms_err:
+            logger.warning(f"SMS dispatch notice: {sms_err}")
+
     return {
         "success": True,
         "payment_id": payment_record.id,
@@ -382,10 +489,15 @@ def settle_single_plan_purchase(
         "invoice_id": invoice.id,
         "company_id": company.id,
         "company_name": company.name,
+        "company_email": company.email,
         "profile_count_added": profile_count,
         "new_max_limit": company.max_limit,
         "subtotal": subtotal,
         "gst_amount": gst_amount,
         "total_amount": total_amount,
-        "status": "Settled"
+        "status": "Settled",
+        "is_new_account": is_new_company,
+        "temp_password": temp_password if is_new_company else None,
+        "login_url": login_url,
+        "statutory_verified": False if is_new_company else (company.features or {}).get("statutory_verified", False)
     }

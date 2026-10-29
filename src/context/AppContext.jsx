@@ -4237,11 +4237,23 @@ export const AppProvider = ({ children }) => {
       if (c.id === companyId) {
         const existingVerif = c.company_verification || {};
         const updatedChecks = { ...(existingVerif.checks || {}), [checkType]: checkResult };
+        const hasGst = updatedChecks.gst?.status === 'Verified' || c.statutory_checks?.gst?.verified;
+        const hasPan = updatedChecks.pan?.status === 'Verified' || c.statutory_checks?.pan?.verified;
+        const hasCin = updatedChecks.cin?.status === 'Verified' || c.statutory_checks?.cin?.verified;
+        const isNowFullyVerified = Boolean(hasGst && (hasPan || hasCin));
+
         return {
           ...c,
+          status: isNowFullyVerified ? 'Active' : c.status,
+          verification_status: isNowFullyVerified ? 'Verified' : (existingVerif.status === 'Verified' ? 'Verified' : 'Under Review'),
+          statutory_verified: isNowFullyVerified || Boolean(c.statutory_verified),
+          features: {
+            ...(c.features || {}),
+            statutory_verified: isNowFullyVerified || Boolean((c.features || {}).statutory_verified)
+          },
           company_verification: {
             ...existingVerif,
-            status: existingVerif.status === 'Verified' ? 'Verified' : 'Under Review',
+            status: isNowFullyVerified ? 'Verified' : (existingVerif.status === 'Verified' ? 'Verified' : 'Under Review'),
             lastVerifiedAt: timestampReadable,
             checks: updatedChecks
           }

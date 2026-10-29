@@ -89,6 +89,8 @@ import {
   Send,
   Server,
   Settings,
+  BellRing,
+  ShieldAlert,
   ShieldCheck,
   Sliders,
   Smartphone,
@@ -109,6 +111,50 @@ import {
   Image as ImageIcon,
   File
 } from 'lucide-react';
+
+// 🏢 Official Modern Enterprise Onboarding Plans
+export const ENTERPRISE_ONBOARDING_PLANS = [
+  {
+    id: 'starter_100',
+    name: 'Starter Plan (100 Profiles)',
+    profiles: 100,
+    storage: 10,
+    badge: 'Starter',
+    desc: 'For startups & boutique teams (100 profiles, 10 GB Vault)'
+  },
+  {
+    id: 'growth_300',
+    name: 'Professional Plan (300 Profiles)',
+    profiles: 300,
+    storage: 25,
+    badge: 'Most Popular ⭐',
+    desc: 'For growing organizations & quarterly hiring cohorts (300 profiles, 25 GB Vault)'
+  },
+  {
+    id: 'enterprise_500',
+    name: 'Enterprise Scale Plan (500 Profiles)',
+    profiles: 500,
+    storage: 50,
+    badge: 'Enterprise',
+    desc: 'For high-volume workforces & manufacturing units (500 profiles, 50 GB Vault)'
+  },
+  {
+    id: 'custom_1000',
+    name: 'Custom Enterprise Scale (1,000+ Profiles)',
+    profiles: 1000,
+    storage: 100,
+    badge: 'Conglomerate',
+    desc: 'For pan-India workforces & corporate conglomerates (1,000+ profiles, 100 GB Vault)'
+  },
+  {
+    id: 'custom_scope',
+    name: 'Tailored Single Plan / Custom Scope',
+    profiles: 250,
+    storage: 25,
+    badge: 'Bespoke',
+    desc: 'Custom statutory check scope and flexible profile quota'
+  }
+];
 
 export const SuperAdminView = () => {
   const { 
@@ -188,6 +234,31 @@ export const SuperAdminView = () => {
   } = useApp();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (typeof api?.getStatutoryReminderSettings === 'function') {
+      api.getStatutoryReminderSettings()
+        .then(res => {
+          if (res?.settings) {
+            setStatutoryReminderConfig(res.settings);
+          }
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  // 🏛️ Corporate Statutory Verification Reminders & Governance States
+  const [sendingReminderId, setSendingReminderId] = useState(null);
+  const [isTriggeringDailyReminders, setIsTriggeringDailyReminders] = useState(false);
+  const [dailyReminderSummary, setDailyReminderSummary] = useState(null);
+  const [statutoryReminderConfig, setStatutoryReminderConfig] = useState({
+    auto_reminders_enabled: true,
+    channels: { email: true, whatsapp: true, sms: true },
+    schedule_time: '10:00 AM IST',
+    last_run_at: null,
+    last_run_count: 0
+  });
+  const [isSavingReminderConfig, setIsSavingReminderConfig] = useState(false);
 
   const [ticketReplyText, setTicketReplyText] = useState({});
   const [activeTicketLightbox, setActiveTicketLightbox] = useState(null);
@@ -902,9 +973,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
     password: 'Company@Admin2026',
     activation_password: '1234',
     security_mode: 'pin',
-    plan: 'Tier 2 (< 100 Employees)',
-    credits_purchased: 100,
-    maxLimit: 100,
+    plan: 'Professional Plan (300 Profiles)',
+    credits_purchased: 300,
+    maxLimit: 300,
     storage_limit_gb: 25,
     expiry_days: 15,
     expiry_date: '',
@@ -1730,7 +1801,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
       badgeText: `${multiRoleSessions.length} Active Sessions`,
       title: 'Active User Sessions & Devices',
       subtitle: 'Live monitor showing active user sessions, login timestamps, IP addresses, and devices',
-      icon: ShieldCheck,
+      icon: BellRing,
+  ShieldAlert,
+  ShieldCheck,
       colorClass: 'from-sky-600 to-indigo-700'
     },
     issuelogs: {
@@ -2933,31 +3006,24 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                   value={newCompany.plan}
                   onChange={(e) => {
                     const selectedPlanName = e.target.value;
-                    const planObj = Object.values(POSTPAID_PLANS).find(p => p.name === selectedPlanName) || POSTPAID_PLANS.tier2;
-                    let recommendedStorage = 25;
-                    if (planObj.name.includes('< 50')) recommendedStorage = 10;
-                    else if (planObj.name.includes('< 100')) recommendedStorage = 25;
-                    else if (planObj.name.includes('< 300')) recommendedStorage = 50;
-                    else if (planObj.name.includes('< 500')) recommendedStorage = 100;
-                    else if (planObj.name.includes('> 500') || planObj.name.includes('Custom')) recommendedStorage = 500;
-
-                    setNewCompany({ 
-                      ...newCompany, 
-                      plan: planObj.name, 
-                      credits_purchased: planObj.maxProfiles, 
-                      maxLimit: planObj.maxProfiles,
-                      storage_limit_gb: recommendedStorage
+                    const planObj = ENTERPRISE_ONBOARDING_PLANS.find(p => p.name === selectedPlanName) || ENTERPRISE_ONBOARDING_PLANS[1];
+                    setNewCompany({
+                      ...newCompany,
+                      plan: planObj.name,
+                      credits_purchased: planObj.profiles,
+                      maxLimit: planObj.profiles,
+                      storage_limit_gb: planObj.storage
                     });
                   }}
                   className="form-select text-xs font-bold"
                 >
-                  {Object.values(POSTPAID_PLANS).map((p) => (
+                  {ENTERPRISE_ONBOARDING_PLANS.map((p) => (
                     <option key={p.id} value={p.name}>
-                      {p.name} (₹{p.ratePerProfile} / check) — {p.maxProfiles} Profiles Quota
+                      {p.name} — {p.profiles} Profiles Quota ({p.storage} GB Vault)
                     </option>
                   ))}
                 </select>
-                <span className="text-[10px] text-slate-400 mt-0.5 block">Official Postpaid tiered rate matching landing page</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Official Enterprise Single Plan tier matching platform pricing</span>
               </div>
 
               <div>
@@ -3325,6 +3391,28 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       {/* 5. Governance Status */}
                       <td className="py-4 px-4 text-center min-w-[170px]">
                         <div className="flex flex-col items-center justify-center gap-1">
+                          {/* Statutory Status Indicator */}
+                          {(() => {
+                            const isStatutoryOk = comp.statutory_verified === true ||
+                              comp.features?.statutory_verified === true ||
+                              (comp.status === 'Active' && comp.verification_status === 'Verified') ||
+                              Boolean(
+                                (comp.company_verification?.checks?.gst?.status === 'Verified' || comp.statutory_checks?.gst?.verified) &&
+                                (comp.company_verification?.checks?.pan?.status === 'Verified' || comp.statutory_checks?.pan?.verified || comp.company_verification?.checks?.cin?.status === 'Verified' || comp.statutory_checks?.cin?.verified)
+                              );
+                            if (isStatutoryOk) {
+                              return (
+                                <span className="badge badge-emerald text-[9px] font-black py-0.5 px-2.5 border border-emerald-300 flex items-center gap-1 shadow-2xs">
+                                  🟢 STATUTORY VERIFIED ✓
+                                </span>
+                              );
+                            }
+                            return (
+                              <span className="badge badge-amber text-[9px] font-black py-0.5 px-2.5 border border-amber-300 flex items-center gap-1 shadow-2xs animate-pulse">
+                                ⚠️ PENDING STATUTORY
+                              </span>
+                            );
+                          })()}
                           {comp.status === 'Pending Approval' || comp.activation_status === 'Pending Approval' ? (
                             <span className="badge badge-purple text-[9.5px] font-black py-1 px-2.5 border border-purple-300 animate-pulse">
                               🔵 PENDING APPROVAL
@@ -3424,6 +3512,45 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                       {/* 6. Management Actions Toolbar */}
                       <td className="py-4 px-4 text-right min-w-[340px]">
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                          {/* Statutory Reminder Action for Pending Companies */}
+                          {!(
+                            comp.statutory_verified === true ||
+                            comp.features?.statutory_verified === true ||
+                            (comp.status === 'Active' && comp.verification_status === 'Verified')
+                          ) && (
+                            <button
+                              type="button"
+                              disabled={sendingReminderId === comp.id}
+                              onClick={async () => {
+                                setSendingReminderId(comp.id);
+                                try {
+                                  const res = await api.sendCompanyVerificationReminder(comp.id);
+                                  showToast(res?.message || `🔔 Statutory verification reminder sent to ${comp.name} via Email, WhatsApp & SMS!`);
+                                  setCompanies(prev => prev.map(c => c.id === comp.id ? {
+                                    ...c,
+                                    features: {
+                                      ...(c.features || {}),
+                                      verification_reminders_count: (c.features?.verification_reminders_count || 0) + 1,
+                                      last_verification_reminder_at: new Date().toLocaleString('en-IN') + ' IST'
+                                    }
+                                  } : c));
+                                } catch (err) {
+                                  showToast(`Reminder failed: ${err.message}`, 'error');
+                                } finally {
+                                  setSendingReminderId(null);
+                                }
+                              }}
+                              className="btn text-[11px] py-1.5 px-2.5 flex items-center gap-1 font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-2xs cursor-pointer transition-all disabled:opacity-50"
+                              title="Dispatch multi-channel statutory verification reminder via Email, WhatsApp, and SMS"
+                            >
+                              {sendingReminderId === comp.id ? (
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <BellRing className="w-3.5 h-3.5" />
+                              )}
+                              <span>Remind Statutory 🔔</span>
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => setAuditingCompany(comp)}
@@ -7397,7 +7524,9 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                     { label: 'Companies Table', count: (companies || []).length, table: 'companies', icon: Building2, color: 'text-teal-600 bg-teal-50 border-teal-200' },
                     { label: 'HR Users Table', count: (hrUsers || []).length, table: 'hr_users', icon: UserCheck, color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
                     { label: 'System Errors Log', count: (systemErrorLogs || []).length, table: 'system_error_logs', icon: AlertTriangle, color: 'text-rose-600 bg-rose-50 border-rose-200' },
-                    { label: 'Active Sessions', count: (multiRoleSessions || []).length, table: 'active_sessions', icon: ShieldCheck, color: 'text-sky-600 bg-sky-50 border-sky-200' },
+                    { label: 'Active Sessions', count: (multiRoleSessions || []).length, table: 'active_sessions', icon: BellRing,
+  ShieldAlert,
+  ShieldCheck, color: 'text-sky-600 bg-sky-50 border-sky-200' },
                     { label: 'Support Tickets', count: (supportTickets || []).length, table: 'support_tickets', icon: LifeBuoy, color: 'text-amber-600 bg-amber-50 border-amber-200' }
                   ].map((tbl, i) => (
                     <div key={i} className={`p-4 rounded-2xl border ${tbl.color} space-y-1 text-center`}>
@@ -7673,6 +7802,177 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
                 <span>Allow individual Enterprise Companies to override default gate preference</span>
               </label>
               <span className="text-[10px] text-slate-500">Active Selection: <strong className="text-indigo-700 uppercase font-mono">{secGateState.gate_type}</strong></span>
+            </div>
+          </div>
+
+          {/* 🏛️ CORPORATE STATUTORY VERIFICATION AUTOMATED REMINDERS GOVERNANCE */}
+          <div className="glass-panel p-6 border-slate-200 bg-white space-y-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 border-2 border-amber-200 text-amber-700 flex items-center justify-center font-black shadow-xs shrink-0">
+                  <BellRing className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900">
+                      Corporate Statutory Verification Automated Reminders & Multi-Channel Dispatch
+                    </h3>
+                    <span className="badge badge-amber text-[10px] font-bold">DPDP COMPLIANCE</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Configure automated daily reminders across Email, WhatsApp, and SMS for all companies in "Pending Statutory Verification" status.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsSavingReminderConfig(true);
+                    try {
+                      const res = await api.saveStatutoryReminderSettings(statutoryReminderConfig);
+                      showToast(res?.message || 'Statutory reminder governance preferences saved!');
+                    } catch (e) {
+                      showToast(`Failed to save settings: ${e.message}`, 'error');
+                    } finally {
+                      setIsSavingReminderConfig(false);
+                    }
+                  }}
+                  disabled={isSavingReminderConfig}
+                  className="btn btn-superadmin text-xs py-2 px-4 flex items-center gap-1.5 font-bold shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingReminderConfig ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{isSavingReminderConfig ? 'Saving...' : 'Save Settings 💾'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Automation Toggle and Channels */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="font-black text-slate-900 text-xs block">
+                      Automated Daily Reminders Daemon
+                    </label>
+                    <span className="text-[11px] text-slate-500">
+                      Dispatches reminders daily to companies with pending GSTIN/CIN/PAN
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={statutoryReminderConfig.auto_reminders_enabled}
+                    onChange={(e) => setStatutoryReminderConfig({
+                      ...statutoryReminderConfig,
+                      auto_reminders_enabled: e.target.checked
+                    })}
+                    className="w-5 h-5 accent-indigo-600 rounded cursor-pointer"
+                  />
+                </div>
+
+                <div className="pt-2 border-t border-slate-200 text-xs flex items-center justify-between">
+                  <span className="font-bold text-slate-700">Scheduled Dispatch Time:</span>
+                  <input
+                    type="text"
+                    value={statutoryReminderConfig.schedule_time || '10:00 AM IST'}
+                    onChange={(e) => setStatutoryReminderConfig({
+                      ...statutoryReminderConfig,
+                      schedule_time: e.target.value
+                    })}
+                    className="form-input text-xs font-mono font-bold w-36 py-1 px-2"
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <label className="font-black text-slate-900 text-xs block">
+                  Active Multi-Channel Notification Dispatch Rails
+                </label>
+                <div className="space-y-2 text-xs pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={statutoryReminderConfig.channels?.email ?? true}
+                      onChange={(e) => setStatutoryReminderConfig({
+                        ...statutoryReminderConfig,
+                        channels: { ...(statutoryReminderConfig.channels || {}), email: e.target.checked }
+                      })}
+                      className="w-4 h-4 accent-indigo-600 rounded"
+                    />
+                    <span className="font-bold text-slate-800">📧 Official SMTP Email (Formal Statutory Notice)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={statutoryReminderConfig.channels?.whatsapp ?? true}
+                      onChange={(e) => setStatutoryReminderConfig({
+                        ...statutoryReminderConfig,
+                        channels: { ...(statutoryReminderConfig.channels || {}), whatsapp: e.target.checked }
+                      })}
+                      className="w-4 h-4 accent-emerald-600 rounded"
+                    />
+                    <span className="font-bold text-slate-800">💬 Official WhatsApp Bot (Interactive Alerts)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={statutoryReminderConfig.channels?.sms ?? true}
+                      onChange={(e) => setStatutoryReminderConfig({
+                        ...statutoryReminderConfig,
+                        channels: { ...(statutoryReminderConfig.channels || {}), sms: e.target.checked }
+                      })}
+                      className="w-4 h-4 accent-sky-600 rounded"
+                    />
+                    <span className="font-bold text-slate-800">📱 Airtel IQ Carrier SMS Gateway (Direct Delivery)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Action Trigger Button & Telemetry */}
+            <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 via-indigo-50 to-purple-50 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div>
+                <span className="font-black text-slate-900 block">Manual Immediate Multi-Channel Dispatch Run</span>
+                <span className="text-[11px] text-slate-600">
+                  {statutoryReminderConfig.last_run_at 
+                    ? `Last Run: ${statutoryReminderConfig.last_run_at} • Reminded: ${statutoryReminderConfig.last_run_count || 0} Companies`
+                    : 'No manual or automated runs recorded today.'}
+                </span>
+                {dailyReminderSummary && (
+                  <span className="text-[11px] font-bold text-emerald-700 block mt-0.5">
+                    ✓ {dailyReminderSummary.message}
+                  </span>
+                )}
+              </div>
+
+              <button
+                type="button"
+                disabled={isTriggeringDailyReminders}
+                onClick={async () => {
+                  setIsTriggeringDailyReminders(true);
+                  try {
+                    const res = await api.triggerDailyVerificationReminders({
+                      channels: statutoryReminderConfig.channels
+                    });
+                    setDailyReminderSummary(res);
+                    setStatutoryReminderConfig(prev => ({
+                      ...prev,
+                      last_run_at: res.last_run_at,
+                      last_run_count: res.reminded_count
+                    }));
+                    showToast(res.message || 'Dispatched statutory reminders to all pending companies!');
+                  } catch (e) {
+                    showToast(`Daily run failed: ${e.message}`, 'error');
+                  } finally {
+                    setIsTriggeringDailyReminders(false);
+                  }
+                }}
+                className="btn bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
+              >
+                {isTriggeringDailyReminders ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                <span>{isTriggeringDailyReminders ? 'Dispatching Across Rails...' : '🚀 Trigger Daily Reminders Run Now'}</span>
+              </button>
             </div>
           </div>
 
@@ -9678,41 +9978,34 @@ All verification transactions maintain end-to-end cryptographic audit trails wit
 
               {/* Field 8 & 9: Subscribed Plan (From POSTPAID_PLANS) & Headcount Quota */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Subscribed Plan Tier *</label>
-                  <select 
-                    value={newCompany.plan}
-                    onChange={(e) => {
-                      const selectedPlanName = e.target.value;
-                      const planObj = Object.values(POSTPAID_PLANS).find(p => p.name === selectedPlanName) || POSTPAID_PLANS.tier2;
-                      let recommendedStorage = 25;
-                      if (planObj.name.includes('< 50')) recommendedStorage = 10;
-                      else if (planObj.name.includes('< 100')) recommendedStorage = 25;
-                      else if (planObj.name.includes('< 300')) recommendedStorage = 50;
-                      else if (planObj.name.includes('< 500')) recommendedStorage = 100;
-                      else if (planObj.name.includes('> 500') || planObj.name.includes('Custom')) recommendedStorage = 500;
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Subscribed Plan Tier *</label>
+                <select 
+                  value={newCompany.plan}
+                  onChange={(e) => {
+                    const selectedPlanName = e.target.value;
+                    const planObj = ENTERPRISE_ONBOARDING_PLANS.find(p => p.name === selectedPlanName) || ENTERPRISE_ONBOARDING_PLANS[1];
+                    setNewCompany({
+                      ...newCompany,
+                      plan: planObj.name,
+                      credits_purchased: planObj.profiles,
+                      maxLimit: planObj.profiles,
+                      storage_limit_gb: planObj.storage
+                    });
+                  }}
+                  className="form-select text-xs font-bold"
+                >
+                  {ENTERPRISE_ONBOARDING_PLANS.map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name} — {p.profiles} Profiles Quota ({p.storage} GB Vault)
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">Official Enterprise Single Plan tier matching platform pricing</span>
+              </div>
 
-                      setNewCompany({ 
-                        ...newCompany, 
-                        plan: planObj.name, 
-                        credits_purchased: planObj.maxProfiles, 
-                        maxLimit: planObj.maxProfiles,
-                        storage_limit_gb: recommendedStorage
-                      });
-                    }}
-                    className="form-select text-xs font-bold"
-                  >
-                    {Object.values(POSTPAID_PLANS).map((p) => (
-                      <option key={p.id} value={p.name}>
-                        {p.name} (₹{p.ratePerProfile} / check) — {p.maxProfiles} Profiles Quota
-                      </option>
-                    ))}
-                  </select>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">Official Postpaid tiered rate matching landing page</span>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Employee Headcount Quota *</label>
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Employee Headcount Quota *</label>
                   <input 
                     type="number" 
                     min="10"

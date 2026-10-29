@@ -189,6 +189,16 @@ export const api = {
   rejectCompanyRequest: (requestId, payload = {}) => request(`/superadmin/company-requests/${requestId}/reject`, { method: 'PUT', body: JSON.stringify(payload) }),
   topupCompanyCredits: (companyId, payload) => request(`/superadmin/companies/${companyId}/topup-credits`, { method: 'POST', body: JSON.stringify(payload) }),
   updateCompanyTariffs: (companyId, tariffs) => request(`/superadmin/companies/${companyId}/tariffs`, { method: 'PUT', body: JSON.stringify({ tariffs }) }),
+  sendCompanyVerificationReminder: (companyId) => request(`/superadmin/companies/${companyId}/send-verification-reminder`, { method: 'POST' }),
+  triggerDailyVerificationReminders: (payload = {}) => request(`/superadmin/trigger-daily-verification-reminders`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  getStatutoryReminderSettings: () => request(`/superadmin/statutory-reminder-settings`),
+  saveStatutoryReminderSettings: (payload) => request(`/superadmin/statutory-reminder-settings`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
   resendCompanyActivationEmail: (companyId, payload = {}) => request(`/superadmin/companies/${companyId}/resend-activation`, {
     method: 'POST',
     body: JSON.stringify(payload),

@@ -1464,3 +1464,172 @@ def send_password_changed_confirmation_email(
     return send_smtp_email(to_email, subject, html, company_id=company_id, db=db)
 
 
+
+
+def send_company_payment_and_credentials_email(
+    company_name: str,
+    company_code: str,
+    admin_email: str,
+    contact_person: str,
+    temp_password: str,
+    plan_name: str,
+    profile_count: int,
+    total_amount: float,
+    payment_id: str,
+    invoice_id: str,
+    db=None
+) -> Dict[str, Any]:
+    """Dispatches official payment confirmation, tax invoice receipt, login credentials, and onboarding guide to newly subscribed company"""
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    login_url = f"{app_url}/company"
+
+    content = f"""
+    <div style="margin-bottom: 24px;">
+        <div style="display: inline-block; background-color: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; margin-bottom: 10px;">
+            💳 PAYMENT CONFIRMED & PORTAL CREDENTIALS ISSUED
+        </div>
+        <h2 style="color: #0f172a; font-size: 20px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Welcome to JOY TrueProfile, {contact_person}!
+        </h2>
+        <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.6;">
+            Your payment of <strong>₹{total_amount:,.2f}</strong> for <strong>{company_name}</strong> has been successfully settled. Your enterprise profile quota of <strong>{profile_count} Candidate Profiles</strong> has been provisioned.
+        </p>
+    </div>
+
+    <!-- Payment & Invoice Box -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 12px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 800;">
+            Transaction & Subscription Particulars
+        </h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+            <div><span style="color: #64748b;">Plan Tier:</span> <strong style="color: #0f172a;">{plan_name}</strong></div>
+            <div><span style="color: #64748b;">Profiles Quota:</span> <strong style="color: #0f172a;">{profile_count} Profiles</strong></div>
+            <div><span style="color: #64748b;">Payment Ref:</span> <strong style="color: #0f172a; font-family: monospace;">{payment_id}</strong></div>
+            <div><span style="color: #64748b;">Tax Invoice:</span> <strong style="color: #0f172a; font-family: monospace;">{invoice_id}</strong></div>
+        </div>
+    </div>
+
+    <!-- Credentials Box -->
+    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 2px solid #86efac; border-radius: 14px; padding: 18px 20px; margin-bottom: 24px;">
+        <h3 style="color: #166534; font-size: 14px; font-weight: 800; margin: 0 0 12px 0;">
+            🔐 Your Company Portal Login Credentials
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <tr>
+                <td style="padding: 6px 0; color: #475569; width: 130px;">Login Portal:</td>
+                <td style="padding: 6px 0;"><a href="{login_url}" style="color: #2563eb; font-weight: 700; text-decoration: none;">{login_url}</a></td>
+            </tr>
+            <tr>
+                <td style="padding: 6px 0; color: #475569;">Admin Email:</td>
+                <td style="padding: 6px 0;"><strong style="font-family: monospace; color: #0f172a;">{admin_email}</strong></td>
+            </tr>
+            <tr>
+                <td style="padding: 6px 0; color: #475569;">Temporary Passcode:</td>
+                <td style="padding: 6px 0;"><strong style="font-family: monospace; font-size: 15px; color: #15803d; background: #ffffff; padding: 2px 8px; border-radius: 4px; border: 1px dashed #86efac;">{temp_password}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Step by Step Guide -->
+    <div style="background-color: #fefce8; border: 1px solid #fef08a; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+        <h3 style="color: #854d0e; font-size: 13px; font-weight: 800; margin: 0 0 10px 0;">
+            🚀 Next Steps: Complete Statutory Profile Verification to Unlock Portal Actions
+        </h3>
+        <ol style="margin: 0; padding-left: 20px; font-size: 12px; color: #713f12; line-height: 1.8;">
+            <li>Sign in to your portal using the temporary credentials above.</li>
+            <li>Go to the <strong>Corporate Profile</strong> section.</li>
+            <li>Enter your company's official <strong>GSTIN, MCA CIN, and PAN</strong>.</li>
+            <li>Click <strong>'Verify via Gateway'</strong> to authenticate your statutory details against government registries (~30 seconds).</li>
+            <li>Once verified, all candidate and vendor onboarding actions will automatically activate!</li>
+        </ol>
+    </div>
+
+    <div style="text-align: center; margin: 28px 0;">
+        <a href="{login_url}" style="background-color: #2563eb; color: #ffffff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; display: inline-block;">
+            Access Company Portal 🚀
+        </a>
+    </div>
+    """
+
+    subject = f"💳 Payment Confirmed & Portal Credentials — Welcome to JOY TrueProfile ({company_name})"
+    shell_html = _build_email_shell(
+        header_title="Payment Confirmed & Company Portal Activated",
+        badge_text="OFFICIAL ONBOARDING PASS",
+        content_html=content,
+        action_url=login_url,
+        action_text="Access Company Portal",
+        sender_brand="JOY CORPORATE SOLUTIONS"
+    )
+
+    return send_smtp_email(
+        to_email=admin_email,
+        subject=subject,
+        html_content=shell_html,
+        company_id=company_code,
+        db=db
+    )
+
+
+def send_company_statutory_verification_reminder_email(
+    company_name: str,
+    admin_email: str,
+    contact_person: str,
+    db=None
+) -> Dict[str, Any]:
+    """Dispatches daily/triggered reminder to company admin to complete GSTIN/CIN/PAN profile verification"""
+    app_url = settings.APP_BASE_URL.rstrip('/')
+    login_url = f"{app_url}/company"
+
+    content = f"""
+    <div style="margin-bottom: 24px;">
+        <div style="display: inline-block; background-color: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; margin-bottom: 10px;">
+            ⚠️ ACTION REQUIRED: STATUTORY PROFILE VERIFICATION
+        </div>
+        <h2 style="color: #0f172a; font-size: 20px; font-weight: 900; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+            Please Complete Statutory Verification for {company_name}
+        </h2>
+        <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.6;">
+            Dear {contact_person}, In compliance with the <strong>Digital Personal Data Protection (DPDP) Act 2023</strong> and statutory employer due diligence regulations, all enterprise accounts on JOY TrueProfile must complete corporate identity verification before candidate background checks and vendor onboarding can be initiated.
+        </p>
+    </div>
+
+    <!-- Action Details Box -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+        <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #0f172a; font-weight: 800;">
+            Mandatory Documents to Authenticate:
+        </h4>
+        <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #475569; line-height: 1.8;">
+            <li><strong>GSTIN (Goods and Services Tax ID)</strong> — Validated via GSTN Taxpayer Gateway.</li>
+            <li><strong>MCA CIN (Corporate Identification Number)</strong> — Validated via Ministry of Corporate Affairs Registry.</li>
+            <li><strong>Company PAN Card</strong> — Validated via NSDL Income Tax Database.</li>
+            <li><strong>Bank Account Particulars</strong> — Validated via NPCI IMPS Instant Penny Drop.</li>
+        </ul>
+    </div>
+
+    <div style="text-align: center; margin: 28px 0;">
+        <a href="{login_url}" style="background-color: #d97706; color: #ffffff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; display: inline-block;">
+            Verify Company Profile Now 🚀
+        </a>
+    </div>
+
+    <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin: 0; text-align: center;">
+        Verification takes less than 60 seconds. Once confirmed, all candidate onboarding actions will activate immediately.
+    </p>
+    """
+
+    subject = f"⚠️ Action Required: Complete Corporate Statutory Verification — {company_name}"
+    shell_html = _build_email_shell(
+        header_title="Statutory Verification Required",
+        badge_text="DPDP STATUTORY COMPLIANCE",
+        content_html=content,
+        action_url=login_url,
+        action_text="Verify Company Profile Now",
+        sender_brand="JOY CORPORATE SOLUTIONS"
+    )
+
+    return send_smtp_email(
+        to_email=admin_email,
+        subject=subject,
+        html_content=shell_html,
+        db=db
+    )

@@ -60,7 +60,9 @@ export const DynamicPlanBuilderModal = ({
 
   const minPlanOrderAmount = Number(systemSettings?.superadmin?.minPlanOrderAmount) || 2000;
 
-  // Determine active company
+  // Determine active company & guest buyer status
+  const isGuestBuyer = !targetCompanyId && !currentUser?.companyId;
+
   const company = useMemo(() => {
     if (targetCompanyId) {
       return (companies || []).find(c => c.id === targetCompanyId) || null;
@@ -68,8 +70,15 @@ export const DynamicPlanBuilderModal = ({
     if (currentUser?.companyId) {
       return (companies || []).find(c => c.id === currentUser.companyId) || null;
     }
-    return (companies && companies[0]) || null;
+    return null;
   }, [companies, targetCompanyId, currentUser]);
+
+  const [guestCompanyForm, setGuestCompanyForm] = useState({
+    companyName: '',
+    contactPerson: '',
+    email: '',
+    phone: ''
+  });
 
   // Volume Selection State
   const [selectedVolumePreset, setSelectedVolumePreset] = useState(initialVolumePreset || 'vol_300');
@@ -206,9 +215,28 @@ export const DynamicPlanBuilderModal = ({
 
   // ⚡ Execute Razorpay Payment & Single Plan Settlement
   const handleExecutePurchase = async () => {
-    if (!company?.id) {
+    if (!isGuestBuyer && !company?.id) {
       showToast('Please select an active company to purchase verification credits.', 'error');
       return;
+    }
+
+    if (isGuestBuyer) {
+      if (!guestCompanyForm.companyName.trim()) {
+        showToast('⚠️ Please enter your Company Legal Name to setup your enterprise account.', 'warning');
+        return;
+      }
+      if (!guestCompanyForm.contactPerson.trim()) {
+        showToast('⚠️ Please enter the Contact Person Name.', 'warning');
+        return;
+      }
+      if (!guestCompanyForm.email.trim() || !guestCompanyForm.email.includes('@')) {
+        showToast('⚠️ Please enter a valid Official Work Email for portal credentials.', 'warning');
+        return;
+      }
+      if (!guestCompanyForm.phone.trim() || guestCompanyForm.phone.trim().length < 10) {
+        showToast('⚠️ Please enter a valid 10-digit Mobile Number for WhatsApp/SMS alerts.', 'warning');
+        return;
+      }
     }
 
     if (bill.totalAmount < minPlanOrderAmount) {
@@ -231,10 +259,10 @@ export const DynamicPlanBuilderModal = ({
       const orderPayload = {
         amount: bill.totalAmount,
         currency: 'INR',
-        receipt: `rcpt_plan_${company.code || 'JOY'}_${Date.now().toString().slice(-6)}`,
+        receipt: isGuestBuyer ? `rcpt_plan_new_${Date.now().toString().slice(-6)}` : `rcpt_plan_${company?.code || 'JOY'}_${Date.now().toString().slice(-6)}`,
         notes: {
-          company_id: company.id,
-          company_name: company.name,
+          company_id: isGuestBuyer ? 'new_company' : (company?.id || 'new_company'),
+          company_name: isGuestBuyer ? guestCompanyForm.companyName : (company?.name || 'Enterprise Client'),
           profile_count: bill.profileCount,
           total_rate_per_profile: bill.totalRatePerProfile
         }
@@ -263,7 +291,9 @@ export const DynamicPlanBuilderModal = ({
         totalRatePerProfile: bill.totalRatePerProfile,
         selectedEmployeeCheckIds: selectedEmpChecks,
         selectedVendorCheckIds: selectedVendorChecks,
-        selectedGatewayIds: selectedGateways
+        selectedGatewayIds: selectedGateways,
+        planName: `Single Plan (${bill.profileCount} Profiles)`,
+        guestCompany: isGuestBuyer ? guestCompanyForm : null
       };
 
       // 3. Trigger Razorpay Checkout Popup if script is loaded
@@ -277,9 +307,9 @@ export const DynamicPlanBuilderModal = ({
           image: platformLogoEmblem || '/assets/logos/joy_true_profile_shield_emblem.png',
           order_id: orderData.id && !orderData.id.startsWith('order_sim_') ? orderData.id : undefined,
           prefill: {
-            name: company.contact_person || company.contactPerson || 'Company Administrator',
-            email: company.email || 'admin@joycorporatesolutions.com',
-            contact: company.phone || '+919876543210'
+            name: isGuestBuyer ? guestCompanyForm.contactPerson : (company?.contact_person || company?.contactPerson || 'Company Administrator'),
+            email: isGuestBuyer ? guestCompanyForm.email : (company?.email || 'admin@joycorporatesolutions.com'),
+            contact: isGuestBuyer ? guestCompanyForm.phone : (company?.phone || '+919876543210')
           },
           theme: {
             color: '#4f46e5'
@@ -288,7 +318,7 @@ export const DynamicPlanBuilderModal = ({
             try {
               // 4. Verify Cryptographic Signature on Backend & Settle Plan
               const verifyRes = await api.verifyRazorpayPayment({
-                company_id: company.id,
+                company_id: isGuestBuyer ? null : company?.id,
                 razorpay_order_id: response.razorpay_order_id || orderData.id,
                 razorpay_payment_id: response.razorpay_payment_id || `pay_${Date.now()}`,
                 razorpay_signature: response.razorpay_signature || `sig_sim_${Date.now()}`,
@@ -426,7 +456,49 @@ export const DynamicPlanBuilderModal = ({
                 </p>
               </div>
 
-              {/* Tax Invoice Breakdown Receipt */}
+{/* Enterprise Login Credentials Issued (For New Accounts) */}
+              {(paymentSuccessData.temp_password || paymentSuccessData.is_new_account) && (
+                <div className="max-w-lg mx-auto bg-gradient-to-r from-indigo-50 via-purple-50 to-indigo-50 p-5 rounded-2xl border-2 border-indigo-300 text-left space-y-3.5 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-indigo-950 font-outfit">
+                        Enterprise Portal Access Pass Issued
+                      </h4>
+                      <p className="text-[10px] text-indigo-700 font-medium">
+                        Credentials also dispatched via Email, WhatsApp & SMS
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                    <div className="p-2.5 rounded-xl bg-white border border-indigo-200">
+                      <span className="text-[10px] text-slate-400 block font-sans font-bold">Portal Username:</span>
+                      <strong className="text-slate-900 text-xs truncate block mt-0.5">{paymentSuccessData.company_email}</strong>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white border border-indigo-200">
+                      <span className="text-[10px] text-slate-400 block font-sans font-bold">Temporary Passcode:</span>
+                      <strong className="text-emerald-700 text-xs font-bold block mt-0.5">{paymentSuccessData.temp_password}</strong>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-300 text-amber-900 text-[11px] leading-relaxed">
+                    <strong>⚠️ Next Step:</strong> Sign in to your Company Portal and authenticate your <strong>GSTIN, MCA CIN & PAN</strong> in the Corporate Profile section. Candidate background verification actions are activated upon statutory profile authentication.
+                  </div>
+
+                  <a
+                    href="/company"
+                    className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all"
+                  >
+                    <span>Sign In to Company Portal 🚀</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              )}
+
+                            {/* Tax Invoice Breakdown Receipt */}
               <div className="max-w-lg mx-auto bg-white p-5 rounded-2xl border border-emerald-200 text-left text-xs space-y-2 text-slate-700 shadow-sm font-mono">
                 <div className="flex justify-between pb-1.5 border-b border-slate-100">
                   <span className="text-slate-500 font-bold">GST Tax Invoice No:</span>
@@ -826,6 +898,69 @@ export const DynamicPlanBuilderModal = ({
                   </div>
                 )}
               </div>
+
+              {/* 2.5 Organization Account Setup Form (For New Client Purchases) */}
+              {isGuestBuyer && (
+                <div className="bg-gradient-to-r from-slate-50 to-indigo-50/50 border-2 border-indigo-200 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xs animate-fadeIn">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black">
+                      3
+                    </span>
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 font-outfit">
+                      Organization Account Particulars (New Client Onboarding)
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                    Enter your organization details below. Upon payment settlement, your enterprise portal credentials, tax invoice, and step-by-step onboarding guide will be dispatched immediately via Email, WhatsApp & SMS.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Company Legal Name *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Apex Prime Technologies Private Limited"
+                        value={guestCompanyForm.companyName}
+                        onChange={(e) => setGuestCompanyForm({ ...guestCompanyForm, companyName: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Contact Person Full Name *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Vikram Malhotra"
+                        value={guestCompanyForm.contactPerson}
+                        onChange={(e) => setGuestCompanyForm({ ...guestCompanyForm, contactPerson: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Official Work Email (Portal Login Username) *</label>
+                      <input
+                        type="email"
+                        placeholder="e.g. admin@company.com"
+                        value={guestCompanyForm.email}
+                        onChange={(e) => setGuestCompanyForm({ ...guestCompanyForm, email: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Mobile Number (WhatsApp & SMS Verification Alerts) *</label>
+                      <input
+                        type="tel"
+                        placeholder="e.g. +91 98765 43210"
+                        value={guestCompanyForm.phone}
+                        onChange={(e) => setGuestCompanyForm({ ...guestCompanyForm, phone: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 3. Sticky Real-Time Bill Breakdown Card */}
               <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-4 sm:p-5 rounded-2xl text-white shadow-xl space-y-3">
